@@ -18,65 +18,65 @@ public class StegoOutputStream extends OutputStream
     /**
      * Image data
      */
-    BufferedImage image = null;
+    private BufferedImage image = null;
 
     /**
      * Number of bits used per color channel
      */
-    int channelBitsUsed = 1;
+    private int channelBitsUsed = 1;
 
     /**
      * Length of the data
      */
-    int dataLength = 0;
+    private int dataLength = 0;
 
     /**
      * Current x co-ordinate
      */
-    int x = 0;
+    private int x = 0;
 
     /**
      * Current y co-ordinate
      */
-    int y = 0;
+    private int y = 0;
 
     /**
      * Current bit number to be read
      */
-    int currBit = 0;
+    private int currBit = 0;
 
     /**
      * Bit set to store three bits per pixel
      */
-    byte[] bitSet = null;
+    private byte[] bitSet = null;
 
     /**
      * Width of the image
      */
-    int imgWidth = 0;
+    private int imgWidth = 0;
 
     /**
      * Height of the image
      */
-    int imgHeight = 0;
+    private int imgHeight = 0;
 
     /**
      * Configuration data
      */
-    StegoConfig config = null;
+    private StegoConfig config = null;
 
     /**
-     * Constructor
-     * @param image
-     * @param dataLength
-     * @param config
+     * Default constructor
+     * @param image Source image into which data will be embedded
+     * @param dataLength Length of the data that would be written to the image
+     * @param config Configuration data to use while writing
      * @throws IOException
      */
     public StegoOutputStream(BufferedImage image, int dataLength, StegoConfig config) throws IOException
     {
         if(image == null)
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Null value provided for image");
         }
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
@@ -135,7 +135,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Implementation of write method
+     * Implementation of <code>OutputStream.write(int)</code> method
      * @param data Byte to be written
      * @throws IOException
      */
@@ -155,7 +155,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Flush the stream
+     * Flushes the stream
      * @throws IOException
      */
     public void flush() throws IOException
@@ -164,7 +164,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Close the stream
+     * Closes the stream
      * @throws IOException
      */
     public void close() throws IOException
@@ -183,7 +183,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get the image data
+     * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      * @return Image data
      * @throws IOException
      */
@@ -194,7 +194,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get Method for dataLength
+     * Get method for dataLength
      * @return dataLength
      */
     public int getDataLength()
@@ -203,7 +203,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get Method for channelBitsUsed
+     * Get method for channelBitsUsed
      * @return channelBitsUsed
      */
     public int getChannelBitsUsed()
