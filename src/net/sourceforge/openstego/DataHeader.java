@@ -10,23 +10,36 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Class to hold the image data header data
+ * This class holds the header data for the data that needs to be embedded in the image.
+ * First, the header data gets written inside the image, and then the actual data is written.
  */
 public class DataHeader
 {
+    /**
+     * Magic string at the start of the header to identify OpenStego embedded data
+     */
     public static final byte[] DATA_STAMP = "#$OpenStego$#".getBytes();
 
+    /**
+     * Length of the data embedded in the image (excluding the header data)
+     */
     private int dataLength = 0;
 
+    /**
+     * Number of bits used per color channel for embedding the data
+     */
     private int channelBitsUsed = 0;
 
+    /**
+     * StegoConfig instance to hold the configuration data
+     */
     private StegoConfig config = null;
 
     /**
-     * Constructor
-     * @param dataLength
-     * @param channelBitsUsed
-     * @param config
+     * This constructor should normally be used when writing the data.
+     * @param dataLength Length of the data embedded in the image (excluding the header data)
+     * @param channelBitsUsed Number of bits used per color channel for embedding the data
+     * @param config StegoConfig instance to hold the configuration data
      */
     public DataHeader(int dataLength, int channelBitsUsed, StegoConfig config)
     {
@@ -36,9 +49,9 @@ public class DataHeader
     }
 
     /**
-     * Constructor using data input stream
-     * @param dataInStream Data input stream
-     * @param config Stego configuration data
+     * This constructor should be used when reading embedded data from an InputStream.
+     * @param dataInStream Data input stream containing the embedded data
+     * @param config StegoConfig instance to hold the configuration data
      * @throws IOException
      */
     public DataHeader(InputStream dataInStream, StegoConfig config) throws IOException
@@ -68,8 +81,7 @@ public class DataHeader
     }
 
     /**
-     * Create header data for data
-     * @param dataLength Length of data
+     * This method generates the header in the form of byte array based on the parameters provided in the constructor.
      * @return Header data
      */
     public byte[] getHeaderData()

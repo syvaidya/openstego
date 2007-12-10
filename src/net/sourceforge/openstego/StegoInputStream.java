@@ -18,53 +18,52 @@ public class StegoInputStream extends InputStream
     /**
      * Image data
      */
-    BufferedImage image = null;
+    private BufferedImage image = null;
 
     /**
      * Number of bits used per color channel
      */
-    int channelBitsUsed = 1;
+    private int channelBitsUsed = 1;
 
     /**
      * Length of the data
      */
-    int dataLength = 0;
+    private int dataLength = 0;
 
     /**
      * Current x co-ordinate
      */
-    int x = 0;
+    private int x = 0;
 
     /**
      * Current y co-ordinate
      */
-    int y = 0;
+    private int y = 0;
 
     /**
      * Current bit number to be read
      */
-    int currBit = 0;
+    private int currBit = 0;
 
     /**
      * Width of the image
      */
-    int imgWidth = 0;
+    private int imgWidth = 0;
 
     /**
      * Height of the image
      */
-    int imgHeight = 0;
+    private int imgHeight = 0;
 
     /**
      * Configuration data
      */
-    StegoConfig config = null;
+    private StegoConfig config = null;
 
     /**
-     * Constructor
-     * @param image
-     * @param channelBitsUsed
-     * @param config
+     * Default constructor
+     * @param image Image data to be read
+     * @param config Configuration data to use while reading
      * @throws IOException
      */
     public StegoInputStream(BufferedImage image, StegoConfig config) throws IOException
@@ -113,7 +112,7 @@ public class StegoInputStream extends InputStream
     }
 
     /**
-     * Implementation of read method
+     * Implementation of <code>InputStream.read()</code> method
      * @throws IOException
      */
     public int read() throws IOException

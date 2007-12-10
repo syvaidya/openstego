@@ -10,17 +10,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Class to store configuration data for openstego
+ * Class to store configuration data for OpenStego
  */
 public class StegoConfig
 {
     /**
-     * Key string for maxBitsUsedPerChannel
+     * Key string for configuration item - maxBitsUsedPerChannel.
+     * <p>
+     * Maximum bits to use per color channel. Allowing for higher number here might degrade the quality
+     * of the image in case the data size is big.
      */
     public static final String MAX_BITS_USED_PER_CHANNEL = "maxBitsUsedPerChannel";
 
     /**
-     * Key string for maxBitsUsedPerChannel
+     * Key string for configuration item - useCompression
+     * <p>
+     * Flag to indicate whether compression should be used or not
      */
     public static final String USE_COMPRESSION = "useCompression";
 
@@ -39,18 +44,20 @@ public class StegoConfig
     /**
      * Flag to indicate whether compression should be used or not
      */
-    private boolean useCompression = true;
+    private boolean useCompression = false;
 
 
     /**
-     * Default Constructor
+     * Default Constructor (with default values for configuration items)
      */
     public StegoConfig()
     {
     }
 
     /**
-     * Constructor with map of configuration data
+     * Constructor with map of configuration data. Please make sure that only valid keys for configuration
+     * items are provided, and the values for those items are also valid.
+     * @param propMap Map containing the configuration data
      */
     public StegoConfig(Map propMap)
     {
@@ -138,15 +145,6 @@ public class StegoConfig
     public void setMaxBitsUsedPerChannel(int maxBitsUsedPerChannel)
     {
         this.maxBitsUsedPerChannel = maxBitsUsedPerChannel;
-    }
-
-    /**
-     * Set method for configuration item - defaultImageOutputType
-     * @param defaultImageOutputType
-     */
-    public void setDefaultImageOutputType(String defaultImageOutputType)
-    {
-        this.defaultImageOutputType = defaultImageOutputType;
     }
 
     /**

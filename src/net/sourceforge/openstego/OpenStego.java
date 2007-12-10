@@ -21,10 +21,15 @@ import java.util.zip.GZIPOutputStream;
 import javax.imageio.ImageIO;
 
 /**
- * Main class for openstego
+ * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
+ * command line interface for the tool. It also has API methods which can be used by external programs
+ * when using OpenStego as a library.
  */
 public class OpenStego
 {
+    /**
+     * Version string for OpenStego
+     */
     private static final String VERSION_STRING = "openstego v0.1";
 
     /**
@@ -33,7 +38,7 @@ public class OpenStego
     private StegoConfig config = null;
 
     /**
-     * Default Constructor
+     * Constructor using the default configuration
      */
     public OpenStego()
     {
@@ -41,7 +46,7 @@ public class OpenStego
     }
 
     /**
-     * Constructor with configuration data
+     * Constructor using <code>StegoConfig</code> object
      * @param config StegoConfig object with configuration data
      */
     public OpenStego(StegoConfig config)
@@ -50,8 +55,8 @@ public class OpenStego
     }
 
     /**
-     * Constructor with configuration data in the form of map
-     * @param propMap Configuration data map
+     * Constructor with configuration data in the form of <code>Map<code>
+     * @param propMap Map containing the configuration data
      */
     public OpenStego(Map propMap)
     {
@@ -59,21 +64,17 @@ public class OpenStego
     }
 
     /**
-     * Method to embed the data into an image file
-     * @param dataFileName Data file name
-     * @param imageFileName Image file name
+     * Method to embed the data into an image
+     * @param data Data to be embedded
+     * @param image Source image data into which data needs to be embedded
      * @return Image with embedded data
      * @throws IOException
      */
-    public BufferedImage embedData(String dataFileName, String imageFileName) throws IOException
+    public BufferedImage embedData(byte[] data, BufferedImage image) throws IOException
     {
-        byte[] data = null;
-        BufferedImage image = null;
         OutputStream os = null;
         StegoOutputStream stegoOS = null;
 
-        image = readImage(imageFileName);
-        data = getFileBytes(new File(dataFileName));
         stegoOS = new StegoOutputStream(image, data.length, config);
         if(config.isUseCompression())
         {
@@ -92,18 +93,30 @@ public class OpenStego
     }
 
     /**
-     * Method to extract the data from an image file
-     * @param imageFileName Image file name
-     * @return Extracted data
-     * @throws Exception
+     * Method to embed the data into an image (alternate API)
+     * @param dataFile File containing the data to be embedded
+     * @param imageFile Source image file into which data needs to be embedded
+     * @return Image with embedded data
+     * @throws IOException
      */
-    public byte[] extractData(String imageFileName) throws Exception
+    public BufferedImage embedData(File dataFile, File imageFile) throws IOException
+    {
+        return embedData(getFileBytes(dataFile), readImage(imageFile));
+    }
+
+    /**
+     * Method to extract the data from an image
+     * @param image Image from which data needs to be extracted
+     * @return Extracted data
+     * @throws IOException
+     */
+    public byte[] extractData(BufferedImage image) throws IOException
     {
         byte[] data = null;
         InputStream is = null;
         StegoInputStream stegoIS = null;
 
-        stegoIS = new StegoInputStream(ImageIO.read(new File(imageFileName)), config);
+        stegoIS = new StegoInputStream(image, config);
         if(config.isUseCompression())
         {
             is = new GZIPInputStream(stegoIS);
@@ -122,8 +135,19 @@ public class OpenStego
     }
 
     /**
+     * Method to extract the data from an image (alternate API)
+     * @param imageFile Image file from which data needs to be extracted
+     * @return Extracted data
+     * @throws IOException
+     */
+    public byte[] extractData(File imageFile) throws IOException
+    {
+        return extractData(ImageIO.read(imageFile));
+    }
+
+    /**
      * Helper method to get byte array data from given file
-     * @param fileName Name of the file
+     * @param file File to be read
      * @return File data as byte array
      * @throws IOException
      */
@@ -156,13 +180,13 @@ public class OpenStego
 
     /**
      * Method to load the image file
-     * @param imageFileName Image file name
-     * @throws IOException
+     * @param imageFile Image file
      * @return Buffered image
+     * @throws IOException
      */
-    private BufferedImage readImage(String imageFileName) throws IOException
+    private BufferedImage readImage(File imageFile) throws IOException
     {
-        return ImageIO.read(new File(imageFileName));
+        return ImageIO.read(imageFile);
     }
 
     /**
@@ -170,7 +194,6 @@ public class OpenStego
      * @param image Image data
      * @param imageFileName Image file name
      * @throws IOException
-     * @return Buffered image
      */
     private void writeImage(BufferedImage image, String imageFileName) throws IOException
     {
@@ -180,20 +203,21 @@ public class OpenStego
 
     /**
      * Main method for calling openstego from command line.
+     * <pre>
      *   Usage:
-     *        java -jar <path_to>/openstego.jar -embed <data_file> <image_file>
-     *     OR java -jar <path_to>/openstego.jar -extract <image_file>
-     *
+     *        java -jar &lt;path_to&gt;/openstego.jar -embed &lt;data_file&gt; &lt;image_file&gt;
+     *     OR java -jar &lt;path_to&gt;/openstego.jar -extract &lt;image_file&gt;
+     * </pre>
      * For '-embed' option, openstego will embed the data into the given image file, and save the file
      * as PNG after appending '_out' to the file name.
-     *
+     * <p>
      * For '-extract' option, openstego will output the extracted data on the standard OUT stream, so
      * make sure that output is redirected to required file.
      *
-     * @param args
-     * @throws Exception
+     * @param args Command line arguments
+     * @throws IOException
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         int count = 0;
         int index = 0;
@@ -246,7 +270,7 @@ public class OpenStego
 
             dataFileName = args[count];
             imageFileName = args[count + 1];
-            stego.writeImage(stego.embedData(dataFileName, imageFileName), imageFileName);
+            stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)), imageFileName);
         }
         else if(option.equals("-extract"))
         {
@@ -257,7 +281,7 @@ public class OpenStego
             }
             imageFileName = args[1];
             stego = new OpenStego();
-            System.out.write(stego.extractData(imageFileName));
+            System.out.write(stego.extractData(new File(imageFileName)));
         }
         else
         {
@@ -267,7 +291,7 @@ public class OpenStego
     }
 
     /**
-     * Method to display utility usage
+     * Method to display usage for OpenStego
      */
     private static void displayUsage()
     {
