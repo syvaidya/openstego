@@ -30,7 +30,7 @@ public class OpenStego
     /**
      * Version string for OpenStego
      */
-    private static final String VERSION_STRING = "openstego v0.1";
+    private static final String VERSION_STRING = "openstego v0.1.1";
 
     /**
      * Configuration data
