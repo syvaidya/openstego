@@ -86,8 +86,15 @@ public class OpenStego
         }
 
         os.write(data);
-        os.close();
-        stegoOS.close();
+        if(config.isUseCompression())
+        {
+            ((GZIPOutputStream) os).finish();
+            os.close();
+        }
+        else
+        {
+            stegoOS.close();
+        }
 
         return stegoOS.getImage();
     }
