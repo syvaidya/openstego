@@ -1,5 +1,5 @@
-OpenStego v0.1
---------------
+OpenStego v0.1.1
+----------------
 
 OpenStego is a command line tool developed in Java for image based stegano-
 graphy. It currently supports embedding of data files into 24 bpp images only.
@@ -28,7 +28,7 @@ USAGE:
   standard OUT stream, so make sure that output is redirected to required file.
 
 TODO:
-  - Documentation for usage of OpenStego as a library
+  - Create GUI for the tool
   - Implementation of OpenStego in C++ 
 
 AUTHOR:
