@@ -1,0 +1,42 @@
+OpenStego v0.1.1
+----------------
+
+OpenStego is a command line tool developed in Java for image based stegano-
+graphy. It currently supports embedding of data files into 24 bpp images only.
+Image containing embedded data is written out in PNG format.
+
+USAGE:
+     java -jar <path>/openstego.jar -embed [options] <data_file> <image_file>
+  OR java -jar <path>/openstego.jar -extract <image_file>
+
+  For '-embed' option, openstego will embed the data into the given image file
+  and save the file as PNG after appending '_out' to the file name.
+
+    [options] can be specified for '-embed' and should be of the format 
+    '--name=value' pairs. Supported options are:
+
+      maxBitsUsedPerChannel  - Max number of bits to use per color channel in
+                               the image for embedding data. This value can be
+                               increased at the expense of image quality, in
+                               case size of image is not able to accommodate
+                               the data (Default = 3)
+
+      useCompression         - Flag to indicate whether compression should be
+                               used on the data or not (Default = true)
+
+  For '-extract' option, openstego will output the extracted data on the
+  standard OUT stream, so make sure that output is redirected to required file.
+
+TODO:
+  - Create GUI for the tool
+  - Implementation of OpenStego in C++ 
+
+AUTHOR:
+  Samir Vaidya (syvaidya@gmail.com)
+  Copyright (c) 2007
+
+SEE ALSO:
+  http://sourceforge.net/projects/openstego for more details.
+
+LICENSE:
+  GNU General Public License 2.0 (GPL) (see LICENSE file)
