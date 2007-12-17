@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.util.LabelUtil;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public class StegoConfig
     /**
      * Flag to indicate whether compression should be used or not
      */
-    private boolean useCompression = false;
+    private boolean useCompression = true;
 
 
     /**
@@ -78,12 +80,12 @@ public class StegoConfig
                 }
                 catch(NumberFormatException ex)
                 {
-                    throw new IllegalArgumentException("Invalid value for configuration item 'maxBitsUsedPerChannel': " + value);
+                    throw new IllegalArgumentException(LabelUtil.getString("err.config.maxBitsUsedPerChannel.notNumber", new Object[] { value }));
                 }
 
                 if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
                 {
-                    throw new IllegalArgumentException("Configuration item 'maxBitsUsedPerChannel' must be between 1 and 8. Value: " + value);
+                    throw new IllegalArgumentException(LabelUtil.getString("err.config.maxBitsUsedPerChannel.notInRange", new Object[] { value }));
                 }
             }
             else if(key.equals(USE_COMPRESSION))
@@ -99,12 +101,12 @@ public class StegoConfig
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Invalid value for configuration item 'useCompression': " + value);
+                    throw new IllegalArgumentException(LabelUtil.getString("err.config.useCompression.invalid", new Object[] { value }));
                 }
             }
             else
             {
-                throw new IllegalArgumentException("Invalid configuration item provided: " + key);
+                throw new IllegalArgumentException(LabelUtil.getString("err.config.invalidKey", new Object[] { key }));
             }
         }
     }

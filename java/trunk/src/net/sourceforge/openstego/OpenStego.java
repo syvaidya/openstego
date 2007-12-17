@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.util.LabelUtil;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -178,7 +180,7 @@ public class OpenStego
 
         if(offset < data.length)
         {
-            throw new IOException("Error loading file: " + file.getName());
+            throw new IOException(LabelUtil.getString("err.fileLoadError", new Object[] { file.getName() }));
         }
 
         is.close();
@@ -302,26 +304,7 @@ public class OpenStego
      */
     private static void displayUsage()
     {
-        System.err.println(VERSION_STRING + ". Usage:");
-        System.err.println("     java -jar <path>" + File.separator + "openstego.jar -embed [options] <data_file> <image_file>");
-        System.err.println("  OR java -jar <path>" + File.separator + "openstego.jar -extract <image_file>");
-        System.err.println();
-        System.err.println("  For '-embed' option, openstego will embed the data into the given image file");
-        System.err.println("  and save the file as PNG after appending '_out' to the file name.");
-        System.err.println();
-        System.err.println("    [options] can be specified for '-embed' and should be of the format ");
-        System.err.println("    '--name=value' pairs. Supported options are:");
-        System.err.println();
-        System.err.println("      maxBitsUsedPerChannel  - Max number of bits to use per color channel in");
-        System.err.println("                               the image for embedding data. This value can be");
-        System.err.println("                               increased at the expense of image quality, in");
-        System.err.println("                               case size of image is not able to accommodate");
-        System.err.println("                               the data (Default = " +  (new StegoConfig()).getMaxBitsUsedPerChannel() + ")");
-        System.err.println();
-        System.err.println("      useCompression         - Flag to indicate whether compression should be");
-        System.err.println("                               used on the data or not (Default = " +  (new StegoConfig()).isUseCompression() + ")");
-        System.err.println();
-        System.err.println("  For '-extract' option, openstego will output the extracted data on the");
-        System.err.println("  standard OUT stream, so make sure that output is redirected to required file.");
+        System.err.print(LabelUtil.getString("versionString"));
+        System.err.println(LabelUtil.getString("cmd.usage"));
     }
 }

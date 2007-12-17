@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.util.LabelUtil;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +77,7 @@ public class StegoInputStream extends InputStream
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException("Images with indexed color model (e.g. GIF) not supported");
+            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
         }
 
         this.image = image;

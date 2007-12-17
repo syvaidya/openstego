@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.util.LabelUtil;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -76,12 +78,12 @@ public class StegoOutputStream extends OutputStream
     {
         if(image == null)
         {
-            throw new IllegalArgumentException("Null value provided for image");
+            throw new IllegalArgumentException(LabelUtil.getString("err.image.arg.nullValue"));
         }
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException("Images with indexed color model (e.g. GIF) not supported");
+            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
         }
 
         this.image = image;
@@ -112,7 +114,7 @@ public class StegoOutputStream extends OutputStream
                 channelBits++;
                 if(channelBits > config.getMaxBitsUsedPerChannel())
                 {
-                    throw new IOException("Image size not enough to embed the data");
+                    throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
                 }
             }
             else
@@ -225,7 +227,7 @@ public class StegoOutputStream extends OutputStream
 
         if(y == imgHeight)
         {
-            throw new IOException("Image size not enough to embed the data");
+            throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
         }
 
         maskPerByte = (int) (Math.pow(2, channelBitsUsed) - 1);
