@@ -6,8 +6,6 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,52 +18,53 @@ public class StegoInputStream extends InputStream
     /**
      * Image data
      */
-    private BufferedImage image = null;
+    BufferedImage image = null;
 
     /**
      * Number of bits used per color channel
      */
-    private int channelBitsUsed = 1;
+    int channelBitsUsed = 1;
 
     /**
      * Length of the data
      */
-    private int dataLength = 0;
+    int dataLength = 0;
 
     /**
      * Current x co-ordinate
      */
-    private int x = 0;
+    int x = 0;
 
     /**
      * Current y co-ordinate
      */
-    private int y = 0;
+    int y = 0;
 
     /**
      * Current bit number to be read
      */
-    private int currBit = 0;
+    int currBit = 0;
 
     /**
      * Width of the image
      */
-    private int imgWidth = 0;
+    int imgWidth = 0;
 
     /**
      * Height of the image
      */
-    private int imgHeight = 0;
+    int imgHeight = 0;
 
     /**
      * Configuration data
      */
-    private StegoConfig config = null;
+    StegoConfig config = null;
 
     /**
-     * Default constructor
-     * @param image Image data to be read
-     * @param config Configuration data to use while reading
+     * Constructor
+     * @param image
+     * @param channelBitsUsed
+     * @param config
      * @throws IOException
      */
     public StegoInputStream(BufferedImage image, StegoConfig config) throws IOException
@@ -77,7 +76,7 @@ public class StegoInputStream extends InputStream
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
+            throw new IllegalArgumentException("Images with indexed color model (e.g. GIF) not supported");
         }
 
         this.image = image;
@@ -114,7 +113,7 @@ public class StegoInputStream extends InputStream
     }
 
     /**
-     * Implementation of <code>InputStream.read()</code> method
+     * Implementation of read method
      * @throws IOException
      */
     public int read() throws IOException

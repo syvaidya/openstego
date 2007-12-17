@@ -6,8 +6,6 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,70 +18,70 @@ public class StegoOutputStream extends OutputStream
     /**
      * Image data
      */
-    private BufferedImage image = null;
+    BufferedImage image = null;
 
     /**
      * Number of bits used per color channel
      */
-    private int channelBitsUsed = 1;
+    int channelBitsUsed = 1;
 
     /**
      * Length of the data
      */
-    private int dataLength = 0;
+    int dataLength = 0;
 
     /**
      * Current x co-ordinate
      */
-    private int x = 0;
+    int x = 0;
 
     /**
      * Current y co-ordinate
      */
-    private int y = 0;
+    int y = 0;
 
     /**
      * Current bit number to be read
      */
-    private int currBit = 0;
+    int currBit = 0;
 
     /**
      * Bit set to store three bits per pixel
      */
-    private byte[] bitSet = null;
+    byte[] bitSet = null;
 
     /**
      * Width of the image
      */
-    private int imgWidth = 0;
+    int imgWidth = 0;
 
     /**
      * Height of the image
      */
-    private int imgHeight = 0;
+    int imgHeight = 0;
 
     /**
      * Configuration data
      */
-    private StegoConfig config = null;
+    StegoConfig config = null;
 
     /**
-     * Default constructor
-     * @param image Source image into which data will be embedded
-     * @param dataLength Length of the data that would be written to the image
-     * @param config Configuration data to use while writing
+     * Constructor
+     * @param image
+     * @param dataLength
+     * @param config
      * @throws IOException
      */
     public StegoOutputStream(BufferedImage image, int dataLength, StegoConfig config) throws IOException
     {
         if(image == null)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.arg.nullValue"));
+            throw new IllegalArgumentException();
         }
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
+            throw new IllegalArgumentException("Images with indexed color model (e.g. GIF) not supported");
         }
 
         this.image = image;
@@ -114,7 +112,7 @@ public class StegoOutputStream extends OutputStream
                 channelBits++;
                 if(channelBits > config.getMaxBitsUsedPerChannel())
                 {
-                    throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
+                    throw new IOException("Image size not enough to embed the data");
                 }
             }
             else
@@ -137,7 +135,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Implementation of <code>OutputStream.write(int)</code> method
+     * Implementation of write method
      * @param data Byte to be written
      * @throws IOException
      */
@@ -157,7 +155,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Flushes the stream
+     * Flush the stream
      * @throws IOException
      */
     public void flush() throws IOException
@@ -166,7 +164,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Closes the stream
+     * Close the stream
      * @throws IOException
      */
     public void close() throws IOException
@@ -185,7 +183,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
+     * Get the image data
      * @return Image data
      * @throws IOException
      */
@@ -196,7 +194,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get method for dataLength
+     * Get Method for dataLength
      * @return dataLength
      */
     public int getDataLength()
@@ -205,7 +203,7 @@ public class StegoOutputStream extends OutputStream
     }
 
     /**
-     * Get method for channelBitsUsed
+     * Get Method for channelBitsUsed
      * @return channelBitsUsed
      */
     public int getChannelBitsUsed()
@@ -227,7 +225,7 @@ public class StegoOutputStream extends OutputStream
 
         if(y == imgHeight)
         {
-            throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
+            throw new IOException("Image size not enough to embed the data");
         }
 
         maskPerByte = (int) (Math.pow(2, channelBitsUsed) - 1);

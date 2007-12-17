@@ -6,42 +6,27 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class holds the header data for the data that needs to be embedded in the image.
- * First, the header data gets written inside the image, and then the actual data is written.
+ * Class to hold the image data header data
  */
 public class DataHeader
 {
-    /**
-     * Magic string at the start of the header to identify OpenStego embedded data
-     */
     public static final byte[] DATA_STAMP = "#$OpenStego$#".getBytes();
 
-    /**
-     * Length of the data embedded in the image (excluding the header data)
-     */
     private int dataLength = 0;
 
-    /**
-     * Number of bits used per color channel for embedding the data
-     */
     private int channelBitsUsed = 0;
 
-    /**
-     * StegoConfig instance to hold the configuration data
-     */
     private StegoConfig config = null;
 
     /**
-     * This constructor should normally be used when writing the data.
-     * @param dataLength Length of the data embedded in the image (excluding the header data)
-     * @param channelBitsUsed Number of bits used per color channel for embedding the data
-     * @param config StegoConfig instance to hold the configuration data
+     * Constructor
+     * @param dataLength
+     * @param channelBitsUsed
+     * @param config
      */
     public DataHeader(int dataLength, int channelBitsUsed, StegoConfig config)
     {
@@ -51,9 +36,9 @@ public class DataHeader
     }
 
     /**
-     * This constructor should be used when reading embedded data from an InputStream.
-     * @param dataInStream Data input stream containing the embedded data
-     * @param config StegoConfig instance to hold the configuration data
+     * Constructor using data input stream
+     * @param dataInStream Data input stream
+     * @param config Stego configuration data
      * @throws IOException
      */
     public DataHeader(InputStream dataInStream, StegoConfig config) throws IOException
@@ -71,7 +56,7 @@ public class DataHeader
 
         if(!(new String(stamp)).equals(new String(DATA_STAMP)))
         {
-            throw new IOException(LabelUtil.getString("err.invalidHeader"));
+            throw new IOException("Wrong Header: Image does not contain embedded data");
         }
 
         dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
@@ -83,7 +68,8 @@ public class DataHeader
     }
 
     /**
-     * This method generates the header in the form of byte array based on the parameters provided in the constructor.
+     * Create header data for data
+     * @param dataLength Length of data
      * @return Header data
      */
     public byte[] getHeaderData()
