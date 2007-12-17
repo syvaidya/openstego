@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.util.LabelUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -69,7 +71,7 @@ public class DataHeader
 
         if(!(new String(stamp)).equals(new String(DATA_STAMP)))
         {
-            throw new IOException("Wrong Header: Image does not contain embedded data");
+            throw new IOException(LabelUtil.getString("err.invalidHeader"));
         }
 
         dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
