@@ -6,6 +6,7 @@
 
 package net.sourceforge.openstego;
 
+import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.util.LabelUtil;
 
 import java.awt.image.BufferedImage;
@@ -21,6 +22,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.UIManager;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
@@ -224,10 +226,19 @@ public class OpenStego
      * make sure that output is redirected to required file.
      *
      * @param args Command line arguments
-     * @throws IOException
+     * @throws Exception
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws Exception
     {
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch(Exception e)
+        {
+        }
+        new OpenStegoUI().setVisible(true);
+
         int count = 0;
         int index = 0;
         String key = null;
