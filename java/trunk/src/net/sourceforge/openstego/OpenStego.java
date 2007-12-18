@@ -76,29 +76,22 @@ public class OpenStego
      */
     public BufferedImage embedData(byte[] data, BufferedImage image) throws IOException
     {
-        OutputStream os = null;
+        GZIPOutputStream os = null;
         StegoOutputStream stegoOS = null;
 
         stegoOS = new StegoOutputStream(image, data.length, config);
         if(config.isUseCompression())
         {
             os = new GZIPOutputStream(stegoOS);
-        }
-        else
-        {
-            os = stegoOS;
-        }
-
-        os.write(data);
-        if(config.isUseCompression())
-        {
-            ((GZIPOutputStream) os).finish();
+            os.write(data, 0, data.length);
+            os.finish();
             os.close();
         }
         else
         {
-            stegoOS.close();
+            stegoOS.write(data);
         }
+        stegoOS.close();
 
         return stegoOS.getImage();
     }
@@ -123,6 +116,7 @@ public class OpenStego
      */
     public byte[] extractData(BufferedImage image) throws IOException
     {
+        int bytesRead = 0;
         byte[] data = null;
         InputStream is = null;
         StegoInputStream stegoIS = null;
@@ -138,7 +132,7 @@ public class OpenStego
         }
         data = new byte[stegoIS.getDataLength()];
 
-        is.read(data);
+        bytesRead = is.read(data, 0, data.length);
         is.close();
         stegoIS.close();
 
@@ -230,15 +224,6 @@ public class OpenStego
      */
     public static void main(String[] args) throws Exception
     {
-        try
-        {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch(Exception e)
-        {
-        }
-        new OpenStegoUI().setVisible(true);
-
         int count = 0;
         int index = 0;
         String key = null;
@@ -249,64 +234,78 @@ public class OpenStego
         OpenStego stego = null;
         Map propMap = new HashMap();
 
-        if(args.length < 2)
+        if(args.length == 0) // Start GUI
         {
-            displayUsage();
-            return;
-        }
-
-        option = args[0];
-        if(option.equals("-embed"))
-        {
-            count = 1;
-            while(args[count].startsWith("--"))
+            try
             {
-                index = args[count].indexOf('=');
-                if(index == -1)
-                {
-                    displayUsage();
-                    return;
-                }
-
-                key = args[count].substring(2, index);
-                value = args[count].substring(index + 1);
-                propMap.put(key, value);
-
-                count++;
-                if(args.length < count)
-                {
-                    displayUsage();
-                    return;
-                }
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
-
-            stego = new OpenStego(propMap);
-
-            if(args.length != (count + 2))
+            catch(Exception e)
             {
-                displayUsage();
-                return;
             }
-
-            dataFileName = args[count];
-            imageFileName = args[count + 1];
-            stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)), imageFileName);
-        }
-        else if(option.equals("-extract"))
-        {
-            if(args.length != 2)
-            {
-                displayUsage();
-                return;
-            }
-            imageFileName = args[1];
-            stego = new OpenStego();
-            System.out.write(stego.extractData(new File(imageFileName)));
+            new OpenStegoUI().setVisible(true);
         }
         else
         {
-            displayUsage();
-            return;
+            if(args.length < 2)
+            {
+                displayUsage();
+                return;
+            }
+
+            option = args[0];
+            if(option.equals("-embed"))
+            {
+                count = 1;
+                while(args[count].startsWith("--"))
+                {
+                    index = args[count].indexOf('=');
+                    if(index == -1)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
+                    key = args[count].substring(2, index);
+                    value = args[count].substring(index + 1);
+                    propMap.put(key, value);
+
+                    count++;
+                    if(args.length < count)
+                    {
+                        displayUsage();
+                        return;
+                    }
+                }
+
+                stego = new OpenStego(propMap);
+
+                if(args.length != (count + 2))
+                {
+                    displayUsage();
+                    return;
+                }
+
+                dataFileName = args[count];
+                imageFileName = args[count + 1];
+                stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)), imageFileName);
+            }
+            else if(option.equals("-extract"))
+            {
+                if(args.length != 2)
+                {
+                    displayUsage();
+                    return;
+                }
+                imageFileName = args[1];
+                stego = new OpenStego();
+                System.out.write(stego.extractData(new File(imageFileName)));
+            }
+            else
+            {
+                displayUsage();
+                return;
+            }
         }
     }
 

@@ -60,6 +60,12 @@ public class OpenStegoFrame extends JFrame
     protected JButton cancelButton = new JButton();
 
     /**
+     * Tabbed pane for embed/extract tabs
+     */
+    protected JTabbedPane mainTabbedPane = new JTabbedPane();
+
+
+    /**
      * Default constructor
      */
     public OpenStegoFrame()
@@ -75,7 +81,6 @@ public class OpenStegoFrame extends JFrame
     private void initComponents()
     {
         GridBagConstraints gridBagConstraints = null;
-        JTabbedPane mainTabbedPane = new JTabbedPane();
         JPanel mainPanel = new JPanel();
         JPanel embedPanel = new JPanel();
         JPanel extractPanel = new JPanel();
