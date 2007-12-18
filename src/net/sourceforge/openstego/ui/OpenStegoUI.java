@@ -6,16 +6,19 @@
 
 package net.sourceforge.openstego.ui;
 
+import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.util.LabelUtil;
 
-//import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
@@ -42,6 +45,25 @@ public class OpenStegoUI extends OpenStegoFrame
     }
 
     /**
+     * This method embeds the selected data file into selected image file
+     */
+    private void embedData() throws IOException
+    {
+        OpenStego openStego = new OpenStego();
+        BufferedImage image = null;
+        String dataFileName = null;
+        String imgFileName = null;
+        String outputFileName = null;
+
+        dataFileName = srcDataTextField.getText();
+        imgFileName = srcImageTextField.getText();
+        outputFileName = tgtImageTextField.getText();
+
+        image = openStego.embedData(new File(dataFileName), new File(imgFileName));
+        ImageIO.write(image, "png", new File(outputFileName));
+    }
+
+    /**
      * This method shows the file chooser and updates the text field based on the selection
      */
     private void selectFile(String action)
@@ -52,11 +74,10 @@ public class OpenStegoUI extends OpenStegoFrame
         String filterDesc = null;
         ArrayList allowedExts = new ArrayList();
         JTextField textField = null;
-        
+
         if(action.equals("BROWSE_SRC_DATA"))
         {
             title = LabelUtil.getString("gui.filechooser.title.sourceDataFile");
-            filterDesc = LabelUtil.getString("gui.filechooser.filter.allFiles");
             textField = this.srcDataTextField;
         }
         else if(action.equals("BROWSE_SRC_IMG"))
@@ -96,18 +117,32 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         public void actionPerformed(ActionEvent ev)
         {
-            String action = ev.getActionCommand();
+            try
+            {
+                String action = ev.getActionCommand();
 
-            if(action.startsWith("BROWSE_"))
-            {
-                selectFile(action);
+                if(action.startsWith("BROWSE_"))
+                {
+                    selectFile(action);
+                }
+                else if(action.equals("OK"))
+                {
+                    if(mainTabbedPane.getSelectedIndex() == 0) // Embed tab
+                    {
+                        embedData();
+                    }
+                    else // Extract tab
+                    {
+                    }
+                }
+                else if(action.equals("CANCEL"))
+                {
+                    close();
+                }
             }
-            else if(action.equals("OK"))
+            catch(Exception ex)
             {
-            }
-            else if(action.equals("CANCEL"))
-            {
-                close();
+                ex.printStackTrace();
             }
         }
 
@@ -142,7 +177,10 @@ public class OpenStegoUI extends OpenStegoFrame
             String fileName = null;
 
             JFileChooser chooser = new JFileChooser(".");
-            chooser.setFileFilter(new FileBrowserFilter(filterDesc, allowedExts));
+            if(filterDesc != null)
+            {
+                chooser.setFileFilter(new FileBrowserFilter(filterDesc, allowedExts));
+            }
             chooser.setDialogTitle(dialogTitle);
             retVal = chooser.showOpenDialog(null);
 
