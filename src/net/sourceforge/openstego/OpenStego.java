@@ -10,11 +10,7 @@ import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.util.LabelUtil;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
@@ -31,11 +27,6 @@ import javax.swing.UIManager;
  */
 public class OpenStego
 {
-    /**
-     * Version string for OpenStego
-     */
-    private static final String VERSION_STRING = "openstego v0.1.1";
-
     /**
      * Configuration data
      */
@@ -76,21 +67,22 @@ public class OpenStego
      */
     public BufferedImage embedData(byte[] data, BufferedImage image) throws IOException
     {
-        GZIPOutputStream os = null;
         StegoOutputStream stegoOS = null;
 
-        stegoOS = new StegoOutputStream(image, data.length, config);
         if(config.isUseCompression())
         {
-            os = new GZIPOutputStream(stegoOS);
-            os.write(data, 0, data.length);
-            os.finish();
-            os.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            GZIPOutputStream zos = new GZIPOutputStream(bos);
+            zos.write(data);
+            zos.finish();
+            zos.close();
+            bos.close();
+            
+            data = bos.toByteArray();
         }
-        else
-        {
-            stegoOS.write(data);
-        }
+
+        stegoOS = new StegoOutputStream(image, data.length, config);
+        stegoOS.write(data);
         stegoOS.close();
 
         return stegoOS.getImage();
@@ -118,23 +110,25 @@ public class OpenStego
     {
         int bytesRead = 0;
         byte[] data = null;
-        InputStream is = null;
         StegoInputStream stegoIS = null;
 
         stegoIS = new StegoInputStream(image, config);
+        data = new byte[stegoIS.getDataLength()];
+        bytesRead = stegoIS.read(data, 0, data.length);
+        if(bytesRead != data.length)
+        {
+            throw new IOException(LabelUtil.getString("err.imageDataRead"));
+        }
+        stegoIS.close();
+
         if(config.isUseCompression())
         {
-            is = new GZIPInputStream(stegoIS);
+            ByteArrayInputStream bis = new ByteArrayInputStream(data);
+            GZIPInputStream zis = new GZIPInputStream(bis);
+            data = getStreamBytes(zis);
+            zis.close();
+            bis.close();
         }
-        else
-        {
-            is = stegoIS;
-        }
-        data = new byte[stegoIS.getDataLength()];
-
-        bytesRead = is.read(data, 0, data.length);
-        is.close();
-        stegoIS.close();
 
         return data;
     }
@@ -151,6 +145,33 @@ public class OpenStego
     }
 
     /**
+     * Helper method to get byte array data from given InputStream
+     * @param is InputStream to read
+     * @return Stream data as byte array
+     * @throws IOException
+     */
+    private byte[] getStreamBytes(InputStream is) throws IOException
+    {
+        final int BUF_SIZE = 512;
+        ByteArrayOutputStream bos = null;
+        int bytesRead = 0;
+        byte[] data = null;
+
+        data = new byte[BUF_SIZE];
+        bos = new ByteArrayOutputStream();
+
+        while((bytesRead = is.read(data, 0, BUF_SIZE)) >= 0)
+        {
+            bos.write(data, 0, bytesRead);
+        }
+
+        is.close();
+        bos.close();
+
+        return bos.toByteArray();
+    }
+
+    /**
      * Helper method to get byte array data from given file
      * @param file File to be read
      * @return File data as byte array
@@ -158,29 +179,7 @@ public class OpenStego
      */
     private byte[] getFileBytes(File file) throws IOException
     {
-        int offset = 0;
-        int bytesRead = 0;
-        long len = 0;
-        byte[] data = null;
-        FileInputStream is = null;
-
-        is = new FileInputStream(file);
-        len = file.length();
-        data = new byte[(int) len];
-
-        // Read data
-        while(offset < data.length && (bytesRead = is.read(data, offset, data.length - offset)) >= 0)
-        {
-            offset = offset + bytesRead;
-        }
-
-        if(offset < data.length)
-        {
-            throw new IOException(LabelUtil.getString("err.fileLoadError", new Object[] { file.getName() }));
-        }
-
-        is.close();
-        return data;
+        return getStreamBytes(new FileInputStream(file));
     }
 
     /**
@@ -208,16 +207,6 @@ public class OpenStego
 
     /**
      * Main method for calling openstego from command line.
-     * <pre>
-     *   Usage:
-     *        java -jar &lt;path_to&gt;/openstego.jar -embed &lt;data_file&gt; &lt;image_file&gt;
-     *     OR java -jar &lt;path_to&gt;/openstego.jar -extract &lt;image_file&gt;
-     * </pre>
-     * For '-embed' option, openstego will embed the data into the given image file, and save the file
-     * as PNG after appending '_out' to the file name.
-     * <p>
-     * For '-extract' option, openstego will output the extracted data on the standard OUT stream, so
-     * make sure that output is redirected to required file.
      *
      * @param args Command line arguments
      * @throws Exception
