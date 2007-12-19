@@ -50,6 +50,36 @@ public class OpenStegoFrame extends JFrame
     protected JButton tgtImgFileButton = new JButton();
 
     /**
+     * Checkbox for "Use Compression"
+     */
+    protected JCheckBox useCompCheckBox = new JCheckBox();
+
+    /**
+     * Combobox for "Max Bits Per Color Channel"
+     */
+    protected JComboBox maxBitsComboBox = null;
+
+    /**
+     * "Image for Extract" text field
+     */
+    protected JTextField imgForExtractTextField = new JTextField();
+
+    /**
+     * "Image for Extract" browse file button
+     */
+    protected JButton imgForExtractFileButton = new JButton();
+
+    /**
+     * "Output Data" text field
+     */
+    protected JTextField outputDataTextField = new JTextField();
+
+    /**
+     * "Output Data" browse file button
+     */
+    protected JButton outputDataFileButton = new JButton();
+
+    /**
      * "OK" button
      */
     protected JButton okButton = new JButton();
@@ -86,6 +116,7 @@ public class OpenStegoFrame extends JFrame
         JPanel extractPanel = new JPanel();
         JPanel optionPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        Object[] maxBitsList = new Object[8];
 
         mainPanel.setBorder(new EmptyBorder(new Insets(5, 5, 0, 5)));
         embedPanel.setLayout(new GridBagLayout());
@@ -106,11 +137,6 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridy = 4;
         embedPanel.add(new JLabel(LabelUtil.getString("gui.label.outputImgFile")), gridBagConstraints);
 
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
         srcDataTextField.setColumns(50);
@@ -125,11 +151,7 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridy = 5;
         embedPanel.add(tgtImageTextField, gridBagConstraints);
 
-        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 0.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
         srcDataFileButton.setText("...");
@@ -146,6 +168,92 @@ public class OpenStegoFrame extends JFrame
         tgtImgFileButton.setPreferredSize(new Dimension(22, 22));
         gridBagConstraints.gridy = 5;
         embedPanel.add(tgtImgFileButton, gridBagConstraints);
+
+        optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()),
+            " " + LabelUtil.getString("gui.label.option.title") + " "));
+        optionPanel.setLayout(new GridBagLayout());
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = new Insets(5, 5, 5, 5);
+
+        gridBagConstraints.gridy = 0;
+        optionPanel.add(new JLabel(LabelUtil.getString("gui.label.option.useCompression")), gridBagConstraints);
+
+        gridBagConstraints.gridy = 1;
+        optionPanel.add(new JLabel(LabelUtil.getString("gui.label.option.maxBitsPerChannel")), gridBagConstraints);
+
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.weightx = 1.0;
+
+        gridBagConstraints.gridy = 0;
+        optionPanel.add(useCompCheckBox, gridBagConstraints);
+
+        for(int i = 1; i <= 8; i++) maxBitsList[i - 1] = new Integer(i);
+        maxBitsComboBox = new JComboBox(maxBitsList);
+        maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
+
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new Insets(5, 10, 5, 5);
+        optionPanel.add(maxBitsComboBox, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        embedPanel.add(optionPanel, gridBagConstraints);
+
+        extractPanel.setLayout(new GridBagLayout());
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 0.0;
+        gridBagConstraints.insets = new Insets(5, 5, 0, 5);
+
+        gridBagConstraints.gridy = 0;
+        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.imgForExtractFile")), gridBagConstraints);
+
+        gridBagConstraints.gridy = 2;
+        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.outputDataFile")), gridBagConstraints);
+
+        gridBagConstraints.insets = new Insets(0, 5, 5, 5);
+
+        gridBagConstraints.gridy = 1;
+        imgForExtractTextField.setColumns(50);
+        extractPanel.add(imgForExtractTextField, gridBagConstraints);
+
+        gridBagConstraints.gridy = 3;
+        outputDataTextField.setColumns(50);
+        extractPanel.add(outputDataTextField, gridBagConstraints);
+
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.insets = new Insets(0, 0, 5, 5);
+
+        gridBagConstraints.gridy = 1;
+        imgForExtractFileButton.setText("...");
+        imgForExtractFileButton.setPreferredSize(new Dimension(22, 22));
+        extractPanel.add(imgForExtractFileButton, gridBagConstraints);
+
+        gridBagConstraints.gridy = 3;
+        outputDataFileButton.setText("...");
+        outputDataFileButton.setPreferredSize(new Dimension(22, 22));
+        extractPanel.add(outputDataFileButton, gridBagConstraints);
+
+        // Dummy padding
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        extractPanel.add(new JLabel(" "), gridBagConstraints);
 
         mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.embed"), embedPanel);
         mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.extract"), extractPanel);
@@ -173,10 +281,14 @@ public class OpenStegoFrame extends JFrame
      */
     private void setActionCommands()
     {
-        okButton.setActionCommand("OK");
-        cancelButton.setActionCommand("CANCEL");
         srcDataFileButton.setActionCommand("BROWSE_SRC_DATA");
         srcImgFileButton.setActionCommand("BROWSE_SRC_IMG");
         tgtImgFileButton.setActionCommand("BROWSE_TGT_IMG");
+
+        imgForExtractFileButton.setActionCommand("BROWSE_IMG_FOR_EXTRACT");
+        outputDataFileButton.setActionCommand("BROWSE_TGT_DATA");
+
+        okButton.setActionCommand("OK");
+        cancelButton.setActionCommand("CANCEL");
     }
 }
