@@ -11,7 +11,6 @@ import net.sourceforge.openstego.util.LabelUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
