@@ -6,11 +6,11 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * InputStream to read embedded data from image file
@@ -23,14 +23,14 @@ public class StegoInputStream extends InputStream
     private BufferedImage image = null;
 
     /**
+     * Data header
+     */
+    private DataHeader dataHeader = null;
+
+    /**
      * Number of bits used per color channel
      */
     private int channelBitsUsed = 1;
-
-    /**
-     * Length of the data
-     */
-    private int dataLength = 0;
 
     /**
      * Current x co-ordinate
@@ -95,11 +95,8 @@ public class StegoInputStream extends InputStream
      */
     private void readHeader() throws IOException
     {
-        DataHeader dataHeader = null;
-
         dataHeader = new DataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
-        this.dataLength = dataHeader.getDataLength();
 
         if(currBit != 0)
         {
@@ -149,21 +146,12 @@ public class StegoInputStream extends InputStream
     }
 
     /**
-     * Get method for dataLength
-     * @return dataLength
+     * Get method for dataHeader
+     * @return Data header
      */
-    public int getDataLength()
+    public DataHeader getDataHeader()
     {
-        return dataLength;
-    }
-
-    /**
-     * Get Method for channelBitsUsed
-     * @return channelBitsUsed
-     */
-    public int getChannelBitsUsed()
-    {
-        return channelBitsUsed;
+        return dataHeader;
     }
 
     /**

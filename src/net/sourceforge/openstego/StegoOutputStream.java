@@ -6,11 +6,11 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * OutputStream to embed data into image
@@ -31,6 +31,11 @@ public class StegoOutputStream extends OutputStream
      * Length of the data
      */
     private int dataLength = 0;
+
+    /**
+     * Name of the source data file
+     */
+    private String fileName = null;
 
     /**
      * Current x co-ordinate
@@ -71,10 +76,11 @@ public class StegoOutputStream extends OutputStream
      * Default constructor
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
+     * @param fileName Name of the source data file
      * @param config Configuration data to use while writing
      * @throws IOException
      */
-    public StegoOutputStream(BufferedImage image, int dataLength, StegoConfig config) throws IOException
+    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, StegoConfig config) throws IOException
     {
         if(image == null)
         {
@@ -93,6 +99,7 @@ public class StegoOutputStream extends OutputStream
         this.config = config;
 
         this.channelBitsUsed = 1;
+        this.fileName = fileName;
         this.bitSet = new byte[3];
         writeHeader();
     }
@@ -105,11 +112,16 @@ public class StegoOutputStream extends OutputStream
     {
         int channelBits = 1;
         int noOfPixels = 0;
+        int headerSize = 0;
+        DataHeader header = null;
 
         noOfPixels = imgWidth * imgHeight;
+        header = new DataHeader(dataLength, channelBits, fileName, config);
+        headerSize = header.getHeaderSize();
+
         while(true)
         {
-            if((noOfPixels * channelBits) / 8 < (dataLength + DataHeader.getHeaderSize()))
+            if((noOfPixels * channelBits) / 8 < (headerSize + dataLength))
             {
                 channelBits++;
                 if(channelBits > config.getMaxBitsUsedPerChannel())
@@ -124,7 +136,7 @@ public class StegoOutputStream extends OutputStream
         }
 
         // Write header with channelBitsUsed = 1
-        write((new DataHeader(dataLength, channelBits, config)).getHeaderData());
+        write(header.getHeaderData());
         if(currBit != 0)
         {
             currBit = 0;
@@ -193,24 +205,6 @@ public class StegoOutputStream extends OutputStream
     {
         flush();
         return image;
-    }
-
-    /**
-     * Get method for dataLength
-     * @return dataLength
-     */
-    public int getDataLength()
-    {
-        return dataLength;
-    }
-
-    /**
-     * Get method for channelBitsUsed
-     * @return channelBitsUsed
-     */
-    public int getChannelBitsUsed()
-    {
-        return channelBitsUsed;
     }
 
     /**
