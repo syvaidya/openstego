@@ -6,10 +6,6 @@
 
 package net.sourceforge.openstego.ui;
 
-import net.sourceforge.openstego.OpenStego;
-import net.sourceforge.openstego.StegoConfig;
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -22,10 +18,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
+
+import net.sourceforge.openstego.OpenStego;
+import net.sourceforge.openstego.StegoConfig;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * This is the main class for OpenStego GUI and it implements the action and window listeners.
@@ -129,7 +137,7 @@ public class OpenStegoUI extends OpenStegoFrame
         srcImgFileButton.addActionListener(listener);
         tgtImgFileButton.addActionListener(listener);
         imgForExtractFileButton.addActionListener(listener);
-        outputDataFileButton.addActionListener(listener);
+        outputFolderButton.addActionListener(listener);
 
         // "Esc" key handling
         KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
@@ -198,26 +206,29 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         OpenStego openStego = null;
         String imgFileName = null;
-        String outputFileName = null;
+        String outputFolder = null;
         FileOutputStream fos = null;
+        List stegoOutput = null;
 
         openStego = new OpenStego();
         imgFileName = imgForExtractTextField.getText();
-        outputFileName = outputDataTextField.getText();
+        outputFolder = outputFolderTextField.getText();
 
         // Input Validations
         if(!checkMandatory(imgFileName, LabelUtil.getString("gui.label.imgForExtractFile"))) return;
-        if(!checkMandatory(outputFileName, LabelUtil.getString("gui.label.outputDataFile"))) return;
+        if(!checkMandatory(outputFolder, LabelUtil.getString("gui.label.outputDataFolder"))) return;
+        
+        stegoOutput = openStego.extractData(new File(imgFileName));
 
-        fos = new FileOutputStream(outputFileName);
-        fos.write(openStego.extractData(new File(imgFileName)));
+        fos = new FileOutputStream(outputFolder + File.separator + stegoOutput.get(0));
+        fos.write((byte[]) stegoOutput.get(1));
         fos.close();
 
         JOptionPane.showMessageDialog(this, LabelUtil.getString("gui.msg.success.extract"),
                 LabelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
         this.imgForExtractTextField.setText("");
-        this.outputDataTextField.setText("");
+        this.outputFolderTextField.setText("");
         this.imgForExtractTextField.requestFocus();
     }
 
@@ -230,6 +241,7 @@ public class OpenStegoUI extends OpenStegoFrame
         String fileName = null;
         String title = null;
         String filterDesc = null;
+        boolean dirOnly = false;
         ArrayList allowedExts = new ArrayList();
         JTextField textField = null;
 
@@ -261,11 +273,12 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         else if(action.equals("BROWSE_TGT_DATA"))
         {
-            title = LabelUtil.getString("gui.filechooser.title.outputDataFile");
-            textField = this.outputDataTextField;
+            title = LabelUtil.getString("gui.filechooser.title.outputDataFolder");
+            dirOnly = true;
+            textField = this.outputFolderTextField;
         }
         
-        fileName = browser.getFileName(title, filterDesc, allowedExts);
+        fileName = browser.getFileName(title, filterDesc, dirOnly, allowedExts);
         if(fileName != null)
         {
             textField.setText(fileName);
@@ -397,15 +410,21 @@ public class OpenStegoUI extends OpenStegoFrame
          * Method to get the display file chooser and return the selected file name
          * @param dialogTitle Title for the file chooser dialog box
          * @param filterDesc Description to be displayed for the filter in file chooser
+         * @param dirOnly Flag to indicate whether only directory selection should be allowed
          * @param allowedExts Allowed file extensions for the filter
          * @return Name of the selected file (null if no file was selected)
          */
-        public String getFileName(String dialogTitle, String filterDesc, ArrayList allowedExts)
+        public String getFileName(String dialogTitle, String filterDesc, boolean dirOnly, ArrayList allowedExts)
         {
             int retVal = 0;
             String fileName = null;
 
             JFileChooser chooser = new JFileChooser(".");
+            if(dirOnly)
+            {
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            }
+
             if(filterDesc != null)
             {
                 chooser.setFileFilter(new FileBrowserFilter(filterDesc, allowedExts));

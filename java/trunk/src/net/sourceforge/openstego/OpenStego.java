@@ -6,18 +6,26 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.ui.OpenStegoUI;
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
+
+import net.sourceforge.openstego.ui.OpenStegoUI;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
@@ -60,11 +68,12 @@ public class OpenStego
     /**
      * Method to embed the data into an image
      * @param data Data to be embedded
+     * @param dataFileName Name of the data file
      * @param image Source image data into which data needs to be embedded
      * @return Image with embedded data
      * @throws IOException
      */
-    public BufferedImage embedData(byte[] data, BufferedImage image) throws IOException
+    public BufferedImage embedData(byte[] data, String dataFileName, BufferedImage image) throws IOException
     {
         StegoOutputStream stegoOS = null;
 
@@ -80,7 +89,7 @@ public class OpenStego
             data = bos.toByteArray();
         }
 
-        stegoOS = new StegoOutputStream(image, data.length, config);
+        stegoOS = new StegoOutputStream(image, data.length, dataFileName, config);
         stegoOS.write(data);
         stegoOS.close();
 
@@ -96,23 +105,30 @@ public class OpenStego
      */
     public BufferedImage embedData(File dataFile, File imageFile) throws IOException
     {
-        return embedData(getFileBytes(dataFile), readImage(imageFile));
+        return embedData(getFileBytes(dataFile), dataFile.getName(), readImage(imageFile));
     }
 
     /**
      * Method to extract the data from an image
      * @param image Image from which data needs to be extracted
-     * @return Extracted data
+     * @return Extracted data (List's first element is the file name and second element is byte array of data)
      * @throws IOException
      */
-    public byte[] extractData(BufferedImage image) throws IOException
+    public List extractData(BufferedImage image) throws IOException
     {
         int bytesRead = 0;
         byte[] data = null;
+        List output = new ArrayList();
+        DataHeader header = null;
         StegoInputStream stegoIS = null;
 
         stegoIS = new StegoInputStream(image, config);
-        data = new byte[stegoIS.getDataLength()];
+        header = stegoIS.getDataHeader();
+
+        // Add file name as first element of output list 
+        output.add(header.getFileName());
+        data = new byte[header.getDataLength()];
+
         bytesRead = stegoIS.read(data, 0, data.length);
         if(bytesRead != data.length)
         {
@@ -129,16 +145,18 @@ public class OpenStego
             bis.close();
         }
 
-        return data;
+        // Add data as second element of output list
+        output.add(data);
+        return output;
     }
 
     /**
      * Method to extract the data from an image (alternate API)
      * @param imageFile Image file from which data needs to be extracted
-     * @return Extracted data
+     * @return Extracted data (List's first element is the file name and second element is byte array of data)
      * @throws IOException
      */
-    public byte[] extractData(File imageFile) throws IOException
+    public List extractData(File imageFile) throws IOException
     {
         return extractData(ImageIO.read(imageFile));
     }
@@ -219,8 +237,12 @@ public class OpenStego
         String option = null;
         String dataFileName = null;
         String imageFileName = null;
+        String outputFolder = null;
+        String outputFileName = null;
+        List stegoData = null;
         OpenStego stego = null;
         Map propMap = new HashMap();
+        FileOutputStream fos = null;
 
         if(args.length == 0) // Start GUI
         {
@@ -280,14 +302,22 @@ public class OpenStego
             }
             else if(option.equals("-extract"))
             {
-                if(args.length != 2)
+                if(args.length != 3)
                 {
                     displayUsage();
                     return;
                 }
                 imageFileName = args[1];
+                outputFolder = args[2];
                 stego = new OpenStego();
-                System.out.write(stego.extractData(new File(imageFileName)));
+                stegoData = stego.extractData(new File(imageFileName));
+                outputFileName = (String) stegoData.get(0);
+
+                fos = new FileOutputStream(outputFolder + File.separator + outputFileName);
+                fos.write((byte[]) stegoData.get(1));
+                fos.close();
+
+                System.out.println(LabelUtil.getString("cmd.msg.fileExtracted", new Object[] { outputFileName }));
             }
             else
             {

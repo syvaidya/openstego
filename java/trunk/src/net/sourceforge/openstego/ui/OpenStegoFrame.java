@@ -70,14 +70,14 @@ public class OpenStegoFrame extends JFrame
     protected JButton imgForExtractFileButton = new JButton();
 
     /**
-     * "Output Data" text field
+     * "Output Folder" text field
      */
-    protected JTextField outputDataTextField = new JTextField();
+    protected JTextField outputFolderTextField = new JTextField();
 
     /**
-     * "Output Data" browse file button
+     * "Output Folder" browse file button
      */
-    protected JButton outputDataFileButton = new JButton();
+    protected JButton outputFolderButton = new JButton();
 
     /**
      * "OK" button
@@ -222,7 +222,7 @@ public class OpenStegoFrame extends JFrame
         extractPanel.add(new JLabel(LabelUtil.getString("gui.label.imgForExtractFile")), gridBagConstraints);
 
         gridBagConstraints.gridy = 2;
-        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.outputDataFile")), gridBagConstraints);
+        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.outputDataFolder")), gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
@@ -231,8 +231,8 @@ public class OpenStegoFrame extends JFrame
         extractPanel.add(imgForExtractTextField, gridBagConstraints);
 
         gridBagConstraints.gridy = 3;
-        outputDataTextField.setColumns(50);
-        extractPanel.add(outputDataTextField, gridBagConstraints);
+        outputFolderTextField.setColumns(50);
+        extractPanel.add(outputFolderTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
@@ -243,9 +243,9 @@ public class OpenStegoFrame extends JFrame
         extractPanel.add(imgForExtractFileButton, gridBagConstraints);
 
         gridBagConstraints.gridy = 3;
-        outputDataFileButton.setText("...");
-        outputDataFileButton.setPreferredSize(new Dimension(22, 22));
-        extractPanel.add(outputDataFileButton, gridBagConstraints);
+        outputFolderButton.setText("...");
+        outputFolderButton.setPreferredSize(new Dimension(22, 22));
+        extractPanel.add(outputFolderButton, gridBagConstraints);
 
         // Dummy padding
         gridBagConstraints.gridx = 0;
@@ -286,7 +286,7 @@ public class OpenStegoFrame extends JFrame
         tgtImgFileButton.setActionCommand("BROWSE_TGT_IMG");
 
         imgForExtractFileButton.setActionCommand("BROWSE_IMG_FOR_EXTRACT");
-        outputDataFileButton.setActionCommand("BROWSE_TGT_DATA");
+        outputFolderButton.setActionCommand("BROWSE_TGT_DATA");
 
         okButton.setActionCommand("OK");
         cancelButton.setActionCommand("CANCEL");

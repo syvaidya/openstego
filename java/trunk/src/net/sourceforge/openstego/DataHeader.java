@@ -6,10 +6,11 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * This class holds the header data for the data that needs to be embedded in the image.
@@ -33,6 +34,11 @@ public class DataHeader
     private int channelBitsUsed = 0;
 
     /**
+     * Name of the file being embedded in the image (as byte array)
+     */
+    private byte[] fileName = null;
+
+    /**
      * StegoConfig instance to hold the configuration data
      */
     private StegoConfig config = null;
@@ -41,13 +47,30 @@ public class DataHeader
      * This constructor should normally be used when writing the data.
      * @param dataLength Length of the data embedded in the image (excluding the header data)
      * @param channelBitsUsed Number of bits used per color channel for embedding the data
+     * @param fileName Name of the file of data being embedded
      * @param config StegoConfig instance to hold the configuration data
      */
-    public DataHeader(int dataLength, int channelBitsUsed, StegoConfig config)
+    public DataHeader(int dataLength, int channelBitsUsed, String fileName, StegoConfig config)
     {
         this.dataLength = dataLength;
         this.channelBitsUsed = channelBitsUsed;
         this.config = config;
+
+        if(fileName == null)
+        {
+        	this.fileName = new byte[0];
+        }
+        else
+        {
+	        try
+	        {
+	        	this.fileName = fileName.getBytes("UTF-8");
+	        }
+	        catch(UnsupportedEncodingException unEx)
+	        {
+	        	this.fileName = fileName.getBytes();
+	        }
+        }
     }
 
     /**
@@ -59,14 +82,16 @@ public class DataHeader
     public DataHeader(InputStream dataInStream, StegoConfig config) throws IOException
     {
         int stampLen = 0;
+        int fileNameLen = 0;
+        int channelBits = 0;
         byte[] header = null;
         byte[] stamp = null;
 
         stampLen = DATA_STAMP.length;
-        header = new byte[stampLen + 6];
+        header = new byte[stampLen + 7];
         stamp = new byte[stampLen];
 
-        dataInStream.read(header, 0, stampLen + 6);
+        dataInStream.read(header, 0, stampLen + 7);
         System.arraycopy(header, 0, stamp, 0, stampLen);
 
         if(!(new String(stamp)).equals(new String(DATA_STAMP)))
@@ -76,9 +101,21 @@ public class DataHeader
 
         dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
                 + (byteToInt(header[stampLen + 2]) << 16) + (byteToInt(header[stampLen + 3]) << 32));
+        channelBits = header[stampLen + 4];
+        fileNameLen = header[stampLen + 5];
+        config.setUseCompression(header[stampLen + 6] == 1);
+        
+        if(fileNameLen == 0)
+        {
+        	fileName = new byte[0];
+        }
+        else
+        {
+        	fileName = new byte[fileNameLen];
+        	dataInStream.read(fileName, 0, fileNameLen);
+        }
 
-        channelBitsUsed = header[stampLen + 4];
-        config.setUseCompression(header[stampLen + 5] == 1);
+        channelBitsUsed = channelBits;
         this.config = config;
     }
 
@@ -92,7 +129,7 @@ public class DataHeader
         int stampLength = 0;
 
         stampLength = DATA_STAMP.length;
-        out = new byte[stampLength + 6];
+        out = new byte[stampLength + 7 + fileName.length];
 
         System.arraycopy(DATA_STAMP, 0, out, 0, stampLength);
         out[stampLength + 0] = (byte) ((dataLength & 0x000000FF));
@@ -100,7 +137,12 @@ public class DataHeader
         out[stampLength + 2] = (byte) ((dataLength & 0x00FF0000) >> 16);
         out[stampLength + 3] = (byte) ((dataLength & 0xFF000000) >> 32);
         out[stampLength + 4] = (byte) channelBitsUsed;
-        out[stampLength + 5] = (byte) (config.isUseCompression() ? 1 : 0);
+        out[stampLength + 5] = (byte) fileName.length;
+        out[stampLength + 6] = (byte) (config.isUseCompression() ? 1 : 0);
+        if(fileName.length > 0)
+        {
+        	System.arraycopy(fileName, 0, out, stampLength + 7, fileName.length);
+        }
 
         return out;
     }
@@ -124,12 +166,31 @@ public class DataHeader
     }
 
     /**
-     * Method to get standard header size
+     * Get Method for fileName
+     * @return fileName
+     */
+    public String getFileName()
+    {
+    	String name = null;
+
+    	try
+    	{
+    		name = new String(fileName, "UTF-8");
+    	}
+    	catch(UnsupportedEncodingException unEx)
+    	{
+    		name = new String(fileName);
+    	}
+        return name;
+    }
+
+    /**
+     * Method to get size of the current header
      * @return Header size
      */
-    public static int getHeaderSize()
+    public int getHeaderSize()
     {
-        return DATA_STAMP.length + 6;
+        return DATA_STAMP.length + 7 + fileName.length;
     }
 
     /**
