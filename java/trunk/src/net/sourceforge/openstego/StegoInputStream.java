@@ -60,7 +60,7 @@ public class StegoInputStream extends InputStream
     /**
      * Configuration data
      */
-    private StegoConfig config = null;
+    private OpenStegoConfig config = null;
 
     /**
      * Default constructor
@@ -68,7 +68,7 @@ public class StegoInputStream extends InputStream
      * @param config Configuration data to use while reading
      * @throws IOException
      */
-    public StegoInputStream(BufferedImage image, StegoConfig config) throws IOException
+    public StegoInputStream(BufferedImage image, OpenStegoConfig config) throws IOException
     {
         if(image == null)
         {

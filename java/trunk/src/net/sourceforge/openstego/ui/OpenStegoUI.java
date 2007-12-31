@@ -14,25 +14,17 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.openstego.OpenStego;
-import net.sourceforge.openstego.StegoConfig;
+import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -111,7 +103,7 @@ public class OpenStegoUI extends OpenStegoFrame
     /**
      * Class variable to store OpenStego config data
      */
-    private StegoConfig config = new StegoConfig();
+    private OpenStegoConfig config = new OpenStegoConfig();
 
     /**
      * Default constructor
@@ -155,8 +147,9 @@ public class OpenStegoUI extends OpenStegoFrame
 
     /**
      * This method embeds the selected data file into selected image file
+     * @throws Exception
      */
-    private void embedData() throws IOException
+    private void embedData() throws Exception
     {
         OpenStego openStego = null;
         BufferedImage image = null;
@@ -201,8 +194,9 @@ public class OpenStegoUI extends OpenStegoFrame
 
     /**
      * This method extracts data from the selected image file
+     * @throws Exception
      */
-    private void extractData() throws IOException
+    private void extractData() throws Exception
     {
         OpenStego openStego = null;
         String imgFileName = null;
