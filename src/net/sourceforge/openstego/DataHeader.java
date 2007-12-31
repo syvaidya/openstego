@@ -39,18 +39,18 @@ public class DataHeader
     private byte[] fileName = null;
 
     /**
-     * StegoConfig instance to hold the configuration data
+     * OpenStegoConfig instance to hold the configuration data
      */
-    private StegoConfig config = null;
+    private OpenStegoConfig config = null;
 
     /**
      * This constructor should normally be used when writing the data.
      * @param dataLength Length of the data embedded in the image (excluding the header data)
      * @param channelBitsUsed Number of bits used per color channel for embedding the data
      * @param fileName Name of the file of data being embedded
-     * @param config StegoConfig instance to hold the configuration data
+     * @param config OpenStegoConfig instance to hold the configuration data
      */
-    public DataHeader(int dataLength, int channelBitsUsed, String fileName, StegoConfig config)
+    public DataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
     {
         this.dataLength = dataLength;
         this.channelBitsUsed = channelBitsUsed;
@@ -76,10 +76,10 @@ public class DataHeader
     /**
      * This constructor should be used when reading embedded data from an InputStream.
      * @param dataInStream Data input stream containing the embedded data
-     * @param config StegoConfig instance to hold the configuration data
+     * @param config OpenStegoConfig instance to hold the configuration data
      * @throws IOException
      */
-    public DataHeader(InputStream dataInStream, StegoConfig config) throws IOException
+    public DataHeader(InputStream dataInStream, OpenStegoConfig config) throws IOException
     {
         int stampLen = 0;
         int fileNameLen = 0;
@@ -88,10 +88,10 @@ public class DataHeader
         byte[] stamp = null;
 
         stampLen = DATA_STAMP.length;
-        header = new byte[stampLen + 7];
+        header = new byte[stampLen + 8];
         stamp = new byte[stampLen];
 
-        dataInStream.read(header, 0, stampLen + 7);
+        dataInStream.read(header, 0, stampLen + 8);
         System.arraycopy(header, 0, stamp, 0, stampLen);
 
         if(!(new String(stamp)).equals(new String(DATA_STAMP)))
@@ -104,7 +104,8 @@ public class DataHeader
         channelBits = header[stampLen + 4];
         fileNameLen = header[stampLen + 5];
         config.setUseCompression(header[stampLen + 6] == 1);
-        
+        config.setUseEncryption(header[stampLen + 7] == 1);
+
         if(fileNameLen == 0)
         {
         	fileName = new byte[0];
@@ -129,7 +130,7 @@ public class DataHeader
         int stampLength = 0;
 
         stampLength = DATA_STAMP.length;
-        out = new byte[stampLength + 7 + fileName.length];
+        out = new byte[stampLength + 8 + fileName.length];
 
         System.arraycopy(DATA_STAMP, 0, out, 0, stampLength);
         out[stampLength + 0] = (byte) ((dataLength & 0x000000FF));
@@ -139,9 +140,10 @@ public class DataHeader
         out[stampLength + 4] = (byte) channelBitsUsed;
         out[stampLength + 5] = (byte) fileName.length;
         out[stampLength + 6] = (byte) (config.isUseCompression() ? 1 : 0);
+        out[stampLength + 7] = (byte) (config.isUseEncryption() ? 1 : 0);
         if(fileName.length > 0)
         {
-        	System.arraycopy(fileName, 0, out, stampLength + 7, fileName.length);
+        	System.arraycopy(fileName, 0, out, stampLength + 8, fileName.length);
         }
 
         return out;

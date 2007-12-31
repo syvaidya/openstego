@@ -37,21 +37,21 @@ public class OpenStego
     /**
      * Configuration data
      */
-    private StegoConfig config = null;
+    private OpenStegoConfig config = null;
 
     /**
      * Constructor using the default configuration
      */
     public OpenStego()
     {
-        this.config = new StegoConfig();
+        this.config = new OpenStegoConfig();
     }
 
     /**
-     * Constructor using <code>StegoConfig</code> object
-     * @param config StegoConfig object with configuration data
+     * Constructor using <code>OpenStegoConfig</code> object
+     * @param config OpenStegoConfig object with configuration data
      */
-    public OpenStego(StegoConfig config)
+    public OpenStego(OpenStegoConfig config)
     {
         this.config = config;
     }
@@ -62,7 +62,7 @@ public class OpenStego
      */
     public OpenStego(Map propMap)
     {
-        this.config = new StegoConfig(propMap);
+        this.config = new OpenStegoConfig(propMap);
     }
 
     /**
@@ -71,12 +71,13 @@ public class OpenStego
      * @param dataFileName Name of the data file
      * @param image Source image data into which data needs to be embedded
      * @return Image with embedded data
-     * @throws IOException
+     * @throws Exception
      */
-    public BufferedImage embedData(byte[] data, String dataFileName, BufferedImage image) throws IOException
+    public BufferedImage embedData(byte[] data, String dataFileName, BufferedImage image) throws Exception
     {
         StegoOutputStream stegoOS = null;
 
+        // Compress data, if requested
         if(config.isUseCompression())
         {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -85,8 +86,15 @@ public class OpenStego
             zos.finish();
             zos.close();
             bos.close();
-            
+
             data = bos.toByteArray();
+        }
+
+        // Encrypt data, if requested
+        if(config.isUseEncryption())
+        {
+            OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
+            data = crypto.encrypt(data);
         }
 
         stegoOS = new StegoOutputStream(image, data.length, dataFileName, config);
@@ -101,9 +109,9 @@ public class OpenStego
      * @param dataFile File containing the data to be embedded
      * @param imageFile Source image file into which data needs to be embedded
      * @return Image with embedded data
-     * @throws IOException
+     * @throws Exception
      */
-    public BufferedImage embedData(File dataFile, File imageFile) throws IOException
+    public BufferedImage embedData(File dataFile, File imageFile) throws Exception
     {
         return embedData(getFileBytes(dataFile), dataFile.getName(), readImage(imageFile));
     }
@@ -112,9 +120,9 @@ public class OpenStego
      * Method to extract the data from an image
      * @param image Image from which data needs to be extracted
      * @return Extracted data (List's first element is the file name and second element is byte array of data)
-     * @throws IOException
+     * @throws Exception
      */
-    public List extractData(BufferedImage image) throws IOException
+    public List extractData(BufferedImage image) throws Exception
     {
         int bytesRead = 0;
         byte[] data = null;
@@ -125,7 +133,7 @@ public class OpenStego
         stegoIS = new StegoInputStream(image, config);
         header = stegoIS.getDataHeader();
 
-        // Add file name as first element of output list 
+        // Add file name as first element of output list
         output.add(header.getFileName());
         data = new byte[header.getDataLength()];
 
@@ -136,6 +144,14 @@ public class OpenStego
         }
         stegoIS.close();
 
+        // Decrypt data, if required
+        if(config.isUseEncryption())
+        {
+            OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
+            data = crypto.decrypt(data);
+        }
+
+        // Decompress data, if required
         if(config.isUseCompression())
         {
             ByteArrayInputStream bis = new ByteArrayInputStream(data);
@@ -154,9 +170,9 @@ public class OpenStego
      * Method to extract the data from an image (alternate API)
      * @param imageFile Image file from which data needs to be extracted
      * @return Extracted data (List's first element is the file name and second element is byte array of data)
-     * @throws IOException
+     * @throws Exception
      */
-    public List extractData(File imageFile) throws IOException
+    public List extractData(File imageFile) throws Exception
     {
         return extractData(ImageIO.read(imageFile));
     }
@@ -218,8 +234,8 @@ public class OpenStego
      */
     private void writeImage(BufferedImage image, String imageFileName) throws IOException
     {
-        ImageIO.write(image, config.getDefaultImageOutputType(), new File(
-            imageFileName.substring(0, imageFileName.lastIndexOf('.')) + "_out." + config.getDefaultImageOutputType()));
+        ImageIO.write(image, config.getDefaultImageOutputType(), new File(imageFileName.substring(0,
+                imageFileName.lastIndexOf('.')) + "_out." + config.getDefaultImageOutputType()));
     }
 
     /**
@@ -302,14 +318,38 @@ public class OpenStego
             }
             else if(option.equals("-extract"))
             {
-                if(args.length != 3)
+                count = 1;
+                while(args[count].startsWith("--"))
+                {
+                    index = args[count].indexOf('=');
+                    if(index == -1)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
+                    key = args[count].substring(2, index);
+                    value = args[count].substring(index + 1);
+                    propMap.put(key, value);
+
+                    count++;
+                    if(args.length < count)
+                    {
+                        displayUsage();
+                        return;
+                    }
+                }
+
+                stego = new OpenStego(propMap);
+
+                if(args.length != (count + 2))
                 {
                     displayUsage();
                     return;
                 }
-                imageFileName = args[1];
-                outputFolder = args[2];
-                stego = new OpenStego();
+
+                imageFileName = args[count];
+                outputFolder = args[count + 1];
                 stegoData = stego.extractData(new File(imageFileName));
                 outputFileName = (String) stegoData.get(0);
 
@@ -332,7 +372,16 @@ public class OpenStego
      */
     private static void displayUsage()
     {
+        OpenStegoConfig defaultConfig = new OpenStegoConfig();
         System.err.print(LabelUtil.getString("versionString"));
-        System.err.println(LabelUtil.getString("cmd.usage"));
+        System.err.println(LabelUtil.getString("cmd.usage.main", new Object[] {
+                                                    File.separator,
+                                                    File.separator,
+                                                    File.separator }));
+        System.err.println(LabelUtil.getString("cmd.usage.options", new Object[] {
+                                                    new Integer(defaultConfig.getMaxBitsUsedPerChannel()),
+                                                    new Boolean(defaultConfig.isUseCompression()),
+                                                    new Boolean(defaultConfig.isUseEncryption()),
+                                                    defaultConfig.getPassword() }));
     }
 }

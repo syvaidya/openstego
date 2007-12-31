@@ -12,6 +12,7 @@ import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 
 /**
  * Frame class to build the Swing UI for OpenStego. This class includes only graphics rendering
@@ -60,6 +61,21 @@ public class OpenStegoFrame extends JFrame
     protected JComboBox maxBitsComboBox = null;
 
     /**
+     * Checkbox for "Use Encryption"
+     */
+    protected JCheckBox useEncryptCheckBox = new JCheckBox();
+
+    /**
+     * "Password" text field
+     */
+    protected JPasswordField passwordTextField = new JPasswordField();
+
+    /**
+     * "Confirm Password" text field
+     */
+    protected JPasswordField confPasswordTextField = new JPasswordField();
+
+    /**
      * "Image for Extract" text field
      */
     protected JTextField imgForExtractTextField = new JTextField();
@@ -94,6 +110,10 @@ public class OpenStegoFrame extends JFrame
      */
     protected JTabbedPane mainTabbedPane = new JTabbedPane();
 
+    /**
+     * Password panel handle (for show/hide)
+     */
+    private JPanel passwordPanel = new JPanel();
 
     /**
      * Default constructor
@@ -116,6 +136,7 @@ public class OpenStegoFrame extends JFrame
         JPanel extractPanel = new JPanel();
         JPanel optionPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        JLabel label = null;
         Object[] maxBitsList = new Object[8];
 
         mainPanel.setBorder(new EmptyBorder(new Insets(5, 5, 0, 5)));
@@ -129,13 +150,19 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
 
         gridBagConstraints.gridy = 0;
-        embedPanel.add(new JLabel(LabelUtil.getString("gui.label.sourceDataFile")), gridBagConstraints);
+        label = new JLabel(LabelUtil.getString("gui.label.sourceDataFile"));
+        label.setLabelFor(srcDataTextField);
+        embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 2;
-        embedPanel.add(new JLabel(LabelUtil.getString("gui.label.sourceImgFile")), gridBagConstraints);
+        label = new JLabel(LabelUtil.getString("gui.label.sourceImgFile"));
+        label.setLabelFor(srcImageTextField);
+        embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 4;
-        embedPanel.add(new JLabel(LabelUtil.getString("gui.label.outputImgFile")), gridBagConstraints);
+        label = new JLabel(LabelUtil.getString("gui.label.outputImgFile"));
+        label.setLabelFor(tgtImageTextField);
+        embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
@@ -181,24 +208,70 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
         gridBagConstraints.gridy = 0;
-        optionPanel.add(new JLabel(LabelUtil.getString("gui.label.option.useCompression")), gridBagConstraints);
+        label = new JLabel(LabelUtil.getString("gui.label.option.maxBitsPerChannel"));
+        label.setLabelFor(maxBitsComboBox);
+        optionPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 1;
-        optionPanel.add(new JLabel(LabelUtil.getString("gui.label.option.maxBitsPerChannel")), gridBagConstraints);
+        label = new JLabel(LabelUtil.getString("gui.label.option.useCompression"));
+        label.setLabelFor(useCompCheckBox);
+        optionPanel.add(label, gridBagConstraints);
+
+        gridBagConstraints.gridy = 2;
+        label = new JLabel(LabelUtil.getString("gui.label.option.useEncryption"));
+        label.setLabelFor(useEncryptCheckBox);
+        optionPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
         gridBagConstraints.weightx = 1.0;
 
-        gridBagConstraints.gridy = 0;
-        optionPanel.add(useCompCheckBox, gridBagConstraints);
-
-        for(int i = 1; i <= 8; i++) maxBitsList[i - 1] = new Integer(i);
+        for(int i = 0; i < 8; i++) maxBitsList[i] = new Integer(i + 1);
         maxBitsComboBox = new JComboBox(maxBitsList);
         maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
 
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new Insets(5, 10, 5, 5);
         optionPanel.add(maxBitsComboBox, gridBagConstraints);
+
+        gridBagConstraints.gridy = 1;
+        optionPanel.add(useCompCheckBox, gridBagConstraints);
+
+        gridBagConstraints.gridy = 2;
+        optionPanel.add(useEncryptCheckBox, gridBagConstraints);
+
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        optionPanel.add(passwordPanel, gridBagConstraints);
+
+        passwordPanel.setBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()));
+        passwordPanel.setLayout(new GridBagLayout());
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new Insets(5, 5, 5, 5);
+
+        gridBagConstraints.gridx = 0;
+        label = new JLabel(LabelUtil.getString("gui.label.option.password"));
+        label.setLabelFor(passwordTextField);
+        passwordPanel.add(label, gridBagConstraints);
+
+        gridBagConstraints.gridx = 1;
+        passwordTextField.setColumns(20);
+        passwordPanel.add(passwordTextField, gridBagConstraints);
+
+        gridBagConstraints.gridx = 2;
+        label = new JLabel(LabelUtil.getString("gui.label.option.confPassword"));
+        label.setLabelFor(confPasswordTextField);
+        passwordPanel.add(label, gridBagConstraints);
+
+        gridBagConstraints.gridx = 3;
+        confPasswordTextField.setColumns(20);
+        passwordPanel.add(confPasswordTextField, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -290,5 +363,37 @@ public class OpenStegoFrame extends JFrame
 
         okButton.setActionCommand("OK");
         cancelButton.setActionCommand("CANCEL");
+        
+        ChangeListener changeListener = new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent changeEvent)
+            {
+                useEncryptionChanged(((AbstractButton) changeEvent.getSource()).getModel().isSelected());
+            }
+        };
+        useEncryptCheckBox.addChangeListener(changeListener);
+    }
+
+    /**
+     * Method to handle change event for 'useEncryption'
+     * @param selected Flag to indicate whether 'useEncryption' checkbox is selected or not
+     */
+    private void useEncryptionChanged(boolean selected)
+    {
+        if(selected)
+        {
+            passwordTextField.setEnabled(true);
+            passwordTextField.setBackground(Color.WHITE);
+            confPasswordTextField.setEnabled(true);
+            confPasswordTextField.setBackground(Color.WHITE);
+            passwordTextField.requestFocus();
+        }
+        else
+        {
+            passwordTextField.setEnabled(false);
+            passwordTextField.setBackground(UIManager.getColor("Panel.background"));
+            confPasswordTextField.setEnabled(false);
+            confPasswordTextField.setBackground(UIManager.getColor("Panel.background"));
+        }
     }
 }

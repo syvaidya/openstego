@@ -70,7 +70,7 @@ public class StegoOutputStream extends OutputStream
     /**
      * Configuration data
      */
-    private StegoConfig config = null;
+    private OpenStegoConfig config = null;
 
     /**
      * Default constructor
@@ -80,7 +80,7 @@ public class StegoOutputStream extends OutputStream
      * @param config Configuration data to use while writing
      * @throws IOException
      */
-    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, StegoConfig config) throws IOException
+    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws IOException
     {
         if(image == null)
         {
