@@ -66,18 +66,18 @@ public class StegoInputStream extends InputStream
      * Default constructor
      * @param image Image data to be read
      * @param config Configuration data to use while reading
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    public StegoInputStream(BufferedImage image, OpenStegoConfig config) throws IOException
+    public StegoInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new IllegalArgumentException();
+            throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
         }
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
+            throw new OpenStegoException(OpenStegoException.INDEXED_IMAGE_NOT_SUPPORTED, null);
         }
 
         this.image = image;
@@ -91,9 +91,9 @@ public class StegoInputStream extends InputStream
 
     /**
      * Method to read header data from the input stream
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    private void readHeader() throws IOException
+    private void readHeader() throws OpenStegoException
     {
         dataHeader = new DataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();

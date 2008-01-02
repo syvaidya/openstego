@@ -48,51 +48,79 @@ public class OpenStegoCrypto
     /**
      * Default constructor
      * @param password Password to use for encryption
-     * @throws Exception
+     * @throws OpenStegoException
      */
-    OpenStegoCrypto(String password) throws Exception
+    OpenStegoCrypto(String password) throws OpenStegoException
     {
         KeySpec keySpec = null;
         SecretKey secretKey = null;
         AlgorithmParameterSpec algoParamSpec = null;
-        
-        if(password == null)
+
+        try
         {
-            password = "";
+            if(password == null)
+            {
+                password = "";
+            }
+
+            // Create the key
+            keySpec = new PBEKeySpec(password.toCharArray(), SALT, ITER_COUNT);
+            secretKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+            encryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
+            decryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
+
+            // Prepare cipher parameters
+            algoParamSpec = new PBEParameterSpec(SALT, ITER_COUNT);
+
+            // Initialize the ciphers
+            encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, algoParamSpec);
+            decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, algoParamSpec);
         }
-
-        // Create the key
-        keySpec = new PBEKeySpec(password.toCharArray(), SALT, ITER_COUNT);
-        secretKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-        encryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
-        decryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
-
-        // Prepare cipher parameters
-        algoParamSpec = new PBEParameterSpec(SALT, ITER_COUNT);
-
-        // Initialize the ciphers
-        encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, algoParamSpec);
-        decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, algoParamSpec);
+        catch(Exception ex)
+        {
+            if(ex instanceof OpenStegoException)
+            {
+                throw (OpenStegoException) ex;
+            }
+            else
+            {
+                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+            }
+        }
     }
 
     /**
      * Method to encrypt the data
      * @param input Data to be encrypted
      * @return Encrypted data
-     * @throws Exception
+     * @throws OpenStegoException
      */
-    public byte[] encrypt(byte[] input) throws Exception
+    public byte[] encrypt(byte[] input) throws OpenStegoException
     {
-        return encryptCipher.doFinal(input);
+        try
+        {
+            return encryptCipher.doFinal(input);
+        }
+        catch(Exception ex)
+        {
+            if(ex instanceof OpenStegoException)
+            {
+                throw (OpenStegoException) ex;
+            }
+            else
+            {
+                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+            }
+        }
     }
 
     /**
      * Method to decrypt the data
      * @param input Data to be decrypted
-     * @return Decrypted data
-     * @throws Exception
+     * @return Decrypted data (returns <code>null</code> if password is invalid)
+     * @throws OpenStegoException
      */
-    public byte[] decrypt(byte[] input) throws Exception
+    public byte[] decrypt(byte[] input) throws OpenStegoException
     {
         try
         {
@@ -100,7 +128,18 @@ public class OpenStegoCrypto
         }
         catch(BadPaddingException bpEx)
         {
-            throw new Exception(LabelUtil.getString("err.config.password.invalid"));
+            throw new OpenStegoException(OpenStegoException.INVALID_PASSWORD, bpEx);
+        }
+        catch(Exception ex)
+        {
+            if(ex instanceof OpenStegoException)
+            {
+                throw (OpenStegoException) ex;
+            }
+            else
+            {
+                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+            }
         }
     }
 }

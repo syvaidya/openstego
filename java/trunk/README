@@ -1,44 +1,55 @@
-OpenStego v0.2.0
+OpenStego v0.3.0
 ----------------
 
-OpenStego is a tool developed in Java for image based steganography.
-It currently supports embedding of data files into 24 bpp images only.
-Image containing embedded data is written out in PNG format.
+OpenStego is a tool developed in Java for image based steganography. It
+also supports optional encryption of data before embedding in the image.
+Currently, only 24 bpp images are supported. Image containing embedded
+data is written out in PNG format.
 
 USAGE:
 
 To start the GUI:
-     java -jar <path>/openstego.jar
+
+   java -jar <path>\openstego.jar
+OR Use the script file provided (openstego.bat / openstego.sh)
 
 For command line interface:
-     java -jar <path>/openstego.jar -embed [options] <data_file> <image_file>
-  OR java -jar <path>/openstego.jar -extract <image_file>
 
-  For '-embed' option, openstego will embed the data into the given image file
+   java -jar <path>\openstego.jar -embed [options] <data_file> <img_file>
+OR java -jar <path>\openstego.jar -extract [options] <img_file> <output_folder>
+
+  For '-embed' command, OpenStego will embed the data into the given <img_file>
   and save the file as PNG after appending '_out' to the file name.
 
-    [options] can be specified for '-embed' and should be of the format 
-    '--name=value' pairs. Supported options are:
+  For '-extract' option, OpenStego will output the extracted data from
+  <img_file> to the given <output_folder>.
+
+    [options] can be specified as '--name=value' pairs. Supported options are:
 
       maxBitsUsedPerChannel  - Max number of bits to use per color channel in
                                the image for embedding data. This value can be
                                increased at the expense of image quality, in
                                case size of image is not able to accommodate
                                the data (Default = 3)
+                               (Only applicable for '-embed' command)
 
       useCompression         - Flag to indicate whether compression should be
                                used on the data or not (Default = true)
+                               (Only applicable for '-embed' command)
 
-  For '-extract' option, openstego will output the extracted data on the
-  standard OUT stream, so make sure that output is redirected to required file.
+      useEncryption          - Flag to indicate whether encryption should be
+                               used on the data or not (Default = false)
+                               (Only applicable for '-embed' command)
+
+      password               - Password to be used for encryption or
+                               decryption (Default = null)
 
 TODO:
-  - Implement cryptography for encrypting embedded data
   - Implementation of OpenStego in C++ 
 
 AUTHOR:
   Samir Vaidya (syvaidya@gmail.com)
-  Copyright (c) 2007
+  Copyright (c) 2007-2008
 
 SEE ALSO:
   http://sourceforge.net/projects/openstego for more details.

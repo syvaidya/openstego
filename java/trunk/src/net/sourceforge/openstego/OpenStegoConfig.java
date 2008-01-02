@@ -82,8 +82,9 @@ public class OpenStegoConfig
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
      * @param propMap Map containing the configuration data
+     * @throws OpenStegoException
      */
-    public OpenStegoConfig(Map propMap)
+    public OpenStegoConfig(Map propMap) throws OpenStegoException
     {
         Iterator keys = null;
         String key = null;
@@ -100,50 +101,46 @@ public class OpenStegoConfig
                 {
                     maxBitsUsedPerChannel = Integer.parseInt(value);
                 }
-                catch(NumberFormatException ex)
+                catch(NumberFormatException nfEx)
                 {
-                    throw new IllegalArgumentException(LabelUtil.getString(
-                            "err.config.maxBitsUsedPerChannel.notNumber", new Object[] { value }));
+                    throw new OpenStegoException(OpenStegoException.MAX_BITS_NOT_NUMBER, value, nfEx);
                 }
 
                 if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
                 {
-                    throw new IllegalArgumentException(LabelUtil.getString(
-                            "err.config.maxBitsUsedPerChannel.notInRange", new Object[] { value }));
+                    throw new OpenStegoException(OpenStegoException.MAX_BITS_NOT_IN_RANGE, value, null);
                 }
             }
             else if(key.equals(USE_COMPRESSION))
             {
                 value = propMap.get(key).toString().trim();
-                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y"))
+                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
                 {
                     useCompression = true;
                 }
-                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n"))
+                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
                 {
                     useCompression = false;
                 }
                 else
                 {
-                    throw new IllegalArgumentException(LabelUtil.getString("err.config.useCompression.invalid",
-                            new Object[] { value }));
+                    throw new OpenStegoException(OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
                 }
             }
             else if(key.equals(USE_ENCRYPTION))
             {
                 value = propMap.get(key).toString().trim();
-                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y"))
+                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
                 {
                     useEncryption = true;
                 }
-                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n"))
+                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
                 {
                     useEncryption = false;
                 }
                 else
                 {
-                    throw new IllegalArgumentException(LabelUtil.getString("err.config.useEncryption.invalid",
-                            new Object[] { value }));
+                    throw new OpenStegoException(OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
                 }
             }
             else if(key.equals(PASSWORD))
@@ -152,7 +149,7 @@ public class OpenStegoConfig
             }
             else
             {
-                throw new IllegalArgumentException(LabelUtil.getString("err.config.invalidKey", new Object[] { key }));
+                throw new OpenStegoException(OpenStegoException.INVALID_KEY_NAME, key, null);
             }
         }
     }

@@ -78,18 +78,18 @@ public class StegoOutputStream extends OutputStream
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
      * @param config Configuration data to use while writing
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws IOException
+    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.arg.nullValue"));
+            throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
         }
 
         if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
         {
-            throw new IllegalArgumentException(LabelUtil.getString("err.image.indexed"));
+            throw new OpenStegoException(OpenStegoException.INDEXED_IMAGE_NOT_SUPPORTED, null);
         }
 
         this.image = image;
@@ -106,46 +106,57 @@ public class StegoOutputStream extends OutputStream
 
     /**
      * Method to write header data to stream
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    private void writeHeader() throws IOException
+    private void writeHeader() throws OpenStegoException
     {
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
         DataHeader header = null;
 
-        noOfPixels = imgWidth * imgHeight;
-        header = new DataHeader(dataLength, channelBits, fileName, config);
-        headerSize = header.getHeaderSize();
-
-        while(true)
+        try
         {
-            if((noOfPixels * channelBits) / 8 < (headerSize + dataLength))
+            noOfPixels = imgWidth * imgHeight;
+            header = new DataHeader(dataLength, channelBits, fileName, config);
+            headerSize = header.getHeaderSize();
+
+            while(true)
             {
-                channelBits++;
-                if(channelBits > config.getMaxBitsUsedPerChannel())
+                if((noOfPixels * channelBits) / 8 < (headerSize + dataLength))
                 {
-                    throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
+                    channelBits++;
+                    if(channelBits > config.getMaxBitsUsedPerChannel())
+                    {
+                        throw new OpenStegoException(OpenStegoException.IMAGE_SIZE_INSUFFICIENT, null);
+                    }
+                }
+                else
+                {
+                    break;
                 }
             }
-            else
+
+            // Write header with channelBitsUsed = 1
+            write(header.getHeaderData());
+            if(currBit != 0)
             {
-                break;
+                currBit = 0;
+                writeCurrentBitSet();
+                nextPixel();
             }
-        }
 
-        // Write header with channelBitsUsed = 1
-        write(header.getHeaderData());
-        if(currBit != 0)
+            this.channelBitsUsed = channelBits;
+            this.bitSet = new byte[3 * channelBits];
+        }
+        catch(OpenStegoException osEx)
         {
-            currBit = 0;
-            writeCurrentBitSet();
-            nextPixel();
+            throw osEx;
         }
-
-        this.channelBitsUsed = channelBits;
-        this.bitSet = new byte[3 * channelBits];
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+        }
     }
 
     /**
@@ -199,11 +210,18 @@ public class StegoOutputStream extends OutputStream
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      * @return Image data
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    public BufferedImage getImage() throws IOException
+    public BufferedImage getImage() throws OpenStegoException
     {
-        flush();
+        try
+        {
+            flush();
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
+        }
         return image;
     }
 

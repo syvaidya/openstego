@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -77,9 +76,9 @@ public class DataHeader
      * This constructor should be used when reading embedded data from an InputStream.
      * @param dataInStream Data input stream containing the embedded data
      * @param config OpenStegoConfig instance to hold the configuration data
-     * @throws IOException
+     * @throws OpenStegoException
      */
-    public DataHeader(InputStream dataInStream, OpenStegoConfig config) throws IOException
+    public DataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
     {
         int stampLen = 0;
         int fileNameLen = 0;
@@ -91,29 +90,40 @@ public class DataHeader
         header = new byte[stampLen + 8];
         stamp = new byte[stampLen];
 
-        dataInStream.read(header, 0, stampLen + 8);
-        System.arraycopy(header, 0, stamp, 0, stampLen);
-
-        if(!(new String(stamp)).equals(new String(DATA_STAMP)))
+        try
         {
-            throw new IOException(LabelUtil.getString("err.invalidHeader"));
+            dataInStream.read(header, 0, stampLen + 8);
+            System.arraycopy(header, 0, stamp, 0, stampLen);
+
+            if(!(new String(stamp)).equals(new String(DATA_STAMP)))
+            {
+                throw new OpenStegoException(OpenStegoException.INVALID_STEGO_HEADER, null);
+            }
+
+            dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
+                    + (byteToInt(header[stampLen + 2]) << 16) + (byteToInt(header[stampLen + 3]) << 32));
+            channelBits = header[stampLen + 4];
+            fileNameLen = header[stampLen + 5];
+            config.setUseCompression(header[stampLen + 6] == 1);
+            config.setUseEncryption(header[stampLen + 7] == 1);
+
+            if(fileNameLen == 0)
+            {
+            	fileName = new byte[0];
+            }
+            else
+            {
+            	fileName = new byte[fileNameLen];
+            	dataInStream.read(fileName, 0, fileNameLen);
+            }
         }
-
-        dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
-                + (byteToInt(header[stampLen + 2]) << 16) + (byteToInt(header[stampLen + 3]) << 32));
-        channelBits = header[stampLen + 4];
-        fileNameLen = header[stampLen + 5];
-        config.setUseCompression(header[stampLen + 6] == 1);
-        config.setUseEncryption(header[stampLen + 7] == 1);
-
-        if(fileNameLen == 0)
+        catch(OpenStegoException osEx)
         {
-        	fileName = new byte[0];
+            throw osEx;
         }
-        else
+        catch(Exception ex)
         {
-        	fileName = new byte[fileNameLen];
-        	dataInStream.read(fileName, 0, fileNameLen);
+            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
         }
 
         channelBitsUsed = channelBits;
