@@ -1,1 +1,1 @@
-@javaw -jar .\lib\openstego.jar
+@java -jar .\lib\openstego.jar
