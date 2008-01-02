@@ -368,19 +368,19 @@ public class OpenStegoFrame extends JFrame
         {
             public void stateChanged(ChangeEvent changeEvent)
             {
-                useEncryptionChanged(((AbstractButton) changeEvent.getSource()).getModel().isSelected());
+                useEncryptionChanged();
             }
         };
         useEncryptCheckBox.addChangeListener(changeListener);
+        useEncryptionChanged();
     }
 
     /**
      * Method to handle change event for 'useEncryption'
-     * @param selected Flag to indicate whether 'useEncryption' checkbox is selected or not
      */
-    private void useEncryptionChanged(boolean selected)
+    private void useEncryptionChanged()
     {
-        if(selected)
+        if(useEncryptCheckBox.isSelected())
         {
             passwordTextField.setEnabled(true);
             passwordTextField.setBackground(Color.WHITE);
