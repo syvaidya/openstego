@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<project name="openstego" default="compile" basedir=".">
+
+  <property name="src" value="./src"/>
+  <property name="build" value="./build"/>
+  <property name="build.classesdir" value="${build}/classes"/>
+  <property name="build.classpath" value="${src}"/>
+
+  <target name="init">
+    <mkdir dir="${build.classesdir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" deprecation="on"/>
+    <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
+      <fileset dir="${build.classesdir}"/>
+      <fileset dir="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"/>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="distclean" depends="clean">
+    <delete file="./lib/openstego.jar"/>
+  </target>
+
+</project>
