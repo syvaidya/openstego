@@ -125,7 +125,7 @@ public class StegoOutputStream extends OutputStream
 
             while(true)
             {
-                if((noOfPixels * channelBits) / 8 < (headerSize + dataLength))
+                if((noOfPixels * 3 * channelBits) / 8 < (headerSize + dataLength))
                 {
                     channelBits++;
                     if(channelBits > config.getMaxBitsUsedPerChannel())
