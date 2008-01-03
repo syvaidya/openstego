@@ -18,7 +18,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 public class StegoOutputStream extends OutputStream
 {
     /**
-     * Image data
+     * Output Image data
      */
     private BufferedImage image = null;
 
@@ -87,16 +87,18 @@ public class StegoOutputStream extends OutputStream
             throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
         }
 
-        if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
-        {
-            throw new OpenStegoException(OpenStegoException.INDEXED_IMAGE_NOT_SUPPORTED, null);
-        }
-
-        this.image = image;
         this.dataLength = dataLength;
         this.imgWidth = image.getWidth();
         this.imgHeight = image.getHeight();
         this.config = config;
+        this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+        for(int x = 0; x < imgWidth; x++)
+        {
+            for(int y = 0; y < imgHeight; y++)
+            {
+                this.image.setRGB(x, y, image.getRGB(x, y));
+            }
+        }
 
         this.channelBitsUsed = 1;
         this.fileName = fileName;

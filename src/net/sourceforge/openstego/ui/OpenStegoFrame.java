@@ -6,13 +6,13 @@
 
 package net.sourceforge.openstego.ui;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
+
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Frame class to build the Swing UI for OpenStego. This class includes only graphics rendering
@@ -166,15 +166,15 @@ public class OpenStegoFrame extends JFrame
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
-        srcDataTextField.setColumns(50);
+        srcDataTextField.setColumns(57);
         gridBagConstraints.gridy = 1;
         embedPanel.add(srcDataTextField, gridBagConstraints);
 
-        srcImageTextField.setColumns(50);
+        srcImageTextField.setColumns(57);
         gridBagConstraints.gridy = 3;
         embedPanel.add(srcImageTextField, gridBagConstraints);
 
-        tgtImageTextField.setColumns(50);
+        tgtImageTextField.setColumns(57);
         gridBagConstraints.gridy = 5;
         embedPanel.add(tgtImageTextField, gridBagConstraints);
 
@@ -300,11 +300,11 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
         gridBagConstraints.gridy = 1;
-        imgForExtractTextField.setColumns(50);
+        imgForExtractTextField.setColumns(57);
         extractPanel.add(imgForExtractTextField, gridBagConstraints);
 
         gridBagConstraints.gridy = 3;
-        outputFolderTextField.setColumns(50);
+        outputFolderTextField.setColumns(57);
         extractPanel.add(outputFolderTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
@@ -363,7 +363,7 @@ public class OpenStegoFrame extends JFrame
 
         okButton.setActionCommand("OK");
         cancelButton.setActionCommand("CANCEL");
-        
+
         ChangeListener changeListener = new ChangeListener()
         {
             public void stateChanged(ChangeEvent changeEvent)

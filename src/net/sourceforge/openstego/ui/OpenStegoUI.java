@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
@@ -119,13 +118,13 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         super();
         setConfig();
-        
+
         byte[] barr = new byte[windowIcon.length];
         for(int i = 0; i < windowIcon.length; i++)
         {
             barr[i] = (byte) windowIcon[i];
         }
-        
+
         this.setIconImage(new ImageIcon(barr).getImage());
 
         Listener listener = new Listener();
@@ -147,9 +146,11 @@ public class OpenStegoUI extends OpenStegoFrame
         		close();
         	}
         };
-         
+
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, "ESCAPE");
         getRootPane().getActionMap().put("ESCAPE", escapeAction);
+
+        srcDataTextField.requestFocus();
     }
 
     /**
@@ -207,14 +208,7 @@ public class OpenStegoUI extends OpenStegoFrame
             }
         }
 
-        try
-        {
-            ImageIO.write(image, config.getDefaultImageOutputType(), outputFile);
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
-        }
+        openStego.writeImage(image, outputFileName);
         JOptionPane.showMessageDialog(this, LabelUtil.getString("gui.msg.success.embed"),
                 LabelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
@@ -223,7 +217,7 @@ public class OpenStegoUI extends OpenStegoFrame
         tgtImageTextField.setText("");
         passwordTextField.setText("");
         confPasswordTextField.setText("");
-        
+
         //Reset configuration
         config = new OpenStegoConfig();
         setConfig();
@@ -354,7 +348,7 @@ public class OpenStegoUI extends OpenStegoFrame
             dirOnly = true;
             textField = this.outputFolderTextField;
         }
-        
+
         fileName = browser.getFileName(title, filterDesc, dirOnly, allowedExts);
         if(fileName != null)
         {
@@ -520,7 +514,7 @@ public class OpenStegoUI extends OpenStegoFrame
                 fileName = chooser.getSelectedFile().getPath();
                 lastFolder = chooser.getSelectedFile().getParent();
             }
-            
+
             return fileName;
         }
 

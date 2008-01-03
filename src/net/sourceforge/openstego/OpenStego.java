@@ -7,21 +7,18 @@
 package net.sourceforge.openstego;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 import javax.swing.UIManager;
 
 import net.sourceforge.openstego.ui.OpenStegoUI;
@@ -154,7 +151,7 @@ public class OpenStego
             bytesRead = stegoIS.read(data, 0, data.length);
             if(bytesRead != data.length)
             {
-                throw new OpenStegoException(OpenStegoException.ERR_IMAGE_FILE_READ, null);
+                throw new OpenStegoException(OpenStegoException.ERR_IMAGE_DATA_READ, null);
             }
             stegoIS.close();
 
@@ -201,14 +198,7 @@ public class OpenStego
      */
     public List extractData(File imageFile) throws OpenStegoException
     {
-        try
-        {
-            return extractData(ImageIO.read(imageFile));
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
-        }
+        return extractData(readImage(imageFile));
     }
 
     /**
@@ -269,11 +259,17 @@ public class OpenStego
      * @return Buffered image
      * @throws OpenStegoException
      */
-    private BufferedImage readImage(File imageFile) throws OpenStegoException
+    public BufferedImage readImage(File imageFile) throws OpenStegoException
     {
+        BufferedImage image = null;
         try
         {
-            return ImageIO.read(imageFile);
+            image = ImageIO.read(imageFile);
+            if(image == null)
+            {
+                throw new OpenStegoException(OpenStegoException.IMAGE_FILE_INVALID, imageFile.getName(), null);
+            }
+            return image;
         }
         catch(IOException ioEx)
         {
@@ -287,12 +283,17 @@ public class OpenStego
      * @param imageFileName Image file name
      * @throws OpenStegoException
      */
-    private void writeImage(BufferedImage image, String imageFileName) throws OpenStegoException
+    public void writeImage(BufferedImage image, String imageFileName) throws OpenStegoException
     {
+        String imageType = null;
         try
         {
-            ImageIO.write(image, config.getDefaultImageOutputType(), new File(imageFileName.substring(0,
-                    imageFileName.lastIndexOf('.')) + "_out." + config.getDefaultImageOutputType()));
+            imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
+            if(!getSupportedWriteFormats().contains(imageType))
+            {
+                throw new OpenStegoException(OpenStegoException.IMAGE_TYPE_INVALID, imageType, null);
+            }
+            ImageIO.write(image, imageType, new File(imageFileName));
         }
         catch(IOException ioEx)
         {
@@ -315,6 +316,7 @@ public class OpenStego
         String option = null;
         String dataFileName = null;
         String imageFileName = null;
+        String outputImageFileName = null;
         String outputFolder = null;
         String outputFileName = null;
         List stegoData = null;
@@ -337,12 +339,6 @@ public class OpenStego
             }
             else
             {
-                if(args.length < 2)
-                {
-                    displayUsage();
-                    return;
-                }
-
                 option = args[0];
                 if(option.equals("-embed"))
                 {
@@ -370,7 +366,7 @@ public class OpenStego
 
                     stego = new OpenStego(propMap);
 
-                    if(args.length != (count + 2))
+                    if(args.length != (count + 3))
                     {
                         displayUsage();
                         return;
@@ -378,7 +374,9 @@ public class OpenStego
 
                     dataFileName = args[count];
                     imageFileName = args[count + 1];
-                    stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)), imageFileName);
+                    outputImageFileName = args[count + 2];
+                    stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)),
+                            outputImageFileName);
                 }
                 else if(option.equals("-extract"))
                 {
@@ -423,6 +421,22 @@ public class OpenStego
 
                     System.out.println(LabelUtil.getString("cmd.msg.fileExtracted", new Object[] { outputFileName }));
                 }
+                else if(option.equals("-supportedReadFormats"))
+                {
+                    List formats = getSupportedReadFormats();
+                    for(int i = 0; i < formats.size(); i++)
+                    {
+                        System.out.println(formats.get(i));
+                    }
+                }
+                else if(option.equals("-supportedWriteFormats"))
+                {
+                    List formats = getSupportedWriteFormats();
+                    for(int i = 0; i < formats.size(); i++)
+                    {
+                        System.out.println(formats.get(i));
+                    }
+                }
                 else
                 {
                     displayUsage();
@@ -447,14 +461,79 @@ public class OpenStego
     {
         OpenStegoConfig defaultConfig = new OpenStegoConfig();
         System.err.print(LabelUtil.getString("versionString"));
-        System.err.println(LabelUtil.getString("cmd.usage.main", new Object[] {
-                                                    File.separator,
-                                                    File.separator,
-                                                    File.separator }));
+        System.err.println(LabelUtil.getString("cmd.usage.main", new Object[] { File.separator }));
         System.err.println(LabelUtil.getString("cmd.usage.options", new Object[] {
                                                     new Integer(defaultConfig.getMaxBitsUsedPerChannel()),
                                                     new Boolean(defaultConfig.isUseCompression()),
                                                     new Boolean(defaultConfig.isUseEncryption()),
                                                     defaultConfig.getPassword() }));
+    }
+
+    /**
+     * Method to get the list of supported image formats for reading
+     * @return List of supported image formats for reading
+     */
+    private static List getSupportedReadFormats()
+    {
+        String format = null;
+        String[] formats = null;
+        List formatList = new ArrayList();
+
+        formats = ImageIO.getReaderFormatNames();
+        for(int i = 0; i < formats.length; i++)
+        {
+            format = formats[i].toLowerCase();
+            if(!formatList.contains(format))
+            {
+                formatList.add(format);
+            }
+        }
+
+        return formatList;
+    }
+
+    /**
+     * Method to get the list of supported image formats for writing
+     * @return List of supported image formats for writing
+     */
+    private static List getSupportedWriteFormats()
+    {
+        String format = null;
+        String[] formats = null;
+        List formatList = new ArrayList();
+        Iterator iter = null;
+        ImageWriteParam writeParam = null;
+
+        formats = ImageIO.getWriterFormatNames();
+        for(int i = 0; i < formats.length; i++)
+        {
+            format = formats[i].toLowerCase();
+            if(!formatList.contains(format))
+            {
+                iter = ImageIO.getImageWritersByFormatName(format);
+                while(iter.hasNext())
+                {
+                    writeParam = ((ImageWriter) iter.next()).getDefaultWriteParam();
+                    try
+                    {
+                        writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    }
+                    catch(UnsupportedOperationException uoEx) // Compression not supported
+                    {
+                        formatList.add(format);
+                        break;
+                    }
+
+                    // Only lossless image compression is supported
+                    if(writeParam.isCompressionLossless())
+                    {
+                        formatList.add(format);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return formatList;
     }
 }
