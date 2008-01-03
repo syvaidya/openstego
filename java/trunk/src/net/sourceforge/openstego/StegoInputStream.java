@@ -75,11 +75,6 @@ public class StegoInputStream extends InputStream
             throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
         }
 
-        if(image.getColorModel() instanceof java.awt.image.IndexColorModel)
-        {
-            throw new OpenStegoException(OpenStegoException.INDEXED_IMAGE_NOT_SUPPORTED, null);
-        }
-
         this.image = image;
         this.channelBitsUsed = 1;
         this.config = config;

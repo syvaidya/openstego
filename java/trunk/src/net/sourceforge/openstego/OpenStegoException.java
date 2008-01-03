@@ -6,9 +6,9 @@
 
 package net.sourceforge.openstego;
 
-import net.sourceforge.openstego.util.LabelUtil;
-
 import java.util.HashMap;
+
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Custom exception class for OpenStego
@@ -26,9 +26,9 @@ public class OpenStegoException extends Exception
     public static final int INVALID_PASSWORD = 1;
 
     /**
-     * Error Code - Error while reading image file
+     * Error Code - Error while reading image data
      */
-    public static final int ERR_IMAGE_FILE_READ = 2;
+    public static final int ERR_IMAGE_DATA_READ = 2;
 
     /**
      * Error Code - maxBitsUsedPerChannel is not a number
@@ -54,26 +54,31 @@ public class OpenStegoException extends Exception
      * Error Code - Invalid key name
      */
     public static final int INVALID_KEY_NAME = 7;
-    
+
     /**
      * Error Code - Invalid stego header data
      */
     public static final int INVALID_STEGO_HEADER = 8;
-    
-    /**
-     * Error Code - Indexed images are not supported
-     */
-    public static final int INDEXED_IMAGE_NOT_SUPPORTED = 9;
-    
+
     /**
      * Error Code - Null value provided for image
      */
     public static final int NULL_IMAGE_ARGUMENT = 10;
-    
+
     /**
      * Error Code - Image size insufficient for data
      */
     public static final int IMAGE_SIZE_INSUFFICIENT = 11;
+
+    /**
+     * Error Code - Image file invalid
+     */
+    public static final int IMAGE_FILE_INVALID = 12;
+
+    /**
+     * Error Code - Image type invalid
+     */
+    public static final int IMAGE_TYPE_INVALID = 13;
 
 
     /**
@@ -92,16 +97,17 @@ public class OpenStegoException extends Exception
     static
     {
         errMsgKeyMap.put(new Integer(INVALID_PASSWORD), "err.config.password.invalid");
-        errMsgKeyMap.put(new Integer(ERR_IMAGE_FILE_READ), "err.imageDataRead");
         errMsgKeyMap.put(new Integer(MAX_BITS_NOT_NUMBER), "err.config.maxBitsUsedPerChannel.notNumber");
         errMsgKeyMap.put(new Integer(MAX_BITS_NOT_IN_RANGE), "err.config.maxBitsUsedPerChannel.notInRange");
         errMsgKeyMap.put(new Integer(INVALID_USE_COMPR_VALUE), "err.config.useCompression.invalid");
         errMsgKeyMap.put(new Integer(INVALID_USE_ENCRYPT_VALUE), "err.config.useEncryption.invalid");
         errMsgKeyMap.put(new Integer(INVALID_KEY_NAME), "err.config.invalidKey");
         errMsgKeyMap.put(new Integer(INVALID_STEGO_HEADER), "err.invalidHeader");
-        errMsgKeyMap.put(new Integer(INDEXED_IMAGE_NOT_SUPPORTED), "err.image.indexed");
+        errMsgKeyMap.put(new Integer(ERR_IMAGE_DATA_READ), "err.image.read");
         errMsgKeyMap.put(new Integer(NULL_IMAGE_ARGUMENT), "err.image.arg.nullValue");
         errMsgKeyMap.put(new Integer(IMAGE_SIZE_INSUFFICIENT), "err.image.insufficientSize");
+        errMsgKeyMap.put(new Integer(IMAGE_FILE_INVALID), "err.image.file.invalid");
+        errMsgKeyMap.put(new Integer(IMAGE_TYPE_INVALID), "err.image.type.invalid");
     }
 
     /**
@@ -111,7 +117,7 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(int errorCode, Throwable cause)
     {
-        super((errorCode == UNHANDLED_EXCEPTION) ? cause.getMessage() :
+        super((errorCode == UNHANDLED_EXCEPTION) ? cause.toString() :
             LabelUtil.getString((String) errMsgKeyMap.get(new Integer(errorCode))), cause);
         this.errorCode = errorCode;
     }
@@ -124,7 +130,7 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(int errorCode, String param, Throwable cause)
     {
-        super((errorCode == UNHANDLED_EXCEPTION) ? cause.getMessage() :
+        super((errorCode == UNHANDLED_EXCEPTION) ? cause.toString() :
             LabelUtil.getString((String) errMsgKeyMap.get(new Integer(errorCode)), new Object[] { param }), cause);
         this.errorCode = errorCode;
     }
@@ -137,7 +143,7 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(int errorCode, Object[] params, Throwable cause)
     {
-        super((errorCode == UNHANDLED_EXCEPTION) ? cause.getMessage() :
+        super((errorCode == UNHANDLED_EXCEPTION) ? cause.toString() :
             LabelUtil.getString((String) errMsgKeyMap.get(new Integer(errorCode)), params), cause);
         this.errorCode = errorCode;
     }
