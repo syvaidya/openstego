@@ -16,6 +16,7 @@
     <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
       <fileset dir="${build.classesdir}"/>
       <fileset dir="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"/>
+      <fileset dir="${src}" includes="image/OpenStegoIcon.png"/>
     </jar>
   </target>
 
