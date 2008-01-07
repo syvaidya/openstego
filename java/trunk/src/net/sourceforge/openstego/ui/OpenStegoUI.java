@@ -37,7 +37,7 @@ public class OpenStegoUI extends OpenStegoFrame
     /**
      * Static variable to holds path to last selected folder
      */
-    private static String lastFolder = ".";
+    private static String lastFolder = null;
 
     /**
      * Class variable to store OpenStego config data
@@ -244,7 +244,7 @@ public class OpenStegoUI extends OpenStegoFrame
         String title = null;
         String filterDesc = null;
         boolean dirOnly = false;
-        ArrayList allowedExts = new ArrayList();
+        List allowedExts = null;
         JTextField textField = null;
 
         if(action.equals("BROWSE_SRC_DATA"))
@@ -255,22 +255,25 @@ public class OpenStegoUI extends OpenStegoFrame
         else if(action.equals("BROWSE_SRC_IMG"))
         {
             title = LabelUtil.getString("gui.filechooser.title.sourceImgFile");
-            filterDesc = LabelUtil.getString("gui.filechooser.filter.imgFiles");
-            allowedExts.add(".png");
+            filterDesc = LabelUtil.getString("gui.filechooser.filter.readImgFiles", new Object[] {
+                                                                                getExtensionsString("R") });
+            allowedExts = getExtensionsList("R");
             textField = this.srcImageTextField;
         }
         else if(action.equals("BROWSE_TGT_IMG"))
         {
             title = LabelUtil.getString("gui.filechooser.title.outputImgFile");
-            filterDesc = LabelUtil.getString("gui.filechooser.filter.imgFiles");
-            allowedExts.add(".png");
+            filterDesc = LabelUtil.getString("gui.filechooser.filter.writeImgFiles", new Object[] {
+                                                                                getExtensionsString("W") });
+            allowedExts = getExtensionsList("W");
             textField = this.tgtImageTextField;
         }
         else if(action.equals("BROWSE_IMG_FOR_EXTRACT"))
         {
             title = LabelUtil.getString("gui.filechooser.title.imgForExtractFile");
-            filterDesc = LabelUtil.getString("gui.filechooser.filter.imgFiles");
-            allowedExts.add(".png");
+            filterDesc = LabelUtil.getString("gui.filechooser.filter.writeImgFiles", new Object[] {
+                                                                                getExtensionsString("W") });
+            allowedExts = getExtensionsList("W");
             textField = this.imgForExtractTextField;
         }
         else if(action.equals("BROWSE_TGT_DATA"))
@@ -360,6 +363,62 @@ public class OpenStegoUI extends OpenStegoFrame
     }
 
     /**
+     * Method to get the list of image extensions as a single string
+     * @param flag Flag to indicate whether readable ("R") or writeable ("W") extensions are required
+     * @return List of image extensions (as string)
+     */
+    private String getExtensionsString(String flag)
+    {
+        List list = null;
+        StringBuffer output = new StringBuffer();
+
+        if(flag.equals("R"))
+        {
+            list = OpenStego.getSupportedReadFormats();
+        }
+        else if(flag.equals("W"))
+        {
+            list = OpenStego.getSupportedWriteFormats();
+        }
+
+        for(int i = 0; i < list.size(); i++)
+        {
+            if(i > 0)
+            {
+                output.append(", ");
+            }
+            output.append("*.").append(list.get(i));
+        }
+        return output.toString();
+    }
+
+    /**
+     * Method to get the list of image extensions as a list
+     * @param flag Flag to indicate whether readable ("R") or writeable ("W") extensions are required
+     * @return List of image extensions (as list)
+     */
+    private List getExtensionsList(String flag)
+    {
+        List list = null;
+        List output = new ArrayList();
+
+        if(flag.equals("R"))
+        {
+            list = OpenStego.getSupportedReadFormats();
+        }
+        else if(flag.equals("W"))
+        {
+            list = OpenStego.getSupportedWriteFormats();
+        }
+
+        for(int i = 0; i < list.size(); i++)
+        {
+            output.add("." + list.get(i));
+        }
+        return output;
+    }
+
+    /**
      * Common listener class to handlw action and window events
      */
     class Listener implements ActionListener, WindowListener
@@ -422,7 +481,7 @@ public class OpenStegoUI extends OpenStegoFrame
          * @param allowedExts Allowed file extensions for the filter
          * @return Name of the selected file (null if no file was selected)
          */
-        public String getFileName(String dialogTitle, String filterDesc, boolean dirOnly, ArrayList allowedExts)
+        public String getFileName(String dialogTitle, String filterDesc, boolean dirOnly, List allowedExts)
         {
             int retVal = 0;
             String fileName = null;
@@ -462,14 +521,14 @@ public class OpenStegoUI extends OpenStegoFrame
             /**
              * List of allowed file extensions
              */
-            private ArrayList allowedExts = null;
+            private List allowedExts = null;
 
             /**
              * Default constructor
              * @param filterDesc Description of the filter
              * @param allowedExts List of allowed file extensions
              */
-            public FileBrowserFilter(String filterDesc, ArrayList allowedExts)
+            public FileBrowserFilter(String filterDesc, List allowedExts)
             {
                 this.filterDesc = filterDesc;
                 this.allowedExts = allowedExts;
