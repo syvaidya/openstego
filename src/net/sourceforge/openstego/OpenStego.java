@@ -9,6 +9,7 @@ package net.sourceforge.openstego;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,16 @@ import net.sourceforge.openstego.util.LabelUtil;
  */
 public class OpenStego
 {
+    /**
+     * Static list of supported read formats
+     */
+    private static List readFormats = null;
+
+    /**
+     * Static list of supported write formats
+     */
+    private static List writeFormats = null;
+
     /**
      * Configuration data
      */
@@ -473,8 +484,13 @@ public class OpenStego
      * Method to get the list of supported image formats for reading
      * @return List of supported image formats for reading
      */
-    private static List getSupportedReadFormats()
+    public static List getSupportedReadFormats()
     {
+        if(readFormats != null)
+        {
+            return readFormats;
+        }
+
         String format = null;
         String[] formats = null;
         List formatList = new ArrayList();
@@ -489,17 +505,25 @@ public class OpenStego
             }
         }
 
-        return formatList;
+        Collections.sort(formatList);
+        readFormats = formatList;
+        return readFormats;
     }
 
     /**
      * Method to get the list of supported image formats for writing
      * @return List of supported image formats for writing
      */
-    private static List getSupportedWriteFormats()
+    public static List getSupportedWriteFormats()
     {
+        if(writeFormats != null)
+        {
+            return writeFormats;
+        }
+
         String format = null;
         String[] formats = null;
+        String[] compTypes = null;
         List formatList = new ArrayList();
         Iterator iter = null;
         ImageWriteParam writeParam = null;
@@ -517,6 +541,11 @@ public class OpenStego
                     try
                     {
                         writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                        compTypes = writeParam.getCompressionTypes();
+                        if(compTypes.length > 0)
+                        {
+                            writeParam.setCompressionType(compTypes[0]);
+                        }
                     }
                     catch(UnsupportedOperationException uoEx) // Compression not supported
                     {
@@ -534,6 +563,11 @@ public class OpenStego
             }
         }
 
-        return formatList;
+        //Expicilty removing GIF format, as it uses indexed color model
+        formatList.remove("gif");
+        Collections.sort(formatList);
+
+        writeFormats = formatList;
+        return writeFormats;
     }
 }
