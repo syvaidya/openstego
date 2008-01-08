@@ -328,8 +328,10 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         extractPanel.add(new JLabel(" "), gridBagConstraints);
 
-        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.embed"), embedPanel);
-        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.extract"), extractPanel);
+        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass().getResource(
+                "/image/EmbedIcon.png")), embedPanel);
+        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.extract"), new ImageIcon(getClass().getResource(
+                "/image/ExtractIcon.png")), extractPanel);
 
         mainPanel.add(mainTabbedPane);
         getContentPane().add(mainPanel, BorderLayout.CENTER);
