@@ -133,6 +133,10 @@ public class StegoInputStream extends InputStream
                 {
                     x = 0;
                     y++;
+                    if(y == imgHeight)
+                    {
+                        return -1;
+                    }
                 }
             }
         }

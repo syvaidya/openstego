@@ -29,16 +29,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.9728677"
-     inkscape:cx="115.48819"
-     inkscape:cy="43.710123"
+     inkscape:cx="71.038725"
+     inkscape:cy="3.1600141"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="825"
-     inkscape:window-height="616"
-     inkscape:window-x="250"
-     inkscape:window-y="114"
+     inkscape:window-width="1280"
+     inkscape:window-height="975"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
      showgrid="false"
      inkscape:guide-points="true" />
   <metadata
@@ -160,7 +160,7 @@
       <path
          sodipodi:nodetypes="cccccccccc"
          id="path8"
-         d="M 40.797963,53.153416 C 35.588456,36.957241 50.838937,29.269184 63.455903,31.304658 L 63.455903,9.4558852 C 28.227551,9.6389542 18.726073,39.195285 19.758425,53.153416 L 19.758425,53.153416 L 8.4294322,53.153416 L 30.278194,74.192915 L 52.126956,53.153416 L 40.797963,53.153416 L 40.797963,53.153416"
+         d="M 49.444682,53.153416 C 42.843541,36.957241 62.167937,29.269184 78.155317,31.304658 L 78.155317,9.4558852 C 33.516292,9.6389542 21.476651,39.195285 22.784779,53.153416 L 22.784779,53.153416 L 8.4294322,53.153416 L 36.11473,74.192915 L 63.800029,53.153416 L 49.444682,53.153416 L 49.444682,53.153416"
          style="fill:#dd3c00;fill-opacity:1;stroke:none;stroke-width:1.80180204" />
     </g>
     <g
@@ -224,7 +224,7 @@
          inkscape:export-filename="D:\MyProj\openstego\java\trunk\src\image\ExtractIcon.png"
          sodipodi:nodetypes="cccccccccc"
          id="path1355"
-         d="M 40.376531,48.440765 C 35.622056,33.659237 49.540491,26.642689 61.055436,28.500376 L 61.055436,8.5599719 C 28.904072,8.7270509 20.232509,35.7018 21.174686,48.440765 L 21.174686,48.440765 L 10.835212,48.440765 L 30.775616,67.642582 L 50.716006,48.440765 L 40.376531,48.440765 L 40.376531,48.440765"
+         d="M 45.922359,51.862183 C 39.296381,35.812531 58.693527,28.194026 74.741098,30.211086 L 74.741098,8.5599719 C 29.933998,8.7413848 17.849049,38.030328 19.162095,51.862183 L 19.162095,51.862183 L 4.7526957,51.862183 L 32.542238,72.711346 L 60.33176,51.862183 L 45.922359,51.862183 L 45.922359,51.862183"
          style="fill:#dd3c00;fill-opacity:1;stroke:none;stroke-width:1.80180204" />
     </g>
   </g>

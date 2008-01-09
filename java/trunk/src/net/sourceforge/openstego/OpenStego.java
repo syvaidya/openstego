@@ -8,12 +8,9 @@ package net.sourceforge.openstego;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -106,6 +103,12 @@ public class OpenStego
             {
                 OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
                 data = crypto.encrypt(data);
+            }
+
+            // Generate random image, if input image is not provided
+            if(image == null)
+            {
+                image = generateRandomImage(data.length);
             }
 
             stegoOS = new StegoOutputStream(image, data.length, dataFileName, config);
@@ -275,6 +278,11 @@ public class OpenStego
         BufferedImage image = null;
         try
         {
+            if(imageFile == null)
+            {
+                return null;
+            }
+
             image = ImageIO.read(imageFile);
             if(image == null)
             {
@@ -285,6 +293,52 @@ public class OpenStego
         catch(IOException ioEx)
         {
             throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
+        }
+    }
+
+    /**
+     * Method to generate a random image filled with noise. The size of the image will be calculated based on the
+     * length of data (after compression) that needs to be embedded, and the 'maxBitsUsedPerChannel' parameter.
+     * @param dataLength Length of data in bytes which the image should be able to accommodate
+     * @return Random image filled with noise
+     * @throws OpenStegoException
+     */
+    public BufferedImage generateRandomImage(int dataLength) throws OpenStegoException
+    {
+        final double ASPECT_RATIO = 4.0 / 3.0;
+        int numOfPixels = 0;
+        int width = 0;
+        int height = 0;
+        byte[] rgbValue = new byte[3];
+        BufferedImage image = null;
+        SecureRandom random = null;
+
+        try
+        {
+            random = SecureRandom.getInstance("SHA1PRNG");
+
+            numOfPixels = (int) ((DataHeader.getMaxHeaderSize() * 8 / 3.0)
+                            + (dataLength * 8 / (3.0 * config.getMaxBitsUsedPerChannel())));
+            width = (int) Math.ceil(Math.sqrt(numOfPixels * ASPECT_RATIO));
+            height = (int) Math.ceil(numOfPixels / (double) width);
+
+            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            for(int x = 0; x < width; x++)
+            {
+                for(int y = 0; y < height; y++)
+                {
+                    random.nextBytes(rgbValue);
+                    image.setRGB(x, y, DataHeader.byteToInt(rgbValue[0])
+                                    + (DataHeader.byteToInt(rgbValue[1]) << 8)
+                                    + (DataHeader.byteToInt(rgbValue[2]) << 16));
+                }
+            }
+
+            return image;
+        }
+        catch(NoSuchAlgorithmException nsaEx)
+        {
+            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, nsaEx);
         }
     }
 
@@ -353,6 +407,12 @@ public class OpenStego
                 option = args[0];
                 if(option.equals("-embed"))
                 {
+                    if(args.length == 1)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
                     count = 1;
                     while(args[count].startsWith("--"))
                     {
@@ -386,11 +446,18 @@ public class OpenStego
                     dataFileName = args[count];
                     imageFileName = args[count + 1];
                     outputImageFileName = args[count + 2];
-                    stego.writeImage(stego.embedData(new File(dataFileName), new File(imageFileName)),
+                    stego.writeImage(stego.embedData(new File(dataFileName),
+                                imageFileName.equals("-random") ? null : new File(imageFileName)),
                             outputImageFileName);
                 }
                 else if(option.equals("-extract"))
                 {
+                    if(args.length == 1)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
                     count = 1;
                     while(args[count].startsWith("--"))
                     {

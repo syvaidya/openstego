@@ -125,7 +125,7 @@ public class StegoOutputStream extends OutputStream
 
             while(true)
             {
-                if((noOfPixels * 3 * channelBits) / 8 < (headerSize + dataLength))
+                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
                 {
                     channelBits++;
                     if(channelBits > config.getMaxBitsUsedPerChannel())
@@ -139,8 +139,10 @@ public class StegoOutputStream extends OutputStream
                 }
             }
 
-            // Write header with channelBitsUsed = 1
+            // Update channelBitsUsed in the header, and write to image
+            header.setChannelBitsUsed(channelBits);
             write(header.getHeaderData());
+
             if(currBit != 0)
             {
                 currBit = 0;

@@ -165,10 +165,10 @@ public class DataHeader
         versionLen = HEADER_VERSION.length;
         out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + fileName.length];
 
-        System.arraycopy(DATA_STAMP, 0, out, 0, stampLen);
+        System.arraycopy(DATA_STAMP, 0, out, currIndex, stampLen);
         currIndex += stampLen;
 
-        System.arraycopy(HEADER_VERSION, 0, out, stampLen, versionLen);
+        System.arraycopy(HEADER_VERSION, 0, out, currIndex, versionLen);
         currIndex += versionLen;
 
         out[currIndex++] = (byte) ((dataLength & 0x000000FF));
@@ -196,6 +196,15 @@ public class DataHeader
     public int getChannelBitsUsed()
     {
         return channelBitsUsed;
+    }
+
+    /**
+     * Set Method for channelBitsUsed
+     * @param channelBitsUsed
+     */
+    public void setChannelBitsUsed(int channelBitsUsed)
+    {
+        this.channelBitsUsed = channelBitsUsed;
     }
 
     /**
@@ -236,11 +245,21 @@ public class DataHeader
     }
 
     /**
+     * Method to get the maximum possible size of the header
+     * @return Maximum possible header size
+     */
+    public static int getMaxHeaderSize()
+    {
+        // Max file name length assumed to be 256
+        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + 256;
+    }
+
+    /**
      * Byte to Int converter
      * @param b
      * @return
      */
-    private int byteToInt(int b)
+    public static int byteToInt(int b)
     {
         int i = (int) b;
         if(i < 0)

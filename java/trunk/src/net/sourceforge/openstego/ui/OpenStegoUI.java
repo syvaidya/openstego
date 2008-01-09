@@ -100,7 +100,10 @@ public class OpenStegoUI extends OpenStegoFrame
         File outputFile = null;
 
         dataFileName = srcDataTextField.getText();
-        imgFileName = srcImageTextField.getText();
+        if(srcImageTextField.isEnabled())
+        {
+            imgFileName = srcImageTextField.getText();
+        }
         outputFileName = tgtImageTextField.getText();
         password = new String(passwordTextField.getPassword());
         confPassword = new String(confPasswordTextField.getPassword());
@@ -126,7 +129,7 @@ public class OpenStegoUI extends OpenStegoFrame
 
         loadConfig();
         openStego = new OpenStego(config);
-        image = openStego.embedData(new File(dataFileName), new File(imgFileName));
+        image = openStego.embedData(new File(dataFileName), imgFileName == null ? null : new File(imgFileName));
         outputFile = new File(outputFileName);
 
         if(outputFile.exists())
@@ -347,8 +350,12 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private boolean checkMandatory(JTextField textField, String fieldName)
     {
-        String value = textField.getText();
+        if(!textField.isEnabled())
+        {
+            return true;
+        }
 
+        String value = textField.getText();
         if(value == null || value.trim().equals(""))
         {
             JOptionPane.showMessageDialog(this, LabelUtil.getString("gui.msg.err.mandatoryCheck",
