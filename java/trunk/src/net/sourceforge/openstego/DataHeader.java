@@ -20,7 +20,18 @@ public class DataHeader
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
      */
-    public static final byte[] DATA_STAMP = "#$OpenStego$#".getBytes();
+    public static final byte[] DATA_STAMP = "OPENSTEGO".getBytes();
+
+    /**
+     * Header version to distinguish between various versions of data embedding. This should be changed to next
+     * version, in case the logic of embedding data is changed.
+     */
+    public static final byte[] HEADER_VERSION = new byte[] { (byte) 1 };
+
+    /**
+     * Length of the fixed portion of the header
+     */
+    private static final int FIXED_HEADER_LENGTH = 8;
 
     /**
      * Length of the data embedded in the image (excluding the header data)
@@ -81,31 +92,40 @@ public class DataHeader
     public DataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
     {
         int stampLen = 0;
+        int versionLen = 0;
         int fileNameLen = 0;
         int channelBits = 0;
         byte[] header = null;
         byte[] stamp = null;
+        byte[] version = null;
 
         stampLen = DATA_STAMP.length;
-        header = new byte[stampLen + 8];
+        versionLen = HEADER_VERSION.length;
+        header = new byte[FIXED_HEADER_LENGTH];
         stamp = new byte[stampLen];
+        version = new byte[versionLen];
 
         try
         {
-            dataInStream.read(header, 0, stampLen + 8);
-            System.arraycopy(header, 0, stamp, 0, stampLen);
-
+            dataInStream.read(stamp, 0, stampLen);
             if(!(new String(stamp)).equals(new String(DATA_STAMP)))
             {
                 throw new OpenStegoException(OpenStegoException.INVALID_STEGO_HEADER, null);
             }
 
-            dataLength = (byteToInt(header[stampLen]) + (byteToInt(header[stampLen + 1]) << 8)
-                    + (byteToInt(header[stampLen + 2]) << 16) + (byteToInt(header[stampLen + 3]) << 32));
-            channelBits = header[stampLen + 4];
-            fileNameLen = header[stampLen + 5];
-            config.setUseCompression(header[stampLen + 6] == 1);
-            config.setUseEncryption(header[stampLen + 7] == 1);
+            dataInStream.read(version, 0, versionLen);
+            if(!(new String(version)).equals(new String(HEADER_VERSION)))
+            {
+                throw new OpenStegoException(OpenStegoException.INVALID_HEADER_VERSION, null);
+            }
+
+            dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
+            dataLength = (byteToInt(header[0]) + (byteToInt(header[1]) << 8)
+                    + (byteToInt(header[2]) << 16) + (byteToInt(header[3]) << 32));
+            channelBits = header[4];
+            fileNameLen = header[5];
+            config.setUseCompression(header[6] == 1);
+            config.setUseEncryption(header[7] == 1);
 
             if(fileNameLen == 0)
             {
@@ -137,23 +157,33 @@ public class DataHeader
     public byte[] getHeaderData()
     {
         byte[] out = null;
-        int stampLength = 0;
+        int stampLen = 0;
+        int versionLen = 0;
+        int currIndex = 0;
 
-        stampLength = DATA_STAMP.length;
-        out = new byte[stampLength + 8 + fileName.length];
+        stampLen = DATA_STAMP.length;
+        versionLen = HEADER_VERSION.length;
+        out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + fileName.length];
 
-        System.arraycopy(DATA_STAMP, 0, out, 0, stampLength);
-        out[stampLength + 0] = (byte) ((dataLength & 0x000000FF));
-        out[stampLength + 1] = (byte) ((dataLength & 0x0000FF00) >> 8);
-        out[stampLength + 2] = (byte) ((dataLength & 0x00FF0000) >> 16);
-        out[stampLength + 3] = (byte) ((dataLength & 0xFF000000) >> 32);
-        out[stampLength + 4] = (byte) channelBitsUsed;
-        out[stampLength + 5] = (byte) fileName.length;
-        out[stampLength + 6] = (byte) (config.isUseCompression() ? 1 : 0);
-        out[stampLength + 7] = (byte) (config.isUseEncryption() ? 1 : 0);
+        System.arraycopy(DATA_STAMP, 0, out, 0, stampLen);
+        currIndex += stampLen;
+
+        System.arraycopy(HEADER_VERSION, 0, out, stampLen, versionLen);
+        currIndex += versionLen;
+
+        out[currIndex++] = (byte) ((dataLength & 0x000000FF));
+        out[currIndex++] = (byte) ((dataLength & 0x0000FF00) >> 8);
+        out[currIndex++] = (byte) ((dataLength & 0x00FF0000) >> 16);
+        out[currIndex++] = (byte) ((dataLength & 0xFF000000) >> 32);
+        out[currIndex++] = (byte) channelBitsUsed;
+        out[currIndex++] = (byte) fileName.length;
+        out[currIndex++] = (byte) (config.isUseCompression() ? 1 : 0);
+        out[currIndex++] = (byte) (config.isUseEncryption() ? 1 : 0);
+
         if(fileName.length > 0)
         {
-        	System.arraycopy(fileName, 0, out, stampLength + 8, fileName.length);
+        	System.arraycopy(fileName, 0, out, currIndex, fileName.length);
+            currIndex += fileName.length;
         }
 
         return out;
@@ -202,7 +232,7 @@ public class DataHeader
      */
     public int getHeaderSize()
     {
-        return DATA_STAMP.length + 7 + fileName.length;
+        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + fileName.length;
     }
 
     /**

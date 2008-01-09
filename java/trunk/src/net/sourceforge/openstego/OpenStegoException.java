@@ -80,6 +80,11 @@ public class OpenStegoException extends Exception
      */
     public static final int IMAGE_TYPE_INVALID = 13;
 
+    /**
+     * Error Code - Invalid image header version
+     */
+    public static final int INVALID_HEADER_VERSION = 14;
+
 
     /**
      * Map to store error code to message key mapping
@@ -102,12 +107,13 @@ public class OpenStegoException extends Exception
         errMsgKeyMap.put(new Integer(INVALID_USE_COMPR_VALUE), "err.config.useCompression.invalid");
         errMsgKeyMap.put(new Integer(INVALID_USE_ENCRYPT_VALUE), "err.config.useEncryption.invalid");
         errMsgKeyMap.put(new Integer(INVALID_KEY_NAME), "err.config.invalidKey");
-        errMsgKeyMap.put(new Integer(INVALID_STEGO_HEADER), "err.invalidHeader");
+        errMsgKeyMap.put(new Integer(INVALID_STEGO_HEADER), "err.invalidHeaderStamp");
         errMsgKeyMap.put(new Integer(ERR_IMAGE_DATA_READ), "err.image.read");
         errMsgKeyMap.put(new Integer(NULL_IMAGE_ARGUMENT), "err.image.arg.nullValue");
         errMsgKeyMap.put(new Integer(IMAGE_SIZE_INSUFFICIENT), "err.image.insufficientSize");
         errMsgKeyMap.put(new Integer(IMAGE_FILE_INVALID), "err.image.file.invalid");
         errMsgKeyMap.put(new Integer(IMAGE_TYPE_INVALID), "err.image.type.invalid");
+        errMsgKeyMap.put(new Integer(INVALID_HEADER_VERSION), "err.invalidHeaderVersion");
     }
 
     /**
