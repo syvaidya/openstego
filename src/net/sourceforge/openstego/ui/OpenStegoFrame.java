@@ -41,6 +41,11 @@ public class OpenStegoFrame extends JFrame
     protected JButton srcImgFileButton = new JButton();
 
     /**
+     * "Random Image as Source" checkbox
+     */
+    protected JCheckBox randomImgCheckBox = null;
+
+    /**
      * "Target Image" text field
      */
     protected JTextField tgtImageTextField = new JTextField();
@@ -159,7 +164,7 @@ public class OpenStegoFrame extends JFrame
         label.setLabelFor(srcImageTextField);
         embedPanel.add(label, gridBagConstraints);
 
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         label = new JLabel(LabelUtil.getString("gui.label.outputImgFile"));
         label.setLabelFor(tgtImageTextField);
         embedPanel.add(label, gridBagConstraints);
@@ -170,13 +175,20 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridy = 1;
         embedPanel.add(srcDataTextField, gridBagConstraints);
 
+        gridBagConstraints.insets = new Insets(0, 5, 0, 5);
         srcImageTextField.setColumns(57);
         gridBagConstraints.gridy = 3;
         embedPanel.add(srcImageTextField, gridBagConstraints);
 
         tgtImageTextField.setColumns(57);
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         embedPanel.add(tgtImageTextField, gridBagConstraints);
+
+        gridBagConstraints.insets = new Insets(0, 5, 5, 5);
+        randomImgCheckBox = new JCheckBox(LabelUtil.getString("gui.label.option.useRandomImage"));
+        gridBagConstraints.gridy = 4;
+        embedPanel.add(randomImgCheckBox, gridBagConstraints);
+
 
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
@@ -193,11 +205,11 @@ public class OpenStegoFrame extends JFrame
 
         tgtImgFileButton.setText("...");
         tgtImgFileButton.setPreferredSize(new Dimension(22, 22));
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         embedPanel.add(tgtImgFileButton, gridBagConstraints);
 
-        optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()),
-            " " + LabelUtil.getString("gui.label.option.title") + " "));
+        optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
+            new EtchedBorder()), " " + LabelUtil.getString("gui.label.option.title") + " "));
         optionPanel.setLayout(new GridBagLayout());
 
         gridBagConstraints = new GridBagConstraints();
@@ -246,7 +258,8 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         optionPanel.add(passwordPanel, gridBagConstraints);
 
-        passwordPanel.setBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()));
+        passwordPanel.setBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
+                new EtchedBorder()));
         passwordPanel.setLayout(new GridBagLayout());
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridy = 0;
@@ -275,7 +288,7 @@ public class OpenStegoFrame extends JFrame
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -375,6 +388,16 @@ public class OpenStegoFrame extends JFrame
         };
         useEncryptCheckBox.addChangeListener(changeListener);
         useEncryptionChanged();
+
+        changeListener = new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent changeEvent)
+            {
+                useRandomImgChanged();
+            }
+        };
+        randomImgCheckBox.addChangeListener(changeListener);
+        useRandomImgChanged();
     }
 
     /**
@@ -396,6 +419,26 @@ public class OpenStegoFrame extends JFrame
             passwordTextField.setBackground(UIManager.getColor("Panel.background"));
             confPasswordTextField.setEnabled(false);
             confPasswordTextField.setBackground(UIManager.getColor("Panel.background"));
+        }
+    }
+
+    /**
+     * Method to handle change event for 'randomImage'
+     */
+    private void useRandomImgChanged()
+    {
+        if(randomImgCheckBox.isSelected())
+        {
+            srcImageTextField.setEnabled(false);
+            srcImageTextField.setBackground(UIManager.getColor("Panel.background"));
+            srcImgFileButton.setEnabled(false);
+        }
+        else
+        {
+            srcImageTextField.setEnabled(true);
+            srcImageTextField.setBackground(Color.WHITE);
+            srcImgFileButton.setEnabled(true);
+            srcImageTextField.requestFocus();
         }
     }
 }
