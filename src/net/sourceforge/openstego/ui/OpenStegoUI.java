@@ -289,6 +289,15 @@ public class OpenStegoUI extends OpenStegoFrame
         fileName = browser.getFileName(title, filterDesc, dirOnly, allowedExts);
         if(fileName != null)
         {
+            // Check for valid extension for output file (in case of BROWSE_TGT_IMG)
+            if(action.equals("BROWSE_TGT_IMG"))
+            {
+                if(!OpenStego.getSupportedWriteFormats().contains(fileName.substring(
+                            fileName.lastIndexOf('.') + 1).toLowerCase()))
+                {
+                    fileName = fileName + "." + OpenStego.getSupportedWriteFormats().get(0);
+                }
+            }
             textField.setText(fileName);
         }
     }

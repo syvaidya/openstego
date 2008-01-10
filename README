@@ -26,7 +26,10 @@ Embed Data:
     <msg_file>   - Source message/data file
     <cover_file> - Cover file (image in which message will be embedded)
                    If '-random' is provided as the value here, then a random
-                   image having noise will be generated and used as cover file
+                   image having noise is generated and used as cover file.
+                   The size of the image is the minimum required to embed
+                   the given source file when 'maxButsUsedPerChannel'
+                   bits are used per color channel
     <stego_file> - Output stego file containing the embedded message
 
 Extract Data:
