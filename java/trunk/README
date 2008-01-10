@@ -1,48 +1,64 @@
-OpenStego v0.3.0
+OpenStego v0.3.1
 ----------------
 
 OpenStego is a tool developed in Java for image based steganography. It
 also supports optional encryption of data before embedding in the image.
-Currently, only 24 bpp images are supported. Image containing embedded
-data is written out in PNG format.
+Currently, only 24 bpp images are supported.
 
 USAGE:
 
-To start the GUI:
-
-   java -jar <path>\openstego.jar
-OR Use the script file provided (openstego.bat / openstego.sh)
+For GUI:
+  java -jar <path>\openstego.jar
 
 For command line interface:
+  java -jar <path>\openstego.jar [command] [options] ...
 
-   java -jar <path>\openstego.jar -embed [options] <data_file> <img_file>
-OR java -jar <path>\openstego.jar -extract [options] <img_file> <output_folder>
+Valid commands are:
+-embed                  Embed data into image
+-extract                Extract data from image
+-supportedReadFormats   List down the supported formats for cover file
+-supportedWriteFormats  List down the supported formats for stego file
 
-  For '-embed' command, OpenStego will embed the data into the given <img_file>
-  and save the file as PNG after appending '_out' to the file name.
+Embed Data:
+  java -jar <path>\openstego.jar -embed [options] <msg_file> <cover_file> <stego_file>
 
-  For '-extract' option, OpenStego will output the extracted data from
-  <img_file> to the given <output_folder>.
+  where,
+    <msg_file>   - Source message/data file
+    <cover_file> - Cover file (image in which message will be embedded)
+                   If '-random' is provided as the value here, then a random
+                   image having noise will be generated and used as cover file
+    <stego_file> - Output stego file containing the embedded message
 
-    [options] can be specified as '--name=value' pairs. Supported options are:
+Extract Data:
+  java -jar <path>\openstego.jar -extract [options] <stego_file> <output_dir>
 
-      maxBitsUsedPerChannel  - Max number of bits to use per color channel in
-                               the image for embedding data. This value can be
-                               increased at the expense of image quality, in
-                               case size of image is not able to accommodate
-                               the data (Default = 3)
-                               (Only applicable for '-embed' command)
+  where,
+    <stego_file> - Stego file containing the embedded message
+    <output_dir> - Output folder where message file will be written
 
-      useCompression         - Flag to indicate whether compression should be
-                               used on the data or not (Default = true)
-                               (Only applicable for '-embed' command)
+[options] can be specified as '--name=value' pairs. Supported options are:
 
-      useEncryption          - Flag to indicate whether encryption should be
-                               used on the data or not (Default = false)
-                               (Only applicable for '-embed' command)
+  maxBitsUsedPerChannel  - Max number of bits to use per color channel in
+                           the image for embedding data. This value can be
+                           increased at the expense of image quality, in
+                           case size of image is not able to accommodate
+                           the data (Default = 3)
+                           (Only applicable for '-embed' command)
 
-      password               - Password to be used for encryption or
-                               decryption (Default = null)
+  useCompression         - Flag to indicate whether compression should be
+                           used on the data or not (Default = true)
+                           (Only applicable for '-embed' command)
+
+  useEncryption          - Flag to indicate whether encryption should be
+                           used on the data or not (Default = false)
+                           (Only applicable for '-embed' command)
+
+  password               - Password to be used for encryption or
+                           decryption (Default = null)
+
+
+Java Advanced Imaging API can be installed to get support for more image
+formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
 
 TODO:
   - Implementation of OpenStego in C++ 
