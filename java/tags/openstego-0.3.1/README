@@ -1,0 +1,77 @@
+OpenStego v0.3.1
+----------------
+
+OpenStego is a tool developed in Java for image based steganography. It
+also supports optional encryption of data before embedding in the image.
+Currently, only 24 bpp images are supported.
+
+USAGE:
+
+For GUI:
+  java -jar <path>\openstego.jar
+
+For command line interface:
+  java -jar <path>\openstego.jar [command] [options] ...
+
+Valid commands are:
+-embed                  Embed data into image
+-extract                Extract data from image
+-supportedReadFormats   List down the supported formats for cover file
+-supportedWriteFormats  List down the supported formats for stego file
+
+Embed Data:
+  java -jar <path>\openstego.jar -embed [options] <msg_file> <cover_file> <stego_file>
+
+  where,
+    <msg_file>   - Source message/data file
+    <cover_file> - Cover file (image in which message will be embedded)
+                   If '-random' is provided as the value here, then a random
+                   image having noise is generated and used as cover file.
+                   The size of the image is the minimum required to embed
+                   the given source file when 'maxButsUsedPerChannel'
+                   bits are used per color channel
+    <stego_file> - Output stego file containing the embedded message
+
+Extract Data:
+  java -jar <path>\openstego.jar -extract [options] <stego_file> <output_dir>
+
+  where,
+    <stego_file> - Stego file containing the embedded message
+    <output_dir> - Output folder where message file will be written
+
+[options] can be specified as '--name=value' pairs. Supported options are:
+
+  maxBitsUsedPerChannel  - Max number of bits to use per color channel in
+                           the image for embedding data. This value can be
+                           increased at the expense of image quality, in
+                           case size of image is not able to accommodate
+                           the data (Default = 3)
+                           (Only applicable for '-embed' command)
+
+  useCompression         - Flag to indicate whether compression should be
+                           used on the data or not (Default = true)
+                           (Only applicable for '-embed' command)
+
+  useEncryption          - Flag to indicate whether encryption should be
+                           used on the data or not (Default = false)
+                           (Only applicable for '-embed' command)
+
+  password               - Password to be used for encryption or
+                           decryption (Default = null)
+
+
+Java Advanced Imaging API can be installed to get support for more image
+formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
+
+TODO:
+  - Implementation of OpenStego in C++ 
+
+AUTHOR:
+  Samir Vaidya (syvaidya@gmail.com)
+  Copyright (c) 2007-2008
+
+SEE ALSO:
+  http://sourceforge.net/projects/openstego for more details.
+
+LICENSE:
+  GNU General Public License 2.0 (GPL) (see LICENSE file)
