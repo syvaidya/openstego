@@ -75,7 +75,8 @@ public class OpenStego
      * Method to embed the data into an image
      * @param data Data to be embedded
      * @param dataFileName Name of the data file
-     * @param image Source image data into which data needs to be embedded
+     * @param image Source image data into which data needs to be embedded. If <code>null</code> then random image
+     *              is generated and used as the cover file
      * @return Image with embedded data
      * @throws OpenStegoException
      */
@@ -130,7 +131,8 @@ public class OpenStego
     /**
      * Method to embed the data into an image (alternate API)
      * @param dataFile File containing the data to be embedded
-     * @param imageFile Source image file into which data needs to be embedded
+     * @param imageFile Source image file into which data needs to be embedded. If <code>null</code> then random image
+     *                  is generated and used as the cover file
      * @return Image with embedded data
      * @throws OpenStegoException
      */
