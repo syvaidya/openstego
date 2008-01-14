@@ -20,7 +20,7 @@ import javax.imageio.ImageWriter;
 import javax.swing.UIManager;
 
 import net.sourceforge.openstego.ui.OpenStegoUI;
-import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.*;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
@@ -138,7 +138,28 @@ public class OpenStego
      */
     public BufferedImage embedData(File dataFile, File imageFile) throws OpenStegoException
     {
-        return embedData(getFileBytes(dataFile), dataFile.getName(), readImage(imageFile));
+        InputStream is = null;
+        String filename = null;
+
+        try
+        {
+            // If no data file is provided, then read the data from stdin
+            if(dataFile == null)
+            {
+                is = System.in;
+            }
+            else
+            {
+                is = new FileInputStream(dataFile);
+                filename = dataFile.getName();
+            }
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
+        }
+
+        return embedData(getStreamBytes(is), filename, readImage(imageFile));
     }
 
     /**
@@ -252,24 +273,6 @@ public class OpenStego
     }
 
     /**
-     * Helper method to get byte array data from given file
-     * @param file File to be read
-     * @return File data as byte array
-     * @throws OpenStegoException
-     */
-    private byte[] getFileBytes(File file) throws OpenStegoException
-    {
-        try
-        {
-            return getStreamBytes(new FileInputStream(file));
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
-        }
-    }
-
-    /**
      * Method to load the image file
      * @param imageFile Image file
      * @return Buffered image
@@ -355,12 +358,24 @@ public class OpenStego
         String imageType = null;
         try
         {
-            imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
-            if(!getSupportedWriteFormats().contains(imageType))
+            if(imageFileName != null)
             {
-                throw new OpenStegoException(OpenStegoException.IMAGE_TYPE_INVALID, imageType, null);
+                imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
+                if(!getSupportedWriteFormats().contains(imageType))
+                {
+                    throw new OpenStegoException(OpenStegoException.IMAGE_TYPE_INVALID, imageType, null);
+                }
+                if(imageType.equals("jp2"))
+                {
+                    imageType = "jpeg 2000";
+                }
+                ImageIO.write(image, imageType, new File(imageFileName));
             }
-            ImageIO.write(image, imageType, new File(imageFileName));
+            // If file name is not provided then write the image data to System.out
+            else
+            {
+                ImageIO.write(image, "png", System.out);
+            }
         }
         catch(IOException ioEx)
         {
@@ -378,22 +393,31 @@ public class OpenStego
     {
         int count = 0;
         int index = 0;
-        String key = null;
-        String value = null;
-        String option = null;
-        String dataFileName = null;
-        String imageFileName = null;
-        String outputImageFileName = null;
-        String outputFolder = null;
-        String outputFileName = null;
+        String msgFileName = null;
+        String coverFileName = null;
+        String stegoFileName = null;
+        String extractDir = null;
+        String extractFileName = null;
+        String command = null;
         List stegoData = null;
         OpenStego stego = null;
-        Map propMap = new HashMap();
         FileOutputStream fos = null;
+        CmdLineParser parser = null;
+        CmdLineOptions options = null;
+        CmdLineOption option = null;
+        List optionList = null;
 
         try
         {
-            if(args.length == 0) // Start GUI
+            // Parse the command-line
+            parser = new CmdLineParser(getStdCmdLineOptions(), args);
+            if(!parser.isValid())
+            {
+                displayUsage();
+                return;
+            }
+
+            if(parser.getNumOfOptions() == 0) // Start GUI
             {
                 try
                 {
@@ -406,102 +430,79 @@ public class OpenStego
             }
             else
             {
-                option = args[0];
-                if(option.equals("-embed"))
+                optionList = parser.getParsedOptionsAsList();
+                options = parser.getParsedOptions();
+
+                for(int i = 0; i < optionList.size(); i++)
                 {
-                    if(args.length == 1)
+                    option = (CmdLineOption) optionList.get(i);
+                    if(((i == 0) && (option.getType() != CmdLineOption.TYPE_COMMAND))
+                        || ((i > 0) && (option.getType() == CmdLineOption.TYPE_COMMAND)))
                     {
                         displayUsage();
                         return;
                     }
 
-                    count = 1;
-                    while(args[count].startsWith("--"))
+                    if(i == 0)
                     {
-                        index = args[count].indexOf('=');
-                        if(index == -1)
-                        {
-                            displayUsage();
-                            return;
-                        }
-
-                        key = args[count].substring(2, index);
-                        value = args[count].substring(index + 1);
-                        propMap.put(key, value);
-
-                        count++;
-                        if(args.length < count)
-                        {
-                            displayUsage();
-                            return;
-                        }
+                        command = option.getName();
                     }
-
-                    stego = new OpenStego(propMap);
-
-                    if(args.length != (count + 3))
-                    {
-                        displayUsage();
-                        return;
-                    }
-
-                    dataFileName = args[count];
-                    imageFileName = args[count + 1];
-                    outputImageFileName = args[count + 2];
-                    stego.writeImage(stego.embedData(new File(dataFileName),
-                                imageFileName.equals("-random") ? null : new File(imageFileName)),
-                            outputImageFileName);
                 }
-                else if(option.equals("-extract"))
+                
+                // Non-standard options are not allowed
+                if(parser.getNonStdOptions().size() > 0)
                 {
-                    if(args.length == 1)
+                    displayUsage();
+                    return;
+                }
+
+                // Create main stego object
+                stego = new OpenStego(new OpenStegoConfig(parser.getParsedOptions()));
+
+                if(command.equals("embed"))
+                {
+                    msgFileName = options.getOptionValue("-mf");
+                    coverFileName = options.getOptionValue("-cf");
+                    stegoFileName = options.getOptionValue("-sf");
+
+                    stego.writeImage(stego.embedData(
+                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                                (coverFileName == null || coverFileName.equals("-")) ? null : new File(coverFileName)),
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                }
+                else if(command.equals("extract"))
+                {
+                    stegoFileName = options.getOptionValue("-sf");
+                    extractDir = options.getOptionValue("-xd");
+
+                    if(stegoFileName == null)
                     {
                         displayUsage();
                         return;
                     }
 
-                    count = 1;
-                    while(args[count].startsWith("--"))
+                    stegoData = stego.extractData(new File(stegoFileName));
+                    extractFileName = options.getOptionValue("-xf");
+                    if(extractFileName == null)
                     {
-                        index = args[count].indexOf('=');
-                        if(index == -1)
+                        extractFileName = (String) stegoData.get(0);
+                        if(extractFileName == null || extractFileName.equals(""))
                         {
-                            displayUsage();
-                            return;
-                        }
-
-                        key = args[count].substring(2, index);
-                        value = args[count].substring(index + 1);
-                        propMap.put(key, value);
-
-                        count++;
-                        if(args.length < count)
-                        {
-                            displayUsage();
-                            return;
+                            extractFileName = "untitled";
                         }
                     }
-
-                    stego = new OpenStego(propMap);
-
-                    if(args.length != (count + 2))
+                    if(extractDir != null)
                     {
-                        displayUsage();
-                        return;
+                        extractFileName = extractDir + File.separator + extractFileName;
                     }
 
-                    imageFileName = args[count];
-                    outputFolder = args[count + 1];
-                    stegoData = stego.extractData(new File(imageFileName));
-                    outputFileName = (String) stegoData.get(0);
-
-                    fos = new FileOutputStream(outputFolder + File.separator + outputFileName);
+                    fos = new FileOutputStream(extractFileName);
                     fos.write((byte[]) stegoData.get(1));
                     fos.close();
 
-                    System.out.println(LabelUtil.getString("cmd.msg.fileExtracted", new Object[] { outputFileName }));
+                    System.out.println(LabelUtil.getString("cmd.msg.fileExtracted", new Object[] { extractFileName }));
                 }
-                else if(option.equals("-supportedReadFormats"))
+                else if(command.equals("readformats"))
                 {
                     List formats = getSupportedReadFormats();
                     for(int i = 0; i < formats.size(); i++)
@@ -509,7 +510,7 @@ public class OpenStego
                         System.out.println(formats.get(i));
                     }
                 }
-                else if(option.equals("-supportedWriteFormats"))
+                else if(command.equals("writeformats"))
                 {
                     List formats = getSupportedWriteFormats();
                     for(int i = 0; i < formats.size(); i++)
@@ -541,12 +542,9 @@ public class OpenStego
     {
         OpenStegoConfig defaultConfig = new OpenStegoConfig();
         System.err.print(LabelUtil.getString("versionString"));
-        System.err.println(LabelUtil.getString("cmd.usage.main", new Object[] { File.separator }));
-        System.err.println(LabelUtil.getString("cmd.usage.options", new Object[] {
-                                                    new Integer(defaultConfig.getMaxBitsUsedPerChannel()),
-                                                    new Boolean(defaultConfig.isUseCompression()),
-                                                    new Boolean(defaultConfig.isUseEncryption()),
-                                                    defaultConfig.getPassword() }));
+        System.err.println(LabelUtil.getString("cmd.usage.main", new Object[] {
+                                                    File.separator,
+                                                    new Integer(defaultConfig.getMaxBitsUsedPerChannel()) }));
     }
 
     /**
@@ -568,6 +566,10 @@ public class OpenStego
         for(int i = 0; i < formats.length; i++)
         {
             format = formats[i].toLowerCase();
+            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
+            {
+                format = "jp2";
+            }
             if(!formatList.contains(format))
             {
                 formatList.add(format);
@@ -601,9 +603,13 @@ public class OpenStego
         for(int i = 0; i < formats.length; i++)
         {
             format = formats[i].toLowerCase();
+            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
+            {
+                format = "jp2";
+            }
             if(!formatList.contains(format))
             {
-                iter = ImageIO.getImageWritersByFormatName(format);
+                iter = ImageIO.getImageWritersBySuffix(format);
                 while(iter.hasNext())
                 {
                     writeParam = ((ImageWriter) iter.next()).getDefaultWriteParam();
@@ -632,11 +638,44 @@ public class OpenStego
             }
         }
 
-        //Expicilty removing GIF format, as it uses indexed color model
+        //Expicilty removing GIF and WBMP formats, as they use unsupported color models
         formatList.remove("gif");
+        formatList.remove("wbmp");
         Collections.sort(formatList);
 
         writeFormats = formatList;
         return writeFormats;
+    }
+
+    /**
+     * Method to generate the standard list of command-line options
+     * @return Standard list of command-line options
+     */
+    private static CmdLineOptions getStdCmdLineOptions()
+    {
+        CmdLineOptions options = new CmdLineOptions();
+
+        // Commands
+        options.add("embed", "--embed", CmdLineOption.TYPE_COMMAND, false);
+        options.add("extract", "--extract", CmdLineOption.TYPE_COMMAND, false);
+        options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
+        options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
+
+        // File options
+        options.add("-mf", "--messagefile", CmdLineOption.TYPE_OPTION, true);
+        options.add("-cf", "--coverfile", CmdLineOption.TYPE_OPTION, true);
+        options.add("-sf", "--stegofile", CmdLineOption.TYPE_OPTION, true);
+        options.add("-xf", "--extractfile", CmdLineOption.TYPE_OPTION, true);
+        options.add("-xd", "--extractdir", CmdLineOption.TYPE_OPTION, true);
+
+        // Command options
+        options.add("-b", "--maxBitsUsedPerChannel", CmdLineOption.TYPE_OPTION, true);
+        options.add("-c", "--compress", CmdLineOption.TYPE_OPTION, false);
+        options.add("-C", "--nocompress", CmdLineOption.TYPE_OPTION, false);
+        options.add("-e", "--encrypt", CmdLineOption.TYPE_OPTION, false);
+        options.add("-E", "--noencrypt", CmdLineOption.TYPE_OPTION, false);
+        options.add("-p", "--password", CmdLineOption.TYPE_OPTION, true);
+
+        return options;
     }
 }
