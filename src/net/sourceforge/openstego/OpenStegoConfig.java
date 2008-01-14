@@ -6,10 +6,11 @@
 
 package net.sourceforge.openstego;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.*;
 
 /**
  * Class to store configuration data for OpenStego
@@ -151,6 +152,46 @@ public class OpenStegoConfig
             {
                 throw new OpenStegoException(OpenStegoException.INVALID_KEY_NAME, key, null);
             }
+        }
+    }
+
+    /**
+     * Constructor which reads configuration data from the command line options.
+     * @param options Command-line options
+     * @throws OpenStegoException
+     */
+    public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException
+    {
+        HashMap map = new HashMap();
+        
+        if(options.getOption("-b") != null) // maxBitsUsedPerChannel
+        {
+            map.put(MAX_BITS_USED_PER_CHANNEL, options.getOptionValue("-b"));
+        }
+
+        if(options.getOption("-c") != null) // compress
+        {
+            map.put(USE_COMPRESSION, "true");
+        }
+
+        if(options.getOption("-C") != null) // nocompress
+        {
+            map.put(USE_COMPRESSION, "false");
+        }
+
+        if(options.getOption("-e") != null) // encrypt
+        {
+            map.put(USE_ENCRYPTION, "true");
+        }
+
+        if(options.getOption("-E") != null) // noencrypt
+        {
+            map.put(USE_ENCRYPTION, "false");
+        }
+
+        if(options.getOption("-p") != null) // password
+        {
+            map.put(PASSWORD, options.getOptionValue("-p"));
         }
     }
 

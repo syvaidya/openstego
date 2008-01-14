@@ -274,7 +274,7 @@ public class OpenStegoFrame extends JFrame
         passwordPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
-        passwordTextField.setColumns(20);
+        passwordTextField.setColumns(15);
         passwordPanel.add(passwordTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 2;
@@ -283,7 +283,7 @@ public class OpenStegoFrame extends JFrame
         passwordPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridx = 3;
-        confPasswordTextField.setColumns(20);
+        confPasswordTextField.setColumns(15);
         passwordPanel.add(confPasswordTextField, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();

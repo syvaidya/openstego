@@ -1,4 +1,4 @@
-OpenStego v0.3.1
+OpenStego v0.3.2
 ----------------
 
 OpenStego is a tool developed in Java for image based steganography. It
@@ -11,60 +11,97 @@ For GUI:
   java -jar <path>\openstego.jar
 
 For command line interface:
-  java -jar <path>\openstego.jar [command] [options] ...
+  java -jar <path>\openstego.jar <command> [options]
 
-Valid commands are:
--embed                  Embed data into image
--extract                Extract data from image
--supportedReadFormats   List down the supported formats for cover file
--supportedWriteFormats  List down the supported formats for stego file
+The first argument must be a command. Valid commands are:
 
-Embed Data:
-  java -jar <path>\openstego.jar -embed [options] <msg_file> <cover_file> <stego_file>
+  embed, --embed                Embed data into image
+  extract, --extract            Extract data from image
+  readformats --readformats     List down supported formats for cover file
+  writeformats, --writeformats  List down supported formats for stego file
 
-  where,
-    <msg_file>   - Source message/data file
-    <cover_file> - Cover file (image in which message will be embedded)
-                   If '-random' is provided as the value here, then a random
-                   image having noise is generated and used as cover file.
-                   The size of the image is the minimum required to embed
-                   the given source file when 'maxButsUsedPerChannel'
-                   bits are used per color channel
-    <stego_file> - Output stego file containing the embedded message
+'embed' options:
 
-Extract Data:
-  java -jar <path>\openstego.jar -extract [options] <stego_file> <output_dir>
+    -mf, --messagefile <filename>
+        Source message/data file. If this option is not provided or '-'
+        (without quotes) is provided as the value then the message data is
+        read from stdin
 
-  where,
-    <stego_file> - Stego file containing the embedded message
-    <output_dir> - Output folder where message file will be written
+    -cf, --coverfile <filename>
+        Cover file (image in which message will be embedded). If this option is
+        not provided or '-' (without quotes) is provided as the value then a
+        random image containing noise is generated and used as cover file. The
+        size of image is minimum required to embed the given source file when
+        'maxBitsUsedPerChannel' bits are used per color channel
 
-[options] can be specified as '--name=value' pairs. Supported options are:
+    -sf, --stegofile <filename>
+        Output stego file containing the embedded message. If this option is
+        not provided or '-' (without quotes) is provided as the value then
+        stego file is written to stdout with image format as PNG
 
-  maxBitsUsedPerChannel  - Max number of bits to use per color channel in
-                           the image for embedding data. This value can be
-                           increased at the expense of image quality, in
-                           case size of image is not able to accommodate
-                           the data (Default = 3)
-                           (Only applicable for '-embed' command)
+    -b, --maxBitsUsedPerChannel <n>
+        Max number of bits to use per color channel in the image for embedding
+        data. This value can be increased at the expense of image quality, in
+        case size of image is not able to accommodate the data (Default = 3)
 
-  useCompression         - Flag to indicate whether compression should be
-                           used on the data or not (Default = true)
-                           (Only applicable for '-embed' command)
+    -c, --compress
+        Compress the message file before embedding (default)
 
-  useEncryption          - Flag to indicate whether encryption should be
-                           used on the data or not (Default = false)
-                           (Only applicable for '-embed' command)
+    -C, --nocompress
+        Do not compress the message file before embedding
 
-  password               - Password to be used for encryption or
-                           decryption (Default = null)
+    -e, --encrypt
+        Encrypt the message file before embedding
 
+    -E, --noencrypt
+        Do not encrypt the message file before embedding (default)
+
+    -p, --password
+        Password to be used for encryption
+
+'extract' options:
+
+    -sf, --stegofile <filename>
+        Stego file containing the embedded message
+
+    -xf, --extractfile <filename>
+        Optional filename for the extracted data. Use this to override the
+        filename embedded in the stego file
+
+    -xd, --extractdir <dir>
+        Directory where the message file will be extracted. If this option is
+        not provided, then the file is extracted to current directory
+
+    -p, --password
+        Password to be used for decryption (if the message is encrypted)
+
+Examples:
+
+  To embed secret.txt into wallpaper.png and generate the output into test.png:
+
+      java -jar <path>\openstego.jar embed -mf secret.txt -cf wallpaper.png \
+        -sf test.png
+   OR
+      java -jar <path>\openstego.jar --embed --messagefile=secret.txt \
+        --coverfile=wallpaper.png --stegofile=test.png
+
+  To extract embedded data from test.png to /data directory:
+
+      java -jar <path>\openstego.jar extract -sf test.png -xd /data
+   OR
+      java -jar <path>\openstego.jar extract --stegofile=test.png \
+        --extractdir=/data
+
+  Piping example:
+
+      ls -R | java -jar <path>\openstego.jar embed > test.png
 
 Java Advanced Imaging API can be installed to get support for more image
 formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
 
 TODO:
-  - Implementation of OpenStego in C++ 
+  - Add support for audio data to be used as cover file
+  - Implementation of OpenStego in C++
 
 AUTHOR:
   Samir Vaidya (syvaidya@gmail.com)
