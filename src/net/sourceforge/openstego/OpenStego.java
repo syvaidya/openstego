@@ -197,9 +197,6 @@ public class OpenStego
             {
                 OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
                 data = crypto.decrypt(data);
-                if(data == null)
-                {
-                }
             }
 
             // Decompress data, if required
@@ -384,6 +381,15 @@ public class OpenStego
     }
 
     /**
+     * Get method for configuration data
+     * @return Configuration data
+     */
+    public OpenStegoConfig getConfig()
+    {
+        return config;
+    }
+
+    /**
      * Main method for calling openstego from command line.
      *
      * @param args Command line arguments
@@ -465,6 +471,13 @@ public class OpenStego
                     coverFileName = options.getOptionValue("-cf");
                     stegoFileName = options.getOptionValue("-sf");
 
+                    // Check if we need to prompt for password
+                    if(stego.getConfig().isUseEncryption() && stego.getConfig().getPassword() == null)
+                    {
+                        stego.getConfig().setPassword(PasswordInput.readPassword(
+                                LabelUtil.getString("cmd.msg.enterPassword") + " "));
+                    }
+
                     stego.writeImage(stego.embedData(
                                 (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
                                 (coverFileName == null || coverFileName.equals("-")) ? null : new File(coverFileName)),
@@ -481,7 +494,47 @@ public class OpenStego
                         return;
                     }
 
-                    stegoData = stego.extractData(new File(stegoFileName));
+                    try
+                    {
+                        stegoData = stego.extractData(new File(stegoFileName));
+                    }
+                    catch(OpenStegoException osEx)
+                    {
+                        if(osEx.getErrorCode() == OpenStegoException.INVALID_PASSWORD)
+                        {
+                            if(stego.getConfig().getPassword() == null)
+                            {
+                                stego.getConfig().setPassword(PasswordInput.readPassword(
+                                        LabelUtil.getString("cmd.msg.enterPassword") + " "));
+
+                                try
+                                {
+                                    stegoData = stego.extractData(new File(stegoFileName));
+                                }
+                                catch(OpenStegoException inEx)
+                                {
+                                    if(inEx.getErrorCode() == OpenStegoException.INVALID_PASSWORD)
+                                    {
+                                        System.err.println(inEx.getMessage());
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        throw inEx;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                System.err.println(osEx.getMessage());
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            throw osEx;
+                        }
+                    }
                     extractFileName = options.getOptionValue("-xf");
                     if(extractFileName == null)
                     {

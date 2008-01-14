@@ -57,7 +57,8 @@ The first argument must be a command. Valid commands are:
         Do not encrypt the message file before embedding (default)
 
     -p, --password
-        Password to be used for encryption
+        Password to be used for encryption. If this is not provided then
+        prompt will be displayed for entry
 
 'extract' options:
 
@@ -73,7 +74,8 @@ The first argument must be a command. Valid commands are:
         not provided, then the file is extracted to current directory
 
     -p, --password
-        Password to be used for decryption (if the message is encrypted)
+        Password to be used for decryption. If this is not provided then
+        prompt will be displayed for entry (if the message is encrypted)
 
 Examples:
 
