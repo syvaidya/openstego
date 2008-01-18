@@ -85,6 +85,11 @@ public class OpenStegoException extends Exception
      */
     public static final int INVALID_HEADER_VERSION = 14;
 
+    /**
+     * Error Code - Corrupt Data
+     */
+    public static final int CORRUPT_DATA = 15;
+
 
     /**
      * Map to store error code to message key mapping
@@ -114,6 +119,7 @@ public class OpenStegoException extends Exception
         errMsgKeyMap.put(new Integer(IMAGE_FILE_INVALID), "err.image.file.invalid");
         errMsgKeyMap.put(new Integer(IMAGE_TYPE_INVALID), "err.image.type.invalid");
         errMsgKeyMap.put(new Integer(INVALID_HEADER_VERSION), "err.invalidHeaderVersion");
+        errMsgKeyMap.put(new Integer(CORRUPT_DATA), "err.corruptData");
     }
 
     /**
