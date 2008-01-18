@@ -140,6 +140,7 @@ public class OpenStego
     {
         InputStream is = null;
         String filename = null;
+        BufferedImage image = null;
 
         try
         {
@@ -153,13 +154,15 @@ public class OpenStego
                 is = new FileInputStream(dataFile);
                 filename = dataFile.getName();
             }
+
+            image = embedData(getStreamBytes(is), filename, readImage(imageFile));
         }
         catch(IOException ioEx)
         {
             throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
         }
 
-        return embedData(getStreamBytes(is), filename, readImage(imageFile));
+        return image;
     }
 
     /**
@@ -202,11 +205,18 @@ public class OpenStego
             // Decompress data, if required
             if(config.isUseCompression())
             {
-                ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                GZIPInputStream zis = new GZIPInputStream(bis);
-                data = getStreamBytes(zis);
-                zis.close();
-                bis.close();
+                try
+                {
+                    ByteArrayInputStream bis = new ByteArrayInputStream(data);
+                    GZIPInputStream zis = new GZIPInputStream(bis);
+                    data = getStreamBytes(zis);
+                    zis.close();
+                    bis.close();
+                }
+                catch(IOException ioEx)
+                {
+                    throw new OpenStegoException(OpenStegoException.CORRUPT_DATA, ioEx);
+                }
             }
 
             // Add data as second element of output list
@@ -239,34 +249,27 @@ public class OpenStego
      * Helper method to get byte array data from given InputStream
      * @param is InputStream to read
      * @return Stream data as byte array
-     * @throws OpenStegoException
+     * @throws IOException
      */
-    private byte[] getStreamBytes(InputStream is) throws OpenStegoException
+    private byte[] getStreamBytes(InputStream is) throws IOException
     {
         final int BUF_SIZE = 512;
         ByteArrayOutputStream bos = null;
         int bytesRead = 0;
         byte[] data = null;
 
-        try
+        data = new byte[BUF_SIZE];
+        bos = new ByteArrayOutputStream();
+
+        while((bytesRead = is.read(data, 0, BUF_SIZE)) >= 0)
         {
-            data = new byte[BUF_SIZE];
-            bos = new ByteArrayOutputStream();
-
-            while((bytesRead = is.read(data, 0, BUF_SIZE)) >= 0)
-            {
-                bos.write(data, 0, bytesRead);
-            }
-
-            is.close();
-            bos.close();
-
-            return bos.toByteArray();
+            bos.write(data, 0, bytesRead);
         }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
-        }
+
+        is.close();
+        bos.close();
+
+        return bos.toByteArray();
     }
 
     /**
