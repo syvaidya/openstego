@@ -1,7 +1,7 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -15,8 +15,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
-import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * This is the class for providing cryptography support to OpenStego.
@@ -84,7 +82,7 @@ public class OpenStegoCrypto
             }
             else
             {
-                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+                throw new OpenStegoException(ex);
             }
         }
     }
@@ -109,7 +107,7 @@ public class OpenStegoCrypto
             }
             else
             {
-                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+                throw new OpenStegoException(ex);
             }
         }
     }
@@ -128,7 +126,7 @@ public class OpenStegoCrypto
         }
         catch(BadPaddingException bpEx)
         {
-            throw new OpenStegoException(OpenStegoException.INVALID_PASSWORD, bpEx);
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_PASSWORD, bpEx);
         }
         catch(Exception ex)
         {
@@ -138,7 +136,7 @@ public class OpenStegoCrypto
             }
             else
             {
-                throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+                throw new OpenStegoException(ex);
             }
         }
     }

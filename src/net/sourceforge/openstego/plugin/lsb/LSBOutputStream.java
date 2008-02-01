@@ -1,22 +1,28 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego;
+package net.sourceforge.openstego.plugin.lsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import net.sourceforge.openstego.*;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * OutputStream to embed data into image
  */
-public class StegoOutputStream extends OutputStream
+public class LSBOutputStream extends OutputStream
 {
+    /**
+     * LabelUtil instance to retrieve labels
+     */
+    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+
     /**
      * Output Image data
      */
@@ -80,11 +86,11 @@ public class StegoOutputStream extends OutputStream
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public StegoOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
+    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.dataLength = dataLength;
@@ -115,12 +121,12 @@ public class StegoOutputStream extends OutputStream
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
-        DataHeader header = null;
+        LSBDataHeader header = null;
 
         try
         {
             noOfPixels = imgWidth * imgHeight;
-            header = new DataHeader(dataLength, channelBits, fileName, config);
+            header = new LSBDataHeader(dataLength, channelBits, fileName, config);
             headerSize = header.getHeaderSize();
 
             while(true)
@@ -128,9 +134,9 @@ public class StegoOutputStream extends OutputStream
                 if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
                 {
                     channelBits++;
-                    if(channelBits > config.getMaxBitsUsedPerChannel())
+                    if(channelBits > ((LSBConfig) config).getMaxBitsUsedPerChannel())
                     {
-                        throw new OpenStegoException(OpenStegoException.IMAGE_SIZE_INSUFFICIENT, null);
+                        throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
                 }
                 else
@@ -159,7 +165,7 @@ public class StegoOutputStream extends OutputStream
         }
         catch(Exception ex)
         {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+            throw new OpenStegoException(ex);
         }
     }
 
@@ -224,7 +230,7 @@ public class StegoOutputStream extends OutputStream
         }
         catch(IOException ioEx)
         {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ioEx);
+            throw new OpenStegoException(ioEx);
         }
         return image;
     }
@@ -243,7 +249,7 @@ public class StegoOutputStream extends OutputStream
 
         if(y == imgHeight)
         {
-            throw new IOException(LabelUtil.getString("err.image.insufficientSize"));
+            throw new IOException(labelUtil.getString("err.image.insufficientSize"));
         }
 
         maskPerByte = (int) (Math.pow(2, channelBitsUsed) - 1);

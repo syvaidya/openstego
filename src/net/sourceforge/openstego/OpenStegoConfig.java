@@ -1,7 +1,7 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -17,14 +17,6 @@ import net.sourceforge.openstego.util.*;
  */
 public class OpenStegoConfig
 {
-    /**
-     * Key string for configuration item - maxBitsUsedPerChannel.
-     * <p>
-     * Maximum bits to use per color channel. Allowing for higher number here might degrade the quality
-     * of the image in case the data size is big.
-     */
-    public static final String MAX_BITS_USED_PER_CHANNEL = "maxBitsUsedPerChannel";
-
     /**
      * Key string for configuration item - useCompression
      * <p>
@@ -45,17 +37,6 @@ public class OpenStegoConfig
      * Password for encryption in case "useEncryption" is set to true
      */
     public static final String PASSWORD = "password";
-
-    /**
-     * Maximum bits to use per color channel. Allowing for higher number here might degrade the quality
-     * of the image in case the data size is big.
-     */
-    private int maxBitsUsedPerChannel = 3;
-
-    /**
-     * Default image file type to use for writing, in case the read image file type is not supported
-     */
-    private String defaultImageOutputType = "png";
 
     /**
      * Flag to indicate whether compression should be used or not
@@ -87,7 +68,7 @@ public class OpenStegoConfig
      */
     public OpenStegoConfig(Map propMap) throws OpenStegoException
     {
-        init(propMap);
+        addProperties(propMap);
     }
 
     /**
@@ -99,11 +80,6 @@ public class OpenStegoConfig
     {
         HashMap map = new HashMap();
         
-        if(options.getOption("-b") != null) // maxBitsUsedPerChannel
-        {
-            map.put(MAX_BITS_USED_PER_CHANNEL, options.getOptionValue("-b"));
-        }
-
         if(options.getOption("-c") != null) // compress
         {
             map.put(USE_COMPRESSION, "true");
@@ -129,15 +105,15 @@ public class OpenStegoConfig
             map.put(PASSWORD, options.getOptionValue("-p"));
         }
         
-        init(map);
+        addProperties(map);
     }
 
     /**
-     * Method to initialize this object using property map
+     * Method to add properties from the map to this configuration data
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    private void init(Map propMap) throws OpenStegoException
+    protected void addProperties(Map propMap) throws OpenStegoException
     {
         Iterator keys = null;
         String key = null;
@@ -147,24 +123,7 @@ public class OpenStegoConfig
         while(keys.hasNext())
         {
             key = (String) keys.next();
-            if(key.equals(MAX_BITS_USED_PER_CHANNEL))
-            {
-                value = propMap.get(key).toString().trim();
-                try
-                {
-                    maxBitsUsedPerChannel = Integer.parseInt(value);
-                }
-                catch(NumberFormatException nfEx)
-                {
-                    throw new OpenStegoException(OpenStegoException.MAX_BITS_NOT_NUMBER, value, nfEx);
-                }
-
-                if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
-                {
-                    throw new OpenStegoException(OpenStegoException.MAX_BITS_NOT_IN_RANGE, value, null);
-                }
-            }
-            else if(key.equals(USE_COMPRESSION))
+            if(key.equals(USE_COMPRESSION))
             {
                 value = propMap.get(key).toString().trim();
                 if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
@@ -177,7 +136,7 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
                 }
             }
             else if(key.equals(USE_ENCRYPTION))
@@ -193,36 +152,14 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
                 }
             }
             else if(key.equals(PASSWORD))
             {
                 password = propMap.get(key).toString();
             }
-            else
-            {
-                throw new OpenStegoException(OpenStegoException.INVALID_KEY_NAME, key, null);
-            }
         }
-    }
-
-    /**
-     * Get method for configuration item - maxBitsUsedPerChannel
-     * @return maxBitsUsedPerChannel
-     */
-    public int getMaxBitsUsedPerChannel()
-    {
-        return maxBitsUsedPerChannel;
-    }
-
-    /**
-     * Get method for configuration item - defaultImageOutputType
-     * @return defaultImageOutputType
-     */
-    public String getDefaultImageOutputType()
-    {
-        return defaultImageOutputType;
     }
 
     /**
@@ -232,15 +169,6 @@ public class OpenStegoConfig
     public boolean isUseCompression()
     {
         return useCompression;
-    }
-
-    /**
-     * Set method for configuration item - maxBitsUsedPerChannel
-     * @param maxBitsUsedPerChannel
-     */
-    public void setMaxBitsUsedPerChannel(int maxBitsUsedPerChannel)
-    {
-        this.maxBitsUsedPerChannel = maxBitsUsedPerChannel;
     }
 
     /**

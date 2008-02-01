@@ -1,21 +1,21 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego;
+package net.sourceforge.openstego.plugin.lsb;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.*;
 
 /**
  * This class holds the header data for the data that needs to be embedded in the image.
  * First, the header data gets written inside the image, and then the actual data is written.
  */
-public class DataHeader
+public class LSBDataHeader
 {
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
@@ -60,7 +60,7 @@ public class DataHeader
      * @param fileName Name of the file of data being embedded
      * @param config OpenStegoConfig instance to hold the configuration data
      */
-    public DataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
+    public LSBDataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
     {
         this.dataLength = dataLength;
         this.channelBitsUsed = channelBitsUsed;
@@ -68,18 +68,18 @@ public class DataHeader
 
         if(fileName == null)
         {
-        	this.fileName = new byte[0];
+            this.fileName = new byte[0];
         }
         else
         {
-	        try
-	        {
-	        	this.fileName = fileName.getBytes("UTF-8");
-	        }
-	        catch(UnsupportedEncodingException unEx)
-	        {
-	        	this.fileName = fileName.getBytes();
-	        }
+            try
+            {
+                this.fileName = fileName.getBytes("UTF-8");
+            }
+            catch(UnsupportedEncodingException unEx)
+            {
+                this.fileName = fileName.getBytes();
+            }
         }
     }
 
@@ -89,7 +89,7 @@ public class DataHeader
      * @param config OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
      */
-    public DataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
+    public LSBDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
     {
         int stampLen = 0;
         int versionLen = 0;
@@ -110,13 +110,13 @@ public class DataHeader
             dataInStream.read(stamp, 0, stampLen);
             if(!(new String(stamp)).equals(new String(DATA_STAMP)))
             {
-                throw new OpenStegoException(OpenStegoException.INVALID_STEGO_HEADER, null);
+                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER, null);
             }
 
             dataInStream.read(version, 0, versionLen);
             if(!(new String(version)).equals(new String(HEADER_VERSION)))
             {
-                throw new OpenStegoException(OpenStegoException.INVALID_HEADER_VERSION, null);
+                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_HEADER_VERSION, null);
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
@@ -129,12 +129,12 @@ public class DataHeader
 
             if(fileNameLen == 0)
             {
-            	fileName = new byte[0];
+                fileName = new byte[0];
             }
             else
             {
-            	fileName = new byte[fileNameLen];
-            	dataInStream.read(fileName, 0, fileNameLen);
+                fileName = new byte[fileNameLen];
+                dataInStream.read(fileName, 0, fileNameLen);
             }
         }
         catch(OpenStegoException osEx)
@@ -143,7 +143,7 @@ public class DataHeader
         }
         catch(Exception ex)
         {
-            throw new OpenStegoException(OpenStegoException.UNHANDLED_EXCEPTION, ex);
+            throw new OpenStegoException(ex);
         }
 
         channelBitsUsed = channelBits;
@@ -182,7 +182,7 @@ public class DataHeader
 
         if(fileName.length > 0)
         {
-        	System.arraycopy(fileName, 0, out, currIndex, fileName.length);
+            System.arraycopy(fileName, 0, out, currIndex, fileName.length);
             currIndex += fileName.length;
         }
 
@@ -222,16 +222,16 @@ public class DataHeader
      */
     public String getFileName()
     {
-    	String name = null;
+        String name = null;
 
-    	try
-    	{
-    		name = new String(fileName, "UTF-8");
-    	}
-    	catch(UnsupportedEncodingException unEx)
-    	{
-    		name = new String(fileName);
-    	}
+        try
+        {
+            name = new String(fileName, "UTF-8");
+        }
+        catch(UnsupportedEncodingException unEx)
+        {
+            name = new String(fileName);
+        }
         return name;
     }
 

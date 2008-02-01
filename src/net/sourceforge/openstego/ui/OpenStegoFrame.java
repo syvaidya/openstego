@@ -1,7 +1,7 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
 package net.sourceforge.openstego.ui;
@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import net.sourceforge.openstego.OpenStego;
+import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -21,24 +23,29 @@ import net.sourceforge.openstego.util.LabelUtil;
 public class OpenStegoFrame extends JFrame
 {
     /**
-     * "Source Data" text field
+     * LabelUtil instance to retrieve labels
      */
-    protected JTextField srcDataTextField = new JTextField();
+    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     /**
-     * "Source Data" browse file button
+     * "Message File" text field
      */
-    protected JButton srcDataFileButton = new JButton();
+    protected JTextField msgFileTextField = new JTextField();
 
     /**
-     * "Source Image" text field
+     * "Message File" browse file button
      */
-    protected JTextField srcImageTextField = new JTextField();
+    protected JButton msgFileButton = new JButton();
 
     /**
-     * "Source Image" browse file button
+     * "Cover File" text field
      */
-    protected JButton srcImgFileButton = new JButton();
+    protected JTextField coverFileTextField = new JTextField();
+
+    /**
+     * "Cover File" browse file button
+     */
+    protected JButton coverFileButton = new JButton();
 
     /**
      * "Random Image as Source" checkbox
@@ -46,14 +53,14 @@ public class OpenStegoFrame extends JFrame
     protected JCheckBox randomImgCheckBox = null;
 
     /**
-     * "Target Image" text field
+     * "Stego File" text field
      */
-    protected JTextField tgtImageTextField = new JTextField();
+    protected JTextField stegoFileTextField = new JTextField();
 
     /**
-     * "Target Image" browse file button
+     * "Stego File" browse file button
      */
-    protected JButton tgtImgFileButton = new JButton();
+    protected JButton stegoFileButton = new JButton();
 
     /**
      * Checkbox for "Use Compression"
@@ -81,14 +88,14 @@ public class OpenStegoFrame extends JFrame
     protected JPasswordField confPasswordTextField = new JPasswordField();
 
     /**
-     * "Image for Extract" text field
+     * "Input Stego File" text field
      */
-    protected JTextField imgForExtractTextField = new JTextField();
+    protected JTextField inputStegoFileTextField = new JTextField();
 
     /**
-     * "Image for Extract" browse file button
+     * "Input Stego File" browse file button
      */
-    protected JButton imgForExtractFileButton = new JButton();
+    protected JButton inputStegoFileButton = new JButton();
 
     /**
      * "Output Folder" text field
@@ -155,37 +162,37 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
 
         gridBagConstraints.gridy = 0;
-        label = new JLabel(LabelUtil.getString("gui.label.sourceDataFile"));
-        label.setLabelFor(srcDataTextField);
+        label = new JLabel(labelUtil.getString("gui.label.msgFile"));
+        label.setLabelFor(msgFileTextField);
         embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 2;
-        label = new JLabel(LabelUtil.getString("gui.label.sourceImgFile"));
-        label.setLabelFor(srcImageTextField);
+        label = new JLabel(labelUtil.getString("gui.label.coverFile"));
+        label.setLabelFor(coverFileTextField);
         embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 5;
-        label = new JLabel(LabelUtil.getString("gui.label.outputImgFile"));
-        label.setLabelFor(tgtImageTextField);
+        label = new JLabel(labelUtil.getString("gui.label.outputStegoFile"));
+        label.setLabelFor(stegoFileTextField);
         embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
-        srcDataTextField.setColumns(57);
+        msgFileTextField.setColumns(57);
         gridBagConstraints.gridy = 1;
-        embedPanel.add(srcDataTextField, gridBagConstraints);
+        embedPanel.add(msgFileTextField, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 0, 5);
-        srcImageTextField.setColumns(57);
+        coverFileTextField.setColumns(57);
         gridBagConstraints.gridy = 3;
-        embedPanel.add(srcImageTextField, gridBagConstraints);
+        embedPanel.add(coverFileTextField, gridBagConstraints);
 
-        tgtImageTextField.setColumns(57);
+        stegoFileTextField.setColumns(57);
         gridBagConstraints.gridy = 6;
-        embedPanel.add(tgtImageTextField, gridBagConstraints);
+        embedPanel.add(stegoFileTextField, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        randomImgCheckBox = new JCheckBox(LabelUtil.getString("gui.label.option.useRandomImage"));
+        randomImgCheckBox = new JCheckBox(LabelUtil.getInstance(LSBPlugin.NAMESPACE).getString("gui.label.option.useRandomImage"));
         gridBagConstraints.gridy = 4;
         embedPanel.add(randomImgCheckBox, gridBagConstraints);
 
@@ -193,23 +200,23 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
-        srcDataFileButton.setText("...");
-        srcDataFileButton.setPreferredSize(new Dimension(22, 22));
+        msgFileButton.setText("...");
+        msgFileButton.setPreferredSize(new Dimension(22, 22));
         gridBagConstraints.gridy = 1;
-        embedPanel.add(srcDataFileButton, gridBagConstraints);
+        embedPanel.add(msgFileButton, gridBagConstraints);
 
-        srcImgFileButton.setText("...");
-        srcImgFileButton.setPreferredSize(new Dimension(22, 22));
+        coverFileButton.setText("...");
+        coverFileButton.setPreferredSize(new Dimension(22, 22));
         gridBagConstraints.gridy = 3;
-        embedPanel.add(srcImgFileButton, gridBagConstraints);
+        embedPanel.add(coverFileButton, gridBagConstraints);
 
-        tgtImgFileButton.setText("...");
-        tgtImgFileButton.setPreferredSize(new Dimension(22, 22));
+        stegoFileButton.setText("...");
+        stegoFileButton.setPreferredSize(new Dimension(22, 22));
         gridBagConstraints.gridy = 6;
-        embedPanel.add(tgtImgFileButton, gridBagConstraints);
+        embedPanel.add(stegoFileButton, gridBagConstraints);
 
         optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
-            new EtchedBorder()), " " + LabelUtil.getString("gui.label.option.title") + " "));
+            new EtchedBorder()), " " + labelUtil.getString("gui.label.option.title") + " "));
         optionPanel.setLayout(new GridBagLayout());
 
         gridBagConstraints = new GridBagConstraints();
@@ -220,17 +227,17 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
         gridBagConstraints.gridy = 0;
-        label = new JLabel(LabelUtil.getString("gui.label.option.maxBitsPerChannel"));
+        label = new JLabel(LabelUtil.getInstance(LSBPlugin.NAMESPACE).getString("gui.label.option.maxBitsPerChannel"));
         label.setLabelFor(maxBitsComboBox);
         optionPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 1;
-        label = new JLabel(LabelUtil.getString("gui.label.option.useCompression"));
+        label = new JLabel(labelUtil.getString("gui.label.option.useCompression"));
         label.setLabelFor(useCompCheckBox);
         optionPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.gridy = 2;
-        label = new JLabel(LabelUtil.getString("gui.label.option.useEncryption"));
+        label = new JLabel(labelUtil.getString("gui.label.option.useEncryption"));
         label.setLabelFor(useEncryptCheckBox);
         optionPanel.add(label, gridBagConstraints);
 
@@ -269,7 +276,7 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
         gridBagConstraints.gridx = 0;
-        label = new JLabel(LabelUtil.getString("gui.label.option.password"));
+        label = new JLabel(labelUtil.getString("gui.label.option.password"));
         label.setLabelFor(passwordTextField);
         passwordPanel.add(label, gridBagConstraints);
 
@@ -278,7 +285,7 @@ public class OpenStegoFrame extends JFrame
         passwordPanel.add(passwordTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 2;
-        label = new JLabel(LabelUtil.getString("gui.label.option.confPassword"));
+        label = new JLabel(labelUtil.getString("gui.label.option.confPassword"));
         label.setLabelFor(confPasswordTextField);
         passwordPanel.add(label, gridBagConstraints);
 
@@ -305,16 +312,16 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
 
         gridBagConstraints.gridy = 0;
-        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.imgForExtractFile")), gridBagConstraints);
+        extractPanel.add(new JLabel(labelUtil.getString("gui.label.inputStegoFile")), gridBagConstraints);
 
         gridBagConstraints.gridy = 2;
-        extractPanel.add(new JLabel(LabelUtil.getString("gui.label.outputDataFolder")), gridBagConstraints);
+        extractPanel.add(new JLabel(labelUtil.getString("gui.label.outputDataFolder")), gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
         gridBagConstraints.gridy = 1;
-        imgForExtractTextField.setColumns(57);
-        extractPanel.add(imgForExtractTextField, gridBagConstraints);
+        inputStegoFileTextField.setColumns(57);
+        extractPanel.add(inputStegoFileTextField, gridBagConstraints);
 
         gridBagConstraints.gridy = 3;
         outputFolderTextField.setColumns(57);
@@ -324,9 +331,9 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
         gridBagConstraints.gridy = 1;
-        imgForExtractFileButton.setText("...");
-        imgForExtractFileButton.setPreferredSize(new Dimension(22, 22));
-        extractPanel.add(imgForExtractFileButton, gridBagConstraints);
+        inputStegoFileButton.setText("...");
+        inputStegoFileButton.setPreferredSize(new Dimension(22, 22));
+        extractPanel.add(inputStegoFileButton, gridBagConstraints);
 
         gridBagConstraints.gridy = 3;
         outputFolderButton.setText("...");
@@ -341,9 +348,9 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         extractPanel.add(new JLabel(" "), gridBagConstraints);
 
-        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass().getResource(
+        mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass().getResource(
                 "/image/EmbedIcon.png")), embedPanel);
-        mainTabbedPane.addTab(LabelUtil.getString("gui.label.tab.extract"), new ImageIcon(getClass().getResource(
+        mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.extract"), new ImageIcon(getClass().getResource(
                 "/image/ExtractIcon.png")), extractPanel);
 
         mainPanel.add(mainTabbedPane);
@@ -352,15 +359,15 @@ public class OpenStegoFrame extends JFrame
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(new Insets(0, 5, 5, 5)));
 
-        okButton.setText(LabelUtil.getString("gui.button.ok"));
+        okButton.setText(labelUtil.getString("gui.button.ok"));
         buttonPanel.add(okButton);
 
-        cancelButton.setText(LabelUtil.getString("gui.button.cancel"));
+        cancelButton.setText(labelUtil.getString("gui.button.cancel"));
         buttonPanel.add(cancelButton);
 
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
-        setTitle(LabelUtil.getString("gui.window.title"));
+        setTitle(labelUtil.getString("gui.window.title"));
         pack();
     }
 
@@ -369,11 +376,11 @@ public class OpenStegoFrame extends JFrame
      */
     private void setActionCommands()
     {
-        srcDataFileButton.setActionCommand("BROWSE_SRC_DATA");
-        srcImgFileButton.setActionCommand("BROWSE_SRC_IMG");
-        tgtImgFileButton.setActionCommand("BROWSE_TGT_IMG");
+        msgFileButton.setActionCommand("BROWSE_SRC_DATA");
+        coverFileButton.setActionCommand("BROWSE_SRC_IMG");
+        stegoFileButton.setActionCommand("BROWSE_TGT_IMG");
 
-        imgForExtractFileButton.setActionCommand("BROWSE_IMG_FOR_EXTRACT");
+        inputStegoFileButton.setActionCommand("BROWSE_IMG_FOR_EXTRACT");
         outputFolderButton.setActionCommand("BROWSE_TGT_DATA");
 
         okButton.setActionCommand("OK");
@@ -429,16 +436,16 @@ public class OpenStegoFrame extends JFrame
     {
         if(randomImgCheckBox.isSelected())
         {
-            srcImageTextField.setEnabled(false);
-            srcImageTextField.setBackground(UIManager.getColor("Panel.background"));
-            srcImgFileButton.setEnabled(false);
+            coverFileTextField.setEnabled(false);
+            coverFileTextField.setBackground(UIManager.getColor("Panel.background"));
+            coverFileButton.setEnabled(false);
         }
         else
         {
-            srcImageTextField.setEnabled(true);
-            srcImageTextField.setBackground(Color.WHITE);
-            srcImgFileButton.setEnabled(true);
-            srcImageTextField.requestFocus();
+            coverFileTextField.setEnabled(true);
+            coverFileTextField.setBackground(Color.WHITE);
+            coverFileButton.setEnabled(true);
+            coverFileTextField.requestFocus();
         }
     }
 }
