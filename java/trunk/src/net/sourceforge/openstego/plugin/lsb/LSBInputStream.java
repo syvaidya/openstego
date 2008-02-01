@@ -1,21 +1,21 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego;
+package net.sourceforge.openstego.plugin.lsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.*;
 
 /**
- * InputStream to read embedded data from image file
+ * InputStream to read embedded data from image file using LSB algorithm
  */
-public class StegoInputStream extends InputStream
+public class LSBInputStream extends InputStream
 {
     /**
      * Image data
@@ -25,7 +25,7 @@ public class StegoInputStream extends InputStream
     /**
      * Data header
      */
-    private DataHeader dataHeader = null;
+    private LSBDataHeader dataHeader = null;
 
     /**
      * Number of bits used per color channel
@@ -68,11 +68,11 @@ public class StegoInputStream extends InputStream
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public StegoInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
+    public LSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new OpenStegoException(OpenStegoException.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.image = image;
@@ -90,7 +90,7 @@ public class StegoInputStream extends InputStream
      */
     private void readHeader() throws OpenStegoException
     {
-        dataHeader = new DataHeader(this, config);
+        dataHeader = new LSBDataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
 
         if(currBit != 0)
@@ -148,7 +148,7 @@ public class StegoInputStream extends InputStream
      * Get method for dataHeader
      * @return Data header
      */
-    public DataHeader getDataHeader()
+    public LSBDataHeader getDataHeader()
     {
         return dataHeader;
     }

@@ -1,14 +1,13 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util;
 
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Localized label handler for OpenStego
@@ -16,13 +15,57 @@ import java.util.ResourceBundle;
 public class LabelUtil
 {
     /**
-     * Static variable to hold the labels loaded from resource file
+     * Static variable to hold the map of labels loaded from resource files
      */
-    private static ResourceBundle labels = null;
+    private static Map map = new HashMap();
 
-    static
+    /**
+     * Static variable to store the namespace map
+     */
+    private static Map namespaceMap = new HashMap();
+
+    /**
+     * Method to add new namespace using resource bundle
+     * @param namespace Namespace for the labels
+     * @param bundle Resource bundle name
+     */
+    public static void addNamespace(String namespace, String bundle)
     {
-        labels = ResourceBundle.getBundle("net.sourceforge.openstego.resource.LabelBundle", Locale.getDefault());
+        map.put(namespace, ResourceBundle.getBundle(bundle, Locale.getDefault()));
+    }
+
+    /**
+     * Method to get instance of LabelUtil based on the namespace
+     * @param namespace Namespace for the labels
+     * @return Instance of LabelUtil
+     */
+    public static LabelUtil getInstance(String namespace)
+    {
+        LabelUtil util = null;
+        
+        util = (LabelUtil) namespaceMap.get(namespace);
+        if(util == null)
+        {
+            util = new LabelUtil(namespace);
+            namespaceMap.put(namespace, util);
+        }
+
+        return util;
+    }
+
+
+    /**
+     * Variable to store the current namespace
+     */
+    private String namespace = null;
+
+    /**
+     * Constructor is protected
+     * @param namespace Namespace for the label
+     */
+    protected LabelUtil(String namespace)
+    {
+        this.namespace = namespace;
     }
 
     /**
@@ -30,9 +73,9 @@ public class LabelUtil
      * @param key Key for the label
      * @return Display value for the label
      */
-    public static String getString(String key)
+    public String getString(String key)
     {
-        return labels.getString(key);
+        return ((ResourceBundle) map.get(namespace)).getString(key);
     }
 
     /**
@@ -41,8 +84,8 @@ public class LabelUtil
      * @param parameters Parameters to pass for a parameterized label
      * @return Display value for the label
      */
-    public static String getString(String key, Object[] parameters)
+    public String getString(String key, Object[] parameters)
     {
-        return MessageFormat.format(labels.getString(key), parameters);
+        return MessageFormat.format(getString(key), parameters);
     }
 }

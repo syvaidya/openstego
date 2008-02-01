@@ -1,7 +1,7 @@
 /*
- * Utility to embed data into images
+ * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2008 Samir Vaidya
+ * Copyright (c) 2007-2008 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util;

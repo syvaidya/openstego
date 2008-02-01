@@ -17,6 +17,7 @@
       <fileset dir="${build.classesdir}"/>
       <fileset dir="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"/>
       <fileset dir="${src}" includes="image/*.png"/>
+      <fileset dir="${src}" includes="OpenStegoPlugins.internal"/>
     </jar>
   </target>
 
