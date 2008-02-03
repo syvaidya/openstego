@@ -14,6 +14,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import net.sourceforge.openstego.*;
+import net.sourceforge.openstego.ui.OpenStegoPluginUI;
 import net.sourceforge.openstego.util.*;
 
 /**
@@ -311,5 +312,14 @@ public class LSBPlugin extends OpenStegoPlugin
         LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage", new Object[] {
                         new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+    }
+
+    /**
+     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * @return UI object specific to this plugin
+     */
+    public OpenStegoPluginUI getGUI() throws OpenStegoException
+    {
+        return null;
     }
 }
