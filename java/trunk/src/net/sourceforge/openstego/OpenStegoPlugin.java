@@ -8,7 +8,9 @@ package net.sourceforge.openstego;
 
 import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 
+import net.sourceforge.openstego.ui.OpenStegoPluginUI;
 import net.sourceforge.openstego.util.*;
 
 /**
@@ -22,6 +24,9 @@ public abstract class OpenStegoPlugin
      */
     protected OpenStegoConfig config = null;
 
+
+    // ------------- Metadata Methods -------------
+
     /**
      * Gives the name of the plugin
      * @return Name of the plugin
@@ -33,6 +38,9 @@ public abstract class OpenStegoPlugin
      * @return Short description of the plugin
      */
     public abstract String getDescription();
+
+
+    // ------------- Core Stego Methods -------------
 
     /**
      * Method to embed the message into the cover data
@@ -78,11 +86,32 @@ public abstract class OpenStegoPlugin
      */
     public abstract List getWritableFileExtensions() throws OpenStegoException;
 
+
+    // ------------- Command-line Related Methods -------------
+
     /**
      * Method to populate the standard command-line options used by this plugin
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      */
     public abstract void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException;
+
+    /**
+     * Method to get the usage details of the plugin
+     * @return Usage details of the plugin
+     */
+    public abstract String getUsage() throws OpenStegoException;
+
+
+    // ------------- GUI Related Methods -------------
+
+    /**
+     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * @return UI object specific to this plugin
+     */
+    public abstract OpenStegoPluginUI getGUI() throws OpenStegoException;
+
+
+    // ------------- Other Methods -------------
 
     /**
      * Method to create default configuration data (specific to this plugin)
@@ -103,12 +132,6 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      */
     public abstract OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException;
-
-    /**
-     * Method to get the usage details of the plugin
-     * @return Usage details of the plugin
-     */
-    public abstract String getUsage() throws OpenStegoException;
 
     /**
      * Get method for config
