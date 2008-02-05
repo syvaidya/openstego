@@ -6,10 +6,10 @@
 
 package net.sourceforge.openstego.util;
 
-import java.awt.image.BufferedImage;
+import java.awt.Color;
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import net.sourceforge.openstego.OpenStegoException;
 
@@ -97,6 +97,25 @@ public class CommonUtil
         catch(IOException ioEx)
         {
             throw new OpenStegoException(    ioEx);
+        }
+    }
+
+    /**
+     * Method to enable/disable a Swing JTextField object
+     * @param textField Swing JTextField object
+     * @param enabled Flag to indicate whether to enable or disable the object
+     */
+    public static void setEnabled(JTextField textField, boolean enabled)
+    {
+        if(enabled)
+        {
+            textField.setEnabled(true);
+            textField.setBackground(Color.WHITE);
+        }
+        else
+        {
+            textField.setEnabled(false);
+            textField.setBackground(UIManager.getColor("Panel.background"));
         }
     }
 }

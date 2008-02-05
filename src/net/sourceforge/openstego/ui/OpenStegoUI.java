@@ -6,25 +6,18 @@
 
 package net.sourceforge.openstego.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.plugin.lsb.*;
 import net.sourceforge.openstego.util.*;
 
 /**
@@ -53,6 +46,11 @@ public class OpenStegoUI extends OpenStegoFrame
     private OpenStegoPlugin plugin = null;
 
     /**
+     * Reference to the UI Panel specific to the plugin
+     */
+    protected PluginEmbedOptionsUI pluginEmbedOptionsUI = null;
+
+    /**
      * Default constructor
      * @throws OpenStegoException
      */
@@ -60,9 +58,14 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         super();
 
-        plugin = PluginManager.getDefaultPlugin();
-        config = plugin.createConfig();
-        setConfig();
+        // Populate the combo box with list of algorithm plugins available
+        List algoList = PluginManager.getPluginNames();
+        for(int i = 0; i < algoList.size(); i++)
+        {
+            algorithmComboBox.addItem(algoList.get(i));
+        }
+
+        resetGUI();
 
         URL iconURL = getClass().getResource("/image/OpenStegoIcon.png");
         if(iconURL != null)
@@ -92,8 +95,50 @@ public class OpenStegoUI extends OpenStegoFrame
 
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, "ESCAPE");
         getRootPane().getActionMap().put("ESCAPE", escapeAction);
+    }
 
+    /**
+     * Method to reset the GUI components from scratch
+     * @throws OpenStegoException
+     */
+    private void resetGUI() throws OpenStegoException
+    {
+        plugin = PluginManager.getPluginByName((String) algorithmComboBox.getSelectedItem());
+        config = plugin.createConfig();
+
+        // Remove the existing UI object
+        pluginEmbedOptionsPanel.removeAll();
+
+        // Get UI object for plugin
+        pluginEmbedOptionsUI = plugin.getEmbedOptionsUI(this);
+        if(pluginEmbedOptionsUI != null)
+        {
+            pluginEmbedOptionsPanel.setLayout(new GridLayout(1, 1));
+            pluginEmbedOptionsPanel.add(pluginEmbedOptionsUI);
+            pluginEmbedOptionsPanel.setVisible(true);
+        }
+        else
+        {
+            pluginEmbedOptionsPanel.setVisible(false);
+        }
+
+        setConfigFromGUI();
+        pack();
+
+        msgFileTextField.setText("");
+        coverFileTextField.setText("");
+        stegoFileTextField.setText("");
+        passwordTextField.setText("");
+        confPasswordTextField.setText("");
         msgFileTextField.requestFocus();
+    }
+
+    /**
+     * Method to handle change event for 'algorithmComboBox'
+     */
+    protected void algorithmChanged() throws OpenStegoException
+    {
+        resetGUI();
     }
 
     /**
@@ -112,10 +157,7 @@ public class OpenStegoUI extends OpenStegoFrame
         File outputFile = null;
 
         dataFileName = msgFileTextField.getText();
-        if(coverFileTextField.isEnabled())
-        {
-            imgFileName = coverFileTextField.getText();
-        }
+        imgFileName = coverFileTextField.getText();
         outputFileName = stegoFileTextField.getText();
         password = new String(passwordTextField.getPassword());
         confPassword = new String(confPasswordTextField.getPassword());
@@ -137,11 +179,14 @@ public class OpenStegoUI extends OpenStegoFrame
                 return;
             }
         }
+
+        if(!pluginEmbedOptionsUI.validateEmbedAction()) return;
         // END: Input Validations
 
-        loadConfig();
+        setConfigFromGUI();
         openStego = new OpenStego(plugin, config);
-        stegoData = openStego.embedData(new File(dataFileName), imgFileName == null ? null : new File(imgFileName),
+        stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName),
+                                        imgFileName == null || imgFileName.equals("") ? null : new File(imgFileName),
                                         outputFileName);
         outputFile = new File(outputFileName);
 
@@ -159,16 +204,8 @@ public class OpenStegoUI extends OpenStegoFrame
         JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.embed"),
                 labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
-        msgFileTextField.setText("");
-        coverFileTextField.setText("");
-        stegoFileTextField.setText("");
-        passwordTextField.setText("");
-        confPasswordTextField.setText("");
-
         //Reset configuration
-        config = plugin.createConfig();
-        setConfig();
-        msgFileTextField.requestFocus();
+        resetGUI();
     }
 
     /**
@@ -190,9 +227,11 @@ public class OpenStegoUI extends OpenStegoFrame
         imgFileName = inputStegoFileTextField.getText();
         outputFolder = outputFolderTextField.getText();
 
-        // Input Validations
+        // START: Input Validations
         if(!checkMandatory(inputStegoFileTextField, labelUtil.getString("gui.label.inputStegoFile"))) return;
         if(!checkMandatory(outputFolderTextField, labelUtil.getString("gui.label.outputDataFolder"))) return;
+        //if(!pluginUI.validateExtractAction()) return; //TODO
+        // END: Input Validations
 
         try
         {
@@ -231,7 +270,7 @@ public class OpenStegoUI extends OpenStegoFrame
             }
         }
 
-        CommonUtil.writeFile((byte[]) stegoOutput.get(1), file.getName());
+        CommonUtil.writeFile((byte[]) stegoOutput.get(1), outputFolder + File.separator + outputFileName);
         JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.extract", new Object[] {
                 outputFileName }), labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
@@ -316,23 +355,33 @@ public class OpenStegoUI extends OpenStegoFrame
 
     /**
      * Method to set the config items in GUI
+     * @throws OpenStegoException
      */
-    private void setConfig()
+    private void setGUIFromConfig() throws OpenStegoException
     {
-        maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
         useCompCheckBox.setSelected(config.isUseCompression());
         useEncryptCheckBox.setSelected(config.isUseEncryption());
+
+        if(pluginEmbedOptionsUI != null)
+        {
+            pluginEmbedOptionsUI.setGUIFromConfig(config);
+        }
     }
 
     /**
      * Method to load the config items from GUI
+     * @throws OpenStegoException
      */
-    private void loadConfig()
+    private void setConfigFromGUI() throws OpenStegoException
     {
-        ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) maxBitsComboBox.getSelectedItem()).intValue());
         config.setUseCompression(useCompCheckBox.isSelected());
         config.setUseEncryption(useEncryptCheckBox.isSelected());
         config.setPassword(new String(passwordTextField.getPassword()));
+
+        if(pluginEmbedOptionsUI != null)
+        {
+            pluginEmbedOptionsUI.setConfigFromGUI(config);
+        }
     }
 
     /**

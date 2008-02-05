@@ -6,10 +6,7 @@
 
 package net.sourceforge.openstego.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility to parse the command line parameters

@@ -190,6 +190,8 @@ public class OpenStego
 
         try
         {
+            // TODO - Determine the plugin to use for extract
+
             // Add file name as first element of output list
             output.add(plugin.extractMsgFileName(stegoData, stegoFileName));
             msg = plugin.extractData(stegoData, stegoFileName);
