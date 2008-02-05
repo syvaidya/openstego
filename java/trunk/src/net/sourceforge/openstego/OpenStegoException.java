@@ -114,7 +114,7 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(String namespace, int errorCode, Object[] params, Throwable cause)
     {
-        super((namespace == null && errorCode == UNHANDLED_EXCEPTION)
+        super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION)
                   ? cause.toString()
                   : LabelUtil.getInstance(namespace).getString((String) errMsgKeyMap.get(namespace + errorCode),
                         params),

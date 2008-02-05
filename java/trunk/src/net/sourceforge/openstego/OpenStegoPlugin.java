@@ -8,9 +8,8 @@ package net.sourceforge.openstego;
 
 import java.util.List;
 import java.util.Map;
-import javax.swing.JPanel;
 
-import net.sourceforge.openstego.ui.OpenStegoPluginUI;
+import net.sourceforge.openstego.ui.*;
 import net.sourceforge.openstego.util.*;
 
 /**
@@ -105,10 +104,12 @@ public abstract class OpenStegoPlugin
     // ------------- GUI Related Methods -------------
 
     /**
-     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     * @return UI object specific to this plugin
+     * Method to get the UI object for "Embed" action specific to this plugin. This UI object will be embedded inside
+     * the main OpenStego GUI
+     * @param stegoUI Reference to the parent OpenStegoUI object
+     * @return UI object specific to this plugin for "Embed" action
      */
-    public abstract OpenStegoPluginUI getGUI() throws OpenStegoException;
+    public abstract PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException;
 
 
     // ------------- Other Methods -------------

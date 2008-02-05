@@ -14,7 +14,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.ui.OpenStegoPluginUI;
+import net.sourceforge.openstego.ui.*;
 import net.sourceforge.openstego.util.*;
 
 /**
@@ -272,6 +272,27 @@ public class LSBPlugin extends OpenStegoPlugin
     }
 
     /**
+     * Method to get the usage details of the plugin
+     * @return Usage details of the plugin
+     */
+    public String getUsage() throws OpenStegoException
+    {
+        LSBConfig defaultConfig = new LSBConfig();
+        return labelUtil.getString("plugin.usage", new Object[] {
+                        new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+    }
+
+    /**
+     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * @param stegoUI Reference to the parent OpenStegoUI object
+     * @return UI object specific to this plugin
+     */
+    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
+    {
+        return new LSBEmbedOptionsUI(stegoUI);
+    }
+
+    /**
      * Method to create default configuration data (specific to this plugin)
      * @return Configuration data
      */
@@ -301,25 +322,5 @@ public class LSBPlugin extends OpenStegoPlugin
     {
         this.config = new LSBConfig(options);
         return this.config;
-    }
-
-    /**
-     * Method to get the usage details of the plugin
-     * @return Usage details of the plugin
-     */
-    public String getUsage() throws OpenStegoException
-    {
-        LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage", new Object[] {
-                        new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
-    }
-
-    /**
-     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     * @return UI object specific to this plugin
-     */
-    public OpenStegoPluginUI getGUI() throws OpenStegoException
-    {
-        return null;
     }
 }
