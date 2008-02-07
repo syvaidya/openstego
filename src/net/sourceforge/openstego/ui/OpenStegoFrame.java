@@ -28,9 +28,14 @@ public class OpenStegoFrame extends JFrame
     private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     /**
-     * Combobox for "Stego Algorithm"
+     * Combobox for "Stego Algorithm" for "Embed"
      */
-    protected JComboBox algorithmComboBox = new JComboBox();
+    protected JComboBox embedAlgoComboBox = new JComboBox();
+
+    /**
+     * Combobox for "Stego Algorithm" for "Extract"
+     */
+    protected JComboBox extractAlgoComboBox = new JComboBox();
 
     /**
      * "Message File" text field
@@ -274,7 +279,8 @@ public class OpenStegoFrame extends JFrame
         JPanel mainPanel = new JPanel();
         JPanel embedPanel = new JPanel();
         JPanel extractPanel = new JPanel();
-        JPanel algorithmPanel = new JPanel();
+        JPanel embedAlgoPanel = new JPanel();
+        JPanel extractAlgoPanel = new JPanel();
         JPanel optionPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
         JLabel label = null;
@@ -288,12 +294,12 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
 
-        algorithmPanel.add(new JLabel(labelUtil.getString("gui.label.algorithmList")));
-        algorithmPanel.add(algorithmComboBox);
+        embedAlgoPanel.add(new JLabel(labelUtil.getString("gui.label.algorithmList")));
+        embedAlgoPanel.add(embedAlgoComboBox);
 
         gridBagConstraints.insets = new Insets(5, 0, 5, 5);
         gridBagConstraints.gridy = 0;
-        embedPanel.add(algorithmPanel, gridBagConstraints);
+        embedPanel.add(embedAlgoPanel, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.gridy = 1;
@@ -437,40 +443,47 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        gridBagConstraints.insets = new Insets(5, 5, 0, 5);
 
+        extractAlgoPanel.add(new JLabel(labelUtil.getString("gui.label.algorithmList")));
+        extractAlgoPanel.add(extractAlgoComboBox);
+
+        gridBagConstraints.insets = new Insets(5, 0, 5, 5);
         gridBagConstraints.gridy = 0;
+        extractPanel.add(extractAlgoPanel, gridBagConstraints);
+
+        gridBagConstraints.insets = new Insets(5, 5, 0, 5);
+        gridBagConstraints.gridy = 1;
         extractPanel.add(new JLabel(labelUtil.getString("gui.label.inputStegoFile")), gridBagConstraints);
 
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         extractPanel.add(new JLabel(labelUtil.getString("gui.label.outputDataFolder")), gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
 
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         inputStegoFileTextField.setColumns(57);
         extractPanel.add(inputStegoFileTextField, gridBagConstraints);
 
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         outputFolderTextField.setColumns(57);
         extractPanel.add(outputFolderTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         inputStegoFileButton.setText("...");
         inputStegoFileButton.setPreferredSize(new Dimension(22, 22));
         extractPanel.add(inputStegoFileButton, gridBagConstraints);
 
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         outputFolderButton.setText("...");
         outputFolderButton.setPreferredSize(new Dimension(22, 22));
         extractPanel.add(outputFolderButton, gridBagConstraints);
 
         // Dummy padding
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
@@ -528,7 +541,7 @@ public class OpenStegoFrame extends JFrame
             {
                 try
                 {
-                    algorithmChanged();
+                    embedAlgoChanged();
                 }
                 catch(Exception ex)
                 {
@@ -536,7 +549,7 @@ public class OpenStegoFrame extends JFrame
                 }
             }
         };
-        algorithmComboBox.addActionListener(actionListener);
+        embedAlgoComboBox.addActionListener(actionListener);
     }
 
     /**
@@ -558,10 +571,10 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
-     * Method to handle change event for 'algorithmComboBox'
+     * Method to handle change event for 'embedAlgoComboBox'
      * @throws OpenStegoException
      */
-    protected void algorithmChanged() throws OpenStegoException
+    protected void embedAlgoChanged() throws OpenStegoException
     {
     }
 }

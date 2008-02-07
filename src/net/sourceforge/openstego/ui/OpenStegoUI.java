@@ -59,10 +59,12 @@ public class OpenStegoUI extends OpenStegoFrame
         super();
 
         // Populate the combo box with list of algorithm plugins available
+        extractAlgoComboBox.addItem(labelUtil.getString("gui.label.plugin.auto"));
         List algoList = PluginManager.getPluginNames();
         for(int i = 0; i < algoList.size(); i++)
         {
-            algorithmComboBox.addItem(algoList.get(i));
+            embedAlgoComboBox.addItem(algoList.get(i));
+            extractAlgoComboBox.addItem(algoList.get(i));
         }
 
         resetGUI();
@@ -103,7 +105,7 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void resetGUI() throws OpenStegoException
     {
-        plugin = PluginManager.getPluginByName((String) algorithmComboBox.getSelectedItem());
+        plugin = PluginManager.getPluginByName((String) embedAlgoComboBox.getSelectedItem());
         config = plugin.createConfig();
 
         // Remove the existing UI object
@@ -134,9 +136,9 @@ public class OpenStegoUI extends OpenStegoFrame
     }
 
     /**
-     * Method to handle change event for 'algorithmComboBox'
+     * Method to handle change event for 'embedAlgoComboBox'
      */
-    protected void algorithmChanged() throws OpenStegoException
+    protected void embedAlgoChanged() throws OpenStegoException
     {
         resetGUI();
     }
@@ -216,14 +218,21 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         OpenStego openStego = null;
         OpenStegoConfig config = null;
+        OpenStegoPlugin extractPlugin = null;
         String imgFileName = null;
         String outputFolder = null;
         String outputFileName = null;
         File file = null;
         List stegoOutput = null;
 
-        config = plugin.createConfig();
-        openStego = new OpenStego(plugin, config);
+        if(extractAlgoComboBox.getSelectedIndex() > 0)
+        {
+            extractPlugin = PluginManager.getPluginByName((String) extractAlgoComboBox.getSelectedItem());
+            config = extractPlugin.createConfig();
+        }
+
+        openStego = new OpenStego(extractPlugin, config);
+        config = openStego.getConfig();
         imgFileName = inputStegoFileTextField.getText();
         outputFolder = outputFolderTextField.getText();
 
