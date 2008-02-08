@@ -163,6 +163,31 @@ public class LSBPlugin extends OpenStegoPlugin
     }
 
     /**
+     * Method to find out whether given stego data can be handled by this plugin or not
+     * @param stegoData Stego data containing the message
+     * @return Boolean indicating whether the stego data can be handled by this plugin or not
+     */
+    public boolean canHandle(byte[] stegoData) throws OpenStegoException
+    {
+        boolean output = true;
+        String dummy = null;
+
+        try
+        {
+            dummy = extractMsgFileName(stegoData, "DUMMY");
+        }
+        catch(OpenStegoException osEx)
+        {
+            if(osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD)
+            {
+                output = false;
+            }
+        }
+
+        return output;
+    }
+
+    /**
      * Method to get the list of supported file extensions for reading
      * @return List of supported file extensions for reading
      */

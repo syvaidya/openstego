@@ -45,6 +45,11 @@ public class OpenStegoException extends Exception
      */
     public static final int CORRUPT_DATA = 5;
 
+    /**
+     * Error Code - No valid plugin
+     */
+    public static final int NO_VALID_PLUGIN = 6;
+
 
     /**
      * Map to store error code to message key mapping
@@ -71,6 +76,7 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_ENCRYPT_VALUE, "err.config.useEncryption.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_KEY_NAME, "err.config.invalidKey");
         addErrorCode(OpenStego.NAMESPACE, CORRUPT_DATA, "err.corruptData");
+        addErrorCode(OpenStego.NAMESPACE, NO_VALID_PLUGIN, "err.noValidPlugin");
     }
 
     /**

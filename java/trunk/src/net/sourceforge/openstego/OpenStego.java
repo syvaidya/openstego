@@ -42,6 +42,11 @@ public class OpenStego
      */
     private OpenStegoPlugin plugin = null;
 
+    /**
+     * Flag to indicate whether plugin to be used is explicitly provided or not
+     */
+    private boolean isPluginExplicit = false;
+
     static
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.OpenStegoLabels");
@@ -66,10 +71,12 @@ public class OpenStego
         if(plugin == null)
         {
             this.plugin = PluginManager.getDefaultPlugin();
+            this.isPluginExplicit = false;
         }
         else
         {
             this.plugin = plugin;
+            this.isPluginExplicit = true;
         }
 
         if(config == null)
@@ -187,10 +194,32 @@ public class OpenStego
     {
         byte[] msg = null;
         List output = new ArrayList();
+        List pluginList = null;
+        boolean pluginFound = false;
 
         try
         {
-            // TODO - Determine the plugin to use for extract
+            // If plugin is not specified explicitly, then determine the plugin to use
+            if(!isPluginExplicit)
+            {
+                pluginFound = false;
+                pluginList = PluginManager.getPlugins();
+
+                for(int i = 0; i < pluginList.size(); i++)
+                {
+                    plugin = (OpenStegoPlugin) pluginList.get(i);
+                    if(plugin.canHandle(stegoData))
+                    {
+                        pluginFound = true;
+                        break;
+                    }
+                }
+
+                if(!pluginFound)
+                {
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_VALID_PLUGIN, null);
+                }
+            }
 
             // Add file name as first element of output list
             output.add(plugin.extractMsgFileName(stegoData, stegoFileName));
@@ -348,7 +377,8 @@ public class OpenStego
                 }
 
                 // Create main stego object
-                stego = new OpenStego(plugin, plugin.createConfig(parser.getParsedOptions()));
+                stego = new OpenStego((pluginName != null && !pluginName.equals("")) ? plugin : null,
+                                        plugin.createConfig(parser.getParsedOptions()));
 
                 if(command.equals("embed"))
                 {

@@ -65,7 +65,7 @@ public class PluginManager
         }
         catch(Exception ex)
         {
-            throw new OpenStegoException(    ex);
+            throw new OpenStegoException(ex);
         }
     }
 
