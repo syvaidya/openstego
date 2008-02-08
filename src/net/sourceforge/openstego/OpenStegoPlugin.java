@@ -74,6 +74,13 @@ public abstract class OpenStegoPlugin
     public abstract byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException;
 
     /**
+     * Method to find out whether given stego data can be handled by this plugin or not
+     * @param stegoData Stego data containing the message
+     * @return Boolean indicating whether the stego data can be handled by this plugin or not
+     */
+    public abstract boolean canHandle(byte[] stegoData) throws OpenStegoException;
+
+    /**
      * Method to get the list of supported file extensions for reading
      * @return List of supported file extensions for reading
      */
