@@ -124,7 +124,7 @@ public class OpenStegoUI extends OpenStegoFrame
             pluginEmbedOptionsPanel.setVisible(false);
         }
 
-        setConfigFromGUI();
+        setGUIFromConfig();
         pack();
 
         msgFileTextField.setText("");
