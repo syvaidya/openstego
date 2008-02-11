@@ -1,11 +1,15 @@
-OpenStego v0.3.2
-----------------
+OpenStego v0.4.0
+================
 
-OpenStego is a tool developed in Java for image based steganography. It
-also supports optional encryption of data before embedding in the image.
-Currently, only 24 bpp images are supported.
+OpenStego is a tool developed in Java for steganography. It also supports
+optional encryption of data before embedding in the image.
+
+Plugins for different steganographic algorithms are now supported. By default,
+one algorithm (Least Significant Bit of Images) is provided. Support for other
+algorithms like DCT, FFT, etc. can be added using plugins.
 
 USAGE:
+------
 
 For GUI:
   java -jar <path>\openstego.jar
@@ -15,10 +19,24 @@ For command line interface:
 
 The first argument must be a command. Valid commands are:
 
-  embed, --embed                Embed data into image
-  extract, --extract            Extract data from image
+  embed, --embed                Embed message into cover file
+  extract, --extract            Extract message from stego file
+  algorithms, --algorithms      List down supported steganography algorithms
   readformats --readformats     List down supported formats for cover file
   writeformats, --writeformats  List down supported formats for stego file
+  help, --help                  Display this help. To get help on options
+                                specific to an algorithm, provide the name
+                                of the algorithm using '-a' option
+
+Following option is common for all commands other than 'algorithms':
+
+    -a, --algorithm <algorithm_name>
+        Name of the steganography algorithm to use. List of the supported
+        algorithms can be retrieved using 'algorithms' command. For all
+        commands except 'extract', if this option is not provided, then
+        default algorithm (LSB) is used, whereas for 'extract' command if this
+        option is not provided then the algorithm is chosen automatically
+        based on the stego file provided
 
 'embed' options:
 
@@ -28,21 +46,12 @@ The first argument must be a command. Valid commands are:
         read from stdin
 
     -cf, --coverfile <filename>
-        Cover file (image in which message will be embedded). If this option is
-        not provided or '-' (without quotes) is provided as the value then a
-        random image containing noise is generated and used as cover file. The
-        size of image is minimum required to embed the given source file when
-        'maxBitsUsedPerChannel' bits are used per color channel
+        Cover file in which the message will be embedded
 
     -sf, --stegofile <filename>
         Output stego file containing the embedded message. If this option is
-        not provided or '-' (without quotes) is provided as the value then
-        stego file is written to stdout with image format as PNG
-
-    -b, --maxBitsUsedPerChannel <n>
-        Max number of bits to use per color channel in the image for embedding
-        data. This value can be increased at the expense of image quality, in
-        case size of image is not able to accommodate the data (Default = 3)
+        not provided or '-' (without quotes) is provided as the value then the
+        stego file is written to stdout
 
     -c, --compress
         Compress the message file before embedding (default)
@@ -98,19 +107,70 @@ Examples:
 
       ls -R | java -jar <path>\openstego.jar embed > test.png
 
+LSB PLUGIN:
+-----------
+Least Significant Bit (LSB) Plugin for OpenStego.
+
+LSB Plugin specific options for OpenStego:
+
+'embed' options:
+
+    -b, --maxBitsUsedPerChannel <n>
+        Max number of bits to use per color channel in the image for embedding
+        data. This value can be increased at the expense of image quality, in
+        case size of image is not able to accommodate the data (Default = 3)
+
+  It also affects the existing OpenStego options in the following way:
+
+    -cf, --coverfile <filename>
+        If this option is not provided or '-' (without quotes) is provided as
+        the value then a random image containing noise is generated and used
+        as cover file. The size of image is minimum required to embed the
+        given source file when 'maxBitsUsedPerChannel' bits are used per color
+        channel
+
+    -sf, --stegofile <filename>
+        If this option is not provided or '-' (without quotes) is provided as
+        the value then stego file is written to stdout in PNG format
+
 Java Advanced Imaging API can be installed to get support for more image
 formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
 
+ADDING NEW PLUGIN:
+------------------
+  To add a new plugin, the following abstract classes must be implemented:
+
+    - net.sourceforge.openstego.OpenStegoPlugin
+    - net.sourceforge.openstego.ui.PluginEmbedOptionsUI
+
+  Read the API documentation for the details of the methods to be implemented. In addition, the following utility class
+  can be used to handle multilingual string labels for the plugin:
+
+    - net.sourceforge.openstego.util.LabelUtil
+
+  A new namespace should be added to LabelUtil class for each new plugin. Same namespace can also be used for exception
+  messages while throwing OpenStegoException.
+
+  After implementing the plugin classes, create new file named "OpenStegoPlugins.external" and put the fully qualified
+  name of the class which implements OpenStegoPlugin in the file. Make sure that this file is put directly under the
+  CLASSPATH while invoking the application.
+
+  Please refer to the "net.sourceforge.openstego.plugin.lsb" package sources for sample plugin implementation.
+
 TODO:
+-----
+  - Add support for other algorithms like DCT, FFT, etc.
   - Add support for audio data to be used as cover file
-  - Implementation of OpenStego in C++
 
 AUTHOR:
+-------
   Samir Vaidya (syvaidya@gmail.com)
   Copyright (c) 2007-2008
 
 SEE ALSO:
-  http://sourceforge.net/projects/openstego for more details.
+---------
+  http://openstego.sourceforge.net for more details.
 
 LICENSE:
+--------
   GNU General Public License 2.0 (GPL) (see LICENSE file)

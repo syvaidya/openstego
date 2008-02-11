@@ -47,7 +47,7 @@ public class OpenStegoCrypto
      * @param password Password to use for encryption
      * @throws OpenStegoException
      */
-    OpenStegoCrypto(String password) throws OpenStegoException
+    public OpenStegoCrypto(String password) throws OpenStegoException
     {
         KeySpec keySpec = null;
         SecretKey secretKey = null;

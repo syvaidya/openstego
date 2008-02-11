@@ -55,8 +55,9 @@ public class OpenStego
     /**
      * Constructor using the default configuration
      * @param plugin Stego plugin to use
+     * @throws OpenStegoException
      */
-    public OpenStego(OpenStegoPlugin plugin)
+    public OpenStego(OpenStegoPlugin plugin) throws OpenStegoException
     {
         this(plugin, (OpenStegoConfig) null);
     }
@@ -65,8 +66,9 @@ public class OpenStego
      * Constructor using <code>OpenStegoConfig</code> object
      * @param plugin Stego plugin to use
      * @param config OpenStegoConfig object with configuration data
+     * @throws OpenStegoException
      */
-    public OpenStego(OpenStegoPlugin plugin, OpenStegoConfig config)
+    public OpenStego(OpenStegoPlugin plugin, OpenStegoConfig config) throws OpenStegoException
     {
         if(plugin == null)
         {
@@ -81,7 +83,7 @@ public class OpenStego
 
         if(config == null)
         {
-            this.config = new OpenStegoConfig();
+            this.config = this.plugin.createConfig();
         }
         else
         {
