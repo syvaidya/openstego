@@ -8,6 +8,9 @@ package net.sourceforge.openstego.util;
 
 import java.awt.Color;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
@@ -48,7 +51,7 @@ public class CommonUtil
         }
         catch(IOException ioEx)
         {
-            throw new OpenStegoException(    ioEx);
+            throw new OpenStegoException(ioEx);
         }
     }
 
@@ -66,7 +69,7 @@ public class CommonUtil
         }
         catch(IOException ioEx)
         {
-            throw new OpenStegoException(    ioEx);
+            throw new OpenStegoException(ioEx);
         }
     }
 
@@ -96,7 +99,7 @@ public class CommonUtil
         }
         catch(IOException ioEx)
         {
-            throw new OpenStegoException(    ioEx);
+            throw new OpenStegoException(ioEx);
         }
     }
 
@@ -116,6 +119,105 @@ public class CommonUtil
         {
             textField.setEnabled(false);
             textField.setBackground(UIManager.getColor("Panel.background"));
+        }
+    }
+
+    /**
+     * Method to parse a delimiter separated list of files into arraylist of filenames. It supports wildcard characters
+     * "*" and "?" within the filenames.
+     * @param fileList Delimiter separated list of filenames
+     * @param delimiter Delimiter for tokenization
+     * @return List of filenames after tokenizing and wildcard expansion
+     */
+    public static List parseFileList(String fileList, String delimiter)
+    {
+        StringTokenizer tokenizer = null;
+        String fileName = null;
+        ArrayList output = new ArrayList();
+        File fileDir = new File(".");
+        File[] arrFile = null;
+
+        if(fileList == null)
+        {
+            return output;
+        }
+
+        tokenizer = new StringTokenizer(fileList, delimiter);
+        while(tokenizer.hasMoreTokens())
+        {
+            fileName = replaceWildcards(tokenizer.nextToken());
+            arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
+
+            for (int i = 0; i < arrFile.length; i++)
+            {
+                output.add(arrFile[i]);
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * Helper method to replace file wildcard characters with Java regexp wildcard chararcters
+     * @param input Input String
+     * @return String containing modified wildcard characters
+     */
+    private static String replaceWildcards(String input)
+    {
+        StringBuffer buffer = new StringBuffer();
+        char [] chars = input.toCharArray();
+
+        for(int i = 0; i < chars.length; i++)
+        {
+            if (chars[i] == '*')
+            {
+                buffer.append(".*");
+            }
+            else if (chars[i] == '?')
+            {
+                buffer.append(".{1}");
+            }
+            else if ("+()^$.{}[]|\\".indexOf(chars[i]) != -1) // Escape rest of the java regexp wildcards
+            {
+                buffer.append('\\').append(chars[i]);
+            }
+            else
+            {
+                buffer.append(chars[i]);
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    /**
+     * Inner class for wildcard filename filter
+     */
+    static class WildcardFilenameFilter implements FilenameFilter
+    {
+        /**
+         * Variable to hold the filter string
+         */
+        String filter = null;
+
+        /**
+         * Default constructor
+         * @param filter Filter string
+         */
+        public WildcardFilenameFilter(String filter)
+        {
+            this.filter = filter.toLowerCase();
+        }
+
+        /**
+         * Implementation of <code>accept</code> method
+         * @param dir Directory to traverse
+         * @param name Name of the file
+         * @return Whether file is accepted by the filter or not
+         */
+        public boolean accept(File dir, String name)
+        {
+            return (name.toLowerCase().matches(filter));
         }
     }
 }

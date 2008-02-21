@@ -59,7 +59,7 @@ public class CmdLineParser
 
             if(option == null) // Non-standard option
             {
-                nonStdArgList.add(args[i]);
+                nonStdArgList.add(arg);
             }
             else // Standard option
             {
