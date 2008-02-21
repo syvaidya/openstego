@@ -48,6 +48,7 @@ public class LSBPlugin extends OpenStegoPlugin
     public LSBPlugin()
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.LSBPluginLabels");
+        LSBErrors errors = new LSBErrors(); // Initialize error codes
     }
 
     /**
