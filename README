@@ -1,10 +1,10 @@
-OpenStego v0.4.0
+OpenStego v0.4.1
 ================
 
-OpenStego is a tool developed in Java for steganography. It also supports
+OpenStego is a tool developed in Java for steganography. It supports
 optional encryption of data before embedding in the image.
 
-Plugins for different steganographic algorithms are now supported. By default,
+Plugins for different steganographic algorithms are supported. By default,
 one algorithm (Least Significant Bit of Images) is provided. Support for other
 algorithms like DCT, FFT, etc. can be added using plugins.
 
@@ -46,7 +46,14 @@ Following option is common for all commands other than 'algorithms':
         read from stdin
 
     -cf, --coverfile <filename>
-        Cover file in which the message will be embedded
+        Cover file in which the message will be embedded. This option supports
+        '*' and '?' wildcards for filename. If wildcard filename is provided
+        then make sure that it is surrounded by double quotes.
+        Multiple filenames can also be provided by separating them with ';'
+        (semi-colon).
+        If the wildcard expression returns more than one file, then '-sf'
+        option is ignored, and each coverfile is overwritten with the
+        corresponding generated stegofile
 
     -sf, --stegofile <filename>
         Output stego file containing the embedded message. If this option is
@@ -106,6 +113,11 @@ Examples:
   Piping example:
 
       ls -R | java -jar <path>\openstego.jar embed > test.png
+
+  Wildcard example (Please note that the double quotes are important):
+
+      java -jar <path>\openstego.jar embed -cf "img???.png;wall*.png" \
+        -mf watermark.txt
 
 LSB PLUGIN:
 -----------
