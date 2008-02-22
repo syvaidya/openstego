@@ -6,6 +6,7 @@
   <property name="build" value="./build"/>
   <property name="build.classesdir" value="${build}/classes"/>
   <property name="build.classpath" value="${src}"/>
+  <property name="javadoc" value="./doc/api"/>
 
   <target name="init">
     <mkdir dir="${build.classesdir}"/>
@@ -19,6 +20,13 @@
       <fileset dir="${src}" includes="image/*.png"/>
       <fileset dir="${src}" includes="OpenStegoPlugins.internal"/>
     </jar>
+  </target>
+
+  <target name="doc">
+    <javadoc packagenames="net.sourceforge.openstego.*"
+      sourcepath="${src}"
+      excludepackagenames="net.sourceforge.openstego.plugin.*"
+      destdir="${javadoc}" />
   </target>
 
   <target name="clean">

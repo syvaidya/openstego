@@ -145,7 +145,7 @@ public class CommonUtil
         tokenizer = new StringTokenizer(fileList, delimiter);
         while(tokenizer.hasMoreTokens())
         {
-            fileName = replaceWildcards(tokenizer.nextToken());
+            fileName = replaceWildcards(tokenizer.nextToken().trim());
             arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
 
             for (int i = 0; i < arrFile.length; i++)
