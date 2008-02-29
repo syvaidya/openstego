@@ -103,6 +103,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
         if(randomImgCheckBox.isSelected())
         {
             CommonUtil.setEnabled(coverFileTextField, false);
+            coverFileTextField.setText("");
             coverFileButton.setEnabled(false);
         }
         else
