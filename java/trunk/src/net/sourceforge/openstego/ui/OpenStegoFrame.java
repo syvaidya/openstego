@@ -103,6 +103,11 @@ public class OpenStegoFrame extends JFrame
     protected JTextField outputFolderTextField = new JTextField();
 
     /**
+     * "Password for Extract" text field
+     */
+    protected JPasswordField extractPwdTextField = new JPasswordField();
+
+    /**
      * "Output Folder" browse file button
      */
     protected JButton outputFolderButton = new JButton();
@@ -254,6 +259,14 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * Get method for "Password for Extract" text field
+     */
+    public JPasswordField getExtractPwdTextField()
+    {
+        return extractPwdTextField;
+    }
+
+    /**
      * Get method for "OK" button
      */
     public JButton getOkButton()
@@ -283,6 +296,7 @@ public class OpenStegoFrame extends JFrame
         JPanel extractAlgoPanel = new JPanel();
         JPanel optionPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        JPanel extractPwdPanel = new JPanel();
         JLabel label = null;
 
         mainPanel.setBorder(new EmptyBorder(new Insets(5, 5, 0, 5)));
@@ -468,6 +482,13 @@ public class OpenStegoFrame extends JFrame
         outputFolderTextField.setColumns(57);
         extractPanel.add(outputFolderTextField, gridBagConstraints);
 
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.insets = new Insets(20, 5, 0, 5);
+        extractPanel.add(extractPwdPanel, gridBagConstraints);
+        extractPwdPanel.add(new JLabel(labelUtil.getString("gui.label.option.password")));
+        extractPwdTextField.setColumns(20);
+        extractPwdPanel.add(extractPwdTextField);
+
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
@@ -483,7 +504,7 @@ public class OpenStegoFrame extends JFrame
 
         // Dummy padding
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
@@ -534,6 +555,7 @@ public class OpenStegoFrame extends JFrame
             }
         };
         useEncryptCheckBox.addChangeListener(changeListener);
+        useEncryptionChanged();
 
         ActionListener actionListener = new ActionListener()
         {

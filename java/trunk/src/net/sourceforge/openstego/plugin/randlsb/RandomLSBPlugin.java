@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -19,27 +19,27 @@ import net.sourceforge.openstego.util.*;
 import net.sourceforge.openstego.plugin.template.imagebit.*;
 
 /**
- * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography
+ * Plugin for OpenStego which implements the Random LSB algorithm of steganography
  */
-public class LSBPlugin extends ImageBitPluginTemplate
+public class RandomLSBPlugin extends ImageBitPluginTemplate
 {
-    /**
-     * LabelUtil instance to retrieve labels
-     */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
-
     /**
      * Constant for Namespace to use for this plugin
      */
-    public final static String NAMESPACE = "LSB";
+    public final static String NAMESPACE = "RandomLSB";
+
+    /**
+     * LabelUtil instance to retrieve labels
+     */
+    private static LabelUtil labelUtil = LabelUtil.getInstance(NAMESPACE);
 
     /**
      * Default constructor
      */
-    public LSBPlugin()
+    public RandomLSBPlugin()
     {
-        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.LSBPluginLabels");
-        LSBErrors errors = new LSBErrors(); // Initialize error codes
+        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.RandomLSBPluginLabels");
+        RandomLSBErrors errors = new RandomLSBErrors(); // Initialize error codes
     }
 
     /**
@@ -48,7 +48,7 @@ public class LSBPlugin extends ImageBitPluginTemplate
      */
     public String getName()
     {
-        return "LSB";
+        return "RandomLSB";
     }
 
     /**
@@ -75,7 +75,7 @@ public class LSBPlugin extends ImageBitPluginTemplate
         throws OpenStegoException
     {
         BufferedImage image = null;
-        LSBOutputStream lsbOS = null;
+        RandomLSBOutputStream lsbOS = null;
 
         try
         {
@@ -88,7 +88,7 @@ public class LSBPlugin extends ImageBitPluginTemplate
             {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config);
+            lsbOS = new RandomLSBOutputStream(image, msg.length, msgFileName, this.config);
             lsbOS.write(msg);
             lsbOS.close();
 
@@ -109,9 +109,9 @@ public class LSBPlugin extends ImageBitPluginTemplate
      */
     public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
     {
-        LSBInputStream lsbIS = null;
+        RandomLSBInputStream lsbIS = null;
 
-        lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+        lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
         return lsbIS.getDataHeader().getFileName();
     }
 
@@ -127,18 +127,18 @@ public class LSBPlugin extends ImageBitPluginTemplate
         int bytesRead = 0;
         byte[] data = null;
         ImageBitDataHeader header = null;
-        LSBInputStream lsbIS = null;
+        RandomLSBInputStream lsbIS = null;
 
         try
         {
-            lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+            lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
             header = lsbIS.getDataHeader();
             data = new byte[header.getDataLength()];
 
             bytesRead = lsbIS.read(data, 0, data.length);
             if(bytesRead != data.length)
             {
-                throw new OpenStegoException(NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(NAMESPACE, RandomLSBErrors.ERR_IMAGE_DATA_READ, null);
             }
             lsbIS.close();
 

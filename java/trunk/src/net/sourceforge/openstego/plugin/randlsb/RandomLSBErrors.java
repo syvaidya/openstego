@@ -4,16 +4,16 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.randlsb;
 
 import java.util.HashMap;
 
 import net.sourceforge.openstego.OpenStegoException;
 
 /**
- * Class to store error codes for LSB plugin
+ * Class to store error codes for Random LSB plugin
  */
-public class LSBErrors
+public class RandomLSBErrors
 {
     /**
      * Error Code - Error while reading image data
@@ -41,8 +41,8 @@ public class LSBErrors
      */
     static
     {
-        OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
-        OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, NULL_IMAGE_ARGUMENT, "err.image.arg.nullValue");
-        OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
+        OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
+        OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, NULL_IMAGE_ARGUMENT, "err.image.arg.nullValue");
+        OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
     }
 }

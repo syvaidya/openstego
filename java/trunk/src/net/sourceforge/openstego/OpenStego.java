@@ -198,6 +198,7 @@ public class OpenStego
         List output = new ArrayList();
         List pluginList = null;
         boolean pluginFound = false;
+        OpenStegoConfig tempConfig = null;
 
         try
         {
@@ -210,6 +211,9 @@ public class OpenStego
                 for(int i = 0; i < pluginList.size(); i++)
                 {
                     plugin = (OpenStegoPlugin) pluginList.get(i);
+                    tempConfig = plugin.createConfig();
+                    tempConfig.setPassword(config.getPassword());
+                    config = tempConfig;
                     if(plugin.canHandle(stegoData))
                     {
                         pluginFound = true;

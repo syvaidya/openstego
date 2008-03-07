@@ -1,1 +1,2 @@
 net.sourceforge.openstego.plugin.lsb.LSBPlugin
+net.sourceforge.openstego.plugin.randlsb.RandomLSBPlugin

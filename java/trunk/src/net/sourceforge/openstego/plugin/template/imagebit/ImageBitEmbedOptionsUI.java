@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.template.imagebit;
 
 import java.awt.*;
 import javax.swing.*;
@@ -15,14 +15,14 @@ import net.sourceforge.openstego.ui.*;
 import net.sourceforge.openstego.util.*;
 
 /**
- * GUI class for the LSB Plugin
+ * GUI class for the Image Bit Plugin template
  */
-public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
+public class ImageBitEmbedOptionsUI extends PluginEmbedOptionsUI
 {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+    private static LabelUtil labelUtil = LabelUtil.getInstance(ImageBitPluginTemplate.NAMESPACE);
 
     /**
      * "Random Image as Source" checkbox
@@ -44,7 +44,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      * @param Reference to the parent UI object
      * @throws OpenStegoException
      */
-    public LSBEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
+    public ImageBitEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
     {
         this.stegoUI = stegoUI;
 
@@ -131,7 +131,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      */
     public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException
     {
-        maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
+        maxBitsComboBox.setSelectedItem(new Integer(((ImageBitConfig) config).getMaxBitsUsedPerChannel()));
     }
 
     /**
@@ -141,6 +141,6 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      */
     public void setConfigFromGUI(OpenStegoConfig config) throws OpenStegoException
     {
-        ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) maxBitsComboBox.getSelectedItem()).intValue());
+        ((ImageBitConfig) config).setMaxBitsUsedPerChannel(((Integer) maxBitsComboBox.getSelectedItem()).intValue());
     }
 }

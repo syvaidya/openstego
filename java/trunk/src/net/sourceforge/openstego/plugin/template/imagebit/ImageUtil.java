@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.template.imagebit;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -41,7 +41,7 @@ public class ImageUtil
         {
             random = SecureRandom.getInstance("SHA1PRNG");
 
-            numOfPixels = (int) ((LSBDataHeader.getMaxHeaderSize() * 8 / 3.0)
+            numOfPixels = (int) ((ImageBitDataHeader.getMaxHeaderSize() * 8 / 3.0)
                             + (dataLength * 8 / (3.0 * maxBitsUsedPerChannel)));
             width = (int) Math.ceil(Math.sqrt(numOfPixels * ASPECT_RATIO));
             height = (int) Math.ceil(numOfPixels / (double) width);
@@ -52,9 +52,9 @@ public class ImageUtil
                 for(int y = 0; y < height; y++)
                 {
                     random.nextBytes(rgbValue);
-                    image.setRGB(x, y, LSBDataHeader.byteToInt(rgbValue[0])
-                                    + (LSBDataHeader.byteToInt(rgbValue[1]) << 8)
-                                    + (LSBDataHeader.byteToInt(rgbValue[2]) << 16));
+                    image.setRGB(x, y, ImageBitDataHeader.byteToInt(rgbValue[0])
+                                    + (ImageBitDataHeader.byteToInt(rgbValue[1]) << 8)
+                                    + (ImageBitDataHeader.byteToInt(rgbValue[2]) << 16));
                 }
             }
 
@@ -70,11 +70,11 @@ public class ImageUtil
      * Method to convert BufferedImage to byte array
      * @param image Image data
      * @param imageFileName Name of the image file
-     * @param plugin Reference to the LSB plugin
+     * @param plugin Reference to the plugin
      * @return Image data as byte array
      * @throws OpenStegoException
      */
-    public static byte[] imageToByteArray(BufferedImage image, String imageFileName, LSBPlugin plugin)
+    public static byte[] imageToByteArray(BufferedImage image, String imageFileName, ImageBitPluginTemplate plugin)
         throws OpenStegoException
     {
         ByteArrayOutputStream barrOS = new ByteArrayOutputStream();
@@ -87,7 +87,7 @@ public class ImageUtil
                 imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
                 if(!plugin.getWritableFileExtensions().contains(imageType))
                 {
-                    throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_TYPE_INVALID, imageType, null);
+                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.IMAGE_TYPE_INVALID, imageType, null);
                 }
                 if(imageType.equals("jp2"))
                 {
@@ -97,7 +97,7 @@ public class ImageUtil
             }
             else
             {
-                ImageIO.write(image, ((LSBConfig) plugin.getConfig()).getImageFileExtension(), barrOS);
+                ImageIO.write(image, ((ImageBitConfig) plugin.getConfig()).getImageFileExtension(), barrOS);
             }
             return barrOS.toByteArray();
         }
@@ -128,7 +128,7 @@ public class ImageUtil
             image = ImageIO.read(new ByteArrayInputStream(imageData));
             if(image == null)
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_FILE_INVALID, imgFileName, null);
+                throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.IMAGE_FILE_INVALID, imgFileName, null);
             }
             return image;
         }
