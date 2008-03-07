@@ -126,6 +126,7 @@ public class OpenStegoUI extends OpenStegoFrame
 
         setGUIFromConfig();
         pack();
+        setResizable(false);
 
         msgFileTextField.setText("");
         coverFileTextField.setText("");
@@ -233,40 +234,16 @@ public class OpenStegoUI extends OpenStegoFrame
 
         openStego = new OpenStego(extractPlugin, config);
         config = openStego.getConfig();
+        config.setPassword(new String(extractPwdTextField.getPassword()));
         imgFileName = inputStegoFileTextField.getText();
         outputFolder = outputFolderTextField.getText();
 
         // START: Input Validations
         if(!checkMandatory(inputStegoFileTextField, labelUtil.getString("gui.label.inputStegoFile"))) return;
         if(!checkMandatory(outputFolderTextField, labelUtil.getString("gui.label.outputDataFolder"))) return;
-        //if(!pluginUI.validateExtractAction()) return; //TODO
         // END: Input Validations
 
-        try
-        {
-            stegoOutput = openStego.extractData(new File(imgFileName));
-        }
-        catch(OpenStegoException osEx)
-        {
-            if(osEx.getErrorCode() == OpenStegoException.INVALID_PASSWORD)
-            {
-                JLabel label = new JLabel("Please enter your password:");
-                JPasswordField pwdField = new JPasswordField();
-                if(JOptionPane.showConfirmDialog(this, new Object[] {new JLabel(labelUtil.getString(
-                        "gui.msg.input.password")), pwdField }, labelUtil.getString("gui.msg.title.input"),
-                        JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
-                {
-                    return;
-                }
-                config.setPassword(new String(pwdField.getPassword()));
-                stegoOutput = openStego.extractData(new File(imgFileName));
-            }
-            else
-            {
-                throw osEx;
-            }
-        }
-
+        stegoOutput = openStego.extractData(new File(imgFileName));
         outputFileName = (String) stegoOutput.get(0);
         file = new File(outputFolder + File.separator + outputFileName);
         if(file.exists())
@@ -285,6 +262,7 @@ public class OpenStegoUI extends OpenStegoFrame
 
         this.inputStegoFileTextField.setText("");
         this.outputFolderTextField.setText("");
+        this.extractPwdTextField.setText("");
         this.inputStegoFileTextField.requestFocus();
     }
 

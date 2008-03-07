@@ -78,7 +78,7 @@ public class PluginManager
 
         for(int i = 0; i < plugins.size(); i++)
         {
-            nameList.add(((OpenStegoPlugin) plugins.get(i)).getName().toUpperCase());
+            nameList.add(((OpenStegoPlugin) plugins.get(i)).getName());
         }
         
         return nameList;

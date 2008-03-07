@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.template.imagebit;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +15,7 @@ import net.sourceforge.openstego.*;
  * This class holds the header data for the data that needs to be embedded in the image.
  * First, the header data gets written inside the image, and then the actual data is written.
  */
-public class LSBDataHeader
+public class ImageBitDataHeader
 {
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
@@ -60,7 +60,7 @@ public class LSBDataHeader
      * @param fileName Name of the file of data being embedded
      * @param config OpenStegoConfig instance to hold the configuration data
      */
-    public LSBDataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
+    public ImageBitDataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
     {
         this.dataLength = dataLength;
         this.channelBitsUsed = channelBitsUsed;
@@ -89,7 +89,7 @@ public class LSBDataHeader
      * @param config OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
      */
-    public LSBDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
+    public ImageBitDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
     {
         int stampLen = 0;
         int versionLen = 0;
@@ -110,13 +110,13 @@ public class LSBDataHeader
             dataInStream.read(stamp, 0, stampLen);
             if(!(new String(stamp)).equals(new String(DATA_STAMP)))
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER, null);
+                throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.INVALID_STEGO_HEADER, null);
             }
 
             dataInStream.read(version, 0, versionLen);
             if(!(new String(version)).equals(new String(HEADER_VERSION)))
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_HEADER_VERSION, null);
+                throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.INVALID_HEADER_VERSION, null);
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);

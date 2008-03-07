@@ -4,11 +4,12 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Random;
 
 import net.sourceforge.openstego.*;
 import net.sourceforge.openstego.util.LabelUtil;
@@ -17,12 +18,12 @@ import net.sourceforge.openstego.plugin.template.imagebit.*;
 /**
  * OutputStream to embed data into image
  */
-public class LSBOutputStream extends OutputStream
+public class RandomLSBOutputStream extends OutputStream
 {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+    private static LabelUtil labelUtil = LabelUtil.getInstance(RandomLSBPlugin.NAMESPACE);
 
     /**
      * Output Image data
@@ -45,26 +46,6 @@ public class LSBOutputStream extends OutputStream
     private String fileName = null;
 
     /**
-     * Current x co-ordinate
-     */
-    private int x = 0;
-
-    /**
-     * Current y co-ordinate
-     */
-    private int y = 0;
-
-    /**
-     * Current bit number to be read
-     */
-    private int currBit = 0;
-
-    /**
-     * Bit set to store three bits per pixel
-     */
-    private byte[] bitSet = null;
-
-    /**
      * Width of the image
      */
     private int imgWidth = 0;
@@ -80,6 +61,16 @@ public class LSBOutputStream extends OutputStream
     private OpenStegoConfig config = null;
 
     /**
+     * Array for bits in the image
+     */
+    private boolean bitWritten[][][][] = null;
+
+    /**
+     * Random number generator
+     */
+    private Random rand = null;
+
+    /**
      * Default constructor
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
@@ -87,11 +78,11 @@ public class LSBOutputStream extends OutputStream
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
+    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.dataLength = dataLength;
@@ -109,7 +100,22 @@ public class LSBOutputStream extends OutputStream
 
         this.channelBitsUsed = 1;
         this.fileName = fileName;
-        this.bitSet = new byte[3];
+		this.bitWritten = new boolean[this.imgWidth][this.imgHeight][3][8];
+		for(int i = 0; i < this.imgWidth; i++)
+        {
+			for(int j = 0; j < this.imgHeight; j++)
+            {
+				for(int k = 0; k < 8; k++)
+                {
+					bitWritten[i][j][0][k] = false;
+					bitWritten[i][j][1][k] = false;
+					bitWritten[i][j][2][k] = false;
+				}
+			}
+		}
+
+        //Initialize random number generator with seed generated using password - TODO
+        rand = new Random(StringUtils.passwordHash(config.getPassword()));
         writeHeader();
     }
 
@@ -137,7 +143,8 @@ public class LSBOutputStream extends OutputStream
                     channelBits++;
                     if(channelBits > ((ImageBitConfig) config).getMaxBitsUsedPerChannel())
                     {
-                        throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
+                        throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.IMAGE_SIZE_INSUFFICIENT,
+                                                     null);
                     }
                 }
                 else
@@ -150,15 +157,7 @@ public class LSBOutputStream extends OutputStream
             header.setChannelBitsUsed(channelBits);
             write(header.getHeaderData());
 
-            if(currBit != 0)
-            {
-                currBit = 0;
-                writeCurrentBitSet();
-                nextPixel();
-            }
-
             this.channelBitsUsed = channelBits;
-            this.bitSet = new byte[3 * channelBits];
         }
         catch(OpenStegoException osEx)
         {
@@ -177,45 +176,28 @@ public class LSBOutputStream extends OutputStream
      */
     public void write(int data) throws IOException
     {
-        for(int bit = 0; bit < 8; bit++)
-        {
-            bitSet[currBit] = (byte) ((data >> (7 - bit)) & 1);
-            currBit++;
-            if(currBit == bitSet.length)
-            {
-                currBit = 0;
-                writeCurrentBitSet();
-                nextPixel();
-            }
-        }
-    }
+        boolean bitValue = false;
+        int x = 0;
+        int y = 0;
+        int channel = 0;
+        int bit = 0;
 
-    /**
-     * Flushes the stream
-     * @throws IOException
-     */
-    public void flush() throws IOException
-    {
-        writeCurrentBitSet();
-    }
-
-    /**
-     * Closes the stream
-     * @throws IOException
-     */
-    public void close() throws IOException
-    {
-        if(currBit != 0)
+        for(int i = 0; i < 8; i++)
         {
-            for(int i = currBit; i < bitSet.length; i++)
+            bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
+
+            do
             {
-                bitSet[i] = 0;
+                x = rand.nextInt(this.imgWidth);
+                y = rand.nextInt(this.imgHeight);
+                channel = rand.nextInt(3);
+                bit = rand.nextInt(channelBitsUsed);
             }
-            currBit = 0;
-            writeCurrentBitSet();
-            nextPixel();
+            while(bitWritten[x][y][channel][bit]);
+            bitWritten[x][y][channel][bit] = true;
+
+            setPixelBit(x, y, channel, bit, bitValue);
         }
-        super.close();
     }
 
     /**
@@ -225,60 +207,43 @@ public class LSBOutputStream extends OutputStream
      */
     public BufferedImage getImage() throws OpenStegoException
     {
-        try
-        {
-            flush();
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(ioEx);
-        }
         return image;
     }
 
-    /**
-     * Method to write current bit set
-     * @throws IOException
-     */
-    private void writeCurrentBitSet() throws IOException
-    {
-        int pixel = 0;
-        int offset = 0;
-        int mask = 0;
-        int maskPerByte = 0;
-        int bitOffset = 0;
+	/**
+	 * Sets the pixel bit at the given location to the new value.
+	 *
+	 * @param x The x position of the pixel
+	 * @param y The y position of the pixel
+	 * @param channel The color channel of the bit
+	 * @param bit The position of the bit
+	 * @param bitValue The new bit value for the pixel
+	 */
+	private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue)
+	{
+		int pixel = 0;
+		int newColor = 0;
+        int newPixel = 0;
 
-        if(y == imgHeight)
+		//Get the pixel value
+		pixel = this.image.getRGB(x, y);
+
+		//Set the bit value
+		if(bitValue)
         {
-            throw new IOException(labelUtil.getString("err.image.insufficientSize"));
-        }
-
-        maskPerByte = (int) (Math.pow(2, channelBitsUsed) - 1);
-        mask = (maskPerByte << 16) + (maskPerByte << 8) + maskPerByte;
-        pixel = image.getRGB(x, y) & (0xFFFFFFFF - mask);
-
-        for(int bit = 0; bit < 3; bit++)
+			newPixel = pixel | 1 << (bit + (channel * 8));
+		}
+        else
         {
-            bitOffset = 0;
-            for(int i = 0; i < channelBitsUsed; i++)
+			newColor = 0xfffffffe;
+			for(int i = 0; i < (bit + (channel * 8)); i++)
             {
-                bitOffset = (bitOffset << 1) + bitSet[(bit * channelBitsUsed) + i];
-            }
-            offset = (offset << 8) + bitOffset;
-        }
-        image.setRGB(x, y, pixel + offset);
-    }
+				newColor = (newColor << 1) | 0x1;
+			}
+			newPixel = pixel & newColor;
+		}
 
-    /**
-     * Method to move on to next pixel
-     */
-    private void nextPixel()
-    {
-        x++;
-        if(x == imgWidth)
-        {
-            x = 0;
-            y++;
-        }
-    }
+		//Set the pixel value back in image
+		this.image.setRGB(x, y, newPixel);
+	}
 }

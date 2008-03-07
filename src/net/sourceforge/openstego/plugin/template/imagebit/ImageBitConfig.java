@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.template.imagebit;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,9 +14,9 @@ import net.sourceforge.openstego.*;
 import net.sourceforge.openstego.util.*;
 
 /**
- * Class to store configuration data for LSB plugin
+ * Class to store configuration data for Image Bit plugin template
  */
-public class LSBConfig extends OpenStegoConfig
+public class ImageBitConfig extends OpenStegoConfig
 {
     /**
      * Key string for configuration item - maxBitsUsedPerChannel.
@@ -40,7 +40,7 @@ public class LSBConfig extends OpenStegoConfig
     /**
      * Default Constructor (with default values for configuration items)
      */
-    public LSBConfig()
+    public ImageBitConfig()
     {
     }
 
@@ -50,7 +50,7 @@ public class LSBConfig extends OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public LSBConfig(Map propMap) throws OpenStegoException
+    public ImageBitConfig(Map propMap) throws OpenStegoException
     {
         addProperties(propMap);
     }
@@ -60,7 +60,7 @@ public class LSBConfig extends OpenStegoConfig
      * @param options Command-line options
      * @throws OpenStegoException
      */
-    public LSBConfig(CmdLineOptions options) throws OpenStegoException
+    public ImageBitConfig(CmdLineOptions options) throws OpenStegoException
     {
         super(options);
 
@@ -99,12 +99,12 @@ public class LSBConfig extends OpenStegoConfig
                 }
                 catch(NumberFormatException nfEx)
                 {
-                    throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_NUMBER, value, nfEx);
+                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.MAX_BITS_NOT_NUMBER, value, nfEx);
                 }
 
                 if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
                 {
-                    throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_IN_RANGE, value, null);
+                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.MAX_BITS_NOT_IN_RANGE, value, null);
                 }
             }
         }

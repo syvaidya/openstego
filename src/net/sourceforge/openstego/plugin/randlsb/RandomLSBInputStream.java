@@ -4,19 +4,20 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.lsb;
+package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import net.sourceforge.openstego.*;
 import net.sourceforge.openstego.plugin.template.imagebit.*;
 
 /**
- * InputStream to read embedded data from image file using LSB algorithm
+ * InputStream to read embedded data from image file using Random LSB algorithm
  */
-public class LSBInputStream extends InputStream
+public class RandomLSBInputStream extends InputStream
 {
     /**
      * Image data
@@ -34,21 +35,6 @@ public class LSBInputStream extends InputStream
     private int channelBitsUsed = 1;
 
     /**
-     * Current x co-ordinate
-     */
-    private int x = 0;
-
-    /**
-     * Current y co-ordinate
-     */
-    private int y = 0;
-
-    /**
-     * Current bit number to be read
-     */
-    private int currBit = 0;
-
-    /**
      * Width of the image
      */
     private int imgWidth = 0;
@@ -64,16 +50,26 @@ public class LSBInputStream extends InputStream
     private OpenStegoConfig config = null;
 
     /**
+     * Array for bits in the image
+     */
+    private boolean bitRead[][][][] = null;
+
+    /**
+     * Random number generator
+     */
+    private Random rand = null;
+
+    /**
      * Default constructor
      * @param image Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public LSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
+    public RandomLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
     {
         if(image == null)
         {
-            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.image = image;
@@ -82,6 +78,22 @@ public class LSBInputStream extends InputStream
 
         this.imgWidth = image.getWidth();
         this.imgHeight = image.getHeight();
+		this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][8];
+		for(int i = 0; i < this.imgWidth; i++)
+        {
+			for(int j = 0; j < this.imgHeight; j++)
+            {
+				for(int k = 0; k < 8; k++)
+                {
+					bitRead[i][j][0][k] = false;
+					bitRead[i][j][1][k] = false;
+					bitRead[i][j][2][k] = false;
+				}
+			}
+		}
+
+        //Initialize random number generator with seed generated using password - TODO
+        rand = new Random(StringUtils.passwordHash(config.getPassword()));
         readHeader();
     }
 
@@ -93,17 +105,6 @@ public class LSBInputStream extends InputStream
     {
         dataHeader = new ImageBitDataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
-
-        if(currBit != 0)
-        {
-            currBit = 0;
-            x++;
-            if(x == imgWidth)
-            {
-                x = 0;
-                y++;
-            }
-        }
     }
 
     /**
@@ -112,35 +113,27 @@ public class LSBInputStream extends InputStream
      */
     public int read() throws IOException
     {
-        int pixel = 0;
         byte[] bitSet = new byte[8];
+        int x = 0;
+        int y = 0;
+        int channel = 0;
+        int bit = 0;
 
-        if(y == imgHeight)
+        for(int i = 0; i < 8; i++)
         {
-            return -1;
-        }
-
-        for(int i = 0; i < bitSet.length; i++)
-        {
-            pixel = image.getRGB(x, y);
-            bitSet[i] = getCurrBitFromPixel(pixel);
-
-            currBit++;
-            if(currBit == (3 * channelBitsUsed))
+            do
             {
-                currBit = 0;
-                x++;
-                if(x == imgWidth)
-                {
-                    x = 0;
-                    y++;
-                    if(y == imgHeight)
-                    {
-                        return -1;
-                    }
-                }
+                x = rand.nextInt(this.imgWidth);
+                y = rand.nextInt(this.imgHeight);
+                channel = rand.nextInt(3);
+                bit = rand.nextInt(channelBitsUsed);
             }
+            while(bitRead[x][y][channel][bit]);
+            bitRead[x][y][channel][bit] = true;
+
+            bitSet[i] = (byte) getPixelBit(x, y, channel, bit);
         }
+
         return ((bitSet[0] << 7) + (bitSet[1] << 6) + (bitSet[2] << 5) + (bitSet[3] << 4) + (bitSet[4] << 3)
                 + (bitSet[5] << 2) + (bitSet[6] << 1) + (bitSet[7] << 0));
     }
@@ -154,19 +147,17 @@ public class LSBInputStream extends InputStream
         return dataHeader;
     }
 
-    /**
-     * Gets the bit from pixel based on the current bit
-     * @param pixel
-     * @return Bit
-     */
-    private byte getCurrBitFromPixel(int pixel)
+	/**
+	 * Gets a particular bit in the image, and puts it into the LSB of an integer.
+	 *
+	 * @param x The x position of the pixel on the image
+	 * @param y The y position of the pixel on the image
+	 * @param channel The color channel containing the bit
+	 * @param bit The bit position
+	 * @return The bit at the given position, as the LSB of an integer
+	 */
+	public int getPixelBit(int x, int y, int channel, int bit)
     {
-        int group = 0;
-        int groupBit = 0;
-
-        group = currBit / channelBitsUsed;
-        groupBit = currBit % channelBitsUsed;
-
-        return (byte) (((pixel >> (16 - (group * 8))) >> (channelBitsUsed - groupBit - 1)) & 1);
-    }
+		return ((this.image.getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
+	}
 }
