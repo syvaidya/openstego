@@ -89,10 +89,10 @@ public class OpenStegoUI extends OpenStegoFrame
         KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
         Action escapeAction = new AbstractAction()
         {
-        	public void actionPerformed(ActionEvent ev)
-        	{
-        		close();
-        	}
+            public void actionPerformed(ActionEvent ev)
+            {
+                close();
+            }
         };
 
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, "ESCAPE");
@@ -375,7 +375,7 @@ public class OpenStegoUI extends OpenStegoFrame
      * This method handles all the exceptions in the GUI
      * @param ex Exception to be handled
      */
-    private void handleException(Exception ex)
+    private void handleException(Throwable ex)
     {
         String msg = ex.getMessage();
 
@@ -507,7 +507,7 @@ public class OpenStegoUI extends OpenStegoFrame
                     close();
                 }
             }
-            catch(Exception ex)
+            catch(Throwable ex)
             {
                 handleException(ex);
             }

@@ -50,9 +50,9 @@ public class StringUtils
         byte[] byteHash = null;
         String hexString = null;
 
-		if(password == null || password.equals(""))
+        if(password == null || password.equals(""))
         {
-			return DEFAULT_HASH;
+            return DEFAULT_HASH;
         }
 
         try

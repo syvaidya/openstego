@@ -11,20 +11,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.util.LabelUtil;
-import net.sourceforge.openstego.plugin.template.imagebit.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 
 /**
  * OutputStream to embed data into image
  */
 public class RandomLSBOutputStream extends OutputStream
 {
-    /**
-     * LabelUtil instance to retrieve labels
-     */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(RandomLSBPlugin.NAMESPACE);
-
     /**
      * Output Image data
      */
@@ -89,32 +85,28 @@ public class RandomLSBOutputStream extends OutputStream
         this.imgWidth = image.getWidth();
         this.imgHeight = image.getHeight();
         this.config = config;
-        this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
-        for(int x = 0; x < imgWidth; x++)
+
+        switch(image.getType())
         {
-            for(int y = 0; y < imgHeight; y++)
-            {
-                this.image.setRGB(x, y, image.getRGB(x, y));
-            }
+            case BufferedImage.TYPE_INT_RGB:
+                this.image = image;
+                break;
+
+            default:
+                this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+                for(int x = 0; x < imgWidth; x++)
+                {
+                    for(int y = 0; y < imgHeight; y++)
+                    {
+                        this.image.setRGB(x, y, image.getRGB(x, y));
+                    }
+                }
         }
 
         this.channelBitsUsed = 1;
         this.fileName = fileName;
-		this.bitWritten = new boolean[this.imgWidth][this.imgHeight][3][8];
-		for(int i = 0; i < this.imgWidth; i++)
-        {
-			for(int j = 0; j < this.imgHeight; j++)
-            {
-				for(int k = 0; k < 8; k++)
-                {
-					bitWritten[i][j][0][k] = false;
-					bitWritten[i][j][1][k] = false;
-					bitWritten[i][j][2][k] = false;
-				}
-			}
-		}
 
-        //Initialize random number generator with seed generated using password - TODO
+        //Initialize random number generator with seed generated using password
         rand = new Random(StringUtils.passwordHash(config.getPassword()));
         writeHeader();
     }
@@ -155,8 +147,23 @@ public class RandomLSBOutputStream extends OutputStream
 
             // Update channelBitsUsed in the header, and write to image
             header.setChannelBitsUsed(channelBits);
-            write(header.getHeaderData());
 
+            // Initialize hit-check array
+            this.bitWritten = new boolean[this.imgWidth][this.imgHeight][3][channelBits];
+            for(int i = 0; i < this.imgWidth; i++)
+            {
+                for(int j = 0; j < this.imgHeight; j++)
+                {
+                    for(int k = 0; k < channelBits; k++)
+                    {
+                        bitWritten[i][j][0][k] = false;
+                        bitWritten[i][j][1][k] = false;
+                        bitWritten[i][j][2][k] = false;
+                    }
+                }
+            }
+
+            write(header.getHeaderData());
             this.channelBitsUsed = channelBits;
         }
         catch(OpenStegoException osEx)
@@ -210,40 +217,40 @@ public class RandomLSBOutputStream extends OutputStream
         return image;
     }
 
-	/**
-	 * Sets the pixel bit at the given location to the new value.
-	 *
-	 * @param x The x position of the pixel
-	 * @param y The y position of the pixel
-	 * @param channel The color channel of the bit
-	 * @param bit The position of the bit
-	 * @param bitValue The new bit value for the pixel
-	 */
-	private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue)
-	{
-		int pixel = 0;
-		int newColor = 0;
+    /**
+     * Sets the pixel bit at the given location to the new value.
+     *
+     * @param x The x position of the pixel
+     * @param y The y position of the pixel
+     * @param channel The color channel of the bit
+     * @param bit The position of the bit
+     * @param bitValue The new bit value for the pixel
+     */
+    private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue)
+    {
+        int pixel = 0;
+        int newColor = 0;
         int newPixel = 0;
 
-		//Get the pixel value
-		pixel = this.image.getRGB(x, y);
+        //Get the pixel value
+        pixel = this.image.getRGB(x, y);
 
-		//Set the bit value
-		if(bitValue)
+        //Set the bit value
+        if(bitValue)
         {
-			newPixel = pixel | 1 << (bit + (channel * 8));
-		}
+            newPixel = pixel | 1 << (bit + (channel * 8));
+        }
         else
         {
-			newColor = 0xfffffffe;
-			for(int i = 0; i < (bit + (channel * 8)); i++)
+            newColor = 0xfffffffe;
+            for(int i = 0; i < (bit + (channel * 8)); i++)
             {
-				newColor = (newColor << 1) | 0x1;
-			}
-			newPixel = pixel & newColor;
-		}
+                newColor = (newColor << 1) | 0x1;
+            }
+            newPixel = pixel & newColor;
+        }
 
-		//Set the pixel value back in image
-		this.image.setRGB(x, y, newPixel);
-	}
+        //Set the pixel value back in image
+        this.image.setRGB(x, y, newPixel);
+    }
 }

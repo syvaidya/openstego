@@ -6,8 +6,6 @@
 
 package net.sourceforge.openstego.plugin.randlsb;
 
-import java.util.HashMap;
-
 import net.sourceforge.openstego.OpenStegoException;
 
 /**
@@ -30,11 +28,6 @@ public class RandomLSBErrors
      */
     public static final int IMAGE_SIZE_INSUFFICIENT = 3;
 
-
-    /**
-     * Map to store error code to message key mapping
-     */
-    private static HashMap errMsgKeyMap = new HashMap();
 
     /*
      * Initialize the error code - message key map
