@@ -78,21 +78,18 @@ public class RandomLSBInputStream extends InputStream
 
         this.imgWidth = image.getWidth();
         this.imgHeight = image.getHeight();
-		this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][8];
-		for(int i = 0; i < this.imgWidth; i++)
+        this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][1];
+        for(int i = 0; i < this.imgWidth; i++)
         {
-			for(int j = 0; j < this.imgHeight; j++)
+            for(int j = 0; j < this.imgHeight; j++)
             {
-				for(int k = 0; k < 8; k++)
-                {
-					bitRead[i][j][0][k] = false;
-					bitRead[i][j][1][k] = false;
-					bitRead[i][j][2][k] = false;
-				}
-			}
-		}
+                bitRead[i][j][0][0] = false;
+                bitRead[i][j][1][0] = false;
+                bitRead[i][j][2][0] = false;
+            }
+        }
 
-        //Initialize random number generator with seed generated using password - TODO
+        //Initialize random number generator with seed generated using password
         rand = new Random(StringUtils.passwordHash(config.getPassword()));
         readHeader();
     }
@@ -103,8 +100,34 @@ public class RandomLSBInputStream extends InputStream
      */
     private void readHeader() throws OpenStegoException
     {
+        boolean[][][][] oldBitRead = null;
         dataHeader = new ImageBitDataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
+
+        // Re-initialize hit-check array based on read channelBitsUsed
+        if(this.channelBitsUsed > 1)
+        {
+            oldBitRead = this.bitRead;
+            this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][this.channelBitsUsed];
+    
+            for(int i = 0; i < this.imgWidth; i++)
+            {
+                for(int j = 0; j < this.imgHeight; j++)
+                {
+                    // Maintain the current bit hits
+                    bitRead[i][j][0][0] = oldBitRead[i][j][0][0];
+                    bitRead[i][j][1][0] = oldBitRead[i][j][1][0];
+                    bitRead[i][j][2][0] = oldBitRead[i][j][2][0];
+    
+                    for(int k = 1; k < this.channelBitsUsed; k++)
+                    {
+                        bitRead[i][j][0][k] = false;
+                        bitRead[i][j][1][k] = false;
+                        bitRead[i][j][2][k] = false;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -147,17 +170,17 @@ public class RandomLSBInputStream extends InputStream
         return dataHeader;
     }
 
-	/**
-	 * Gets a particular bit in the image, and puts it into the LSB of an integer.
-	 *
-	 * @param x The x position of the pixel on the image
-	 * @param y The y position of the pixel on the image
-	 * @param channel The color channel containing the bit
-	 * @param bit The bit position
-	 * @return The bit at the given position, as the LSB of an integer
-	 */
-	public int getPixelBit(int x, int y, int channel, int bit)
+    /**
+     * Gets a particular bit in the image, and puts it into the LSB of an integer.
+     *
+     * @param x The x position of the pixel on the image
+     * @param y The y position of the pixel on the image
+     * @param channel The color channel containing the bit
+     * @param bit The bit position
+     * @return The bit at the given position, as the LSB of an integer
+     */
+    public int getPixelBit(int x, int y, int channel, int bit)
     {
-		return ((this.image.getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
-	}
+        return ((this.image.getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
+    }
 }

@@ -6,8 +6,6 @@
 
 package net.sourceforge.openstego.plugin.template.imagebit;
 
-import java.util.HashMap;
-
 import net.sourceforge.openstego.OpenStegoException;
 
 /**
@@ -45,11 +43,6 @@ public class ImageBitErrors
      */
     public static final int INVALID_HEADER_VERSION = 8;
 
-
-    /**
-     * Map to store error code to message key mapping
-     */
-    private static HashMap errMsgKeyMap = new HashMap();
 
     /*
      * Initialize the error code - message key map

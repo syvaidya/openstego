@@ -7,16 +7,14 @@
 package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
+import java.io.IOException;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.ui.*;
-import net.sourceforge.openstego.util.*;
-import net.sourceforge.openstego.plugin.template.imagebit.*;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitPluginTemplate;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageUtil;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Plugin for OpenStego which implements the Random LSB algorithm of steganography
@@ -39,7 +37,7 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     public RandomLSBPlugin()
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.RandomLSBPluginLabels");
-        RandomLSBErrors errors = new RandomLSBErrors(); // Initialize error codes
+        new RandomLSBErrors(); // Initialize error codes
     }
 
     /**

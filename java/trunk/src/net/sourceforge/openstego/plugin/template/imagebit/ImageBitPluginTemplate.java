@@ -6,16 +6,24 @@
 
 package net.sourceforge.openstego.plugin.template.imagebit;
 
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.ui.*;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.OpenStegoPlugin;
+import net.sourceforge.openstego.ui.OpenStegoUI;
+import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.CmdLineOption;
+import net.sourceforge.openstego.util.CmdLineOptions;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Template plugin for OpenStego which implements the bit based steganography for images
@@ -40,7 +48,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
     static
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.ImageBitPluginTemplateLabels");
-        ImageBitErrors errors = new ImageBitErrors(); // Initialize error codes
+        new ImageBitErrors(); // Initialize error codes
     }
 
     /**
@@ -51,11 +59,10 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
     public boolean canHandle(byte[] stegoData) throws OpenStegoException
     {
         boolean output = true;
-        String dummy = null;
 
         try
         {
-            dummy = extractMsgFileName(stegoData, "DUMMY");
+            extractMsgFileName(stegoData, "DUMMY");
         }
         catch(OpenStegoException osEx)
         {

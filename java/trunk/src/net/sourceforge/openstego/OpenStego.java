@@ -7,9 +7,12 @@
 package net.sourceforge.openstego;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
 import javax.swing.UIManager;
 
 import net.sourceforge.openstego.ui.OpenStegoUI;
@@ -298,8 +301,6 @@ public class OpenStego
      */
     public static void main(String[] args) throws OpenStegoException
     {
-        int count = 0;
-        int index = 0;
         String msgFileName = null;
         String coverFileName = null;
         String stegoFileName = null;
@@ -575,7 +576,6 @@ public class OpenStego
     private static void displayUsage() throws OpenStegoException
     {
         PluginManager.loadPlugins();
-        OpenStegoConfig defaultConfig = new OpenStegoConfig();
 
         System.err.print(labelUtil.getString("versionString"));
         System.err.println(labelUtil.getString("cmd.usage", new Object[] { File.separator,
