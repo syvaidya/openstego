@@ -29,31 +29,22 @@ public class ImageBitErrors
     public static final int INVALID_STEGO_HEADER = 3;
 
     /**
-     * Error Code - Image file invalid
-     */
-    public static final int IMAGE_FILE_INVALID = 6;
-
-    /**
-     * Error Code - Image type invalid
-     */
-    public static final int IMAGE_TYPE_INVALID = 7;
-
-    /**
      * Error Code - Invalid image header version
      */
-    public static final int INVALID_HEADER_VERSION = 8;
-
+    public static final int INVALID_HEADER_VERSION = 4;
 
     /*
      * Initialize the error code - message key map
      */
     static
     {
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, MAX_BITS_NOT_NUMBER, "err.config.maxBitsUsedPerChannel.notNumber");
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, MAX_BITS_NOT_IN_RANGE, "err.config.maxBitsUsedPerChannel.notInRange");
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, INVALID_STEGO_HEADER, "err.invalidHeaderStamp");
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, IMAGE_FILE_INVALID, "err.image.file.invalid");
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
-        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, INVALID_HEADER_VERSION, "err.invalidHeaderVersion");
+        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, MAX_BITS_NOT_NUMBER,
+                "err.config.maxBitsUsedPerChannel.notNumber");
+        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, MAX_BITS_NOT_IN_RANGE,
+                "err.config.maxBitsUsedPerChannel.notInRange");
+        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, INVALID_STEGO_HEADER,
+                "err.invalidHeaderStamp");
+        OpenStegoException.addErrorCode(ImageBitPluginTemplate.NAMESPACE, INVALID_HEADER_VERSION,
+                "err.invalidHeaderVersion");
     }
 }

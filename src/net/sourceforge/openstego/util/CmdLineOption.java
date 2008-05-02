@@ -60,7 +60,7 @@ public class CmdLineOption
         this.altName = altName;
         this.type = type;
         this.takesArgVal = takesArgVal;
-        
+
         if(type == TYPE_COMMAND && takesArgVal)
         {
             throw new IllegalArgumentException();

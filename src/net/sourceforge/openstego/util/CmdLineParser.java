@@ -6,7 +6,8 @@
 
 package net.sourceforge.openstego.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility to parse the command line parameters
@@ -61,7 +62,8 @@ public class CmdLineParser
             {
                 nonStdArgList.add(arg);
             }
-            else // Standard option
+            else
+            // Standard option
             {
                 // If non-standard option is already parsed then standard option should not be provided now
                 if(!nonStdMixedWithStdOptions && nonStdArgList.size() > 0)

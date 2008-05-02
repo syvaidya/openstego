@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.template.imagebit;
+package net.sourceforge.openstego.plugin.template.dct;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,33 +16,28 @@ import net.sourceforge.openstego.OpenStegoException;
  * This class holds the header data for the data that needs to be embedded in the image.
  * First, the header data gets written inside the image, and then the actual data is written.
  */
-public class ImageBitDataHeader
+public class DCTDataHeader
 {
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
      */
-    public static final byte[] DATA_STAMP = "OPENSTEGO".getBytes();
+    public static final byte[] DATA_STAMP = "OSDCT".getBytes();
 
     /**
      * Header version to distinguish between various versions of data embedding. This should be changed to next
-     * version, in case the logic of embedding data is changed.
+     * version, in case the structure of the header is changed.
      */
     public static final byte[] HEADER_VERSION = new byte[] { (byte) 1 };
 
     /**
      * Length of the fixed portion of the header
      */
-    private static final int FIXED_HEADER_LENGTH = 8;
+    private static final int FIXED_HEADER_LENGTH = 7;
 
     /**
      * Length of the data embedded in the image (excluding the header data)
      */
     private int dataLength = 0;
-
-    /**
-     * Number of bits used per color channel for embedding the data
-     */
-    private int channelBitsUsed = 0;
 
     /**
      * Name of the file being embedded in the image (as byte array)
@@ -57,14 +52,12 @@ public class ImageBitDataHeader
     /**
      * This constructor should normally be used when writing the data.
      * @param dataLength Length of the data embedded in the image (excluding the header data)
-     * @param channelBitsUsed Number of bits used per color channel for embedding the data
      * @param fileName Name of the file of data being embedded
      * @param config OpenStegoConfig instance to hold the configuration data
      */
-    public ImageBitDataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config)
+    public DCTDataHeader(int dataLength, String fileName, OpenStegoConfig config)
     {
         this.dataLength = dataLength;
-        this.channelBitsUsed = channelBitsUsed;
         this.config = config;
 
         if(fileName == null)
@@ -90,12 +83,11 @@ public class ImageBitDataHeader
      * @param config OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
      */
-    public ImageBitDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
+    public DCTDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException
     {
         int stampLen = 0;
         int versionLen = 0;
         int fileNameLen = 0;
-        int channelBits = 0;
         byte[] header = null;
         byte[] stamp = null;
         byte[] version = null;
@@ -111,23 +103,20 @@ public class ImageBitDataHeader
             dataInStream.read(stamp, 0, stampLen);
             if(!(new String(stamp)).equals(new String(DATA_STAMP)))
             {
-                throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.INVALID_STEGO_HEADER,
-                        null);
+                throw new OpenStegoException(DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_STEGO_HEADER, null);
             }
 
             dataInStream.read(version, 0, versionLen);
             if(!(new String(version)).equals(new String(HEADER_VERSION)))
             {
-                throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.INVALID_HEADER_VERSION,
-                        null);
+                throw new OpenStegoException(DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_HEADER_VERSION, null);
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
             dataLength = (byteToInt(header[0]) + (byteToInt(header[1]) << 8) + (byteToInt(header[2]) << 16) + (byteToInt(header[3]) << 32));
-            channelBits = header[4];
-            fileNameLen = header[5];
-            config.setUseCompression(header[6] == 1);
-            config.setUseEncryption(header[7] == 1);
+            fileNameLen = header[4];
+            config.setUseCompression(header[5] == 1);
+            config.setUseEncryption(header[6] == 1);
 
             if(fileNameLen == 0)
             {
@@ -148,7 +137,6 @@ public class ImageBitDataHeader
             throw new OpenStegoException(ex);
         }
 
-        channelBitsUsed = channelBits;
         this.config = config;
     }
 
@@ -177,7 +165,6 @@ public class ImageBitDataHeader
         out[currIndex++] = (byte) ((dataLength & 0x0000FF00) >> 8);
         out[currIndex++] = (byte) ((dataLength & 0x00FF0000) >> 16);
         out[currIndex++] = (byte) ((dataLength & 0xFF000000) >> 32);
-        out[currIndex++] = (byte) channelBitsUsed;
         out[currIndex++] = (byte) fileName.length;
         out[currIndex++] = (byte) (config.isUseCompression() ? 1 : 0);
         out[currIndex++] = (byte) (config.isUseEncryption() ? 1 : 0);
@@ -189,24 +176,6 @@ public class ImageBitDataHeader
         }
 
         return out;
-    }
-
-    /**
-     * Get Method for channelBitsUsed
-     * @return channelBitsUsed
-     */
-    public int getChannelBitsUsed()
-    {
-        return channelBitsUsed;
-    }
-
-    /**
-     * Set Method for channelBitsUsed
-     * @param channelBitsUsed
-     */
-    public void setChannelBitsUsed(int channelBitsUsed)
-    {
-        this.channelBitsUsed = channelBitsUsed;
     }
 
     /**

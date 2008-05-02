@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
@@ -131,10 +132,12 @@ public class CommonUtil
      */
     public static List parseFileList(String fileList, String delimiter)
     {
+        int index = 0;
         StringTokenizer tokenizer = null;
         String fileName = null;
+        String dirName = null;
         ArrayList output = new ArrayList();
-        File fileDir = new File(".");
+        File fileDir = null;
         File[] arrFile = null;
 
         if(fileList == null)
@@ -145,10 +148,24 @@ public class CommonUtil
         tokenizer = new StringTokenizer(fileList, delimiter);
         while(tokenizer.hasMoreTokens())
         {
-            fileName = replaceWildcards(tokenizer.nextToken().trim());
+            fileName = tokenizer.nextToken().trim();
+            index = fileName.lastIndexOf(File.separator);
+
+            if(index >= 0)
+            {
+                dirName = fileName.substring(0, index);
+                fileName = fileName.substring(index + 1);
+            }
+            else
+            {
+                dirName = ".";
+            }
+            fileName = replaceWildcards(fileName);
+
+            fileDir = new File(dirName.equals("") ? "." : dirName);
             arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
 
-            for (int i = 0; i < arrFile.length; i++)
+            for(int i = 0; i < arrFile.length; i++)
             {
                 output.add(arrFile[i]);
             }
@@ -165,19 +182,19 @@ public class CommonUtil
     private static String replaceWildcards(String input)
     {
         StringBuffer buffer = new StringBuffer();
-        char [] chars = input.toCharArray();
+        char[] chars = input.toCharArray();
 
         for(int i = 0; i < chars.length; i++)
         {
-            if (chars[i] == '*')
+            if(chars[i] == '*')
             {
                 buffer.append(".*");
             }
-            else if (chars[i] == '?')
+            else if(chars[i] == '?')
             {
                 buffer.append(".{1}");
             }
-            else if ("+()^$.{}[]|\\".indexOf(chars[i]) != -1) // Escape rest of the java regexp wildcards
+            else if("+()^$.{}[]|\\".indexOf(chars[i]) != -1) // Escape rest of the java regexp wildcards
             {
                 buffer.append('\\').append(chars[i]);
             }

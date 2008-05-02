@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.plugin.template.imagebit.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
+import net.sourceforge.openstego.util.StringUtil;
 
 /**
  * InputStream to read embedded data from image file using Random LSB algorithm
@@ -90,7 +92,7 @@ public class RandomLSBInputStream extends InputStream
         }
 
         //Initialize random number generator with seed generated using password
-        rand = new Random(StringUtils.passwordHash(config.getPassword()));
+        rand = new Random(StringUtil.passwordHash(config.getPassword()));
         readHeader();
     }
 
@@ -109,7 +111,7 @@ public class RandomLSBInputStream extends InputStream
         {
             oldBitRead = this.bitRead;
             this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][this.channelBitsUsed];
-    
+
             for(int i = 0; i < this.imgWidth; i++)
             {
                 for(int j = 0; j < this.imgHeight; j++)
@@ -118,7 +120,7 @@ public class RandomLSBInputStream extends InputStream
                     bitRead[i][j][0][0] = oldBitRead[i][j][0][0];
                     bitRead[i][j][1][0] = oldBitRead[i][j][1][0];
                     bitRead[i][j][2][0] = oldBitRead[i][j][2][0];
-    
+
                     for(int k = 1; k < this.channelBitsUsed; k++)
                     {
                         bitRead[i][j][0][k] = false;
@@ -132,6 +134,7 @@ public class RandomLSBInputStream extends InputStream
 
     /**
      * Implementation of <code>InputStream.read()</code> method
+     * @return Byte read from the stream
      * @throws IOException
      */
     public int read() throws IOException

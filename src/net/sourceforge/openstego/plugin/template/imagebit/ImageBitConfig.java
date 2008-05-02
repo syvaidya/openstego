@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.util.CmdLineOptions;
 
 /**
  * Class to store configuration data for Image Bit plugin template
@@ -99,12 +100,14 @@ public class ImageBitConfig extends OpenStegoConfig
                 }
                 catch(NumberFormatException nfEx)
                 {
-                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.MAX_BITS_NOT_NUMBER, value, nfEx);
+                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.MAX_BITS_NOT_NUMBER,
+                            value, nfEx);
                 }
 
                 if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
                 {
-                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE, ImageBitErrors.MAX_BITS_NOT_IN_RANGE, value, null);
+                    throw new OpenStegoException(ImageBitPluginTemplate.NAMESPACE,
+                            ImageBitErrors.MAX_BITS_NOT_IN_RANGE, value, null);
                 }
             }
         }

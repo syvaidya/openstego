@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.util.CmdLineOptions;
 
 /**
  * Class to store configuration data for OpenStego
@@ -79,7 +79,7 @@ public class OpenStegoConfig
     public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException
     {
         HashMap map = new HashMap();
-        
+
         if(options.getOption("-c") != null) // compress
         {
             map.put(USE_COMPRESSION, "true");
@@ -104,7 +104,7 @@ public class OpenStegoConfig
         {
             map.put(PASSWORD, options.getOptionValue("-p"));
         }
-        
+
         addProperties(map);
     }
 
@@ -136,7 +136,8 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE,
+                            value, null);
                 }
             }
             else if(key.equals(USE_ENCRYPTION))
@@ -152,7 +153,8 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE,
+                            value, null);
                 }
             }
             else if(key.equals(PASSWORD))

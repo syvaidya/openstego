@@ -4,36 +4,32 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.template.imagebit;
+package net.sourceforge.openstego.plugin.template.dct;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.OpenStegoPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
-import net.sourceforge.openstego.util.CmdLineOption;
 import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
- * Template plugin for OpenStego which implements the bit based steganography for images
+ * Template plugin for OpenStego which implements the DCT based steganography for images (transfer domain)
  */
-public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
+public abstract class DCTPluginTemplate extends OpenStegoPlugin
 {
     /**
      * Constant for Namespace to use for this plugin
      */
-    public final static String NAMESPACE = "IMAGEBITTEMPLATE";
+    public final static String NAMESPACE = "DCTTEMPLATE";
 
     /**
      * Static list of supported read formats
@@ -47,8 +43,8 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
 
     static
     {
-        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.ImageBitPluginTemplateLabels");
-        new ImageBitErrors(); // Initialize error codes
+        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DCTPluginTemplateLabels");
+        new DCTErrors(); // Initialize error codes
     }
 
     /**
@@ -125,10 +121,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
 
         String format = null;
         String[] formats = null;
-        String[] compTypes = null;
         List formatList = new ArrayList();
-        Iterator iter = null;
-        ImageWriteParam writeParam = null;
 
         formats = ImageIO.getWriterFormatNames();
         for(int i = 0; i < formats.length; i++)
@@ -140,40 +133,11 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
             }
             if(!formatList.contains(format))
             {
-                iter = ImageIO.getImageWritersBySuffix(format);
-                while(iter.hasNext())
-                {
-                    writeParam = ((ImageWriter) iter.next()).getDefaultWriteParam();
-                    try
-                    {
-                        writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                        compTypes = writeParam.getCompressionTypes();
-                        if(compTypes.length > 0)
-                        {
-                            writeParam.setCompressionType(compTypes[0]);
-                        }
-                    }
-                    catch(UnsupportedOperationException uoEx) // Compression not supported
-                    {
-                        formatList.add(format);
-                        break;
-                    }
-
-                    // Only lossless image compression is supported
-                    if(writeParam.isCompressionLossless())
-                    {
-                        formatList.add(format);
-                        break;
-                    }
-                }
+                formatList.add(format);
             }
         }
 
-        //Expicilty removing GIF and WBMP formats, as they use unsupported color models
-        formatList.remove("gif");
-        formatList.remove("wbmp");
         Collections.sort(formatList);
-
         writeFormats = formatList;
         return writeFormats;
     }
@@ -186,7 +150,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
      */
     public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
     {
-        return new ImageBitEmbedOptionsUI(stegoUI);
+        return new DCTEmbedOptionsUI(stegoUI);
     }
 
     /**
@@ -196,7 +160,6 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
      */
     public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException
     {
-        options.add("-b", "--maxBitsUsedPerChannel", CmdLineOption.TYPE_OPTION, true);
     }
 
     /**
@@ -206,7 +169,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
      */
     public OpenStegoConfig createConfig() throws OpenStegoException
     {
-        this.config = new ImageBitConfig();
+        this.config = new DCTConfig();
         return this.config;
     }
 
@@ -218,7 +181,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
      */
     public OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
     {
-        this.config = new ImageBitConfig(propMap);
+        this.config = new DCTConfig(propMap);
         return this.config;
     }
 
@@ -230,7 +193,7 @@ public abstract class ImageBitPluginTemplate extends OpenStegoPlugin
      */
     public OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
     {
-        this.config = new ImageBitConfig(options);
+        this.config = new DCTConfig(options);
         return this.config;
     }
 }

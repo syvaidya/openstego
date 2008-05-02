@@ -9,8 +9,9 @@ package net.sourceforge.openstego;
 import java.util.List;
 import java.util.Map;
 
-import net.sourceforge.openstego.ui.*;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.ui.OpenStegoUI;
+import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.CmdLineOptions;
 
 /**
  * Abstract class for stego plugins for OpenStego. Abstract methods need to be implemented to add support for more
@@ -22,7 +23,6 @@ public abstract class OpenStegoPlugin
      * Configuration data to be used while embedding / extracting data
      */
     protected OpenStegoConfig config = null;
-
 
     // ------------- Metadata Methods -------------
 
@@ -38,7 +38,6 @@ public abstract class OpenStegoPlugin
      */
     public abstract String getDescription();
 
-
     // ------------- Core Stego Methods -------------
 
     /**
@@ -52,8 +51,8 @@ public abstract class OpenStegoPlugin
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public abstract byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-        throws OpenStegoException;
+    public abstract byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName,
+            String stegoFileName) throws OpenStegoException;
 
     /**
      * Method to extract the message file name from the stego data
@@ -77,36 +76,39 @@ public abstract class OpenStegoPlugin
      * Method to find out whether given stego data can be handled by this plugin or not
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
+     * @throws OpenStegoException
      */
     public abstract boolean canHandle(byte[] stegoData) throws OpenStegoException;
 
     /**
      * Method to get the list of supported file extensions for reading
      * @return List of supported file extensions for reading
+     * @throws OpenStegoException
      */
     public abstract List getReadableFileExtensions() throws OpenStegoException;
 
     /**
      * Method to get the list of supported file extensions for writing
      * @return List of supported file extensions for writing
+     * @throws OpenStegoException
      */
     public abstract List getWritableFileExtensions() throws OpenStegoException;
-
 
     // ------------- Command-line Related Methods -------------
 
     /**
      * Method to populate the standard command-line options used by this plugin
      * @param options Existing command-line options. Plugin-specific options will get added to this list
+     * @throws OpenStegoException
      */
     public abstract void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException;
 
     /**
      * Method to get the usage details of the plugin
      * @return Usage details of the plugin
+     * @throws OpenStegoException
      */
     public abstract String getUsage() throws OpenStegoException;
-
 
     // ------------- GUI Related Methods -------------
 
@@ -115,15 +117,16 @@ public abstract class OpenStegoPlugin
      * the main OpenStego GUI
      * @param stegoUI Reference to the parent OpenStegoUI object
      * @return UI object specific to this plugin for "Embed" action
+     * @throws OpenStegoException
      */
     public abstract PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException;
-
 
     // ------------- Other Methods -------------
 
     /**
      * Method to create default configuration data (specific to this plugin)
      * @return Configuration data
+     * @throws OpenStegoException
      */
     public abstract OpenStegoConfig createConfig() throws OpenStegoException;
 
@@ -131,6 +134,7 @@ public abstract class OpenStegoPlugin
      * Method to create configuration data (specific to this plugin) based on the property map
      * @param propMap Property map
      * @return Configuration data
+     * @throws OpenStegoException
      */
     public abstract OpenStegoConfig createConfig(Map propMap) throws OpenStegoException;
 
@@ -138,6 +142,7 @@ public abstract class OpenStegoPlugin
      * Method to create configuration data (specific to this plugin) based on the command-line options
      * @param options Command-line options
      * @return Configuration data
+     * @throws OpenStegoException
      */
     public abstract OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException;
 
