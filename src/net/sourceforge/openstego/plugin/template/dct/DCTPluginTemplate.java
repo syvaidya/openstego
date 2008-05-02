@@ -150,7 +150,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
      */
     public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
     {
-        return new DCTEmbedOptionsUI(stegoUI);
+        return null;
     }
 
     /**
