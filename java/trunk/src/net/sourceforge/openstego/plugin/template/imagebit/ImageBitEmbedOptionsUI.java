@@ -6,13 +6,25 @@
 
 package net.sourceforge.openstego.plugin.template.imagebit;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.ui.*;
-import net.sourceforge.openstego.util.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.ui.OpenStegoUI;
+import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.CommonUtil;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * GUI class for the Image Bit Plugin template
@@ -41,7 +53,7 @@ public class ImageBitEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Default constructor
-     * @param Reference to the parent UI object
+     * @param stegoUI Reference to the parent UI object
      * @throws OpenStegoException
      */
     public ImageBitEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
@@ -76,7 +88,10 @@ public class ImageBitEmbedOptionsUI extends PluginEmbedOptionsUI
         add(randomImgCheckBox, gridBagConstraints);
 
         gridBagConstraints.gridy = 1;
-        for(int i = 0; i < 8; i++) maxBitsList[i] = new Integer(i + 1);
+        for(int i = 0; i < 8; i++)
+        {
+            maxBitsList[i] = new Integer(i + 1);
+        }
         maxBitsComboBox = new JComboBox(maxBitsList);
         maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
         add(maxBitsComboBox, gridBagConstraints);

@@ -96,6 +96,7 @@ public class OpenStego
 
     /**
      * Constructor with configuration data in the form of <code>Map<code>
+     * @param plugin Plugin object
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -115,7 +116,7 @@ public class OpenStego
      * @throws OpenStegoException
      */
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-        throws OpenStegoException
+            throws OpenStegoException
     {
         try
         {
@@ -177,10 +178,8 @@ public class OpenStego
                 filename = msgFile.getName();
             }
 
-            return embedData(CommonUtil.getStreamBytes(is), filename,
-                             coverFile == null ? null : CommonUtil.getFileBytes(coverFile),
-                             coverFile == null ? null : coverFile.getName(),
-                             stegoFileName);
+            return embedData(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
+                    .getFileBytes(coverFile), coverFile == null ? null : coverFile.getName(), stegoFileName);
         }
         catch(IOException ioEx)
         {
@@ -370,7 +369,7 @@ public class OpenStego
                 {
                     option = (CmdLineOption) optionList.get(i);
                     if(((i == 0) && (option.getType() != CmdLineOption.TYPE_COMMAND))
-                        || ((i > 0) && (option.getType() == CmdLineOption.TYPE_COMMAND)))
+                            || ((i > 0) && (option.getType() == CmdLineOption.TYPE_COMMAND)))
                     {
                         displayUsage();
                         return;
@@ -390,8 +389,8 @@ public class OpenStego
                 }
 
                 // Create main stego object
-                stego = new OpenStego((pluginName != null && !pluginName.equals("")) ? plugin : null,
-                                        plugin.createConfig(parser.getParsedOptions()));
+                stego = new OpenStego((pluginName != null && !pluginName.equals("")) ? plugin : null, plugin
+                        .createConfig(parser.getParsedOptions()));
 
                 if(command.equals("embed"))
                 {
@@ -402,8 +401,8 @@ public class OpenStego
                     // Check if we need to prompt for password
                     if(stego.getConfig().isUseEncryption() && stego.getConfig().getPassword() == null)
                     {
-                        stego.getConfig().setPassword(PasswordInput.readPassword(
-                                labelUtil.getString("cmd.msg.enterPassword") + " "));
+                        stego.getConfig().setPassword(
+                                PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
                     }
 
                     coverFileList = CommonUtil.parseFileList(coverFileName, ";");
@@ -413,15 +412,15 @@ public class OpenStego
                         if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                         {
                             System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                                                                   new Object[] { coverFileName }));
+                                    new Object[] { coverFileName }));
                             return;
                         }
 
-                        CommonUtil.writeFile(stego.embedData(
-                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                        CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
+                                : new File(msgFileName),
                                 coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
                                 (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
-                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                     }
                     // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
                     else
@@ -438,11 +437,10 @@ public class OpenStego
                             coverFileName = ((File) coverFileList.get(i)).getName();
                             CommonUtil.writeFile(stego.embedData(
                                     (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
-                                    (File) coverFileList.get(i), coverFileName),
-                                coverFileName);
+                                    (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
-                                                                   new Object[] { coverFileName }));
+                                    new Object[] { coverFileName }));
                         }
                     }
                 }
@@ -467,8 +465,8 @@ public class OpenStego
                         {
                             if(stego.getConfig().getPassword() == null)
                             {
-                                stego.getConfig().setPassword(PasswordInput.readPassword(
-                                        labelUtil.getString("cmd.msg.enterPassword") + " "));
+                                stego.getConfig().setPassword(
+                                        PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
 
                                 try
                                 {
@@ -547,7 +545,8 @@ public class OpenStego
                         displayUsage();
                         return;
                     }
-                    else // Show plugin-specific help
+                    else
+                    // Show plugin-specific help
                     {
                         System.err.println(plugin.getUsage());
                     }
@@ -579,7 +578,7 @@ public class OpenStego
 
         System.err.print(labelUtil.getString("versionString"));
         System.err.println(labelUtil.getString("cmd.usage", new Object[] { File.separator,
-                                            PluginManager.getDefaultPlugin().getName() }));
+                PluginManager.getDefaultPlugin().getName() }));
     }
 
     /**

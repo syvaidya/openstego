@@ -6,19 +6,29 @@
 
 package net.sourceforge.openstego.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.OpenStego;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.OpenStegoPlugin;
+import net.sourceforge.openstego.util.CommonUtil;
+import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.PluginManager;
 
 /**
  * This is the main class for OpenStego GUI and it implements the action and window listeners.
@@ -138,6 +148,7 @@ public class OpenStegoUI extends OpenStegoFrame
 
     /**
      * Method to handle change event for 'embedAlgoComboBox'
+     * @throws OpenStegoException
      */
     protected void embedAlgoChanged() throws OpenStegoException
     {
@@ -166,31 +177,49 @@ public class OpenStegoUI extends OpenStegoFrame
         confPassword = new String(confPasswordTextField.getPassword());
 
         // START: Input Validations
-        if(!checkMandatory(msgFileTextField, labelUtil.getString("gui.label.msgFile"))) return;
-        if(!checkMandatory(coverFileTextField, labelUtil.getString("gui.label.coverFile"))) return;
-        if(!checkMandatory(stegoFileTextField, labelUtil.getString("gui.label.outputStegoFile"))) return;
+        if(!checkMandatory(msgFileTextField, labelUtil.getString("gui.label.msgFile")))
+        {
+            return;
+        }
+        if(!checkMandatory(coverFileTextField, labelUtil.getString("gui.label.coverFile")))
+        {
+            return;
+        }
+        if(!checkMandatory(stegoFileTextField, labelUtil.getString("gui.label.outputStegoFile")))
+        {
+            return;
+        }
 
         if(useEncryptCheckBox.isSelected())
         {
-            if(!checkMandatory(passwordTextField, labelUtil.getString("gui.label.option.password"))) return;
-            if(!checkMandatory(confPasswordTextField, labelUtil.getString("gui.label.option.confPassword"))) return;
+            if(!checkMandatory(passwordTextField, labelUtil.getString("gui.label.option.password")))
+            {
+                return;
+            }
+            if(!checkMandatory(confPasswordTextField, labelUtil.getString("gui.label.option.confPassword")))
+            {
+                return;
+            }
             if(!password.equals(confPassword))
             {
-                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.passwordMismatch"),
-                    labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.passwordMismatch"), labelUtil
+                        .getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
                 confPasswordTextField.requestFocus();
                 return;
             }
         }
 
-        if(!pluginEmbedOptionsUI.validateEmbedAction()) return;
+        if(!pluginEmbedOptionsUI.validateEmbedAction())
+        {
+            return;
+        }
         // END: Input Validations
 
         setConfigFromGUI();
         openStego = new OpenStego(plugin, config);
-        stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName),
-                                        imgFileName == null || imgFileName.equals("") ? null : new File(imgFileName),
-                                        outputFileName);
+        stegoData = openStego.embedData(
+                dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName), imgFileName == null
+                        || imgFileName.equals("") ? null : new File(imgFileName), outputFileName);
         outputFile = new File(outputFileName);
 
         if(outputFile.exists())
@@ -204,8 +233,8 @@ public class OpenStegoUI extends OpenStegoFrame
         }
 
         CommonUtil.writeFile(stegoData, outputFileName);
-        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.embed"),
-                labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.embed"), labelUtil
+                .getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
         //Reset configuration
         resetGUI();
@@ -239,8 +268,14 @@ public class OpenStegoUI extends OpenStegoFrame
         outputFolder = outputFolderTextField.getText();
 
         // START: Input Validations
-        if(!checkMandatory(inputStegoFileTextField, labelUtil.getString("gui.label.inputStegoFile"))) return;
-        if(!checkMandatory(outputFolderTextField, labelUtil.getString("gui.label.outputDataFolder"))) return;
+        if(!checkMandatory(inputStegoFileTextField, labelUtil.getString("gui.label.inputStegoFile")))
+        {
+            return;
+        }
+        if(!checkMandatory(outputFolderTextField, labelUtil.getString("gui.label.outputDataFolder")))
+        {
+            return;
+        }
         // END: Input Validations
 
         stegoOutput = openStego.extractData(new File(imgFileName));
@@ -257,8 +292,9 @@ public class OpenStegoUI extends OpenStegoFrame
         }
 
         CommonUtil.writeFile((byte[]) stegoOutput.get(1), outputFolder + File.separator + outputFileName);
-        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.extract", new Object[] {
-                outputFileName }), labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.extract",
+                new Object[] { outputFileName }), labelUtil.getString("gui.msg.title.success"),
+                JOptionPane.INFORMATION_MESSAGE);
 
         this.inputStegoFileTextField.setText("");
         this.outputFolderTextField.setText("");
@@ -288,24 +324,24 @@ public class OpenStegoUI extends OpenStegoFrame
         else if(action.equals("BROWSE_SRC_IMG"))
         {
             title = labelUtil.getString("gui.filechooser.title.coverFile");
-            filterDesc = labelUtil.getString("gui.filechooser.filter.coverFiles", new Object[] {
-                                                                                getExtensionsString("R") });
+            filterDesc = labelUtil.getString("gui.filechooser.filter.coverFiles",
+                    new Object[] { getExtensionsString("R") });
             allowedExts = getExtensionsList("R");
             textField = this.coverFileTextField;
         }
         else if(action.equals("BROWSE_TGT_IMG"))
         {
             title = labelUtil.getString("gui.filechooser.title.outputStegoFile");
-            filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles", new Object[] {
-                                                                                getExtensionsString("W") });
+            filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles",
+                    new Object[] { getExtensionsString("W") });
             allowedExts = getExtensionsList("W");
             textField = this.stegoFileTextField;
         }
         else if(action.equals("BROWSE_IMG_FOR_EXTRACT"))
         {
             title = labelUtil.getString("gui.filechooser.title.inputStegoFile");
-            filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles", new Object[] {
-                                                                                getExtensionsString("W") });
+            filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles",
+                    new Object[] { getExtensionsString("W") });
             allowedExts = getExtensionsList("W");
             textField = this.inputStegoFileTextField;
         }
@@ -322,8 +358,8 @@ public class OpenStegoUI extends OpenStegoFrame
             // Check for valid extension for output file (in case of BROWSE_TGT_IMG)
             if(action.equals("BROWSE_TGT_IMG"))
             {
-                if(!plugin.getWritableFileExtensions().contains(fileName.substring(
-                            fileName.lastIndexOf('.') + 1).toLowerCase()))
+                if(!plugin.getWritableFileExtensions().contains(
+                        fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase()))
                 {
                     fileName = fileName + "." + plugin.getWritableFileExtensions().get(0);
                 }
@@ -379,7 +415,7 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         String msg = ex.getMessage();
 
-        if ((msg == null) || (msg.trim().equals("")))
+        if((msg == null) || (msg.trim().equals("")))
         {
             StringWriter writer = new StringWriter();
             ex.printStackTrace(new PrintWriter(writer));
@@ -387,8 +423,7 @@ public class OpenStegoUI extends OpenStegoFrame
         }
 
         ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, msg,
-                labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, msg, labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -408,8 +443,7 @@ public class OpenStegoUI extends OpenStegoFrame
         if(value == null || value.trim().equals(""))
         {
             JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.mandatoryCheck",
-                    new Object[] { fieldName }), labelUtil.getString("gui.msg.title.err"),
-                    JOptionPane.ERROR_MESSAGE);
+                    new Object[] { fieldName }), labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
 
             textField.requestFocus();
             return false;
@@ -497,7 +531,8 @@ public class OpenStegoUI extends OpenStegoFrame
                     {
                         embedData();
                     }
-                    else // Extract tab
+                    else
+                    // Extract tab
                     {
                         extractData();
                     }
@@ -518,12 +553,29 @@ public class OpenStegoUI extends OpenStegoFrame
             close();
         }
 
-        public void windowActivated(WindowEvent ev) {}
-        public void windowClosed(WindowEvent ev) {}
-        public void windowDeactivated(WindowEvent ev) {}
-        public void windowDeiconified(WindowEvent ev) {}
-        public void windowIconified(WindowEvent ev) {}
-        public void windowOpened(WindowEvent ev) {}
+        public void windowActivated(WindowEvent ev)
+        {
+        }
+
+        public void windowClosed(WindowEvent ev)
+        {
+        }
+
+        public void windowDeactivated(WindowEvent ev)
+        {
+        }
+
+        public void windowDeiconified(WindowEvent ev)
+        {
+        }
+
+        public void windowIconified(WindowEvent ev)
+        {
+        }
+
+        public void windowOpened(WindowEvent ev)
+        {
+        }
     }
 
     /**

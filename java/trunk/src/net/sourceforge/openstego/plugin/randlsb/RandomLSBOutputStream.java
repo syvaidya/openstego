@@ -15,6 +15,7 @@ import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
+import net.sourceforge.openstego.util.StringUtil;
 
 /**
  * OutputStream to embed data into image
@@ -74,7 +75,8 @@ public class RandomLSBOutputStream extends OutputStream
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
+    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
+            throws OpenStegoException
     {
         if(image == null)
         {
@@ -107,7 +109,7 @@ public class RandomLSBOutputStream extends OutputStream
         this.fileName = fileName;
 
         //Initialize random number generator with seed generated using password
-        rand = new Random(StringUtils.passwordHash(config.getPassword()));
+        rand = new Random(StringUtil.passwordHash(config.getPassword()));
         writeHeader();
     }
 
@@ -135,8 +137,8 @@ public class RandomLSBOutputStream extends OutputStream
                     channelBits++;
                     if(channelBits > ((ImageBitConfig) config).getMaxBitsUsedPerChannel())
                     {
-                        throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.IMAGE_SIZE_INSUFFICIENT,
-                                                     null);
+                        throw new OpenStegoException(RandomLSBPlugin.NAMESPACE,
+                                RandomLSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
                 }
                 else

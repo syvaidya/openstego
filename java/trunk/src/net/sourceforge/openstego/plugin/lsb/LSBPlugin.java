@@ -13,7 +13,7 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitPluginTemplate;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageUtil;
+import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -70,8 +70,9 @@ public class LSBPlugin extends ImageBitPluginTemplate
      * @throws OpenStegoException
      */
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-        throws OpenStegoException
+            throws OpenStegoException
     {
+        int numOfPixels = 0;
         BufferedImage image = null;
         LSBOutputStream lsbOS = null;
 
@@ -80,7 +81,9 @@ public class LSBPlugin extends ImageBitPluginTemplate
             // Generate random image, if input image is not provided
             if(cover == null)
             {
-                image = ImageUtil.generateRandomImage(msg.length, ((ImageBitConfig) config).getMaxBitsUsedPerChannel());
+                numOfPixels = (int) (ImageBitDataHeader.getMaxHeaderSize() * 8 / 3.0);
+                numOfPixels += (int) (msg.length * 8 / (3.0 * ((ImageBitConfig) config).getMaxBitsUsedPerChannel()));
+                image = ImageUtil.generateRandomImage(numOfPixels);
             }
             else
             {
@@ -155,11 +158,12 @@ public class LSBPlugin extends ImageBitPluginTemplate
     /**
      * Method to get the usage details of the plugin
      * @return Usage details of the plugin
+     * @throws OpenStegoException
      */
     public String getUsage() throws OpenStegoException
     {
         ImageBitConfig defaultConfig = new ImageBitConfig();
-        return labelUtil.getString("plugin.usage", new Object[] {
-                        new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+        return labelUtil.getString("plugin.usage",
+                new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
     }
 }

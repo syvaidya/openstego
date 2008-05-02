@@ -6,7 +6,9 @@
 
 package net.sourceforge.openstego.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import net.sourceforge.openstego.OpenStegoException;
 
@@ -27,7 +29,7 @@ public class PasswordInput
         EraserThread et = null;
         BufferedReader in = null;
         Thread mask = null;
-        
+
         et = new EraserThread(prompt);
         mask = new Thread(et);
         mask.start();
@@ -39,7 +41,7 @@ public class PasswordInput
         }
         catch(IOException ioEx)
         {
-            throw new OpenStegoException(    ioEx);
+            throw new OpenStegoException(ioEx);
         }
 
         // Stop masking
@@ -67,7 +69,7 @@ public class PasswordInput
         {
             System.out.print(prompt);
         }
-        
+
         /**
          * Implementation of <code>run</code> method
          */

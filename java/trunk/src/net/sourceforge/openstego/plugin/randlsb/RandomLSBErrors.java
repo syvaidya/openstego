@@ -28,7 +28,6 @@ public class RandomLSBErrors
      */
     public static final int IMAGE_SIZE_INSUFFICIENT = 3;
 
-
     /*
      * Initialize the error code - message key map
      */
@@ -36,6 +35,7 @@ public class RandomLSBErrors
     {
         OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
         OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, NULL_IMAGE_ARGUMENT, "err.image.arg.nullValue");
-        OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
+        OpenStegoException.addErrorCode(RandomLSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT,
+                "err.image.insufficientSize");
     }
 }

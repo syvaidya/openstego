@@ -8,7 +8,8 @@ package net.sourceforge.openstego.ui;
 
 import javax.swing.JPanel;
 
-import net.sourceforge.openstego.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
 
 /**
  * Abstract class for GUI for OpenStego plugin for "Embed" action

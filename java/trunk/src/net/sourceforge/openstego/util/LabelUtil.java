@@ -7,7 +7,10 @@
 package net.sourceforge.openstego.util;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Localized label handler for OpenStego
@@ -42,7 +45,7 @@ public class LabelUtil
     public static LabelUtil getInstance(String namespace)
     {
         LabelUtil util = null;
-        
+
         util = (LabelUtil) namespaceMap.get(namespace);
         if(util == null)
         {
@@ -52,7 +55,6 @@ public class LabelUtil
 
         return util;
     }
-
 
     /**
      * Variable to store the current namespace

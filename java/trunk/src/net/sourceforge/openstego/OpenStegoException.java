@@ -50,6 +50,15 @@ public class OpenStegoException extends Exception
      */
     public static final int NO_VALID_PLUGIN = 6;
 
+    /**
+     * Error Code - Image type invalid
+     */
+    public static final int IMAGE_TYPE_INVALID = 7;
+
+    /**
+     * Error Code - Image file invalid
+     */
+    public static final int IMAGE_FILE_INVALID = 8;
 
     /**
      * Map to store error code to message key mapping
@@ -77,6 +86,8 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, INVALID_KEY_NAME, "err.config.invalidKey");
         addErrorCode(OpenStego.NAMESPACE, CORRUPT_DATA, "err.corruptData");
         addErrorCode(OpenStego.NAMESPACE, NO_VALID_PLUGIN, "err.noValidPlugin");
+        addErrorCode(OpenStego.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
+        addErrorCode(OpenStego.NAMESPACE, IMAGE_FILE_INVALID, "err.image.file.invalid");
     }
 
     /**
@@ -120,11 +131,8 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(String namespace, int errorCode, Object[] params, Throwable cause)
     {
-        super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION)
-                  ? cause.toString()
-                  : LabelUtil.getInstance(namespace).getString((String) errMsgKeyMap.get(namespace + errorCode),
-                        params),
-                cause);
+        super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString() : LabelUtil
+                .getInstance(namespace).getString((String) errMsgKeyMap.get(namespace + errorCode), params), cause);
 
         this.namespace = namespace;
         this.errorCode = errorCode;

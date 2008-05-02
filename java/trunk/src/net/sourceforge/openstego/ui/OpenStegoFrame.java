@@ -7,14 +7,21 @@
 package net.sourceforge.openstego.ui;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.util.CommonUtil;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Frame class to build the Swing UI for OpenStego. This class includes only graphics rendering
@@ -148,6 +155,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Message File" text field
+     * @return msgFileTextField
      */
     public JTextField getMsgFileTextField()
     {
@@ -156,6 +164,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Message File" browse file button
+     * @return msgFileButton
      */
     public JButton getMsgFileButton()
     {
@@ -164,6 +173,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Cover File" text field
+     * @return coverFileTextField
      */
     public JTextField getCoverFileTextField()
     {
@@ -172,6 +182,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Cover File" browse file button
+     * @return coverFileButton
      */
     public JButton getCoverFileButton()
     {
@@ -180,6 +191,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Stego File" text field
+     * @return stegoFileTextField
      */
     public JTextField getStegoFileTextField()
     {
@@ -188,6 +200,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Stego File" browse file button
+     * @return stegoFileButton
      */
     public JButton getStegoFileButton()
     {
@@ -196,6 +209,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for Checkbox for "Use Compression"
+     * @return useCompCheckBox
      */
     public JCheckBox getUseCompCheckBox()
     {
@@ -204,6 +218,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for Checkbox for "Use Encryption"
+     * @return useEncryptCheckBox
      */
     public JCheckBox getUseEncryptCheckBox()
     {
@@ -212,6 +227,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Password" text field
+     * @return passwordTextField
      */
     public JPasswordField getPasswordTextField()
     {
@@ -220,6 +236,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Confirm Password" text field
+     * @return confPasswordTextField
      */
     public JPasswordField getConfPasswordTextField()
     {
@@ -228,6 +245,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Input Stego File" text field
+     * @return inputStegoFileTextField
      */
     public JTextField getInputStegoFileTextField()
     {
@@ -236,6 +254,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Input Stego File" browse file button
+     * @return inputStegoFileButton
      */
     public JButton getInputStegoFileButton()
     {
@@ -244,6 +263,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Output Folder" text field
+     * @return outputFolderTextField
      */
     public JTextField getOutputFolderTextField()
     {
@@ -252,6 +272,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Output Folder" browse file button
+     * @return outputFolderButton
      */
     public JButton getOutputFolderButton()
     {
@@ -260,6 +281,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Password for Extract" text field
+     * @return extractPwdTextField
      */
     public JPasswordField getExtractPwdTextField()
     {
@@ -268,6 +290,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "OK" button
+     * @return okButton
      */
     public JButton getOkButton()
     {
@@ -276,6 +299,7 @@ public class OpenStegoFrame extends JFrame
 
     /**
      * Get method for "Cancel" button
+     * @return cancelButton
      */
     public JButton getCancelButton()
     {
@@ -345,7 +369,6 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridy = 6;
         embedPanel.add(stegoFileTextField, gridBagConstraints);
 
-
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
 
@@ -365,7 +388,7 @@ public class OpenStegoFrame extends JFrame
         embedPanel.add(stegoFileButton, gridBagConstraints);
 
         optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
-            new EtchedBorder()), " " + labelUtil.getString("gui.label.option.title") + " "));
+                new EtchedBorder()), " " + labelUtil.getString("gui.label.option.title") + " "));
         optionPanel.setLayout(new GridBagLayout());
 
         gridBagConstraints = new GridBagConstraints();
@@ -438,8 +461,8 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         embedPanel.add(optionPanel, gridBagConstraints);
 
-        pluginEmbedOptionsPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
-            new EtchedBorder()), " " + labelUtil.getString("gui.label.pluginOption.title") + " "));
+        pluginEmbedOptionsPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5,
+                5, 5)), new EtchedBorder()), " " + labelUtil.getString("gui.label.pluginOption.title") + " "));
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;

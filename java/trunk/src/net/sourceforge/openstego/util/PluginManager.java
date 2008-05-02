@@ -9,7 +9,8 @@ package net.sourceforge.openstego.util;
 import java.io.InputStream;
 import java.util.*;
 
-import net.sourceforge.openstego.*;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.OpenStegoPlugin;
 
 /**
  * Utility class to load and manage the available stego plugins
@@ -20,7 +21,6 @@ public class PluginManager
      * Name of the default plugin
      */
     private final static String DEFAULT_PLUGIN = "LSB";
-
 
     /**
      * Static variable to hold the list of available plugins
@@ -71,6 +71,7 @@ public class PluginManager
 
     /**
      * Method to get the list of names of the loaded plugins
+     * @return List of names of the loaded plugins
      */
     public static List getPluginNames()
     {
@@ -80,12 +81,13 @@ public class PluginManager
         {
             nameList.add(((OpenStegoPlugin) plugins.get(i)).getName());
         }
-        
+
         return nameList;
     }
 
     /**
      * Method to get the list of the loaded plugins
+     * @return List of the loaded plugins
      */
     public static List getPlugins()
     {
@@ -94,6 +96,8 @@ public class PluginManager
 
     /**
      * Method to get the plugin object based on the name of the plugin
+     * @param name Name of the plugin
+     * @return Plugin object
      */
     public static OpenStegoPlugin getPluginByName(String name)
     {
@@ -102,6 +106,7 @@ public class PluginManager
 
     /**
      * Method to get the default plugin
+     * @return Default plugin object
      */
     public static OpenStegoPlugin getDefaultPlugin()
     {

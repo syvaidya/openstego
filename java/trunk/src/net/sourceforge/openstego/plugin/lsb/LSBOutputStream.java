@@ -10,9 +10,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import net.sourceforge.openstego.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 import net.sourceforge.openstego.util.LabelUtil;
-import net.sourceforge.openstego.plugin.template.imagebit.*;
 
 /**
  * OutputStream to embed data into image
@@ -87,7 +89,8 @@ public class LSBOutputStream extends OutputStream
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException
+    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
+            throws OpenStegoException
     {
         if(image == null)
         {

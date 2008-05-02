@@ -4,40 +4,40 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.randlsb;
+package net.sourceforge.openstego.plugin.dctlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitPluginTemplate;
+import net.sourceforge.openstego.plugin.template.dct.DCT;
+import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
+import net.sourceforge.openstego.plugin.template.dct.DCTPluginTemplate;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
- * Plugin for OpenStego which implements the Random LSB algorithm of steganography
+ * Plugin for OpenStego which implements the DCT based Least-significant bit algorithm
  */
-public class RandomLSBPlugin extends ImageBitPluginTemplate
+public class DctLSBPlugin extends DCTPluginTemplate
 {
-    /**
-     * Constant for Namespace to use for this plugin
-     */
-    public final static String NAMESPACE = "RandomLSB";
-
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(NAMESPACE);
+    private static LabelUtil labelUtil = LabelUtil.getInstance(DctLSBPlugin.NAMESPACE);
+
+    /**
+     * Constant for Namespace to use for this plugin
+     */
+    public final static String NAMESPACE = "DCTLSB";
 
     /**
      * Default constructor
      */
-    public RandomLSBPlugin()
+    public DctLSBPlugin()
     {
-        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.RandomLSBPluginLabels");
-        new RandomLSBErrors(); // Initialize error codes
+        LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DctLSBPluginLabels");
+        new DctLSBErrors(); // Initialize error codes
     }
 
     /**
@@ -46,7 +46,7 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
      */
     public String getName()
     {
-        return "RandomLSB";
+        return "DctLSB";
     }
 
     /**
@@ -72,28 +72,26 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
             throws OpenStegoException
     {
-        int numOfPixels = 0;
         BufferedImage image = null;
-        RandomLSBOutputStream lsbOS = null;
+        DctLSBOutputStream os = null;
 
         try
         {
             // Generate random image, if input image is not provided
             if(cover == null)
             {
-                numOfPixels = (int) (ImageBitDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((ImageBitConfig) config).getMaxBitsUsedPerChannel()));
-                image = ImageUtil.generateRandomImage(numOfPixels);
+                image = ImageUtil.generateRandomImage((DCTDataHeader.getMaxHeaderSize() + msg.length) * 8 * DCT.NJPEG
+                        * DCT.NJPEG);
             }
             else
             {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            lsbOS = new RandomLSBOutputStream(image, msg.length, msgFileName, this.config);
-            lsbOS.write(msg);
-            lsbOS.close();
+            os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config);
+            os.write(msg);
+            os.close();
 
-            return ImageUtil.imageToByteArray(lsbOS.getImage(), stegoFileName, this);
+            return ImageUtil.imageToByteArray(os.getImage(), stegoFileName, this);
         }
         catch(IOException ioEx)
         {
@@ -110,10 +108,21 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
      */
     public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
     {
-        RandomLSBInputStream lsbIS = null;
+        String fileName = null;
+        DctLSBInputStream is = null;
 
-        lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
-        return lsbIS.getDataHeader().getFileName();
+        try
+        {
+            is = new DctLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+            fileName = is.getDataHeader().getFileName();
+            is.close();
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(ioEx);
+        }
+
+        return fileName;
     }
 
     /**
@@ -125,34 +134,30 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
      */
     public byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException
     {
+        byte[] msg = null;
+        DCTDataHeader header = null;
+        DctLSBInputStream is = null;
         int bytesRead = 0;
-        byte[] data = null;
-        ImageBitDataHeader header = null;
-        RandomLSBInputStream lsbIS = null;
 
         try
         {
-            lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
-            header = lsbIS.getDataHeader();
-            data = new byte[header.getDataLength()];
+            is = new DctLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+            header = is.getDataHeader();
+            msg = new byte[header.getDataLength()];
 
-            bytesRead = lsbIS.read(data, 0, data.length);
-            if(bytesRead != data.length)
+            bytesRead = is.read(msg, 0, msg.length);
+            if(bytesRead != msg.length)
             {
-                throw new OpenStegoException(NAMESPACE, RandomLSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(NAMESPACE, DctLSBErrors.ERR_IMAGE_DATA_READ, null);
             }
-            lsbIS.close();
+            is.close();
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(ioEx);
+        }
 
-            return data;
-        }
-        catch(OpenStegoException osEx)
-        {
-            throw osEx;
-        }
-        catch(Exception ex)
-        {
-            throw new OpenStegoException(ex);
-        }
+        return msg;
     }
 
     /**
@@ -162,8 +167,6 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
      */
     public String getUsage() throws OpenStegoException
     {
-        ImageBitConfig defaultConfig = new ImageBitConfig();
-        return labelUtil.getString("plugin.usage",
-                new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+        return labelUtil.getString("plugin.usage");
     }
 }

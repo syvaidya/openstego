@@ -4,25 +4,27 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.randlsb;
+package net.sourceforge.openstego.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class StringUtils
+public class StringUtil
 {
     /**
      * Hexadecimal characters
      */
     private static final byte[] HEX_CHAR_TABLE = {
-                                                    (byte)'0', (byte)'1', (byte)'2', (byte)'3',
-                                                    (byte)'4', (byte)'5', (byte)'6', (byte)'7',
-                                                    (byte)'8', (byte)'9', (byte)'a', (byte)'b',
-                                                    (byte)'c', (byte)'d', (byte)'e', (byte)'f'
-                                                 };
+        (byte)'0', (byte)'1', (byte)'2', (byte)'3',
+        (byte)'4', (byte)'5', (byte)'6', (byte)'7',
+        (byte)'8', (byte)'9', (byte)'a', (byte)'b',
+        (byte)'c', (byte)'d', (byte)'e', (byte)'f'
+     };
 
     /**
      * Method to convert byte array to hexadecimal string
+     * @param raw Raw byte array
+     * @return Hex string
      */
     public static String getHexString(byte[] raw)
     {
@@ -59,7 +61,7 @@ public class StringUtils
         {
             byteHash = MessageDigest.getInstance("MD5").digest(password.getBytes());
             hexString = getHexString(byteHash);
-            
+
             // Hex string will be 32 bytes long whereas parsing to long can handle only 16 bytes, so trim it
             hexString = hexString.substring(0, 15);
             return Long.parseLong(hexString, 16);

@@ -10,8 +10,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.openstego.*;
-import net.sourceforge.openstego.plugin.template.imagebit.*;
+import net.sourceforge.openstego.OpenStegoConfig;
+import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 
 /**
  * InputStream to read embedded data from image file using LSB algorithm
@@ -108,6 +109,7 @@ public class LSBInputStream extends InputStream
 
     /**
      * Implementation of <code>InputStream.read()</code> method
+     * @return Byte read from the stream
      * @throws IOException
      */
     public int read() throws IOException
