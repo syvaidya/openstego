@@ -8,6 +8,7 @@ package net.sourceforge.openstego.plugin.dctlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCT;
@@ -158,6 +159,22 @@ public class DctLSBPlugin extends DCTPluginTemplate
         }
 
         return msg;
+    }
+
+    /**
+     * Method to get the list of supported file extensions for writing
+     * @return List of supported file extensions for writing
+     * @throws OpenStegoException
+     */
+    public List getWritableFileExtensions() throws OpenStegoException
+    {
+        List formatList = super.getWritableFileExtensions();
+
+        //Expicilty removing unsupported formats
+        formatList.remove("jpeg");
+        formatList.remove("jpg");
+
+        return formatList;
     }
 
     /**

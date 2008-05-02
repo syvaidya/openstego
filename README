@@ -1,12 +1,18 @@
-OpenStego v0.4.2
+OpenStego v0.5.0
 ================
 
 OpenStego is a tool developed in Java for steganography. It supports
 optional encryption of data before embedding in the image.
 
-Plugins for different steganographic algorithms are supported. By default,
-two algorithms (based on Least Significant Bit for Images) is provided. Support
-for other algorithms like DCT, FFT, etc. can be added using plugins.
+Plugins for different steganographic algorithms are supported. As of now, the
+following algorithms are provided:
+ - LSB       : Embedding data in Least Significant Bits (LSB) of image pixels
+ - RandomLSB : Embedding data in Least Significant Bits (LSB) of image pixels
+               in a pseudo-random order, to avoid steganalysis
+ - DctLSB    : Embedding data in the frequency domain of the image (using
+               Discrete Cosine Transforms - DCT)
+
+Support for other algorithms like FFT, etc. can be added using plugins.
 
 USAGE:
 ------
@@ -119,64 +125,12 @@ Examples:
       java -jar <path>\openstego.jar embed -cf "img???.png;wall*.png" \
         -mf watermark.txt
 
-LSB PLUGIN:
------------
-Least Significant Bit (LSB) Plugin for OpenStego.
+PLUGINS HELP:
+-------------
+Please use the following command to get plugin specific help:
 
-LSB Plugin specific options for OpenStego:
+  java -jar <path>\openstego.jar -help -a <algorithm_name>
 
-'embed' options:
-
-    -b, --maxBitsUsedPerChannel <n>
-        Max number of bits to use per color channel in the image for embedding
-        data. This value can be increased at the expense of image quality, in
-        case size of image is not able to accommodate the data (Default = 3)
-
-  It also affects the existing OpenStego options in the following way:
-
-    -cf, --coverfile <filename>
-        If this option is not provided or '-' (without quotes) is provided as
-        the value then a random image containing noise is generated and used
-        as cover file. The size of image is minimum required to embed the
-        given source file when 'maxBitsUsedPerChannel' bits are used per color
-        channel
-
-    -sf, --stegofile <filename>
-        If this option is not provided or '-' (without quotes) is provided as
-        the value then stego file is written to stdout in PNG format
-
-Java Advanced Imaging API can be installed to get support for more image
-formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
-
-RandomLSB PLUGIN:
------------------
-Random Least Significant Bit (RandomLSB) Plugin for OpenStego.
-Copyright (c) 2007-2008 Samir Vaidya
-
-RandomLSB Plugin specific options for OpenStego:
-
-'embed' options:
-
-    -b, --maxBitsUsedPerChannel <n>
-        Max number of bits to use per color channel in the image for embedding
-        data. This value can be increased at the expense of image quality, in
-        case size of image is not able to accommodate the data (Default = 3)
-
-  It also affects the existing OpenStego options in the following way:
-
-    -cf, --coverfile <filename>
-        If this option is not provided or '-' (without quotes) is provided as
-        the value then a random image containing noise is generated and used
-        as cover file. The size of image is minimum required to embed the
-        given source file when 'maxBitsUsedPerChannel' bits are used per color
-        channel
-
-    -sf, --stegofile <filename>
-        If this option is not provided or '-' (without quotes) is provided as
-        the value then stego file is written to stdout in PNG format
-
-Java Advanced Imaging API can be installed to get support for more image
-formats (like BMP, etc). It can be downloaded from:  https://jai.dev.java.net
 
 ADDING NEW PLUGIN:
 ------------------
@@ -201,7 +155,7 @@ ADDING NEW PLUGIN:
 
 TODO:
 -----
-  - Add support for other algorithms like DCT, FFT, etc.
+  - Add support for more algorithms
   - Add support for audio data to be used as cover file
 
 AUTHOR:
