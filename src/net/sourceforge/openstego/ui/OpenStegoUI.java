@@ -209,7 +209,7 @@ public class OpenStegoUI extends OpenStegoFrame
             }
         }
 
-        if(!pluginEmbedOptionsUI.validateEmbedAction())
+        if(pluginEmbedOptionsUI != null && !pluginEmbedOptionsUI.validateEmbedAction())
         {
             return;
         }
