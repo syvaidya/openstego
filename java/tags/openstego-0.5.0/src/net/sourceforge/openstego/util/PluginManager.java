@@ -46,13 +46,13 @@ public class PluginManager
         {
             // Load internal plugins
             is = plugins.getClass().getResourceAsStream("/OpenStegoPlugins.internal");
-            pluginList = CommonUtil.getStringLines(new String(CommonUtil.getStreamBytes(is)));
+            pluginList = StringUtil.getStringLines(new String(CommonUtil.getStreamBytes(is)));
 
             // Load external plugins if available
             is = plugins.getClass().getResourceAsStream("/OpenStegoPlugins.external");
             if(is != null)
             {
-                pluginList.addAll(CommonUtil.getStringLines(new String(CommonUtil.getStreamBytes(is))));
+                pluginList.addAll(StringUtil.getStringLines(new String(CommonUtil.getStreamBytes(is))));
             }
 
             for(int i = 0; i < pluginList.size(); i++)

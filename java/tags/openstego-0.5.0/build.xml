@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 
-<project name="openstego" default="compile" basedir=".">
+<project name="OpenStego" default="compile" basedir=".">
 
   <property name="src" value="./src"/>
   <property name="build" value="./build"/>
   <property name="build.classesdir" value="${build}/classes"/>
   <property name="build.classpath" value="${src}"/>
   <property name="javadoc" value="./doc/api"/>
+  <property name="jdk.docs.href" value="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+  <property name="jdk.docs.dir" value="C:/j2sdk1.4.2_17/docs/api"/>
 
   <target name="init">
     <mkdir dir="${build.classesdir}"/>
@@ -24,9 +26,14 @@
 
   <target name="doc">
     <javadoc packagenames="net.sourceforge.openstego.*"
-      sourcepath="${src}"
-      excludepackagenames="net.sourceforge.openstego.plugin.*"
-      destdir="${javadoc}" />
+             sourcepath="${src}"
+             excludepackagenames="net.sourceforge.openstego.plugin.*"
+             destdir="${javadoc}"
+             windowtitle="${ant.project.name} API">
+      <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &copy; 2007-2008 Samir Vaidya. All Rights Reserved.</i>]]></bottom>
+      <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
+    </javadoc>
   </target>
 
   <target name="clean">
