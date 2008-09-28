@@ -350,9 +350,15 @@ public class OpenStegoFrame extends JFrame
         label.setLabelFor(coverFileTextField);
         embedPanel.add(label, gridBagConstraints);
 
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         label = new JLabel(labelUtil.getString("gui.label.outputStegoFile"));
         label.setLabelFor(stegoFileTextField);
+        embedPanel.add(label, gridBagConstraints);
+
+        gridBagConstraints.insets = new Insets(0, 5, 0, 5);
+        gridBagConstraints.gridy = 4;
+        label = new JLabel(labelUtil.getString("gui.label.coverFileMsg"));
+        label.setFont(label.getFont().deriveFont(Font.ITALIC));
         embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
@@ -362,11 +368,11 @@ public class OpenStegoFrame extends JFrame
         embedPanel.add(msgFileTextField, gridBagConstraints);
 
         coverFileTextField.setColumns(57);
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         embedPanel.add(coverFileTextField, gridBagConstraints);
 
         stegoFileTextField.setColumns(57);
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         embedPanel.add(stegoFileTextField, gridBagConstraints);
 
         gridBagConstraints.gridx = 1;
@@ -379,12 +385,12 @@ public class OpenStegoFrame extends JFrame
 
         coverFileButton.setText("...");
         coverFileButton.setPreferredSize(new Dimension(22, 22));
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         embedPanel.add(coverFileButton, gridBagConstraints);
 
         stegoFileButton.setText("...");
         stegoFileButton.setPreferredSize(new Dimension(22, 22));
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         embedPanel.add(stegoFileButton, gridBagConstraints);
 
         optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
@@ -454,7 +460,7 @@ public class OpenStegoFrame extends JFrame
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -466,7 +472,7 @@ public class OpenStegoFrame extends JFrame
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;

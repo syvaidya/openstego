@@ -6,9 +6,17 @@
 
 package net.sourceforge.openstego.util;
 
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.sourceforge.openstego.OpenStegoException;
+
+/**
+ * Utility class to manipulate strings
+ */
 public class StringUtil
 {
     /**
@@ -70,5 +78,33 @@ public class StringUtil
         {
             return DEFAULT_HASH;
         }
+    }
+
+    /**
+     * Method to tokenize a string by line breaks
+     * @param input Input string
+     * @return List of strings tokenized by line breaks
+     * @throws OpenStegoException
+     */
+    public static List getStringLines(String input) throws OpenStegoException
+    {
+        String str = null;
+        ArrayList stringList = new ArrayList();
+        BufferedReader reader = null;
+
+        try
+        {
+            reader = new BufferedReader(new StringReader(input));
+            while((str = reader.readLine()) != null)
+            {
+                stringList.add(str);
+            }
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(ioEx);
+        }
+
+        return stringList;
     }
 }
