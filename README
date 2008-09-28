@@ -9,8 +9,6 @@ following algorithms are provided:
  - LSB       : Embedding data in Least Significant Bits (LSB) of image pixels
  - RandomLSB : Embedding data in Least Significant Bits (LSB) of image pixels
                in a pseudo-random order, to avoid steganalysis
- - DctLSB    : Embedding data in the frequency domain of the image (using
-               Discrete Cosine Transforms - DCT)
 
 Support for other algorithms like FFT, etc. can be added using plugins.
 
