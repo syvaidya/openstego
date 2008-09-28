@@ -192,34 +192,6 @@ public class CommonUtil
     }
 
     /**
-     * Method to tokenize a string by line breaks
-     * @param input Input string
-     * @return List of strings tokenized by line breaks
-     * @throws OpenStegoException
-     */
-    public static List getStringLines(String input) throws OpenStegoException
-    {
-        String str = null;
-        ArrayList stringList = new ArrayList();
-        BufferedReader reader = null;
-
-        try
-        {
-            reader = new BufferedReader(new StringReader(input));
-            while((str = reader.readLine()) != null)
-            {
-                stringList.add(str);
-            }
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(ioEx);
-        }
-
-        return stringList;
-    }
-
-    /**
      * Helper method to replace file wildcard characters with Java regexp wildcard chararcters
      * @param input Input String
      * @return String containing modified wildcard characters
