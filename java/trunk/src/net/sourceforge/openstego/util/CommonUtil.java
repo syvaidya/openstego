@@ -82,18 +82,35 @@ public class CommonUtil
      */
     public static void writeFile(byte[] fileData, String fileName) throws OpenStegoException
     {
+        File file = null;
+
+        if(fileName != null)
+        {
+            file = new File(fileName);
+        }
+        writeFile(fileData, file);
+    }
+
+    /**
+     * Method to write file data to disk
+     * @param fileData File data
+     * @param file File object (If this is <code>null</code>, then data is written to stdout)
+     * @throws OpenStegoException
+     */
+    public static void writeFile(byte[] fileData, File file) throws OpenStegoException
+    {
         OutputStream os = null;
 
         try
         {
-            // If file name is not provided, then write the data to stdout
-            if(fileName == null)
+            // If file is not provided, then write the data to stdout
+            if(file == null)
             {
                 os = System.out;
             }
             else
             {
-                os = new FileOutputStream(fileName);
+                os = new FileOutputStream(file);
             }
             os.write(fileData);
             os.close();
@@ -172,6 +189,34 @@ public class CommonUtil
         }
 
         return output;
+    }
+
+    /**
+     * Method to tokenize a string by line breaks
+     * @param input Input string
+     * @return List of strings tokenized by line breaks
+     * @throws OpenStegoException
+     */
+    public static List getStringLines(String input) throws OpenStegoException
+    {
+        String str = null;
+        ArrayList stringList = new ArrayList();
+        BufferedReader reader = null;
+
+        try
+        {
+            reader = new BufferedReader(new StringReader(input));
+            while((str = reader.readLine()) != null)
+            {
+                stringList.add(str);
+            }
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(ioEx);
+        }
+
+        return stringList;
     }
 
     /**
