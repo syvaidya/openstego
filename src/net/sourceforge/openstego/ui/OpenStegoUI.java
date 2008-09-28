@@ -164,15 +164,19 @@ public class OpenStegoUI extends OpenStegoFrame
         OpenStego openStego = null;
         byte[] stegoData = null;
         String dataFileName = null;
-        String imgFileName = null;
         String outputFileName = null;
         String password = null;
         String confPassword = null;
+        List coverFileList = null;
+        File imgFile = null;
         File outputFile = null;
+        int processCount = 0;
+        int skipCount = 0;
 
         dataFileName = msgFileTextField.getText();
-        imgFileName = coverFileTextField.getText();
+        coverFileList = CommonUtil.parseFileList(coverFileTextField.getText(), ";");
         outputFileName = stegoFileTextField.getText();
+        outputFile = new File(outputFileName);
         password = new String(passwordTextField.getPassword());
         confPassword = new String(confPasswordTextField.getPassword());
 
@@ -188,6 +192,40 @@ public class OpenStegoUI extends OpenStegoFrame
         if(!checkMandatory(stegoFileTextField, labelUtil.getString("gui.label.outputStegoFile")))
         {
             return;
+        }
+
+        // Check if single or multiple cover files are selected
+        if(coverFileList.size() <= 1)
+        {
+            // If user has provided a wildcard for cover file name, and parser returns zero length, then it means that
+            // there are no matching files with that wildcard
+            if(coverFileList.size() == 0 && !coverFileTextField.getText().trim().equals(""))
+            {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.coverFileNotFound",
+                        new Object[] { coverFileTextField.getText() }), labelUtil.getString("gui.msg.title.err"),
+                        JOptionPane.ERROR_MESSAGE);
+                stegoFileTextField.requestFocus();
+                return;
+            }
+            // If single cover file is given, then output stego file must not be a directory
+            if(outputFile.isDirectory())
+            {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.outputIsDir"), labelUtil
+                        .getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                stegoFileTextField.requestFocus();
+                return;
+            }
+        }
+        else
+        {
+            // If multiple cover files are given, then output stego file must be a directory
+            if(!outputFile.isDirectory())
+            {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.outputShouldBeDir"), labelUtil
+                        .getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                stegoFileTextField.requestFocus();
+                return;
+            }
         }
 
         if(useEncryptCheckBox.isSelected())
@@ -217,24 +255,67 @@ public class OpenStegoUI extends OpenStegoFrame
 
         setConfigFromGUI();
         openStego = new OpenStego(plugin, config);
-        stegoData = openStego.embedData(
-                dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName), imgFileName == null
-                        || imgFileName.equals("") ? null : new File(imgFileName), outputFileName);
-        outputFile = new File(outputFileName);
-
-        if(outputFile.exists())
+        if(coverFileList.size() <= 1)
         {
-            if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists",
-                    new Object[] { outputFileName }), labelUtil.getString("gui.msg.title.warn"),
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+            if(coverFileList.size() == 1)
             {
-                return;
+                imgFile = (File) coverFileList.get(0);
+            }
+
+            if(outputFile.exists())
+            {
+                if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists",
+                        new Object[] { outputFileName }), labelUtil.getString("gui.msg.title.warn"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                {
+                    return;
+                }
+            }
+
+            processCount++;
+            stegoData = openStego.embedData(
+                    dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName), imgFile,
+                    outputFileName);
+            CommonUtil.writeFile(stegoData, outputFile);
+        }
+        else
+        {
+            for(int i = 0; i < coverFileList.size(); i++)
+            {
+                imgFile = (File) coverFileList.get(i);
+
+                // Use cover file name as the output file name. Change the folder to given output folder
+                outputFileName = outputFile.getPath() + File.separator + imgFile.getName();
+
+                // If the output filename extension is not supported for writing, then change the same
+                if(!plugin.getWritableFileExtensions().contains(
+                        outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
+                {
+                    outputFileName = outputFileName + "." + plugin.getWritableFileExtensions().get(0);
+                }
+
+                if((new File(outputFileName)).exists())
+                {
+                    if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists",
+                            new Object[] { outputFileName }), labelUtil.getString("gui.msg.title.warn"),
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                    {
+                        skipCount++;
+                        continue;
+                    }
+                }
+
+                processCount++;
+                stegoData = openStego.embedData(
+                                    dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName),
+                                    imgFile, outputFileName);
+                CommonUtil.writeFile(stegoData, outputFileName);
             }
         }
 
-        CommonUtil.writeFile(stegoData, outputFileName);
-        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.embed"), labelUtil
-                .getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.embed", new Object[] {
+                new Integer(processCount), new Integer(skipCount) }), labelUtil.getString("gui.msg.title.success"),
+                JOptionPane.INFORMATION_MESSAGE);
 
         //Reset configuration
         resetGUI();
@@ -312,10 +393,13 @@ public class OpenStegoUI extends OpenStegoFrame
         String fileName = null;
         String title = null;
         String filterDesc = null;
-        boolean dirOnly = false;
         List allowedExts = null;
+        String allowFileDir = "F";
+        boolean multiSelect = false;
+        int coverFileListSize = 0;
         JTextField textField = null;
 
+        coverFileListSize = CommonUtil.parseFileList(this.coverFileTextField.getText(), ";").size();
         if(action.equals("BROWSE_SRC_DATA"))
         {
             title = labelUtil.getString("gui.filechooser.title.msgFile");
@@ -328,13 +412,21 @@ public class OpenStegoUI extends OpenStegoFrame
                     new Object[] { getExtensionsString("R") });
             allowedExts = getExtensionsList("R");
             textField = this.coverFileTextField;
+            multiSelect = true;
         }
         else if(action.equals("BROWSE_TGT_IMG"))
         {
             title = labelUtil.getString("gui.filechooser.title.outputStegoFile");
-            filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles",
-                    new Object[] { getExtensionsString("W") });
-            allowedExts = getExtensionsList("W");
+            if(coverFileListSize > 1)
+            {
+                allowFileDir = "D";
+            }
+            else
+            {
+                filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles",
+                        new Object[] { getExtensionsString("W") });
+                allowedExts = getExtensionsList("W");
+            }
             textField = this.stegoFileTextField;
         }
         else if(action.equals("BROWSE_IMG_FOR_EXTRACT"))
@@ -348,15 +440,15 @@ public class OpenStegoUI extends OpenStegoFrame
         else if(action.equals("BROWSE_TGT_DATA"))
         {
             title = labelUtil.getString("gui.filechooser.title.outputDataFolder");
-            dirOnly = true;
+            allowFileDir = "D";
             textField = this.outputFolderTextField;
         }
 
-        fileName = browser.getFileName(title, filterDesc, dirOnly, allowedExts);
+        fileName = browser.getFileName(title, filterDesc, allowedExts, allowFileDir, multiSelect);
         if(fileName != null)
         {
             // Check for valid extension for output file (in case of BROWSE_TGT_IMG)
-            if(action.equals("BROWSE_TGT_IMG"))
+            if(action.equals("BROWSE_TGT_IMG") && (coverFileListSize <= 1))
             {
                 if(!plugin.getWritableFileExtensions().contains(
                         fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase()))
@@ -587,19 +679,31 @@ public class OpenStegoUI extends OpenStegoFrame
          * Method to get the display file chooser and return the selected file name
          * @param dialogTitle Title for the file chooser dialog box
          * @param filterDesc Description to be displayed for the filter in file chooser
-         * @param dirOnly Flag to indicate whether only directory selection should be allowed
          * @param allowedExts Allowed file extensions for the filter
+         * @param allowFileDir Type of objects allowed to be selected (F = Files only, D = Directories only, B = Both)
+         * @param multiSelect Flag to indicate whether multiple file selection is allowed or not
          * @return Name of the selected file (null if no file was selected)
          */
-        public String getFileName(String dialogTitle, String filterDesc, boolean dirOnly, List allowedExts)
+        public String getFileName(String dialogTitle, String filterDesc, List allowedExts, String allowFileDir,
+                                  boolean multiSelect)
         {
             int retVal = 0;
             String fileName = null;
+            File[] files = null;
 
             JFileChooser chooser = new JFileChooser(lastFolder);
-            if(dirOnly)
+            chooser.setMultiSelectionEnabled(multiSelect);
+            if(allowFileDir.equals("F"))
+            {
+                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            }
+            else if(allowFileDir.equals("D"))
             {
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            }
+            else if(allowFileDir.equals("B"))
+            {
+                chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             }
 
             if(filterDesc != null)
@@ -611,7 +715,24 @@ public class OpenStegoUI extends OpenStegoFrame
 
             if(retVal == JFileChooser.APPROVE_OPTION)
             {
-                fileName = chooser.getSelectedFile().getPath();
+                if(multiSelect)
+                {
+                    StringBuffer fileList = new StringBuffer();
+                    files = chooser.getSelectedFiles();
+                    for(int i = 0; i < files.length; i++)
+                    {
+                        if(i != 0)
+                        {
+                            fileList.append(";");
+                        }
+                        fileList.append(files[i].getPath());
+                    }
+                    fileName = fileList.toString();
+                }
+                else
+                {
+                    fileName = chooser.getSelectedFile().getPath();
+                }
                 lastFolder = chooser.getSelectedFile().getParent();
             }
 

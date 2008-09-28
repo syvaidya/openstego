@@ -38,27 +38,26 @@ public class PluginManager
      */
     public static void loadPlugins() throws OpenStegoException
     {
-        Properties prop = new Properties();
+        List pluginList = null;
         OpenStegoPlugin plugin = null;
         InputStream is = null;
-        Enumeration en = null;
 
         try
         {
+            // Load internal plugins
+            is = plugins.getClass().getResourceAsStream("/OpenStegoPlugins.internal");
+            pluginList = CommonUtil.getStringLines(new String(CommonUtil.getStreamBytes(is)));
+
             // Load external plugins if available
-            is = prop.getClass().getResourceAsStream("/OpenStegoPlugins.external");
+            is = plugins.getClass().getResourceAsStream("/OpenStegoPlugins.external");
             if(is != null)
             {
-                prop.load(is);
+                pluginList.addAll(CommonUtil.getStringLines(new String(CommonUtil.getStreamBytes(is))));
             }
 
-            // Load internal plugins
-            prop.load(prop.getClass().getResourceAsStream("/OpenStegoPlugins.internal"));
-
-            en = prop.keys();
-            while(en.hasMoreElements())
+            for(int i = 0; i < pluginList.size(); i++)
             {
-                plugin = (OpenStegoPlugin) Class.forName((String) en.nextElement()).newInstance();
+                plugin = (OpenStegoPlugin) Class.forName((String) pluginList.get(i)).newInstance();
                 plugins.add(plugin);
                 pluginsMap.put(plugin.getName().toUpperCase(), plugin);
             }
