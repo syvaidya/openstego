@@ -1,0 +1,32 @@
+#!/bin/sh
+
+set -e
+
+case "${1}" in
+	configure)
+		;;
+
+	abort-upgrade|abort-deconfigure|abort-remove)
+
+		;;
+
+	*)
+		echo "${0} called with unknown argument \`${1}'" 1>&2
+		exit 1
+		;;
+esac
+
+# Automatically added by dh_installmenu
+if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
+	update-menus
+fi
+# End automatically added section
+# Automatically added by dh_installudev
+# End automatically added section
+# Automatically added by dh_installinit
+# End automatically added section
+# Automatically added by dh_installinit
+# End automatically added section
+
+
+exit 0

@@ -1,0 +1,4 @@
+?package(openstego):needs="X11" section="Applications/System/Security"\
+  title="OpenStego" longtitle="Steganography Solution"\
+  description="Hide secret data in innocuous files like images"\
+  command="/usr/bin/openstego" icon="/usr/share/pixmaps/openstego.xpm"

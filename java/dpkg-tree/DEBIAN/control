@@ -1,0 +1,16 @@
+Package: openstego
+Version: 0.5.0-1
+Architecture: i386
+Maintainer: Samir Vaidya <syvaidya@gmail.com>
+Installed-Size: 124.3
+Depends: java-virtual-machine
+Section: utils
+Priority: extra
+Homepage: http://openstego.sourceforge.net/
+Description: Modular steganography solution
+ OpenStego is a tool implemented in Java for generic steganography, with
+ support for password-based encryption of the data. It supports plugins
+ for various steganographic algorithms.
+ .
+ Using OpenStego, you can hide secret data within innocuous looking
+ files like images.
