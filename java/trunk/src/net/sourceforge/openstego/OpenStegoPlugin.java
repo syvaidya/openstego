@@ -12,6 +12,7 @@ import java.util.Map;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
 import net.sourceforge.openstego.util.CmdLineOptions;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Abstract class for stego plugins for OpenStego. Abstract methods need to be implemented to add support for more
@@ -19,6 +20,16 @@ import net.sourceforge.openstego.util.CmdLineOptions;
  */
 public abstract class OpenStegoPlugin
 {
+    /**
+     * Constant for the purpose of the plugin - Data Hiding
+     */
+    public static final String PURPOSE_DATA_HIDING = "DH";
+
+    /**
+     * Constant for the purpose of the plugin - Watermarking
+     */
+    public static final String PURPOSE_WATERMARKING = "WM";
+
     /**
      * Configuration data to be used while embedding / extracting data
      */
@@ -33,10 +44,45 @@ public abstract class OpenStegoPlugin
     public abstract String getName();
 
     /**
+     * Gives the purpose(s) of the plugin
+     * @return Purpose(s) of the plugin
+     */
+    public abstract List getPurposes();
+
+    /**
      * Gives a short description of the plugin
      * @return Short description of the plugin
      */
     public abstract String getDescription();
+
+    /**
+     * Gives the display label for purpose(s) of the plugin
+     * @return Display lable for purpose(s) of the plugin
+     */
+    public String getPurposesLabel()
+    {
+        StringBuffer sbf = new StringBuffer();
+        LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+        List purposes = getPurposes();
+
+        if(purposes == null || purposes.size() == 0)
+        {
+            return "";
+        }
+
+        sbf.append("(").append(labelUtil.getString("cmd.label.purpose.caption")).append(" ");
+        for(int i = 0; i < purposes.size(); i++)
+        {
+            if(i > 0)
+            {
+                sbf.append(", ");
+            }
+            sbf.append(labelUtil.getString("cmd.label.purpose." + purposes.get(i)));
+        }
+        sbf.append(")");
+
+        return sbf.toString();
+    }
 
     // ------------- Core Stego Methods -------------
 
@@ -71,6 +117,16 @@ public abstract class OpenStegoPlugin
      * @throws OpenStegoException
      */
     public abstract byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException;
+
+    /**
+     * Method to generate the signature data. This method needs to be implemented only if the purpose of the plugin
+     * is Watermarking
+     * @return Signature data     * @throws OpenStegoException
+     */
+    public byte[] generateSignature() throws OpenStegoException
+    {
+        return null;
+    }
 
     /**
      * Method to find out whether given stego data can be handled by this plugin or not

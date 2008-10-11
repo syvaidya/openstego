@@ -8,6 +8,7 @@ package net.sourceforge.openstego.plugin.dctlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
@@ -51,6 +52,17 @@ public class DctLSBPlugin extends DCTPluginTemplate
     }
 
     /**
+     * Gives the purpose(s) of the plugin
+     * @return Purpose(s) of the plugin
+     */
+    public List getPurposes()
+    {
+        List purposes = new ArrayList();
+        purposes.add(PURPOSE_WATERMARKING);
+        return purposes;
+    }
+
+    /**
      * Gives a short description of the plugin
      * @return Short description of the plugin
      */
@@ -62,8 +74,8 @@ public class DctLSBPlugin extends DCTPluginTemplate
     /**
      * Method to embed the message into the cover data
      * @param msg Message to be embedded
-     * @param msgFileName Name of the message file. If this value is provided, then the filename should be
-     *                    embedded in the cover data
+     * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
+     *            the cover data
      * @param cover Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
@@ -162,6 +174,16 @@ public class DctLSBPlugin extends DCTPluginTemplate
     }
 
     /**
+     * Method to generate the signature data
+     * @return Signature data
+     * @throws OpenStegoException
+     */
+    public byte[] generateSignature() throws OpenStegoException
+    {
+        return null; // TODO
+    }
+
+    /**
      * Method to get the list of supported file extensions for writing
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
@@ -170,7 +192,7 @@ public class DctLSBPlugin extends DCTPluginTemplate
     {
         List formatList = super.getWritableFileExtensions();
 
-        //Expicilty removing unsupported formats
+        // Expicilty removing unsupported formats
         formatList.remove("jpeg");
         formatList.remove("jpg");
 

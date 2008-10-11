@@ -61,6 +61,16 @@ public class OpenStegoException extends Exception
     public static final int IMAGE_FILE_INVALID = 8;
 
     /**
+     * Error Code - No plugin specified
+     */
+    public static final int NO_PLUGIN_SPECIFIED = 9;
+
+    /**
+     * Error Code - No plugin specified
+     */
+    public static final int SIG_NA_PLUGIN_NOT_WM = 10;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static HashMap errMsgKeyMap = new HashMap();
@@ -88,6 +98,8 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, NO_VALID_PLUGIN, "err.noValidPlugin");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_FILE_INVALID, "err.image.file.invalid");
+        addErrorCode(OpenStego.NAMESPACE, NO_PLUGIN_SPECIFIED, "err.plugin.notSpecified");
+        addErrorCode(OpenStego.NAMESPACE, SIG_NA_PLUGIN_NOT_WM, "err.plugin.sigNotWm");
     }
 
     /**
