@@ -8,6 +8,8 @@ package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
@@ -47,6 +49,17 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     public String getName()
     {
         return "RandomLSB";
+    }
+
+    /**
+     * Gives the purpose(s) of the plugin
+     * @return Purpose(s) of the plugin
+     */
+    public List getPurposes()
+    {
+        List purposes = new ArrayList();
+        purposes.add(PURPOSE_DATA_HIDING);
+        return purposes;
     }
 
     /**

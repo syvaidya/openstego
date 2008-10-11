@@ -284,6 +284,34 @@ public class OpenStego
     }
 
     /**
+     * Method to generate the signature data using the given plugin
+     * @return Signature data     * @throws OpenStegoException
+     */
+    public byte[] generateSignature() throws OpenStegoException
+    {
+        try
+        {
+            if(!isPluginExplicit)
+            {
+                throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+            }
+            if(!plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+            {
+                throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.SIG_NA_PLUGIN_NOT_WM, null);
+            }
+            return plugin.generateSignature();
+        }
+        catch(OpenStegoException osEx)
+        {
+            throw osEx;
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
+        }
+    }
+
+    /**
      * Get method for configuration data
      * @return Configuration data
      */
@@ -305,6 +333,7 @@ public class OpenStego
         String stegoFileName = null;
         String extractDir = null;
         String extractFileName = null;
+        String signatureFileName = null;
         String command = null;
         String pluginName = null;
         List stegoData = null;
@@ -513,6 +542,12 @@ public class OpenStego
                     CommonUtil.writeFile((byte[]) stegoData.get(1), extractFileName);
                     System.err.println(labelUtil.getString("cmd.msg.fileExtracted", new Object[] { extractFileName }));
                 }
+                else if(command.equals("gensig"))
+                {
+                    signatureFileName = options.getOptionValue("-gf");
+                    CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null ||
+                            signatureFileName.equals("-")) ? null : signatureFileName);
+                }
                 else if(command.equals("readformats"))
                 {
                     List formats = plugin.getReadableFileExtensions();
@@ -535,7 +570,8 @@ public class OpenStego
                     for(int i = 0; i < plugins.size(); i++)
                     {
                         plugin = (OpenStegoPlugin) plugins.get(i);
-                        System.out.println(plugin.getName() + " - " + plugin.getDescription());
+                        System.out.println(plugin.getName() + " " + plugin.getPurposesLabel() +  " - "
+                                            + plugin.getDescription());
                     }
                 }
                 else if(command.equals("help"))
@@ -594,6 +630,7 @@ public class OpenStego
         // Commands
         options.add("embed", "--embed", CmdLineOption.TYPE_COMMAND, false);
         options.add("extract", "--extract", CmdLineOption.TYPE_COMMAND, false);
+        options.add("gensig", "--gensig", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("algorithms", "--algorithms", CmdLineOption.TYPE_COMMAND, false);
@@ -608,6 +645,7 @@ public class OpenStego
         options.add("-sf", "--stegofile", CmdLineOption.TYPE_OPTION, true);
         options.add("-xf", "--extractfile", CmdLineOption.TYPE_OPTION, true);
         options.add("-xd", "--extractdir", CmdLineOption.TYPE_OPTION, true);
+        options.add("-gf", "--signaturefile", CmdLineOption.TYPE_OPTION, true);
 
         // Command options
         options.add("-c", "--compress", CmdLineOption.TYPE_OPTION, false);

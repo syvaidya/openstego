@@ -27,7 +27,7 @@ public class StringUtil
         (byte)'4', (byte)'5', (byte)'6', (byte)'7',
         (byte)'8', (byte)'9', (byte)'a', (byte)'b',
         (byte)'c', (byte)'d', (byte)'e', (byte)'f'
-     };
+    };
 
     /**
      * Method to convert byte array to hexadecimal string
@@ -97,7 +97,12 @@ public class StringUtil
             reader = new BufferedReader(new StringReader(input));
             while((str = reader.readLine()) != null)
             {
-                stringList.add(str);
+                str = str.trim();
+                if(str.equals("") || str.startsWith("#"))
+                {
+                    continue;
+                }
+                stringList.add(str.trim());
             }
         }
         catch(IOException ioEx)
