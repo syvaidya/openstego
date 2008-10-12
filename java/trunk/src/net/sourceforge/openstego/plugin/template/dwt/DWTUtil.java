@@ -637,7 +637,7 @@ public class DWTUtil
         int w = width;
         int h = height;
 
-        while(!((w % 2) != 0 || (h % 2) != 0))
+        while((w % 2 == 0) && (h % 2 == 0))
         {
             w = w / 2;
             h = h / 2;

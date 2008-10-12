@@ -43,7 +43,7 @@ public class FilterXMLReader
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
             // Parse to get DOM representation of the XML file
-            dom = db.parse(fileURI);
+            dom = db.parse(db.getClass().getResourceAsStream(fileURI));
 
             // Get a node list of filterGH elements
             nl = dom.getDocumentElement().getElementsByTagName("filterGH");
@@ -66,14 +66,17 @@ public class FilterXMLReader
         }
         catch(ParserConfigurationException pcEx)
         {
+            pcEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
         }
         catch(SAXException saxEx)
         {
+            saxEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
         }
         catch(IOException ioEx)
         {
+            ioEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
         }
     }
