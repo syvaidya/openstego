@@ -296,7 +296,7 @@ public class DWTKimPlugin extends DWTPluginTemplate
 
         int n = 1000;
 
-        int l = 4;
+        int l = 1; //TODO
 
         int e = 2;
 
@@ -344,7 +344,7 @@ public class DWTKimPlugin extends DWTPluginTemplate
             {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
                 ois.read(inputSig, 0, sig.length);
-                if(!sig.equals(inputSig))
+                if(!(new String(sig)).equals(new String(inputSig)))
                 {
                     throw new OpenStegoException(null); // TODO
                 }
@@ -389,6 +389,8 @@ public class DWTKimPlugin extends DWTPluginTemplate
                 {
                     oos.writeDouble(watermark[i]);
                 }
+                oos.flush();
+                oos.close();
 
                 return baos.toByteArray();
             }
