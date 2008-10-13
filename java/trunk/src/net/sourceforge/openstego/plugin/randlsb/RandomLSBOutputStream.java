@@ -213,9 +213,8 @@ public class RandomLSBOutputStream extends OutputStream
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      * @return Image data
-     * @throws OpenStegoException
      */
-    public BufferedImage getImage() throws OpenStegoException
+    public BufferedImage getImage()
     {
         return image;
     }

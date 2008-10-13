@@ -18,8 +18,10 @@ import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.util.CommonUtil;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.StringUtil;
 import net.sourceforge.openstego.util.dwt.DWT;
 import net.sourceforge.openstego.util.dwt.DWTUtil;
 import net.sourceforge.openstego.util.dwt.ImageTree;
@@ -50,7 +52,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Gives the name of the plugin
-     * 
      * @return Name of the plugin
      */
     public String getName()
@@ -60,7 +61,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Gives the purpose(s) of the plugin
-     * 
      * @return Purpose(s) of the plugin
      */
     public List getPurposes()
@@ -72,7 +72,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
-     * 
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -82,7 +81,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
-     * 
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
      *            the cover data
@@ -113,7 +111,7 @@ public class DWTKimPlugin extends ImagePluginTemplate
         // Cover file is mandatory
         if(cover == null)
         {
-            throw new OpenStegoException(NAMESPACE, 0, null); // TODO
+            throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_NO_COVER_FILE, null);
         }
         else
         {
@@ -128,13 +126,13 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
         // Check that level is okay
         levels = DWTUtil.findDeepestLevel(cols, rows) - 1;
-        if(sig.l > levels)
+        if(sig.decompositionLevel > levels)
         {
-            throw new OpenStegoException(null); // TODO
+            throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_DECOMP_LEVEL_NOT_ENOUGH, null);
         }
 
         // Wavelet transform
-        dwt = new DWT(cols, rows, sig.f, sig.l, sig.e);
+        dwt = new DWT(cols, rows, sig.filterNumber, sig.decompositionLevel, sig.waveletFilterMethod);
         dwtTree = dwt.forwardDWT(luminance);
 
         p = dwtTree;
@@ -155,18 +153,19 @@ public class DWTKimPlugin extends ImagePluginTemplate
             threshold = calcLevelThreshold(maxCoeff);
 
             // Calculate embedding strength alpha for current decomposition level
-            alpha = calcLevelAlphaDetail(sig.a, currLevel);
+            alpha = calcLevelAlphaDetail(sig.alphaForDetailSubBand, currLevel);
 
             // Embed watermark sequence into detail subbands of current decomposition level
-            w = markSubBand(p.getHorizontal(), alpha, sig.watermark, threshold, w, sig.n);
-            w = markSubBand(p.getVertical(), alpha, sig.watermark, threshold, w, sig.n);
-            w = markSubBand(p.getDiagonal(), alpha, sig.watermark, threshold, w, sig.n);
+            w = markSubBand(p.getHorizontal(), alpha, sig.watermark, threshold, w, sig.watermarkLength);
+            w = markSubBand(p.getVertical(), alpha, sig.watermark, threshold, w, sig.watermarkLength);
+            w = markSubBand(p.getDiagonal(), alpha, sig.watermark, threshold, w, sig.watermarkLength);
 
             p = p.getCoarse();
         }
 
         // Mark approximation image using calculated significance threshold and embedding strength
-        w = markSubBand(p, sig.A, sig.watermark, calcLevelThreshold(findSubBandMaxCoeff(p, 1)), w, sig.n);
+        w = markSubBand(p, sig.alphaForApproxSubBand, sig.watermark, calcLevelThreshold(findSubBandMaxCoeff(p, 1)), w,
+            sig.watermarkLength);
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
@@ -176,7 +175,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Method to extract the message file name from the stego data
-     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
@@ -189,7 +187,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
-     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Extracted message
@@ -202,20 +199,22 @@ public class DWTKimPlugin extends ImagePluginTemplate
 
     /**
      * Method to generate the signature data
-     * 
      * @return Signature data
      * @throws OpenStegoException
      */
     public byte[] generateSignature() throws OpenStegoException
     {
-        Random rand = new Random();
-        Signature sig = new Signature(rand);
+        Random rand = null;
+        Signature sig = null;
+
+        rand = new Random(StringUtil.passwordHash(config.getPassword()));
+        sig = new Signature(rand);
+
         return sig.getSigData();
     }
 
     /**
      * Method to get the usage details of the plugin
-     * 
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
@@ -224,20 +223,30 @@ public class DWTKimPlugin extends ImagePluginTemplate
         return labelUtil.getString("plugin.usage");
     }
 
-    private int markSubBand(ImageTree s, double alpha, double watermark[], double threshold, int w, int n)
+    /**
+     * Utility method to mark a wavelet sub-band using the watermark data
+     * @param imgTree Image data
+     * @param alpha Alpha value
+     * @param watermark Watermark data
+     * @param threshold Threshold
+     * @param w
+     * @param n
+     * @return
+     */
+    private int markSubBand(ImageTree imgTree, double alpha, double watermark[], double threshold, int w, int n)
     {
         double coeff = 0.0;
         double newCoeff = 0.0;
 
-        for(int i = 5; i < s.getImage().getHeight() - 5; i++)
+        for(int i = 5; i < imgTree.getImage().getHeight() - 5; i++)
         {
-            for(int j = 5; j < s.getImage().getWidth() - 5; j++)
+            for(int j = 5; j < imgTree.getImage().getWidth() - 5; j++)
             {
-                coeff = DWTUtil.getPixel(s.getImage(), i, j);
+                coeff = DWTUtil.getPixel(imgTree.getImage(), i, j);
                 if(Math.abs(coeff) > threshold)
                 {
                     newCoeff = coeff + alpha * coeff * watermark[w % n];
-                    DWTUtil.setPixel(s.getImage(), i, j, newCoeff);
+                    DWTUtil.setPixel(imgTree.getImage(), i, j, newCoeff);
                     w++;
                 }
             }
@@ -246,16 +255,22 @@ public class DWTKimPlugin extends ImagePluginTemplate
         return w;
     }
 
-    private double findSubBandMaxCoeff(ImageTree s, int subband)
+    /**
+     * Utility method to find max coefficient for the sub-band
+     * @param imgTree Image data
+     * @param subBand Sub-band number
+     * @return Max coefficient
+     */
+    private double findSubBandMaxCoeff(ImageTree imgTree, int subBand)
     {
         double max = 0.0;
         double coeff = 0.0;
 
-        for(int i = 5; i < s.getImage().getHeight() - 5; i++)
+        for(int i = 5; i < imgTree.getImage().getHeight() - 5; i++)
         {
-            for(int j = 5; j < s.getImage().getWidth() - 5; j++)
+            for(int j = 5; j < imgTree.getImage().getWidth() - 5; j++)
             {
-                coeff = Math.abs(DWTUtil.getPixel(s.getImage(), i, j));
+                coeff = Math.abs(DWTUtil.getPixel(imgTree.getImage(), i, j));
                 if(coeff > max)
                 {
                     max = coeff;
@@ -266,48 +281,95 @@ public class DWTKimPlugin extends ImagePluginTemplate
         return max;
     }
 
-    private double findLevelMaxCoeff(ImageTree p)
+    /**
+     * Utility method to find the level adaptive max coefficient
+     * @param imgTree Image data
+     * @return Level adaptive max coefficient
+     */
+    private double findLevelMaxCoeff(ImageTree imgTree)
     {
         double h = 0.0;
         double v = 0.0;
         double d = 0.0;
 
-        h = findSubBandMaxCoeff(p.getHorizontal(), 2);
-        v = findSubBandMaxCoeff(p.getVertical(), 3);
-        d = findSubBandMaxCoeff(p.getDiagonal(), 4);
+        h = findSubBandMaxCoeff(imgTree.getHorizontal(), 2);
+        v = findSubBandMaxCoeff(imgTree.getVertical(), 3);
+        d = findSubBandMaxCoeff(imgTree.getDiagonal(), 4);
 
-        return DWTUtil.max(h, DWTUtil.max(v, d));
+        return CommonUtil.max(h, CommonUtil.max(v, d));
     }
 
+    /**
+     * Utility method to calculate level threshold
+     * @param maxCoeff Max coefficient
+     * @return Level threshold
+     */
     private double calcLevelThreshold(double maxCoeff)
     {
         return Math.pow(2.0, Math.floor(Math.log(maxCoeff) / Math.log(2.0)) - 1.0);
     }
 
+    /**
+     * Utility method to calculate level alpha detail
+     * @param alpha Alpha value
+     * @param level Level number
+     * @return Level alpha detail
+     */
     private double calcLevelAlphaDetail(double alpha, int level)
     {
         return alpha / Math.pow(2.0, level - 1);
     }
 
-    class Signature
+    /**
+     * Private class for the data structure required for the signature
+     */
+    private class Signature
     {
+        /**
+         * Signature stamp
+         */
         byte[] sig = "KISG".getBytes();
 
-        int n = 1000;
+        /**
+         * Length of the watermark
+         */
+        int watermarkLength = 1000;
 
-        int l = 1; //TODO
+        /**
+         * Decomposition level
+         */
+        int decompositionLevel = 4;
 
-        int e = 2;
+        /**
+         * Wavelet filter method
+         */
+        int waveletFilterMethod = 2;
 
-        int f = 1;
+        /**
+         * Filter number
+         */
+        int filterNumber = 1;
 
-        double a = 0.1;
+        /**
+         * Alpha for the detail sub-bands
+         */
+        double alphaForDetailSubBand = 0.1;
 
-        double A = 0.02;
+        /**
+         * Alpha for the approximation sub-bands
+         */
+        double alphaForApproxSubBand = 0.02;
 
+        /**
+         * Watermark data
+         */
         double[] watermark = null;
 
-        public Signature(Random rand) throws OpenStegoException
+        /**
+         * Constructor which generates the watermark data using the given randomizer
+         * @param rand Randomizer to use for generating watermark data
+         */
+        public Signature(Random rand)
         {
             double m = 0.0;
             double d = 1.0;
@@ -315,13 +377,13 @@ public class DWTKimPlugin extends ImagePluginTemplate
             double x1 = 0.0;
             double x2 = 0.0;
 
-            watermark = new double[n];
-            for(int cnt = 0; cnt < (n >> 1); cnt = cnt + 2)
+            watermark = new double[watermarkLength];
+            for(int cnt = 0; cnt < (watermarkLength >> 1); cnt = cnt + 2)
             {
                 do
                 {
-                    x1 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / ((double) Integer.MAX_VALUE + 1.0)) - 1.0;
-                    x2 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / ((double) Integer.MAX_VALUE + 1.0)) - 1.0;
+                    x1 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
+                    x2 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
                     x = x1 * x1 + x2 * x2;
                 }
                 while(x >= 1.0);
@@ -334,6 +396,11 @@ public class DWTKimPlugin extends ImagePluginTemplate
             }
         }
 
+        /**
+         * Constructor that takes existing the signature data
+         * @param sigData Existing signature data
+         * @throws OpenStegoException
+         */
         public Signature(byte[] sigData) throws OpenStegoException
         {
             ObjectInputStream ois = null;
@@ -345,17 +412,17 @@ public class DWTKimPlugin extends ImagePluginTemplate
                 ois.read(inputSig, 0, sig.length);
                 if(!(new String(sig)).equals(new String(inputSig)))
                 {
-                    throw new OpenStegoException(null); // TODO
+                    throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_SIG_NOT_VALID, null);
                 }
 
-                n = ois.readInt();
-                a = ois.readDouble();
-                A = ois.readDouble();
-                l = ois.readInt();
-                e = ois.readInt();
-                f = ois.readInt();
+                watermarkLength = ois.readInt();
+                alphaForDetailSubBand = ois.readDouble();
+                alphaForApproxSubBand = ois.readDouble();
+                decompositionLevel = ois.readInt();
+                waveletFilterMethod = ois.readInt();
+                filterNumber = ois.readInt();
 
-                watermark = new double[n];
+                watermark = new double[watermarkLength];
                 for(int i = 0; i < watermark.length; i++)
                 {
                     watermark[i] = ois.readDouble();
@@ -367,6 +434,11 @@ public class DWTKimPlugin extends ImagePluginTemplate
             }
         }
 
+        /**
+         * Get the signature data generated
+         * @return Signature data
+         * @throws OpenStegoException
+         */
         public byte[] getSigData() throws OpenStegoException
         {
             ByteArrayOutputStream baos = null;
@@ -377,12 +449,12 @@ public class DWTKimPlugin extends ImagePluginTemplate
                 baos = new ByteArrayOutputStream();
                 oos = new ObjectOutputStream(baos);
                 oos.write(sig);
-                oos.writeInt(n);
-                oos.writeDouble(a);
-                oos.writeDouble(A);
-                oos.writeInt(l);
-                oos.writeInt(e);
-                oos.writeInt(f);
+                oos.writeInt(watermarkLength);
+                oos.writeDouble(alphaForDetailSubBand);
+                oos.writeDouble(alphaForApproxSubBand);
+                oos.writeInt(decompositionLevel);
+                oos.writeInt(waveletFilterMethod);
+                oos.writeInt(filterNumber);
 
                 for(int i = 0; i < watermark.length; i++)
                 {

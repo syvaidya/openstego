@@ -187,11 +187,13 @@ public class LSBPlugin extends ImagePluginTemplate
             return writeFormats;
         }
 
+        super.getWritableFileExtensions();
         String format = null;
+        String[] compTypes = null;
         Iterator iter = null;
         ImageWriteParam writeParam = null;
 
-        for(int i = writeFormats.size(); i >= 0; i--)
+        for(int i = writeFormats.size() - 1; i >= 0; i--)
         {
             format = (String) writeFormats.get(i);
             iter = ImageIO.getImageWritersBySuffix(format);
@@ -201,7 +203,11 @@ public class LSBPlugin extends ImagePluginTemplate
                 try
                 {
                     writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                    writeParam.getCompressionTypes();
+                    compTypes = writeParam.getCompressionTypes();
+                    if(compTypes.length > 0)
+                    {
+                        writeParam.setCompressionType(compTypes[0]);
+                    }
                     writeFormats.remove(i);
                 }
                 catch(UnsupportedOperationException uoEx) // Compression not supported
@@ -263,6 +269,6 @@ public class LSBPlugin extends ImagePluginTemplate
     {
         LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage",
-                new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+            new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
     }
 }
