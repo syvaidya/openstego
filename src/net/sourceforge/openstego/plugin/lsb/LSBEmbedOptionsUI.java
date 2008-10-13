@@ -54,9 +54,8 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
     /**
      * Default constructor
      * @param stegoUI Reference to the parent UI object
-     * @throws OpenStegoException
      */
-    public LSBEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
+    public LSBEmbedOptionsUI(OpenStegoUI stegoUI)
     {
         this.stegoUI = stegoUI;
 

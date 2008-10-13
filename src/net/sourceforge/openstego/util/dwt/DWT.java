@@ -8,6 +8,8 @@ package net.sourceforge.openstego.util.dwt;
 
 import java.util.ArrayList;
 
+import net.sourceforge.openstego.util.ImageUtil;
+
 /**
  * Class to handle Discrete Wavelet Transforms (DWT).
  * 
@@ -19,20 +21,49 @@ import java.util.ArrayList;
  */
 public class DWT
 {
+    /**
+     * Master list of filters
+     */
     private static ArrayList filterGHList = null;
 
-    private String filterFile = "/net/sourceforge/openstego/plugin/template/dwt/filters.xml";
+    /**
+     * URI for the filter file
+     */
+    private String filterFile = "/net/sourceforge/openstego/util/dwt/filters.xml";
 
+    /**
+     * List of loaded filters
+     */
     private FilterGH[] filters = null;
 
+    /**
+     * Wavelet filtering method
+     */
     private int method = 0;
 
+    /**
+     * No. of columns in the image
+     */
     private int cols = 0;
 
+    /**
+     * No. of rows in the image
+     */
     private int rows = 0;
 
+    /**
+     * Wavelet decomposition level
+     */
     private int level = 0;
 
+    /**
+     * Default constructor
+     * @param cols Image width
+     * @param rows Image height
+     * @param filter Filter number to use
+     * @param level Decomposition level
+     * @param method Wavelet filtering method
+     */
     public DWT(int cols, int rows, int filter, int level, int method)
     {
         // Read the master filter file if it is not already loaded
@@ -53,6 +84,11 @@ public class DWT
         this.rows = rows;
     }
 
+    /**
+     * Method to perform forward DWT on the pixel data
+     * @param pixels Image pixel data
+     * @return Image tree data after DWT
+     */
     public ImageTree forwardDWT(int[][] pixels)
     {
         Image image = null;
@@ -72,6 +108,11 @@ public class DWT
         return tree;
     }
 
+    /**
+     * Method to perform forward DWT (WP) on the pixel data
+     * @param pixels Image pixel data
+     * @return Image tree data after DWT
+     */
     public ImageTree forwardDWTwp(int[][] pixels)
     {
         Image image = null;
@@ -91,6 +132,11 @@ public class DWT
         return tree;
     }
 
+    /**
+     * Method to perform inverse DWT to get back the pixel data
+     * @param dwts DWT data as image tree
+     * @param pixels Image pixel data
+     */
     public void inverseDWT(ImageTree dwts, int[][] pixels)
     {
         Image image = null;
@@ -101,7 +147,7 @@ public class DWT
         {
             for(int j = 0; j < cols; j++)
             {
-                pixels[i][j] = DWTUtil.pixelRange((int) (DWTUtil.getPixel(image, j, i) + 0.5));
+                pixels[i][j] = ImageUtil.pixelRange((int) (DWTUtil.getPixel(image, j, i) + 0.5));
             }
         }
     }

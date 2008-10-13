@@ -9,11 +9,13 @@ package net.sourceforge.openstego.plugin.dctlsb;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
+import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.StringUtil;
 import net.sourceforge.openstego.util.dct.DCT;
 
@@ -113,9 +115,7 @@ public class DctLSBOutputStream extends OutputStream
     public DctLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
             throws OpenStegoException
     {
-        int r = 0;
-        int g = 0;
-        int b = 0;
+        ArrayList yuv = null;
 
         if(image == null)
         {
@@ -133,25 +133,15 @@ public class DctLSBOutputStream extends OutputStream
         imgWidth = actualImgWidth - (actualImgWidth % DCT.NJPEG);
         imgHeight = actualImgHeight - (actualImgHeight % DCT.NJPEG);
 
-        y = new int[actualImgWidth][actualImgHeight];
-        u = new int[actualImgWidth][actualImgHeight];
-        v = new int[actualImgWidth][actualImgHeight];
+        yuv = ImageUtil.getYuvFromImage(image);
+        y = (int[][]) yuv.get(0);
+        u = (int[][]) yuv.get(1);
+        v = (int[][]) yuv.get(2);
         for(int i = 0; i < actualImgWidth; i++)
         {
             for(int j = 0; j < actualImgHeight; j++)
             {
                 this.image.setRGB(i, j, image.getRGB(i, j));
-                r = (image.getRGB(i, j) >> 16) & 0xFF;
-                g = (image.getRGB(i, j) >> 8) & 0xFF;
-                b = (image.getRGB(i, j)) & 0xFF;
-
-                // Convert RGB to YUV colorspace. Only Y (luminance) component is used for embedding data
-                y[i][j] = DCT.pixelRange((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
-                u[i][j] = DCT.pixelRange(-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
-                v[i][j] = DCT.pixelRange((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
-                // y[i][j] = DCT.pixelRange(( 0.2990 * r) + (0.5870 * g) + (0.1140 * b));
-                // u[i][j] = DCT.pixelRange((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
-                // v[i][j] = DCT.pixelRange(( 0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
             }
         }
 
@@ -239,7 +229,7 @@ public class DctLSBOutputStream extends OutputStream
             {
                 coeff &= ~(1);
             }
-            dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = (double) coeff;
+            dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = coeff;
 
             // Dequantize the block
             dct.dequantize8x8(dcts);
@@ -254,30 +244,15 @@ public class DctLSBOutputStream extends OutputStream
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      * @return Image data
-     * @throws OpenStegoException
      */
-    public BufferedImage getImage() throws OpenStegoException
+    public BufferedImage getImage()
     {
-        int r = 0;
-        int g = 0;
-        int b = 0;
+        ArrayList yuv = new ArrayList();
+        yuv.add(y);
+        yuv.add(u);
+        yuv.add(v);
 
-        for(int i = 0; i < actualImgWidth; i++)
-        {
-            for(int j = 0; j < actualImgHeight; j++)
-            {
-                // Convert YUV back to RGB
-                r = DCT.pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
-                g = DCT.pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
-                b = DCT.pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
-                // r = DCT.pixelRange(y[i][j] + 1.40200 * (v[i][j] - 128));
-                // g = DCT.pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
-                // b = DCT.pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128) );
-
-                image.setRGB(i, j, (r << 16) + (g << 8) + b);
-            }
-        }
-
+        image = ImageUtil.getImageFromYuv(yuv);
         return image;
     }
 }

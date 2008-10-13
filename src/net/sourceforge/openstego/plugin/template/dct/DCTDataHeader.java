@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.util.CommonUtil;
 
 /**
  * This class holds the header data for the data that needs to be embedded in the image.
@@ -113,7 +114,8 @@ public class DCTDataHeader
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
-            dataLength = (byteToInt(header[0]) + (byteToInt(header[1]) << 8) + (byteToInt(header[2]) << 16) + (byteToInt(header[3]) << 32));
+            dataLength = (CommonUtil.byteToInt(header[0]) + (CommonUtil.byteToInt(header[1]) << 8)
+                    + (CommonUtil.byteToInt(header[2]) << 16) + (CommonUtil.byteToInt(header[3]) << 32));
             fileNameLen = header[4];
             config.setUseCompression(header[5] == 1);
             config.setUseEncryption(header[6] == 1);
@@ -223,20 +225,5 @@ public class DCTDataHeader
     {
         // Max file name length assumed to be 256
         return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + 256;
-    }
-
-    /**
-     * Byte to Int converter
-     * @param b Input byte value
-     * @return Int value
-     */
-    public static int byteToInt(int b)
-    {
-        int i = (int) b;
-        if(i < 0)
-        {
-            i = i + 256;
-        }
-        return i;
     }
 }

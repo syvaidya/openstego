@@ -7,7 +7,14 @@
 package net.sourceforge.openstego.util;
 
 import java.awt.Color;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -192,6 +199,21 @@ public class CommonUtil
     }
 
     /**
+     * Byte to Int converter
+     * @param b Input byte value
+     * @return Int value
+     */
+    public static int byteToInt(int b)
+    {
+        int i = b;
+        if(i < 0)
+        {
+            i = i + 256;
+        }
+        return i;
+    }
+
+    /**
      * Helper method to replace file wildcard characters with Java regexp wildcard chararcters
      * @param input Input String
      * @return String containing modified wildcard characters
@@ -253,5 +275,104 @@ public class CommonUtil
         {
             return (name.toLowerCase().matches(filter));
         }
+    }
+
+    /**
+     * Returns the floor of the half of the input value
+     * 
+     * @param num Input number
+     * @return Floor of the half of the input number
+     */
+    public static int floorHalf(int num)
+    {
+        if((num & 1) == 1)
+        {
+            return (num - 1) / 2;
+        }
+        else
+        {
+            return num / 2;
+        }
+    }
+
+    /**
+     * Returns the ceiling of the half of the input value
+     * 
+     * @param num Input number
+     * @return Ceiling of the half of the input number
+     */
+    public static int ceilingHalf(int num)
+    {
+        if((num & 1) == 1)
+        {
+            return (num + 1) / 2;
+        }
+        else
+        {
+            return num / 2;
+        }
+    }
+
+    /**
+     * Returns the modulus of the input value (taking care of the sign of the value)
+     * 
+     * @param num Input number
+     * @param div Divisor for modulus
+     * @return Modulus of num by div
+     */
+    public static int mod(int num, int div)
+    {
+        if(num < 0)
+        {
+            return div - (-num % div);
+        }
+        else
+        {
+            return num % div;
+        }
+    }
+
+    /**
+     * Get maximum of two given values 
+     * @param x Value 1
+     * @param y value 2
+     * @return Max of the two values
+     */
+    public static int max(int x, int y)
+    {
+        return (x > y) ? x : y;
+    }
+
+    /**
+     * Get maximum of two given values 
+     * @param x Value 1
+     * @param y value 2
+     * @return Max of the two values
+     */
+    public static double max(double x, double y)
+    {
+        return (x > y) ? x : y;
+    }
+
+    /**
+     * Get minimum of two given values 
+     * @param x Value 1
+     * @param y value 2
+     * @return Min of the two values
+     */
+    public static int min(int x, int y)
+    {
+        return (x < y) ? x : y;
+    }
+
+    /**
+     * Get minimum of two given values 
+     * @param x Value 1
+     * @param y value 2
+     * @return Min of the two values
+     */
+    public static double min(double x, double y)
+    {
+        return (x < y) ? x : y;
     }
 }

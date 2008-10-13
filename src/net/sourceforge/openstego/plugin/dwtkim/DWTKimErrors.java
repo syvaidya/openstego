@@ -14,21 +14,27 @@ import net.sourceforge.openstego.OpenStegoException;
 public class DWTKimErrors
 {
     /**
-     * Error Code - Error while reading image data
+     * Error Code - No cover file given
      */
-    public static final int ERR_IMAGE_DATA_READ = 1;
+    public static final int ERR_NO_COVER_FILE = 1;
 
     /**
-     * Error Code - Image size insufficient for data
+     * Error Code - Image decomposition levels are not enough
      */
-    public static final int IMAGE_SIZE_INSUFFICIENT = 2;
+    public static final int ERR_DECOMP_LEVEL_NOT_ENOUGH = 2;
+
+    /**
+     * Error Code - Invalid signature file provided
+     */
+    public static final int ERR_SIG_NOT_VALID = 3;
 
     /*
      * Initialize the error code - message key map
      */
     static
     {
-        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
-        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
+        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
+        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_DECOMP_LEVEL_NOT_ENOUGH, "err.image.decompLevel.notEnough");
+        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");
     }
 }

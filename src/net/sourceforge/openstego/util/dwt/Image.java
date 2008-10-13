@@ -11,15 +11,20 @@ package net.sourceforge.openstego.util.dwt;
  */
 public class Image
 {
+    /**
+     * Image data
+     */
     private double[] data = null;
 
+    /**
+     * Image width
+     */
     int width = 0;
 
+    /**
+     * Image height
+     */
     int height = 0;
-
-    int size = 0;
-
-    int bpp = 0;
 
     /**
      * Default constructor
@@ -32,8 +37,6 @@ public class Image
         this.data = new double[width * height];
         this.width = width;
         this.height = height;
-        this.size = width * height;
-        this.bpp = 0;
     }
 
     /**
@@ -94,25 +97,5 @@ public class Image
     public void setHeight(int height)
     {
         this.height = height;
-    }
-
-    /**
-     * Get method for bpp
-     * 
-     * @return bpp
-     */
-    public int getBpp()
-    {
-        return bpp;
-    }
-
-    /**
-     * Set method for bpp
-     * 
-     * @param bpp
-     */
-    public void setBpp(int bpp)
-    {
-        this.bpp = bpp;
     }
 }

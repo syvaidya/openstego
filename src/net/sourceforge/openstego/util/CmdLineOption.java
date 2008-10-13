@@ -69,7 +69,7 @@ public class CmdLineOption
 
     /**
      * Set method for value
-     * @param value
+     * @param value Value
      */
     public void setValue(String value)
     {

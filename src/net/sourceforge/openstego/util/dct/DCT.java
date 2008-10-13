@@ -6,6 +6,8 @@
 
 package net.sourceforge.openstego.util.dct;
 
+import net.sourceforge.openstego.util.ImageUtil;
+
 /**
  * Class to handle Discrete Cosine Transforms (DCT).
  *
@@ -36,32 +38,18 @@ public class DCT
     /**
      * JPEG Luminance Quantization Table
      */
-    private static final int[][] JPEG_LUMIN_QUANT_TBL =
-    {
-        {16,  11,  10,  16,  24,  40,  51,  61},
-        {12,  12,  14,  19,  26,  58,  60,  55},
-        {14,  13,  16,  24,  40,  57,  69,  56},
-        {14,  17,  22,  29,  51,  87,  80,  62},
-        {18,  22,  37,  56,  68, 109, 103,  77},
-        {24,  35,  55,  64,  81, 104, 113,  92},
-        {49,  64,  78,  87, 103, 121, 120, 101},
-        {72,  92,  95,  98, 112, 100, 103,  99}
-    };
+    private static final int[][] JPEG_LUMIN_QUANT_TBL = { { 16, 11, 10, 16, 24, 40, 51, 61 },
+            { 12, 12, 14, 19, 26, 58, 60, 55 }, { 14, 13, 16, 24, 40, 57, 69, 56 }, { 14, 17, 22, 29, 51, 87, 80, 62 },
+            { 18, 22, 37, 56, 68, 109, 103, 77 }, { 24, 35, 55, 64, 81, 104, 113, 92 },
+            { 49, 64, 78, 87, 103, 121, 120, 101 }, { 72, 92, 95, 98, 112, 100, 103, 99 } };
 
     /**
      * JPEG Chrominance Quantization Table
      */
-    private static final int[][] JPEG_CHROMIN_QUANT_TBL =
-    {
-        {17,  18,  24,  47,  99,  99,  99,  99},
-        {18,  21,  26,  66,  99,  99,  99,  99},
-        {24,  26,  56,  99,  99,  99,  99,  99},
-        {47,  66,  99,  99,  99,  99,  99,  99},
-        {99,  99,  99,  99,  99,  99,  99,  99},
-        {99,  99,  99,  99,  99,  99,  99,  99},
-        {99,  99,  99,  99,  99,  99,  99,  99},
-        {99,  99,  99,  99,  99,  99,  99,  99}
-    };
+    private static final int[][] JPEG_CHROMIN_QUANT_TBL = { { 17, 18, 24, 47, 99, 99, 99, 99 },
+            { 18, 21, 26, 66, 99, 99, 99, 99 }, { 24, 26, 56, 99, 99, 99, 99, 99 }, { 47, 66, 99, 99, 99, 99, 99, 99 },
+            { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 },
+            { 99, 99, 99, 99, 99, 99, 99, 99 } };
 
     private double[][] nxmCosTableX = null;
 
@@ -128,7 +116,7 @@ public class DCT
         {
             for(j = 0; j < cols; j++)
             {
-                nxmCosTableX[i][j] = cx * Math.cos((Math.PI * ((2 * i + 1) * j)) / (double) (2 * N));
+                nxmCosTableX[i][j] = cx * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * N));
             }
         }
 
@@ -136,7 +124,7 @@ public class DCT
         {
             for(j = 0; j < rows; j++)
             {
-                nxmCosTableY[i][j] = cy * Math.cos((Math.PI * ((2 * i + 1) * j)) / (double) (2 * M));
+                nxmCosTableY[i][j] = cy * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * M));
             }
         }
     }
@@ -160,7 +148,7 @@ public class DCT
         {
             for(y = 0; y < M; y++)
             {
-                t += ((int) pixels[x][y] - 128);
+                t += (pixels[x][y] - 128);
             }
         }
         dcts[0][0] = cx0 * cy0 * t;
@@ -172,7 +160,7 @@ public class DCT
             {
                 for(y = 0; y < M; y++)
                 {
-                    t += ((int) pixels[x][y] - 128) * nxmCosTableX[x][i];
+                    t += (pixels[x][y] - 128) * nxmCosTableX[x][i];
                 }
             }
             dcts[i][0] = cy0 * t;
@@ -185,7 +173,7 @@ public class DCT
             {
                 for(y = 0; y < M; y++)
                 {
-                    t += ((int) pixels[x][y] - 128) * nxmCosTableY[y][j];
+                    t += (pixels[x][y] - 128) * nxmCosTableY[y][j];
                 }
             }
             dcts[0][j] = cx0 * t;
@@ -200,7 +188,7 @@ public class DCT
                 {
                     for(y = 0; y < M; y++)
                     {
-                        t += ((int) pixels[x][y] - 128) * nxmCosTableX[x][i] * nxmCosTableY[y][j];
+                        t += (pixels[x][y] - 128) * nxmCosTableX[x][i] * nxmCosTableY[y][j];
                     }
                 }
                 dcts[i][j] = t;
@@ -247,7 +235,7 @@ public class DCT
                     }
                 }
 
-                pixels[x][y] = pixelRange((int) (t + 128.5));
+                pixels[x][y] = ImageUtil.pixelRange((int) (t + 128.5));
             }
         }
     }
@@ -292,7 +280,7 @@ public class DCT
         {
             for(v = 0; v < M; v++)
             {
-                dcts[u][v] = ((int) pixels[u][v] - 128);
+                dcts[u][v] = (pixels[u][v] - 128);
             }
         }
 
@@ -360,7 +348,7 @@ public class DCT
         {
             for(v = 0; v < M; v++)
             {
-                pixels[u][v] = pixelRange((int) (tmp[u][v] + 128.5));
+                pixels[u][v] = ImageUtil.pixelRange((int) (tmp[u][v] + 128.5));
             }
         }
 
@@ -542,7 +530,7 @@ public class DCT
     {
         int i = 0;
         int j = 0;
-        double sqJpeg = Math.sqrt((double) NJPEG);
+        double sqJpeg = Math.sqrt(NJPEG);
         double sqJpeg2 = Math.sqrt(2.0 / NJPEG);
 
         for(j = 0; j < NJPEG; j++)
@@ -582,7 +570,7 @@ public class DCT
                 temp[i][j] = 0.0;
                 for(k = 0; k < NJPEG; k++)
                 {
-                    temp[i][j] += ((int) input[i][k] - 128) * Ct[k][j];
+                    temp[i][j] += (input[i][k] - 128) * Ct[k][j];
                 }
             }
         }
@@ -659,7 +647,7 @@ public class DCT
                     temp1 += Ct[i][k] * temp[k][j];
                 }
                 temp1 += 128.0;
-                output[i][j] = pixelRange(round(temp1));
+                output[i][j] = ImageUtil.pixelRange(round(temp1));
             }
         }
     }
@@ -731,16 +719,6 @@ public class DCT
     }
 
     /**
-     * Utility method to limit the value within [0,255] range
-     * @param p Input value
-     * @return Limited value
-     */
-    public static int pixelRange(double p)
-    {
-        return ((p > 255) ? 255 : (p < 0) ? 0 : (int) p);
-    }
-
-    /**
      * Utility rounding method
      * @param a Input value
      * @return Rounded value
@@ -793,11 +771,6 @@ public class DCT
         {
             nxnCosTable[i] = 1.0 / (2.0 * Math.cos(nxnCosTable[i] * Math.PI / (2.0 * N)));
         }
-    }
-
-    private int pixelRange(int p)
-    {
-        return ((p > 255) ? 255 : (p < 0) ? 0 : p);
     }
 
     private void bitrev(double[] f, int len, int startIdx)

@@ -134,9 +134,8 @@ public abstract class OpenStegoPlugin
      * Method to find out whether given stego data can be handled by this plugin or not
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
-     * @throws OpenStegoException
      */
-    public boolean canHandle(byte[] stegoData) throws OpenStegoException
+    public boolean canHandle(byte[] stegoData)
     {
         boolean output = true;
 

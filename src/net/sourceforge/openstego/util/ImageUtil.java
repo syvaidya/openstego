@@ -58,8 +58,8 @@ public class ImageUtil
                 for(int y = 0; y < height; y++)
                 {
                     random.nextBytes(rgbValue);
-                    image.setRGB(x, y, byteToInt(rgbValue[0]) + (byteToInt(rgbValue[1]) << 8)
-                            + (byteToInt(rgbValue[2]) << 16));
+                    image.setRGB(x, y, CommonUtil.byteToInt(rgbValue[0]) + (CommonUtil.byteToInt(rgbValue[1]) << 8)
+                            + (CommonUtil.byteToInt(rgbValue[2]) << 16));
                 }
             }
 
@@ -145,20 +145,10 @@ public class ImageUtil
     }
 
     /**
-     * Byte to Int converter
-     * @param b Input byte value
-     * @return Int value
+     * Get YUV data from given image's RGB data
+     * @param image Image
+     * @return List with three elements of two-dimensional int's - Y, U and V
      */
-    public static int byteToInt(int b)
-    {
-        int i = (int) b;
-        if(i < 0)
-        {
-            i = i + 256;
-        }
-        return i;
-    }
-
     public static ArrayList getYuvFromImage(BufferedImage image)
     {
         ArrayList yuv = new ArrayList();
@@ -183,13 +173,13 @@ public class ImageUtil
             for(int j = 0; j < height; j++)
             {
                 r = (image.getRGB(i, j) >> 16) & 0xFF;
-                g = (image.getRGB(i, j) >>  8) & 0xFF;
-                b = (image.getRGB(i, j) >>  0) & 0xFF;
+                g = (image.getRGB(i, j) >> 8) & 0xFF;
+                b = (image.getRGB(i, j) >> 0) & 0xFF;
 
                 // Convert RGB to YUV colorspace
-                y[i][j] = pixelRange( (0.257 * r) + (0.504 * g) + (0.098 * b) + 16 );
+                y[i][j] = pixelRange((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
                 u[i][j] = pixelRange(-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
-                v[i][j] = pixelRange( (0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
+                v[i][j] = pixelRange((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
                 //y[i][j] = pixelRange(( 0.2990 * r) + (0.5870 * g) + (0.1140 * b));
                 //u[i][j] = pixelRange((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
                 //v[i][j] = pixelRange(( 0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
@@ -203,6 +193,11 @@ public class ImageUtil
         return yuv;
     }
 
+    /**
+     * Get image (with RGB data) from given YUV data
+     * @param yuv List with three elements of two-dimensional int's - Y, U and V
+     * @return Image
+     */
     public static BufferedImage getImageFromYuv(ArrayList yuv)
     {
         BufferedImage image = null;
@@ -228,9 +223,9 @@ public class ImageUtil
             for(int j = 0; j < height; j++)
             {
                 // Convert YUV back to RGB
-                r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128)                          );
+                r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
                 g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
-                b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128)                          );
+                b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
                 //r = pixelRange(y[i][j]                             + 1.40200 * (v[i][j] - 128));
                 //g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
                 //b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128)                            );
@@ -240,6 +235,16 @@ public class ImageUtil
         }
 
         return image;
+    }
+
+    /**
+     * Utility method to limit the value within [0,255] range
+     * @param p Input value
+     * @return Limited value
+     */
+    public static int pixelRange(int p)
+    {
+        return ((p > 255) ? 255 : (p < 0) ? 0 : p);
     }
 
     /**

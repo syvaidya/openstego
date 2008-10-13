@@ -71,6 +71,11 @@ public class OpenStegoException extends Exception
     public static final int SIG_NA_PLUGIN_NOT_WM = 10;
 
     /**
+     * Error Code - Plugin not found
+     */
+    public static final int PLUGIN_NOT_FOUND = 11;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static HashMap errMsgKeyMap = new HashMap();
@@ -100,6 +105,7 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, IMAGE_FILE_INVALID, "err.image.file.invalid");
         addErrorCode(OpenStego.NAMESPACE, NO_PLUGIN_SPECIFIED, "err.plugin.notSpecified");
         addErrorCode(OpenStego.NAMESPACE, SIG_NA_PLUGIN_NOT_WM, "err.plugin.sigNotWm");
+        addErrorCode(OpenStego.NAMESPACE, PLUGIN_NOT_FOUND, "err.plugin.notFound");
     }
 
     /**

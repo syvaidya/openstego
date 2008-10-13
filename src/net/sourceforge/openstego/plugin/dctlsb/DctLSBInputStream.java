@@ -14,6 +14,7 @@ import java.util.Random;
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
+import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.StringUtil;
 import net.sourceforge.openstego.util.dct.DCT;
 
@@ -80,10 +81,6 @@ public class DctLSBInputStream extends InputStream
      */
     public DctLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
     {
-        int r = 0;
-        int g = 0;
-        int b = 0;
-
         if(image == null)
         {
             throw new IllegalArgumentException("No image file provided");
@@ -97,19 +94,7 @@ public class DctLSBInputStream extends InputStream
         this.imgWidth = imgWidth - (imgWidth % DCT.NJPEG);
         this.imgHeight = imgHeight - (imgHeight % DCT.NJPEG);
 
-        y = new int[imgWidth][imgHeight];
-        for(int i = 0; i < imgWidth; i++)
-        {
-            for(int j = 0; j < imgHeight; j++)
-            {
-                r = (image.getRGB(i, j) >> 16) & 0xFF;
-                g = (image.getRGB(i, j) >> 8) & 0xFF;
-                b = (image.getRGB(i, j)) & 0xFF;
-
-                // Convert RGB to YUV colorspace. Only Y (luminance) component is used for embedding data
-                y[i][j] = DCT.pixelRange((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
-            }
-        }
+        y = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
 
         dct = new DCT();
         dct.initDct8x8();

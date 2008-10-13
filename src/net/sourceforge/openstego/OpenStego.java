@@ -6,7 +6,12 @@
 
 package net.sourceforge.openstego;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +21,13 @@ import java.util.zip.GZIPOutputStream;
 import javax.swing.UIManager;
 
 import net.sourceforge.openstego.ui.OpenStegoUI;
-import net.sourceforge.openstego.util.*;
+import net.sourceforge.openstego.util.CmdLineOption;
+import net.sourceforge.openstego.util.CmdLineOptions;
+import net.sourceforge.openstego.util.CmdLineParser;
+import net.sourceforge.openstego.util.CommonUtil;
+import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.PasswordInput;
+import net.sourceforge.openstego.util.PluginManager;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
@@ -213,13 +224,16 @@ public class OpenStego
                 for(int i = 0; i < pluginList.size(); i++)
                 {
                     plugin = (OpenStegoPlugin) pluginList.get(i);
-                    tempConfig = plugin.createConfig();
-                    tempConfig.setPassword(config.getPassword());
-                    config = tempConfig;
-                    if(plugin.canHandle(stegoData))
+                    if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
                     {
-                        pluginFound = true;
-                        break;
+                        tempConfig = plugin.createConfig();
+                        tempConfig.setPassword(config.getPassword());
+                        config = tempConfig;
+                        if(plugin.canHandle(stegoData))
+                        {
+                            pluginFound = true;
+                            break;
+                        }
                     }
                 }
 
@@ -285,7 +299,8 @@ public class OpenStego
 
     /**
      * Method to generate the signature data using the given plugin
-     * @return Signature data     * @throws OpenStegoException
+     * @return Signature data
+     * @throws OpenStegoException
      */
     public byte[] generateSignature() throws OpenStegoException
     {
@@ -379,8 +394,7 @@ public class OpenStego
                     plugin = PluginManager.getPluginByName(pluginName);
                     if(plugin == null)
                     {
-                        //TODO
-                        throw new Exception();
+                        throw new OpenStegoException(NAMESPACE, OpenStegoException.PLUGIN_NOT_FOUND, pluginName, null);
                     }
                 }
                 else
@@ -431,7 +445,7 @@ public class OpenStego
                     if(stego.getConfig().isUseEncryption() && stego.getConfig().getPassword() == null)
                     {
                         stego.getConfig().setPassword(
-                                PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                            PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
                     }
 
                     coverFileList = CommonUtil.parseFileList(coverFileName, ";");
@@ -441,15 +455,15 @@ public class OpenStego
                         if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                         {
                             System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                             return;
                         }
 
                         CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
                                 : new File(msgFileName),
-                                coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                     }
                     // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
                     else
@@ -465,11 +479,11 @@ public class OpenStego
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
                             CommonUtil.writeFile(stego.embedData(
-                                    (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
-                                    (File) coverFileList.get(i), coverFileName), coverFileName);
+                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                                (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                         }
                     }
                 }
@@ -495,7 +509,7 @@ public class OpenStego
                             if(stego.getConfig().getPassword() == null)
                             {
                                 stego.getConfig().setPassword(
-                                        PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                                    PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
 
                                 try
                                 {
@@ -545,8 +559,8 @@ public class OpenStego
                 else if(command.equals("gensig"))
                 {
                     signatureFileName = options.getOptionValue("-gf");
-                    CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null ||
-                            signatureFileName.equals("-")) ? null : signatureFileName);
+                    CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null || signatureFileName
+                            .equals("-")) ? null : signatureFileName);
                 }
                 else if(command.equals("readformats"))
                 {
@@ -570,8 +584,8 @@ public class OpenStego
                     for(int i = 0; i < plugins.size(); i++)
                     {
                         plugin = (OpenStegoPlugin) plugins.get(i);
-                        System.out.println(plugin.getName() + " " + plugin.getPurposesLabel() +  " - "
-                                            + plugin.getDescription());
+                        System.out.println(plugin.getName() + " " + plugin.getPurposesLabel() + " - "
+                                + plugin.getDescription());
                     }
                 }
                 else if(command.equals("help"))
