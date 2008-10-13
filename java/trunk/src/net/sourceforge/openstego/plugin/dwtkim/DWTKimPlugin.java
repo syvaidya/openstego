@@ -12,23 +12,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.dwt.DWT;
-import net.sourceforge.openstego.plugin.template.dwt.DWTPluginTemplate;
-import net.sourceforge.openstego.plugin.template.dwt.DWTUtil;
-import net.sourceforge.openstego.plugin.template.dwt.ImageTree;
+import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.dwt.DWT;
+import net.sourceforge.openstego.util.dwt.DWTUtil;
+import net.sourceforge.openstego.util.dwt.ImageTree;
 
 /**
  * Plugin for OpenStego which implements the DWT based algorithm by Kim
  */
-public class DWTKimPlugin extends DWTPluginTemplate
+public class DWTKimPlugin extends ImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels

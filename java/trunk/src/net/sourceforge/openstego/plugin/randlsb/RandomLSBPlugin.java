@@ -8,20 +8,19 @@ package net.sourceforge.openstego.plugin.randlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitPluginTemplate;
+import net.sourceforge.openstego.plugin.lsb.LSBConfig;
+import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
+import net.sourceforge.openstego.plugin.lsb.LSBErrors;
+import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Plugin for OpenStego which implements the Random LSB algorithm of steganography
  */
-public class RandomLSBPlugin extends ImageBitPluginTemplate
+public class RandomLSBPlugin extends LSBPlugin
 {
     /**
      * Constant for Namespace to use for this plugin
@@ -39,7 +38,6 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     public RandomLSBPlugin()
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.RandomLSBPluginLabels");
-        new RandomLSBErrors(); // Initialize error codes
     }
 
     /**
@@ -49,17 +47,6 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     public String getName()
     {
         return "RandomLSB";
-    }
-
-    /**
-     * Gives the purpose(s) of the plugin
-     * @return Purpose(s) of the plugin
-     */
-    public List getPurposes()
-    {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_DATA_HIDING);
-        return purposes;
     }
 
     /**
@@ -94,8 +81,8 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
             // Generate random image, if input image is not provided
             if(cover == null)
             {
-                numOfPixels = (int) (ImageBitDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((ImageBitConfig) config).getMaxBitsUsedPerChannel()));
+                numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
+                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) config).getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
             }
             else
@@ -140,7 +127,7 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
     {
         int bytesRead = 0;
         byte[] data = null;
-        ImageBitDataHeader header = null;
+        LSBDataHeader header = null;
         RandomLSBInputStream lsbIS = null;
 
         try
@@ -152,7 +139,7 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
             bytesRead = lsbIS.read(data, 0, data.length);
             if(bytesRead != data.length)
             {
-                throw new OpenStegoException(NAMESPACE, RandomLSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ, null);
             }
             lsbIS.close();
 
@@ -175,7 +162,7 @@ public class RandomLSBPlugin extends ImageBitPluginTemplate
      */
     public String getUsage() throws OpenStegoException
     {
-        ImageBitConfig defaultConfig = new ImageBitConfig();
+        LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage",
                 new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
     }

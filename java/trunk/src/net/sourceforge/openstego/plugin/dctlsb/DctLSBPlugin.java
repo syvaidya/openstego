@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.dct.DCT;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
-import net.sourceforge.openstego.plugin.template.dct.DCTPluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.dct.DCT;
 
 /**
  * Plugin for OpenStego which implements the DCT based Least-significant bit algorithm
  */
-public class DctLSBPlugin extends DCTPluginTemplate
+public class DctLSBPlugin extends ImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels

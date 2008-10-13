@@ -13,7 +13,9 @@ import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
+import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
+import net.sourceforge.openstego.plugin.lsb.LSBErrors;
+import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
 import net.sourceforge.openstego.util.StringUtil;
 
 /**
@@ -29,7 +31,7 @@ public class RandomLSBInputStream extends InputStream
     /**
      * Data header
      */
-    private ImageBitDataHeader dataHeader = null;
+    private LSBDataHeader dataHeader = null;
 
     /**
      * Number of bits used per color channel
@@ -71,7 +73,7 @@ public class RandomLSBInputStream extends InputStream
     {
         if(image == null)
         {
-            throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.image = image;
@@ -103,7 +105,7 @@ public class RandomLSBInputStream extends InputStream
     private void readHeader() throws OpenStegoException
     {
         boolean[][][][] oldBitRead = null;
-        dataHeader = new ImageBitDataHeader(this, config);
+        dataHeader = new LSBDataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
 
         // Re-initialize hit-check array based on read channelBitsUsed
@@ -168,7 +170,7 @@ public class RandomLSBInputStream extends InputStream
      * Get method for dataHeader
      * @return Data header
      */
-    public ImageBitDataHeader getDataHeader()
+    public LSBDataHeader getDataHeader()
     {
         return dataHeader;
     }

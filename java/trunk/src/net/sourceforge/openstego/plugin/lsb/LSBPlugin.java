@@ -9,19 +9,26 @@ package net.sourceforge.openstego.plugin.lsb;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitPluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.ui.OpenStegoUI;
+import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.CmdLineOption;
+import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography
  */
-public class LSBPlugin extends ImageBitPluginTemplate
+public class LSBPlugin extends ImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels
@@ -94,8 +101,8 @@ public class LSBPlugin extends ImageBitPluginTemplate
             // Generate random image, if input image is not provided
             if(cover == null)
             {
-                numOfPixels = (int) (ImageBitDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((ImageBitConfig) config).getMaxBitsUsedPerChannel()));
+                numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
+                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) config).getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
             }
             else
@@ -140,7 +147,7 @@ public class LSBPlugin extends ImageBitPluginTemplate
     {
         int bytesRead = 0;
         byte[] data = null;
-        ImageBitDataHeader header = null;
+        LSBDataHeader header = null;
         LSBInputStream lsbIS = null;
 
         try
@@ -169,13 +176,92 @@ public class LSBPlugin extends ImageBitPluginTemplate
     }
 
     /**
+     * Method to get the list of supported file extensions for writing
+     * @return List of supported file extensions for writing
+     * @throws OpenStegoException
+     */
+    public List getWritableFileExtensions() throws OpenStegoException
+    {
+        if(writeFormats != null)
+        {
+            return writeFormats;
+        }
+
+        String format = null;
+        Iterator iter = null;
+        ImageWriteParam writeParam = null;
+
+        for(int i = writeFormats.size(); i >= 0; i--)
+        {
+            format = (String) writeFormats.get(i);
+            iter = ImageIO.getImageWritersBySuffix(format);
+            while(iter.hasNext())
+            {
+                writeParam = ((ImageWriter) iter.next()).getDefaultWriteParam();
+                try
+                {
+                    writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    writeParam.getCompressionTypes();
+                    writeFormats.remove(i);
+                }
+                catch(UnsupportedOperationException uoEx) // Compression not supported
+                {
+                    break;
+                }
+
+                // Only lossless image compression is supported
+                if(writeParam.isCompressionLossless())
+                {
+                    break;
+                }
+            }
+        }
+
+        //Expicilty removing GIF and WBMP formats, as they use unsupported color models
+        writeFormats.remove("gif");
+        writeFormats.remove("wbmp");
+
+        return writeFormats;
+    }
+
+    /**
+     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * @param stegoUI Reference to the parent OpenStegoUI object
+     * @return UI object specific to this plugin
+     * @throws OpenStegoException
+     */
+    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
+    {
+        return new LSBEmbedOptionsUI(stegoUI);
+    }
+
+    /**
+     * Method to populate the standard command-line options used by this plugin
+     * @param options Existing command-line options. Plugin-specific options will get added to this list
+     * @throws OpenStegoException
+     */
+    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException
+    {
+        options.add("-b", "--maxBitsUsedPerChannel", CmdLineOption.TYPE_OPTION, true);
+    }
+
+    /**
+     * Method to get the configuration class specific to this plugin
+     * @return Configuration class specific to this plugin
+     */
+    public Class getConfigClass()
+    {
+        return LSBConfig.class;
+    }
+
+    /**
      * Method to get the usage details of the plugin
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
     public String getUsage() throws OpenStegoException
     {
-        ImageBitConfig defaultConfig = new ImageBitConfig();
+        LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage",
                 new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
     }

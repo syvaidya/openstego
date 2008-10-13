@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.template.dct;
+package net.sourceforge.openstego.util.dct;
 
 /**
  * Class to handle Discrete Cosine Transforms (DCT).

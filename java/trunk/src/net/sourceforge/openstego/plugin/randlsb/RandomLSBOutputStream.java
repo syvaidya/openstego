@@ -13,8 +13,10 @@ import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
+import net.sourceforge.openstego.plugin.lsb.LSBConfig;
+import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
+import net.sourceforge.openstego.plugin.lsb.LSBErrors;
+import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
 import net.sourceforge.openstego.util.StringUtil;
 
 /**
@@ -80,7 +82,7 @@ public class RandomLSBOutputStream extends OutputStream
     {
         if(image == null)
         {
-            throw new OpenStegoException(RandomLSBPlugin.NAMESPACE, RandomLSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
         }
 
         this.dataLength = dataLength;
@@ -122,12 +124,12 @@ public class RandomLSBOutputStream extends OutputStream
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
-        ImageBitDataHeader header = null;
+        LSBDataHeader header = null;
 
         try
         {
             noOfPixels = imgWidth * imgHeight;
-            header = new ImageBitDataHeader(dataLength, channelBits, fileName, config);
+            header = new LSBDataHeader(dataLength, channelBits, fileName, config);
             headerSize = header.getHeaderSize();
 
             while(true)
@@ -135,10 +137,9 @@ public class RandomLSBOutputStream extends OutputStream
                 if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
                 {
                     channelBits++;
-                    if(channelBits > ((ImageBitConfig) config).getMaxBitsUsedPerChannel())
+                    if(channelBits > ((LSBConfig) config).getMaxBitsUsedPerChannel())
                     {
-                        throw new OpenStegoException(RandomLSBPlugin.NAMESPACE,
-                                RandomLSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
+                        throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
                 }
                 else

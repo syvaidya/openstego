@@ -12,8 +12,6 @@ import java.io.OutputStream;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitConfig;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -125,12 +123,12 @@ public class LSBOutputStream extends OutputStream
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
-        ImageBitDataHeader header = null;
+        LSBDataHeader header = null;
 
         try
         {
             noOfPixels = imgWidth * imgHeight;
-            header = new ImageBitDataHeader(dataLength, channelBits, fileName, config);
+            header = new LSBDataHeader(dataLength, channelBits, fileName, config);
             headerSize = header.getHeaderSize();
 
             while(true)
@@ -138,7 +136,7 @@ public class LSBOutputStream extends OutputStream
                 if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
                 {
                     channelBits++;
-                    if(channelBits > ((ImageBitConfig) config).getMaxBitsUsedPerChannel())
+                    if(channelBits > ((LSBConfig) config).getMaxBitsUsedPerChannel())
                     {
                         throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
