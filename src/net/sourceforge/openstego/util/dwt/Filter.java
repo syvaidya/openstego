@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.plugin.template.dwt;
+package net.sourceforge.openstego.util.dwt;
 
 /**
  * Object to store Filter data

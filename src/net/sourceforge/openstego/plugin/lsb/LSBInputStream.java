@@ -12,7 +12,6 @@ import java.io.InputStream;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.imagebit.ImageBitDataHeader;
 
 /**
  * InputStream to read embedded data from image file using LSB algorithm
@@ -27,7 +26,7 @@ public class LSBInputStream extends InputStream
     /**
      * Data header
      */
-    private ImageBitDataHeader dataHeader = null;
+    private LSBDataHeader dataHeader = null;
 
     /**
      * Number of bits used per color channel
@@ -92,7 +91,7 @@ public class LSBInputStream extends InputStream
      */
     private void readHeader() throws OpenStegoException
     {
-        dataHeader = new ImageBitDataHeader(this, config);
+        dataHeader = new LSBDataHeader(this, config);
         this.channelBitsUsed = dataHeader.getChannelBitsUsed();
 
         if(currBit != 0)
@@ -151,7 +150,7 @@ public class LSBInputStream extends InputStream
      * Get method for dataHeader
      * @return Data header
      */
-    public ImageBitDataHeader getDataHeader()
+    public LSBDataHeader getDataHeader()
     {
         return dataHeader;
     }

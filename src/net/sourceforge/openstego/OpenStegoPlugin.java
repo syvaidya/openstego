@@ -6,6 +6,7 @@
 
 package net.sourceforge.openstego;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
@@ -89,8 +90,8 @@ public abstract class OpenStegoPlugin
     /**
      * Method to embed the message into the cover data
      * @param msg Message to be embedded
-     * @param msgFileName Name of the message file. If this value is provided, then the filename should be
-     *                    embedded in the cover data
+     * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
+     *            the cover data
      * @param cover Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
@@ -119,9 +120,10 @@ public abstract class OpenStegoPlugin
     public abstract byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException;
 
     /**
-     * Method to generate the signature data. This method needs to be implemented only if the purpose of the plugin
-     * is Watermarking
-     * @return Signature data     * @throws OpenStegoException
+     * Method to generate the signature data. This method needs to be implemented only if the purpose of the plugin is
+     * Watermarking
+     * @return Signature data
+     * @throws OpenStegoException
      */
     public byte[] generateSignature() throws OpenStegoException
     {
@@ -134,7 +136,24 @@ public abstract class OpenStegoPlugin
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
      * @throws OpenStegoException
      */
-    public abstract boolean canHandle(byte[] stegoData) throws OpenStegoException;
+    public boolean canHandle(byte[] stegoData) throws OpenStegoException
+    {
+        boolean output = true;
+
+        try
+        {
+            extractMsgFileName(stegoData, "DUMMY");
+        }
+        catch(OpenStegoException osEx)
+        {
+            if(osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD)
+            {
+                output = false;
+            }
+        }
+
+        return output;
+    }
 
     /**
      * Method to get the list of supported file extensions for reading
@@ -180,11 +199,29 @@ public abstract class OpenStegoPlugin
     // ------------- Other Methods -------------
 
     /**
+     * Method to get the configuration class specific to this plugin
+     * @return Configuration class specific to this plugin
+     */
+    public abstract Class getConfigClass();
+
+    /**
      * Method to create default configuration data (specific to this plugin)
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public abstract OpenStegoConfig createConfig() throws OpenStegoException;
+    public OpenStegoConfig createConfig() throws OpenStegoException
+    {
+        try
+        {
+            Constructor constructor = getConfigClass().getConstructor(new Class[0]);
+            this.config = (OpenStegoConfig) constructor.newInstance(new Object[0]);
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
+        }
+        return this.config;
+    }
 
     /**
      * Method to create configuration data (specific to this plugin) based on the property map
@@ -192,7 +229,19 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public abstract OpenStegoConfig createConfig(Map propMap) throws OpenStegoException;
+    public OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
+    {
+        try
+        {
+            Constructor constructor = getConfigClass().getConstructor(new Class[] { Map.class });
+            this.config = (OpenStegoConfig) constructor.newInstance(new Object[] { propMap });
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
+        }
+        return this.config;
+    }
 
     /**
      * Method to create configuration data (specific to this plugin) based on the command-line options
@@ -200,7 +249,19 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public abstract OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException;
+    public OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
+    {
+        try
+        {
+            Constructor constructor = getConfigClass().getConstructor(new Class[] { CmdLineOptions.class });
+            this.config = (OpenStegoConfig) constructor.newInstance(new Object[] { options });
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
+        }
+        return this.config;
+    }
 
     /**
      * Get method for config

@@ -6,16 +6,9 @@
 
 package net.sourceforge.openstego.plugin.template.dwt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.OpenStegoPlugin;
+import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
 import net.sourceforge.openstego.util.CmdLineOptions;
@@ -24,125 +17,17 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Template plugin for OpenStego which implements the DWT based steganography for images (wavelet domain)
  */
-public abstract class DWTPluginTemplate extends OpenStegoPlugin
+public abstract class DWTPluginTemplate extends ImagePluginTemplate
 {
     /**
      * Constant for Namespace to use for this plugin
      */
     public final static String NAMESPACE = "DWTTEMPLATE";
 
-    /**
-     * Static list of supported read formats
-     */
-    private static List readFormats = null;
-
-    /**
-     * Static list of supported write formats
-     */
-    private static List writeFormats = null;
-
     static
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DWTPluginTemplateLabels");
         new DWTErrors(); // Initialize error codes
-    }
-
-    /**
-     * Method to find out whether given stego data can be handled by this plugin or not
-     * 
-     * @param stegoData Stego data containing the message
-     * @return Boolean indicating whether the stego data can be handled by this plugin or not
-     * @throws OpenStegoException
-     */
-    public boolean canHandle(byte[] stegoData) throws OpenStegoException
-    {
-        boolean output = true;
-
-        try
-        {
-            extractMsgFileName(stegoData, "DUMMY");
-        }
-        catch(OpenStegoException osEx)
-        {
-            if(osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD)
-            {
-                output = false;
-            }
-        }
-
-        return output;
-    }
-
-    /**
-     * Method to get the list of supported file extensions for reading
-     * 
-     * @return List of supported file extensions for reading
-     * @throws OpenStegoException
-     */
-    public List getReadableFileExtensions() throws OpenStegoException
-    {
-        if(readFormats != null)
-        {
-            return readFormats;
-        }
-
-        String format = null;
-        String[] formats = null;
-        List formatList = new ArrayList();
-
-        formats = ImageIO.getReaderFormatNames();
-        for(int i = 0; i < formats.length; i++)
-        {
-            format = formats[i].toLowerCase();
-            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
-            {
-                format = "jp2";
-            }
-            if(!formatList.contains(format))
-            {
-                formatList.add(format);
-            }
-        }
-
-        Collections.sort(formatList);
-        readFormats = formatList;
-        return readFormats;
-    }
-
-    /**
-     * Method to get the list of supported file extensions for writing
-     * 
-     * @return List of supported file extensions for writing
-     * @throws OpenStegoException
-     */
-    public List getWritableFileExtensions() throws OpenStegoException
-    {
-        if(writeFormats != null)
-        {
-            return writeFormats;
-        }
-
-        String format = null;
-        String[] formats = null;
-        List formatList = new ArrayList();
-
-        formats = ImageIO.getWriterFormatNames();
-        for(int i = 0; i < formats.length; i++)
-        {
-            format = formats[i].toLowerCase();
-            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
-            {
-                format = "jp2";
-            }
-            if(!formatList.contains(format))
-            {
-                formatList.add(format);
-            }
-        }
-
-        Collections.sort(formatList);
-        writeFormats = formatList;
-        return writeFormats;
     }
 
     /**
@@ -168,40 +53,11 @@ public abstract class DWTPluginTemplate extends OpenStegoPlugin
     }
 
     /**
-     * Method to create default configuration data (specific to this plugin)
-     * 
-     * @return Configuration data
-     * @throws OpenStegoException
+     * Method to get the configuration class specific to this plugin
+     * @return Configuration class specific to this plugin
      */
-    public OpenStegoConfig createConfig() throws OpenStegoException
+    public Class getConfigClass()
     {
-        this.config = new DWTConfig();
-        return this.config;
-    }
-
-    /**
-     * Method to create configuration data (specific to this plugin) based on the property map
-     * 
-     * @param propMap Property map
-     * @return Configuration data
-     * @throws OpenStegoException
-     */
-    public OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
-    {
-        this.config = new DWTConfig(propMap);
-        return this.config;
-    }
-
-    /**
-     * Method to create configuration data (specific to this plugin) based on the command-line options
-     * 
-     * @param options Command-line options
-     * @return Configuration data
-     * @throws OpenStegoException
-     */
-    public OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
-    {
-        this.config = new DWTConfig(options);
-        return this.config;
+        return OpenStegoConfig.class;
     }
 }

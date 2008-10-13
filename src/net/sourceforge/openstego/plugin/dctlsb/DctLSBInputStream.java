@@ -13,9 +13,9 @@ import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.dct.DCT;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
 import net.sourceforge.openstego.util.StringUtil;
+import net.sourceforge.openstego.util.dct.DCT;
 
 /**
  * InputStream to read embedded data from image file using DCT LSB algorithm
