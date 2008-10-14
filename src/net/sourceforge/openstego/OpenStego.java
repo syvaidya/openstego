@@ -224,16 +224,13 @@ public class OpenStego
                 for(int i = 0; i < pluginList.size(); i++)
                 {
                     plugin = (OpenStegoPlugin) pluginList.get(i);
-                    if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+                    tempConfig = plugin.createConfig();
+                    tempConfig.setPassword(config.getPassword());
+                    config = tempConfig;
+                    if(plugin.canHandle(stegoData))
                     {
-                        tempConfig = plugin.createConfig();
-                        tempConfig.setPassword(config.getPassword());
-                        config = tempConfig;
-                        if(plugin.canHandle(stegoData))
-                        {
-                            pluginFound = true;
-                            break;
-                        }
+                        pluginFound = true;
+                        break;
                     }
                 }
 
@@ -445,7 +442,7 @@ public class OpenStego
                     if(stego.getConfig().isUseEncryption() && stego.getConfig().getPassword() == null)
                     {
                         stego.getConfig().setPassword(
-                            PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                                PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
                     }
 
                     coverFileList = CommonUtil.parseFileList(coverFileName, ";");
@@ -455,15 +452,15 @@ public class OpenStego
                         if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                         {
                             System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                                new Object[] { coverFileName }));
+                                    new Object[] { coverFileName }));
                             return;
                         }
 
                         CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
                                 : new File(msgFileName),
-                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
-                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                                coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                     }
                     // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
                     else
@@ -479,11 +476,11 @@ public class OpenStego
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
                             CommonUtil.writeFile(stego.embedData(
-                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
-                                (File) coverFileList.get(i), coverFileName), coverFileName);
+                                    (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                                    (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
-                                new Object[] { coverFileName }));
+                                    new Object[] { coverFileName }));
                         }
                     }
                 }
@@ -509,7 +506,7 @@ public class OpenStego
                             if(stego.getConfig().getPassword() == null)
                             {
                                 stego.getConfig().setPassword(
-                                    PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                                        PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
 
                                 try
                                 {

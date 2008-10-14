@@ -137,7 +137,10 @@ public abstract class OpenStegoPlugin
      */
     public boolean canHandle(byte[] stegoData)
     {
-        boolean output = true;
+        if(!getPurposes().contains(PURPOSE_DATA_HIDING))
+        {
+            return false;
+        }
 
         try
         {
@@ -147,11 +150,11 @@ public abstract class OpenStegoPlugin
         {
             if(osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD)
             {
-                output = false;
+                return false;
             }
         }
 
-        return output;
+        return true;
     }
 
     /**
