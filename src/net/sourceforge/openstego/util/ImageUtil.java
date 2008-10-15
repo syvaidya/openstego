@@ -31,7 +31,7 @@ public class ImageUtil
     public static String DEFAULT_IMAGE_TYPE = "png";
 
     /**
-     * Method to generate a random image filled with noise. 
+     * Method to generate a random image filled with noise.
      * @param numOfPixels Number of pixels required in the image
      * @return Random image filled with noise
      * @throws OpenStegoException
@@ -255,5 +255,55 @@ public class ImageUtil
     public static int pixelRange(double p)
     {
         return ((p > 255) ? 255 : (p < 0) ? 0 : (int) p);
+    }
+
+    /**
+     * Method to pad an image such that it becomes perfect square. The padding uses black color
+     * @param image Input image
+     * @return Image with square dimensions
+     */
+    public static BufferedImage makeImageSquare(BufferedImage image)
+    {
+        int max = 0;
+
+        max = CommonUtil.max(image.getWidth(), image.getHeight());
+        return cropImage(image, max, max);
+    }
+
+    /**
+     * Method crop an image to the given dimensions. If dimensions are more than the input image size, then the image
+     * gets padded with black color
+     * @param image Input image
+     * @param cropWidth Width required for cropped image
+     * @param cropHeight Height required for cropped image
+     * @return Cropped image
+     */
+    public static BufferedImage cropImage(BufferedImage image, int cropWidth, int cropHeight)
+    {
+        BufferedImage retImg = null;
+        int width = 0;
+        int height = 0;
+
+        width = image.getWidth();
+        height = image.getHeight();
+
+        retImg = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
+
+        for(int i = 0; i < cropWidth; i++)
+        {
+            for(int j = 0; j < cropHeight; j++)
+            {
+                if(i < width && j < height)
+                {
+                    retImg.setRGB(i, j, image.getRGB(i, j));
+                }
+                else
+                {
+                    retImg.setRGB(i, j, 0);
+                }
+            }
+        }
+
+        return retImg;
     }
 }

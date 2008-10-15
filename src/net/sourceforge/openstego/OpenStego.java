@@ -199,6 +199,70 @@ public class OpenStego
     }
 
     /**
+     * Method to embed the signature data into the cover data
+     * @param sig Signature data to be embedded
+     * @param sigFileName Name of the signature file
+     * @param cover Cover data into which signature data needs to be embedded
+     * @param coverFileName Name of the cover file
+     * @param stegoFileName Name of the output stego file
+     * @return Stego data containing the embedded signature
+     * @throws OpenStegoException
+     */
+    public byte[] embedSignature(byte[] sig, String sigFileName, byte[] cover, String coverFileName, String stegoFileName)
+            throws OpenStegoException
+    {
+        try
+        {
+            // No compression and encryption should be done as this is signature data
+
+            return plugin.embedData(sig, sigFileName, cover, coverFileName, stegoFileName);
+        }
+        catch(OpenStegoException osEx)
+        {
+            throw osEx;
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
+        }
+    }
+
+    /**
+     * Method to embed the signature data into the cover data (alternate API)
+     * @param sigFile File containing the signature data to be embedded
+     * @param coverFile Cover file into which data needs to be embedded
+     * @param stegoFileName Name of the output stego file
+     * @return Stego data containing the embedded signature
+     * @throws OpenStegoException
+     */
+    public byte[] embedSignature(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException
+    {
+        InputStream is = null;
+        String filename = null;
+
+        try
+        {
+            // If no signature file is provided, then read the data from stdin
+            if(sigFile == null)
+            {
+                is = System.in;
+            }
+            else
+            {
+                is = new FileInputStream(sigFile);
+                filename = sigFile.getName();
+            }
+
+            return embedSignature(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
+                    .getFileBytes(coverFile), coverFile == null ? null : coverFile.getName(), stegoFileName);
+        }
+        catch(IOException ioEx)
+        {
+            throw new OpenStegoException(ioEx);
+        }
+    }
+
+    /**
      * Method to extract the message data from stego data
      * @param stegoData Stego data from which the message needs to be extracted
      * @param stegoFileName Name of the stego file
@@ -341,6 +405,7 @@ public class OpenStego
     public static void main(String[] args) throws OpenStegoException
     {
         String msgFileName = null;
+        String sigFileName = null;
         String coverFileName = null;
         String stegoFileName = null;
         String extractDir = null;
@@ -477,6 +542,51 @@ public class OpenStego
                             coverFileName = ((File) coverFileList.get(i)).getName();
                             CommonUtil.writeFile(stego.embedData(
                                     (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                                    (File) coverFileList.get(i), coverFileName), coverFileName);
+
+                            System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
+                                    new Object[] { coverFileName }));
+                        }
+                    }
+                }
+                else if(command.equals("embedsig"))
+                {
+                    sigFileName = options.getOptionValue("-gf");
+                    coverFileName = options.getOptionValue("-cf");
+                    stegoFileName = options.getOptionValue("-sf");
+
+                    coverFileList = CommonUtil.parseFileList(coverFileName, ";");
+                    // If no coverfile or only one coverfile is provided then use stegofile name given by the user
+                    if(coverFileList.size() <= 1)
+                    {
+                        if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
+                        {
+                            System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
+                                    new Object[] { coverFileName }));
+                            return;
+                        }
+
+                        CommonUtil.writeFile(stego.embedSignature((sigFileName == null || sigFileName.equals("-")) ? null
+                                : new File(sigFileName),
+                                coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                    }
+                    // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
+                    else
+                    {
+                        // If stego file name is provided, then warn user that it will be ignored
+                        if(stegoFileName != null && !stegoFileName.equals("-"))
+                        {
+                            System.err.println(labelUtil.getString("cmd.warn.stegoFileIgnored"));
+                        }
+
+                        // Loop through all cover files
+                        for(int i = 0; i < coverFileList.size(); i++)
+                        {
+                            coverFileName = ((File) coverFileList.get(i)).getName();
+                            CommonUtil.writeFile(stego.embedSignature(
+                                    (sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
                                     (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
@@ -642,6 +752,7 @@ public class OpenStego
         options.add("embed", "--embed", CmdLineOption.TYPE_COMMAND, false);
         options.add("extract", "--extract", CmdLineOption.TYPE_COMMAND, false);
         options.add("gensig", "--gensig", CmdLineOption.TYPE_COMMAND, false);
+        options.add("embedsig", "--embedsig", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("algorithms", "--algorithms", CmdLineOption.TYPE_COMMAND, false);

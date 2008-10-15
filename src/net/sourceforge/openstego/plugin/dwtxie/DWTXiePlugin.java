@@ -105,6 +105,8 @@ public class DWTXiePlugin extends ImagePluginTemplate
         ImageTree p = null;
         Signature sig = null;
         int[][] luminance = null;
+        int origWidth = 0;
+        int origHeight = 0;
         int cols = 0;
         int rows = 0;
         int n = 0;
@@ -122,6 +124,10 @@ public class DWTXiePlugin extends ImagePluginTemplate
         {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
+
+        origWidth = image.getWidth();
+        origHeight= image.getHeight();
+        image = ImageUtil.makeImageSquare(image);
 
         cols = image.getWidth();
         rows = image.getHeight();
@@ -184,8 +190,9 @@ public class DWTXiePlugin extends ImagePluginTemplate
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
+        image = ImageUtil.cropImage(ImageUtil.getImageFromYuv(yuv), origWidth, origHeight);
 
-        return ImageUtil.imageToByteArray(ImageUtil.getImageFromYuv(yuv), stegoFileName, this);
+        return ImageUtil.imageToByteArray(image, stegoFileName, this);
     }
 
     /**
@@ -209,7 +216,77 @@ public class DWTXiePlugin extends ImagePluginTemplate
      */
     public byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException
     {
-        return null;
+        BufferedImage image = null;
+        DWT dwt = null;
+        ImageTree dwtTree = null;
+        ImageTree p = null;
+        Signature sig = null;
+        int[][] luminance = null;
+        int cols = 0;
+        int rows = 0;
+        int n = 0;
+        Pixel pixel1 = null;
+        Pixel pixel2 = null;
+        Pixel pixel3 = null;
+        double temp = 0.0;
+
+        image = ImageUtil.makeImageSquare(ImageUtil.byteArrayToImage(stegoData, stegoFileName));
+
+        cols = image.getWidth();
+        rows = image.getHeight();
+        luminance = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
+        sig = new Signature(msg);
+
+        // Wavelet transform
+        dwt = new DWT(cols, rows, sig.filterNumber, sig.embeddingLevel, sig.waveletFilterMethod);
+        dwtTree = dwt.forwardDWT(luminance);
+
+        p = dwtTree;
+        // Consider each resolution level
+        while(p.getLevel() < sig.embeddingLevel)
+        {
+            // Descend one level
+            p = p.getCoarse();
+        }
+
+        // Repeat binary watermark by sliding a 3-pixel window of approximation image
+        for(int row = 0; row < p.getImage().getHeight(); row++)
+        {
+            for(int col = 0; col < p.getImage().getWidth() - 3; col += 3)
+            {
+                // Get all three approximation pixels in window
+                pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col + 0, row));
+                pixel2 = new Pixel(1, DWTUtil.getPixel(p.getImage(), col + 1, row));
+                pixel3 = new Pixel(2, DWTUtil.getPixel(p.getImage(), col + 2, row));
+
+                // Bring selected pixels in ascending order
+                if(pixel1.value > pixel2.value)
+                {
+                    temp = pixel1.value;
+                    pixel1.value = pixel2.value;
+                    pixel2.value = temp;
+                }
+                if(pixel2.value > pixel3.value)
+                {
+                    temp = pixel2.value;
+                    pixel2.value = pixel3.value;
+                    pixel3.value = temp;
+                }
+                if(pixel1.value > pixel2.value)
+                {
+                    temp = pixel1.value;
+                    pixel1.value = pixel2.value;
+                    pixel2.value = temp;
+                }
+
+                // Apply inverse watermarking transformation to get the bit value
+                setWatermarkBit(sig.watermark, n, invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value));
+
+                n++;
+            }
+        }
+
+        return sig.watermark;
     }
 
     /**
@@ -255,6 +332,31 @@ public class DWTXiePlugin extends ImagePluginTemplate
     }
 
     /**
+     * Inverse watermarking transformation, extract embedded bit, check quantization boundaries
+     */
+    private int invWmTransform(double alpha, double f1, double f2, double f3)
+    {
+        double s = alpha * (Math.abs(f3) - Math.abs(f1)) / 2.0;
+        double l = f1;
+        int x = 0;
+
+        while(l  < f2)
+        {
+            l += s;
+            x++;
+        }
+
+        if(Math.abs(l - s - f2) < Math.abs(l - f2))
+        {
+            return (x + 1) % 2;
+        }
+        else 
+        {
+            return x % 2;
+        }
+    }
+
+    /**
      * Method to get a bit value from the watermark
      * @param watermark Watermark data
      * @param n Bit number
@@ -266,6 +368,27 @@ public class DWTXiePlugin extends ImagePluginTemplate
         int bit = n & 7;
 
         return (watermark[byteNum] & (1 << bit)) >> bit;
+    }
+
+    /**
+     * Method to set a bit value in the watermark
+     * @param watermark Watermark data
+     * @param n Bit number
+     * @param v Bit value
+     */
+    private void setWatermarkBit(byte[] watermark, int n, int v)
+    {
+        int byteNum = n >> 3;
+        int bit = n & 7;
+
+        if(v == 1)
+        {
+            watermark[byteNum] |= (1 << bit);
+        }
+        else
+        {
+            watermark[byteNum] &= ~(1 << bit);
+        }
     }
 
     /**
@@ -281,12 +404,12 @@ public class DWTXiePlugin extends ImagePluginTemplate
         /**
          * Length of the watermark
          */
-        int watermarkLength = 512;
+        int watermarkLength = 1024;
 
         /**
          * Embedding strength
          */
-        double embeddingStrength = 0.5;
+        double embeddingStrength = 0.2;
 
         /**
          * Wavelet filter method
@@ -301,7 +424,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         /**
          * Embedding level
          */
-        int embeddingLevel = 5;
+        int embeddingLevel = 2;
 
         /**
          * Watermark data
