@@ -126,7 +126,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         }
 
         origWidth = image.getWidth();
-        origHeight= image.getHeight();
+        origHeight = image.getHeight();
         image = ImageUtil.makeImageSquare(image);
 
         cols = image.getWidth();
@@ -211,10 +211,11 @@ public class DWTXiePlugin extends ImagePluginTemplate
      * Method to extract the message from the stego data
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
+     * @param origSigData Optional signature data file for watermark
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
         BufferedImage image = null;
         DWT dwt = null;
@@ -235,7 +236,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         cols = image.getWidth();
         rows = image.getHeight();
         luminance = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
-        sig = new Signature(msg);
+        sig = new Signature(origSigData);
 
         // Wavelet transform
         dwt = new DWT(cols, rows, sig.filterNumber, sig.embeddingLevel, sig.waveletFilterMethod);
@@ -280,7 +281,8 @@ public class DWTXiePlugin extends ImagePluginTemplate
                 }
 
                 // Apply inverse watermarking transformation to get the bit value
-                setWatermarkBit(sig.watermark, n, invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value));
+                setWatermarkBit(sig.watermark, n, invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value,
+                    pixel3.value));
 
                 n++;
             }
@@ -340,7 +342,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         double l = f1;
         int x = 0;
 
-        while(l  < f2)
+        while(l < f2)
         {
             l += s;
             x++;
@@ -350,7 +352,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         {
             return (x + 1) % 2;
         }
-        else 
+        else
         {
             return x % 2;
         }

@@ -306,7 +306,7 @@ public class OpenStego
 
             // Add file name as first element of output list
             output.add(plugin.extractMsgFileName(stegoData, stegoFileName));
-            msg = plugin.extractData(stegoData, stegoFileName);
+            msg = plugin.extractData(stegoData, stegoFileName, null);
 
             // Decrypt data, if required
             if(config.isUseEncryption())

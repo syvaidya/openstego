@@ -114,10 +114,12 @@ public abstract class OpenStegoPlugin
      * Method to extract the message from the stego data
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
+     * @param origSigData Optional signature data file for watermark
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public abstract byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException;
+    public abstract byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData)
+            throws OpenStegoException;
 
     /**
      * Method to generate the signature data. This method needs to be implemented only if the purpose of the plugin is

@@ -1,1 +1,1 @@
-java -jar ./lib/openstego.jar $*
+java -Xmx512m -jar ./lib/openstego.jar $*
