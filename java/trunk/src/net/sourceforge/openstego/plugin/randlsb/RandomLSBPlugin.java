@@ -164,6 +164,6 @@ public class RandomLSBPlugin extends LSBPlugin
     {
         LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage",
-                new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+            new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
     }
 }

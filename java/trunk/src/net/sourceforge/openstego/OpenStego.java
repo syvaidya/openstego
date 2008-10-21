@@ -199,7 +199,7 @@ public class OpenStego
     }
 
     /**
-     * Method to embed the signature data into the cover data
+     * Method to embed the watermark signature data into the cover data
      * @param sig Signature data to be embedded
      * @param sigFileName Name of the signature file
      * @param cover Cover data into which signature data needs to be embedded
@@ -208,7 +208,7 @@ public class OpenStego
      * @return Stego data containing the embedded signature
      * @throws OpenStegoException
      */
-    public byte[] embedSignature(byte[] sig, String sigFileName, byte[] cover, String coverFileName, String stegoFileName)
+    public byte[] embedMark(byte[] sig, String sigFileName, byte[] cover, String coverFileName, String stegoFileName)
             throws OpenStegoException
     {
         try
@@ -228,14 +228,14 @@ public class OpenStego
     }
 
     /**
-     * Method to embed the signature data into the cover data (alternate API)
+     * Method to embed the watermark signature data into the cover data (alternate API)
      * @param sigFile File containing the signature data to be embedded
      * @param coverFile Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the embedded signature
      * @throws OpenStegoException
      */
-    public byte[] embedSignature(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException
+    public byte[] embedMark(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException
     {
         InputStream is = null;
         String filename = null;
@@ -253,7 +253,7 @@ public class OpenStego
                 filename = sigFile.getName();
             }
 
-            return embedSignature(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
+            return embedMark(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
                     .getFileBytes(coverFile), coverFile == null ? null : coverFile.getName(), stegoFileName);
         }
         catch(IOException ioEx)
@@ -359,6 +359,69 @@ public class OpenStego
     }
 
     /**
+     * Method to extract the watermark data from stego data
+     * @param stegoData Stego data from which the watermark needs to be extracted
+     * @param stegoFileName Name of the stego file
+     * @param origSigData Original signature data
+     * @return Extracted watermark
+     * @throws OpenStegoException
+     */
+    public byte[] extractMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
+    {
+        // Plugin is mandatory
+        if(!isPluginExplicit)
+        {
+            //TODO
+        }
+
+        return plugin.extractData(stegoData, stegoFileName, origSigData);
+    }
+
+    /**
+     * Method to extract the watermark data from stego data (alternate API)
+     * @param stegoFile Stego file from which watermark needs to be extracted
+     * @param origSigFile Original signature file
+     * @return Extracted watermark
+     * @throws OpenStegoException
+     */
+    public byte[] extractMark(File stegoFile, File origSigFile) throws OpenStegoException
+    {
+        return extractMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil
+                .getFileBytes(origSigFile));
+    }
+
+    /**
+     * Method to check the correlation for the given image and the original signature
+     * @param stegoData Stego data containing the watermark
+     * @param stegoFileName Name of the stego file
+     * @param origSigData Original signature data
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
+    {
+        // Plugin is mandatory
+        if(!isPluginExplicit)
+        {
+            //TODO
+        }
+
+        return plugin.checkMark(stegoData, stegoFileName, origSigData);
+    }
+
+    /**
+     * Method to check the correlation for the given image and the original signature (alternate API)
+     * @param stegoFile Stego file from which watermark needs to be extracted
+     * @param origSigFile Original signature file
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double checkMark(File stegoFile, File origSigFile) throws OpenStegoException
+    {
+        return checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
+    }
+
+    /**
      * Method to generate the signature data using the given plugin
      * @return Signature data
      * @throws OpenStegoException
@@ -400,9 +463,8 @@ public class OpenStego
      * Main method for calling openstego from command line.
      *
      * @param args Command line arguments
-     * @throws OpenStegoException
      */
-    public static void main(String[] args) throws OpenStegoException
+    public static void main(String[] args)
     {
         String msgFileName = null;
         String sigFileName = null;
@@ -413,7 +475,7 @@ public class OpenStego
         String signatureFileName = null;
         String command = null;
         String pluginName = null;
-        List stegoData = null;
+        List msgData = null;
         List coverFileList = null;
         OpenStego stego = null;
         CmdLineParser parser = null;
@@ -507,7 +569,7 @@ public class OpenStego
                     if(stego.getConfig().isUseEncryption() && stego.getConfig().getPassword() == null)
                     {
                         stego.getConfig().setPassword(
-                                PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                            PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
                     }
 
                     coverFileList = CommonUtil.parseFileList(coverFileName, ";");
@@ -517,15 +579,15 @@ public class OpenStego
                         if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                         {
                             System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                             return;
                         }
 
                         CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
                                 : new File(msgFileName),
-                                coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                     }
                     // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
                     else
@@ -541,15 +603,15 @@ public class OpenStego
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
                             CommonUtil.writeFile(stego.embedData(
-                                    (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
-                                    (File) coverFileList.get(i), coverFileName), coverFileName);
+                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                                (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                         }
                     }
                 }
-                else if(command.equals("embedsig"))
+                else if(command.equals("embedmark"))
                 {
                     sigFileName = options.getOptionValue("-gf");
                     coverFileName = options.getOptionValue("-cf");
@@ -562,15 +624,15 @@ public class OpenStego
                         if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                         {
                             System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                             return;
                         }
 
-                        CommonUtil.writeFile(stego.embedSignature((sigFileName == null || sigFileName.equals("-")) ? null
+                        CommonUtil.writeFile(stego.embedMark((sigFileName == null || sigFileName.equals("-")) ? null
                                 : new File(sigFileName),
-                                coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
-                                (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
+                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                     }
                     // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
                     else
@@ -585,12 +647,12 @@ public class OpenStego
                         for(int i = 0; i < coverFileList.size(); i++)
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
-                            CommonUtil.writeFile(stego.embedSignature(
-                                    (sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
-                                    (File) coverFileList.get(i), coverFileName), coverFileName);
+                            CommonUtil.writeFile(stego.embedMark(
+                                (sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
+                                (File) coverFileList.get(i), coverFileName), coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
-                                    new Object[] { coverFileName }));
+                                new Object[] { coverFileName }));
                         }
                     }
                 }
@@ -607,7 +669,7 @@ public class OpenStego
 
                     try
                     {
-                        stegoData = stego.extractData(new File(stegoFileName));
+                        msgData = stego.extractData(new File(stegoFileName));
                     }
                     catch(OpenStegoException osEx)
                     {
@@ -616,11 +678,11 @@ public class OpenStego
                             if(stego.getConfig().getPassword() == null)
                             {
                                 stego.getConfig().setPassword(
-                                        PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                                    PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
 
                                 try
                                 {
-                                    stegoData = stego.extractData(new File(stegoFileName));
+                                    msgData = stego.extractData(new File(stegoFileName));
                                 }
                                 catch(OpenStegoException inEx)
                                 {
@@ -649,7 +711,7 @@ public class OpenStego
                     extractFileName = options.getOptionValue("-xf");
                     if(extractFileName == null)
                     {
-                        extractFileName = (String) stegoData.get(0);
+                        extractFileName = (String) msgData.get(0);
                         if(extractFileName == null || extractFileName.equals(""))
                         {
                             extractFileName = "untitled";
@@ -660,8 +722,42 @@ public class OpenStego
                         extractFileName = extractDir + File.separator + extractFileName;
                     }
 
-                    CommonUtil.writeFile((byte[]) stegoData.get(1), extractFileName);
+                    CommonUtil.writeFile((byte[]) msgData.get(1), extractFileName);
                     System.err.println(labelUtil.getString("cmd.msg.fileExtracted", new Object[] { extractFileName }));
+                }
+                else if(command.equals("extractmark"))
+                {
+                    stegoFileName = options.getOptionValue("-sf");
+                    sigFileName = options.getOptionValue("-gf");
+                    extractDir = options.getOptionValue("-xd");
+                    extractFileName = options.getOptionValue("-xf");
+
+                    if(stegoFileName == null || extractFileName == null)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
+                    if(extractDir != null)
+                    {
+                        extractFileName = extractDir + File.separator + extractFileName;
+                    }
+
+                    CommonUtil.writeFile(stego.extractMark(new File(stegoFileName), new File(sigFileName)),
+                        extractFileName);
+                }
+                else if(command.equals("checkmark"))
+                {
+                    stegoFileName = options.getOptionValue("-sf");
+                    sigFileName = options.getOptionValue("-gf");
+
+                    if(stegoFileName == null || sigFileName == null)
+                    {
+                        displayUsage();
+                        return;
+                    }
+
+                    System.out.println(stego.checkMark(new File(stegoFileName), new File(sigFileName)));
                 }
                 else if(command.equals("gensig"))
                 {
@@ -717,11 +813,11 @@ public class OpenStego
         }
         catch(OpenStegoException osEx)
         {
-            throw osEx;
+            System.err.println(osEx.getMessage());
         }
         catch(Exception ex)
         {
-            throw new OpenStegoException(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -752,7 +848,9 @@ public class OpenStego
         options.add("embed", "--embed", CmdLineOption.TYPE_COMMAND, false);
         options.add("extract", "--extract", CmdLineOption.TYPE_COMMAND, false);
         options.add("gensig", "--gensig", CmdLineOption.TYPE_COMMAND, false);
-        options.add("embedsig", "--embedsig", CmdLineOption.TYPE_COMMAND, false);
+        options.add("embedmark", "--embedmark", CmdLineOption.TYPE_COMMAND, false);
+        options.add("extractmark", "--extractmark", CmdLineOption.TYPE_COMMAND, false);
+        options.add("checkmark", "--checkmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("algorithms", "--algorithms", CmdLineOption.TYPE_COMMAND, false);
@@ -767,7 +865,7 @@ public class OpenStego
         options.add("-sf", "--stegofile", CmdLineOption.TYPE_OPTION, true);
         options.add("-xf", "--extractfile", CmdLineOption.TYPE_OPTION, true);
         options.add("-xd", "--extractdir", CmdLineOption.TYPE_OPTION, true);
-        options.add("-gf", "--signaturefile", CmdLineOption.TYPE_OPTION, true);
+        options.add("-gf", "--sigfile", CmdLineOption.TYPE_OPTION, true);
 
         // Command options
         options.add("-c", "--compress", CmdLineOption.TYPE_OPTION, false);

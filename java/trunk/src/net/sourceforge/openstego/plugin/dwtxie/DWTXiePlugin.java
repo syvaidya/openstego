@@ -285,10 +285,18 @@ public class DWTXiePlugin extends ImagePluginTemplate
                     pixel3.value));
 
                 n++;
+                if(n >= sig.watermark.length)
+                {
+                    break;
+                }
+            }
+            if(n >= sig.watermark.length)
+            {
+                break;
             }
         }
 
-        return sig.watermark;
+        return sig.getSigData();
     }
 
     /**
@@ -305,6 +313,34 @@ public class DWTXiePlugin extends ImagePluginTemplate
         sig = new Signature(rand);
 
         return sig.getSigData();
+    }
+
+    /**
+     * Method to check the correlation between original signature and the extracted watermark
+     * @param origSigData Original signature data
+     * @param watermarkData Extracted watermark data
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
+    {
+        int corr = 0;
+        Signature orig = new Signature(origSigData);
+        Signature wm = new Signature(watermarkData);
+
+        for(int i = 0; i < wm.watermark.length; i++)
+        {
+            if(getWatermarkBit(orig.watermark, i % orig.watermark.length) == getWatermarkBit(wm.watermark, i))
+            {
+                corr++;
+            }
+            else
+            {
+                corr--;
+            }
+        }
+
+        return (double) corr / (double) wm.watermark.length;
     }
 
     /**
