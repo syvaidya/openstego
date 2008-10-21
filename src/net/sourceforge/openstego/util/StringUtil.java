@@ -6,7 +6,9 @@
 
 package net.sourceforge.openstego.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -22,12 +24,9 @@ public class StringUtil
     /**
      * Hexadecimal characters
      */
-    private static final byte[] HEX_CHAR_TABLE = {
-        (byte)'0', (byte)'1', (byte)'2', (byte)'3',
-        (byte)'4', (byte)'5', (byte)'6', (byte)'7',
-        (byte)'8', (byte)'9', (byte)'a', (byte)'b',
-        (byte)'c', (byte)'d', (byte)'e', (byte)'f'
-    };
+    private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4',
+            (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd',
+            (byte) 'e', (byte) 'f' };
 
     /**
      * Method to convert byte array to hexadecimal string

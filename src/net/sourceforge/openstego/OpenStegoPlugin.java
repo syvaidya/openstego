@@ -133,6 +133,31 @@ public abstract class OpenStegoPlugin
     }
 
     /**
+     * Method to check the correlation for the given image and the original signature
+     * @param stegoData Stego data containing the watermark
+     * @param stegoFileName Name of the stego file
+     * @param origSigData Original signature data
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
+    {
+        return getWatermarkCorrelation(origSigData, extractData(stegoData, stegoFileName, origSigData));
+    }
+
+    /**
+     * Method to check the correlation between original signature and the extracted watermark
+     * @param origSigData Original signature data
+     * @param watermarkData Extracted watermark data
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
+    {
+        return 0.0;
+    }
+
+    /**
      * Method to find out whether given stego data can be handled by this plugin or not
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not

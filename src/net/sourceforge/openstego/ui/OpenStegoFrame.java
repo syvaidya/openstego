@@ -6,11 +6,26 @@
 
 package net.sourceforge.openstego.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -430,8 +445,8 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         optionPanel.add(passwordPanel, gridBagConstraints);
 
-        passwordPanel.setBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)),
-                new EtchedBorder()));
+        passwordPanel
+                .setBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()));
         passwordPanel.setLayout(new GridBagLayout());
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridy = 0;
@@ -540,9 +555,9 @@ public class OpenStegoFrame extends JFrame
         extractPanel.add(new JLabel(" "), gridBagConstraints);
 
         mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass().getResource(
-                "/image/EmbedIcon.png")), embedPanel);
+            "/image/EmbedIcon.png")), embedPanel);
         mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.extract"), new ImageIcon(getClass().getResource(
-                "/image/ExtractIcon.png")), extractPanel);
+            "/image/ExtractIcon.png")), extractPanel);
 
         mainPanel.add(mainTabbedPane);
         getContentPane().add(mainPanel, BorderLayout.CENTER);
