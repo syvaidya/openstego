@@ -27,6 +27,11 @@ public class FilterGH
     public static final int TYPE_OTHER = 2;
 
     /**
+     * Identifier of the filterGH
+     */
+    private Integer id = null;
+
+    /**
      * Name of the filterGH
      */
     private String name = null;
@@ -55,6 +60,26 @@ public class FilterGH
      * Filter Hi
      */
     private Filter hi = null;
+
+    /**
+     * Get method for id
+     * 
+     * @return id
+     */
+    public Integer getId()
+    {
+        return id;
+    }
+
+    /**
+     * Set method for id
+     * 
+     * @param id
+     */
+    public void setId(Integer id)
+    {
+        this.id = id;
+    }
 
     /**
      * Get method for name

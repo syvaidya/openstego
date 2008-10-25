@@ -7,7 +7,8 @@
 package net.sourceforge.openstego.util.dwt;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,11 +28,11 @@ public class FilterXMLReader
      * This method parses the given XML file into the list of objects
      * 
      * @param fileURI URI for the XML file
-     * @return List of objects
+     * @return Map of filters with key being Integer object for filter ID
      */
-    public static ArrayList parse(String fileURI)
+    public static Map parse(String fileURI)
     {
-        ArrayList filterGHList = new ArrayList();
+        HashMap filterGHMap = new HashMap();
         DocumentBuilder db = null;
         Document dom = null;
         Element el = null;
@@ -57,12 +58,12 @@ public class FilterXMLReader
                     // Create the object
                     filterGH = getFilterGH(el);
 
-                    // Add it to list
-                    filterGHList.add(filterGH);
+                    // Add it to map
+                    filterGHMap.put(filterGH.getId(), filterGH);
                 }
             }
 
-            return filterGHList;
+            return filterGHMap;
         }
         catch(ParserConfigurationException pcEx)
         {
@@ -94,6 +95,7 @@ public class FilterXMLReader
         NodeList nl = null;
         Filter filter = null;
 
+        filterGH.setId(new Integer(el.getAttribute("id")));
         filterGH.setName(el.getAttribute("name"));
         filterGH.setType(el.getAttribute("type"));
 
