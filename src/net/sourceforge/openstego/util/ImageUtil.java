@@ -177,12 +177,12 @@ public class ImageUtil
                 b = (image.getRGB(i, j) >> 0) & 0xFF;
 
                 // Convert RGB to YUV colorspace
-                y[i][j] = pixelRange((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
-                u[i][j] = pixelRange(-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
-                v[i][j] = pixelRange((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
-                //y[i][j] = pixelRange(( 0.2990 * r) + (0.5870 * g) + (0.1140 * b));
-                //u[i][j] = pixelRange((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
-                //v[i][j] = pixelRange(( 0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
+                //y[i][j] = pixelRange((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
+                //u[i][j] = pixelRange(-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
+                //v[i][j] = pixelRange((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
+                y[i][j] = pixelRange((0.2990 * r) + (0.5870 * g) + (0.1140 * b));
+                u[i][j] = pixelRange((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
+                v[i][j] = pixelRange((0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
             }
         }
 
@@ -223,12 +223,12 @@ public class ImageUtil
             for(int j = 0; j < height; j++)
             {
                 // Convert YUV back to RGB
-                r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
-                g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
-                b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
-                //r = pixelRange(y[i][j]                             + 1.40200 * (v[i][j] - 128));
-                //g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
-                //b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128)                            );
+                //r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
+                //g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
+                //b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
+                r = pixelRange(y[i][j] + 1.40200 * (v[i][j] - 128));
+                g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
+                b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128));
 
                 image.setRGB(i, j, (r << 16) + (g << 8) + b);
             }
@@ -305,5 +305,61 @@ public class ImageUtil
         }
 
         return retImg;
+    }
+
+    /**
+     * Method generate difference image between two given images
+     * @param leftImage Left input image
+     * @param rightImage Right input image
+     * @return Difference image
+     */
+    public static BufferedImage getDiffImage(BufferedImage leftImage, BufferedImage rightImage)
+    {
+        int leftW = 0;
+        int leftH = 0;
+        int rightW = 0; //TODO
+        int rightH = 0;
+        int min = 0;
+        int max = 0;
+        int diff = 0;
+        double error = 0.0;
+        BufferedImage diffImage = null;
+
+        leftW = leftImage.getWidth();
+        leftH = leftImage.getHeight();
+        rightW = rightImage.getWidth();
+        rightH = rightImage.getHeight();
+        diffImage = new BufferedImage(leftW, leftH, BufferedImage.TYPE_INT_RGB);
+
+        min = Math.abs(leftImage.getRGB(0, 0) - rightImage.getRGB(0, 0));
+        max = min;
+
+        for(int i = 0; i < leftW; i++)
+        {
+            for(int j = 0; j < leftH; j++)
+            {
+                diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
+                error += diff * diff;
+                if(diff < min)
+                {
+                    min = diff;
+                }
+                if(diff > max)
+                {
+                    max = diff;
+                }
+            }
+        }
+
+        for(int i = 0; i < leftW; i++)
+        {
+            for(int j = 0; j < leftH; j++)
+            {
+                diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
+                diffImage.setRGB(i, j, pixelRange((double) (diff - min) / (double) (max - min) * Math.pow(2, 24)));
+            }
+        }
+
+        return diffImage;
     }
 }

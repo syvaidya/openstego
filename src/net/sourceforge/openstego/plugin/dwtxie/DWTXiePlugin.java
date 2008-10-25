@@ -136,7 +136,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         sig = new Signature(msg);
 
         // Wavelet transform
-        dwt = new DWT(cols, rows, sig.filterNumber, sig.embeddingLevel, sig.waveletFilterMethod);
+        dwt = new DWT(cols, rows, sig.filterID, sig.embeddingLevel, sig.waveletFilterMethod);
         dwtTree = dwt.forwardDWT(luminance);
 
         p = dwtTree;
@@ -179,7 +179,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
 
                 // Apply watermarking transformation (modify median pixel)
                 temp = wmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value, getWatermarkBit(
-                    sig.watermark, n % sig.watermarkLength));
+                    sig.watermark, n % (sig.watermarkLength * 8)));
 
                 // Write modified pixel
                 DWTUtil.setPixel(p.getImage(), col + pixel2.pos, row, temp);
@@ -239,7 +239,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         sig = new Signature(origSigData);
 
         // Wavelet transform
-        dwt = new DWT(cols, rows, sig.filterNumber, sig.embeddingLevel, sig.waveletFilterMethod);
+        dwt = new DWT(cols, rows, sig.filterID, sig.embeddingLevel, sig.waveletFilterMethod);
         dwtTree = dwt.forwardDWT(luminance);
 
         p = dwtTree;
@@ -285,12 +285,12 @@ public class DWTXiePlugin extends ImagePluginTemplate
                     pixel3.value));
 
                 n++;
-                if(n >= sig.watermark.length)
+                if(n >= sig.watermarkLength)
                 {
                     break;
                 }
             }
-            if(n >= sig.watermark.length)
+            if(n >= sig.watermarkLength)
             {
                 break;
             }
@@ -328,9 +328,9 @@ public class DWTXiePlugin extends ImagePluginTemplate
         Signature orig = new Signature(origSigData);
         Signature wm = new Signature(watermarkData);
 
-        for(int i = 0; i < wm.watermark.length; i++)
+        for(int i = 0; i < (wm.watermarkLength * 8); i++)
         {
-            if(getWatermarkBit(orig.watermark, i % orig.watermark.length) == getWatermarkBit(wm.watermark, i))
+            if(getWatermarkBit(orig.watermark, i % (orig.watermarkLength * 8)) == getWatermarkBit(wm.watermark, i))
             {
                 corr++;
             }
@@ -340,7 +340,31 @@ public class DWTXiePlugin extends ImagePluginTemplate
             }
         }
 
-        return (double) corr / (double) wm.watermark.length;
+        return (double) corr / (double) (wm.watermarkLength * 8);
+    }
+
+    /**
+     * Method to get difference between original cover file and the stegged file
+     * @param stegoData Stego data containing the embedded data
+     * @param stegoFileName Name of the stego file
+     * @param coverData Original cover data
+     * @param coverFileName Name of the cover file
+     * @param diffFileName Name of the output difference file
+     * @return Difference data
+     * @throws OpenStegoException
+     */
+    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
+            String diffFileName) throws OpenStegoException
+    {
+        BufferedImage stegoImage = null;
+        BufferedImage coverImage = null;
+        BufferedImage diffImage = null;
+
+        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
+        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
+        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
+
+        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
     }
 
     /**
@@ -358,7 +382,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
      */
     private double wmTransform(double alpha, double f1, double f2, double f3, int x)
     {
-        double s = alpha * (Math.abs(f3) - Math.abs(f1)) / 2.0;
+        double s = alpha * (Math.abs(f3 - f1)) / 2.0;
         double l = (x != 0) ? (f1 + s) : f1;
 
         while((l + 2 * s) < f2)
@@ -374,7 +398,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
      */
     private int invWmTransform(double alpha, double f1, double f2, double f3)
     {
-        double s = alpha * (Math.abs(f3) - Math.abs(f1)) / 2.0;
+        double s = alpha * (Math.abs(f3 - f1)) / 2.0;
         double l = f1;
         int x = 0;
 
@@ -440,14 +464,14 @@ public class DWTXiePlugin extends ImagePluginTemplate
         byte[] sig = "XESG".getBytes();
 
         /**
-         * Length of the watermark
+         * Length of the watermark (in bytes)
          */
-        int watermarkLength = 1024;
+        int watermarkLength = 128;
 
         /**
          * Embedding strength
          */
-        double embeddingStrength = 0.2;
+        double embeddingStrength = 0.5;
 
         /**
          * Wavelet filter method
@@ -457,7 +481,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
         /**
          * Filter number
          */
-        int filterNumber = 1;
+        int filterID = 2;
 
         /**
          * Embedding level
@@ -481,8 +505,8 @@ public class DWTXiePlugin extends ImagePluginTemplate
             double x1 = 0.0;
             double x2 = 0.0;
 
-            watermark = new byte[watermarkLength >> 3];
-            for(int cnt = 0; cnt < (watermark.length >> 1); cnt = cnt + 2)
+            watermark = new byte[watermarkLength];
+            for(int cnt = 0; cnt < (watermarkLength >> 1); cnt = cnt + 2)
             {
                 do
                 {
@@ -522,11 +546,11 @@ public class DWTXiePlugin extends ImagePluginTemplate
                 watermarkLength = ois.readInt();
                 embeddingStrength = ois.readDouble();
                 waveletFilterMethod = ois.readInt();
-                filterNumber = ois.readInt();
+                filterID = ois.readInt();
                 embeddingLevel = ois.readInt();
 
-                watermark = new byte[watermarkLength >> 3];
-                for(int i = 0; i < watermark.length; i++)
+                watermark = new byte[watermarkLength];
+                for(int i = 0; i < watermarkLength; i++)
                 {
                     watermark[i] = ois.readByte();
                 }
@@ -555,7 +579,7 @@ public class DWTXiePlugin extends ImagePluginTemplate
                 oos.writeInt(watermarkLength);
                 oos.writeDouble(embeddingStrength);
                 oos.writeInt(waveletFilterMethod);
-                oos.writeInt(filterNumber);
+                oos.writeInt(filterID);
                 oos.writeInt(embeddingLevel);
                 oos.write(watermark);
                 oos.flush();

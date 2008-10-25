@@ -371,7 +371,7 @@ public class OpenStego
         // Plugin is mandatory
         if(!isPluginExplicit)
         {
-            //TODO
+            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
 
         return plugin.extractData(stegoData, stegoFileName, origSigData);
@@ -448,6 +448,42 @@ public class OpenStego
         {
             throw new OpenStegoException(ex);
         }
+    }
+
+    /**
+     * Method to get difference between original cover file and the stegged file
+     * @param stegoData Stego data containing the embedded data
+     * @param stegoFileName Name of the stego file
+     * @param coverData Original cover data
+     * @param coverFileName Name of the cover file
+     * @param diffFileName Name of the output difference file
+     * @return Difference data
+     * @throws OpenStegoException
+     */
+    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
+            String diffFileName) throws OpenStegoException
+    {
+        // Plugin is mandatory
+        if(!isPluginExplicit)
+        {
+            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+        }
+
+        return plugin.getDiff(stegoData, stegoFileName, coverData, coverFileName, diffFileName);
+    }
+
+    /**
+     * Method to get difference between original cover file and the stegged file
+     * @param stegoFile Stego file containing the embedded data
+     * @param coverFile Original cover file
+     * @param diffFileName Name of the output difference file
+     * @return Difference data
+     * @throws OpenStegoException
+     */
+    public byte[] getDiff(File stegoFile, File coverFile, String diffFileName) throws OpenStegoException
+    {
+        return getDiff(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(coverFile),
+            coverFile.getName(), diffFileName);
     }
 
     /**
@@ -765,6 +801,21 @@ public class OpenStego
                     CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null || signatureFileName
                             .equals("-")) ? null : signatureFileName);
                 }
+                else if(command.equals("diff"))
+                {
+                    coverFileName = options.getOptionValue("-cf");
+                    stegoFileName = options.getOptionValue("-sf");
+                    extractDir = options.getOptionValue("-xd");
+                    extractFileName = options.getOptionValue("-xf");
+
+                    if(extractDir != null)
+                    {
+                        extractFileName = extractDir + File.separator + extractFileName;
+                    }
+
+                    CommonUtil.writeFile(stego.getDiff(new File(stegoFileName), new File(coverFileName),
+                        extractFileName), extractFileName);
+                }
                 else if(command.equals("readformats"))
                 {
                     List formats = plugin.getReadableFileExtensions();
@@ -813,7 +864,14 @@ public class OpenStego
         }
         catch(OpenStegoException osEx)
         {
-            System.err.println(osEx.getMessage());
+            if(osEx.getErrorCode() == 0)
+            {
+                osEx.printStackTrace();
+            }
+            else
+            {
+                System.err.println(osEx.getMessage());
+            }
         }
         catch(Exception ex)
         {
@@ -851,6 +909,7 @@ public class OpenStego
         options.add("embedmark", "--embedmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("extractmark", "--extractmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("checkmark", "--checkmark", CmdLineOption.TYPE_COMMAND, false);
+        options.add("diff", "--diff", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("algorithms", "--algorithms", CmdLineOption.TYPE_COMMAND, false);

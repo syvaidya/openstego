@@ -2,7 +2,7 @@
 
 <filterGHList>
 
-    <filterGH name="biortho nr. 1" type="biorthogonal">
+    <filterGH id="1" name="biortho nr. 1" type="biorthogonal">
         <filter type="symm" start="0" end="2">
             <data>0.353553</data>
             <data>-0.707107</data>
@@ -29,7 +29,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="biortho nr. 2" type="biorthogonal">
+    <filterGH id="2" name="biortho nr. 2" type="biorthogonal">
         <filter type="symm" start="-4" end="2">
             <data>-0.064539</data>
             <data>0.040689</data>
@@ -72,7 +72,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 4" type="orthogonal">
+    <filterGH id="3" name="Daubechies 4" type="orthogonal">
         <filter type="symm" start="-1" end="2">
             <data>-0.129409522551</data>
             <data>-0.224143868042</data>
@@ -87,7 +87,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 6" type="orthogonal">
+    <filterGH id="4" name="Daubechies 6" type="orthogonal">
         <filter type="symm" start="-3" end="2">
             <data>0.035226291882</data>
             <data>0.085441273882</data>
@@ -106,7 +106,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 8" type="orthogonal">
+    <filterGH id="5" name="Daubechies 8" type="orthogonal">
         <filter type="symm" start="-1" end="6">
             <data>-0.010597401785</data>
             <data>-0.032883011667</data>
@@ -129,7 +129,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 10" type="orthogonal">
+    <filterGH id="6" name="Daubechies 10" type="orthogonal">
         <filter type="symm" start="-2" end="7">
             <data>0.0033357252854738</data>
             <data>0.0125807519990820</data>
@@ -156,7 +156,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 12" type="orthogonal">
+    <filterGH id="7" name="Daubechies 12" type="orthogonal">
         <filter type="symm" start="-1" end="10">
             <data>-0.0010773010853085</data>
             <data>-0.0047772575119455</data>
@@ -187,7 +187,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 14" type="orthogonal">
+    <filterGH id="8" name="Daubechies 14" type="orthogonal">
         <filter type="symm" start="-1" end="12">
             <data>0.0003537138</data>
             <data>0.001801640704</data>
@@ -222,7 +222,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Daubechies 20" type="orthogonal">
+    <filterGH id="9" name="Daubechies 20" type="orthogonal">
         <filter type="symm" start="-1" end="18">
             <data>-0.000013264203</data>
             <data>-0.000093588670</data>
@@ -269,7 +269,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Beylkin 18" type="orthogonal">
+    <filterGH id="10" name="Beylkin 18" type="orthogonal">
         <filter type="symm" start="-1" end="16">
             <data>0.00064048532852124535</data>
             <data>0.0027360316262586061</data>
@@ -312,7 +312,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Vaidyanathan 24" type="orthogonal">
+    <filterGH id="11" name="Vaidyanathan 24" type="orthogonal">
         <filter type="symm" start="-1" end="22">
             <data>0.045799334110976718</data>
             <data>-0.25018412950466218</data>
@@ -367,7 +367,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Coifman 6" type="orthogonal">
+    <filterGH id="12" name="Coifman 6" type="orthogonal">
         <filter type="symm" start="-1" end="4">
             <data>0.226584276197068560</data>
             <data>-0.745687558934434280</data>
@@ -386,7 +386,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Coifman 12" type="orthogonal">
+    <filterGH id="13" name="Coifman 12" type="orthogonal">
         <filter type="symm" start="-1" end="10">
             <data>-0.000720549445369115120</data>
             <data>0.00182320887091009920</data>
@@ -417,7 +417,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Coifman 18" type="orthogonal">
+    <filterGH id="14" name="Coifman 18" type="orthogonal">
         <filter type="symm" start="-1" end="16">
             <data>-0.000034599773197402695</data>
             <data>0.000070983302505704928</data>
@@ -460,7 +460,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Biorthogonal 1,3" type="biorthogonal">
+    <filterGH id="15" name="Biorthogonal 1,3" type="biorthogonal">
         <filter type="symm" start="-1" end="4">
             <data>-0.08838834764832</data>
             <data>-0.08838834764832</data>
@@ -487,7 +487,7 @@
         </filter>
     </filterGH>
 
-    <filterGH name="Biorthogonal 1,5" type="biorthogonal">
+    <filterGH id="16" name="Biorthogonal 1,5" type="biorthogonal">
         <filter type="symm" start="-1" end="8">
             <data>0.01657281518406</data>
             <data>0.01657281518406</data>

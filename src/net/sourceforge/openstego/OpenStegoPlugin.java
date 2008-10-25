@@ -158,6 +158,19 @@ public abstract class OpenStegoPlugin
     }
 
     /**
+     * Method to get difference between original cover file and the stegged file
+     * @param stegoData Stego data containing the embedded data
+     * @param stegoFileName Name of the stego file
+     * @param coverData Original cover data
+     * @param coverFileName Name of the cover file
+     * @param diffFileName Name of the output difference file
+     * @return Difference data
+     * @throws OpenStegoException
+     */
+    public abstract byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
+            String diffFileName) throws OpenStegoException;
+
+    /**
      * Method to find out whether given stego data can be handled by this plugin or not
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not

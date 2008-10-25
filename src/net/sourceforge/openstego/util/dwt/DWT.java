@@ -6,7 +6,7 @@
 
 package net.sourceforge.openstego.util.dwt;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 import net.sourceforge.openstego.util.ImageUtil;
 
@@ -22,9 +22,9 @@ import net.sourceforge.openstego.util.ImageUtil;
 public class DWT
 {
     /**
-     * Master list of filters
+     * Master map of filters
      */
-    private static ArrayList filterGHList = null;
+    private static Map filterGHMap = null;
 
     /**
      * URI for the filter file
@@ -60,22 +60,22 @@ public class DWT
      * Default constructor
      * @param cols Image width
      * @param rows Image height
-     * @param filter Filter number to use
+     * @param filterID Filter ID to use
      * @param level Decomposition level
      * @param method Wavelet filtering method
      */
-    public DWT(int cols, int rows, int filter, int level, int method)
+    public DWT(int cols, int rows, int filterID, int level, int method)
     {
         // Read the master filter file if it is not already loaded
-        if(filterGHList == null)
+        if(filterGHMap == null)
         {
-            filterGHList = FilterXMLReader.parse(filterFile);
+            filterGHMap = FilterXMLReader.parse(filterFile);
         }
 
         filters = new FilterGH[level + 1];
         for(int i = 0; i <= level; i++)
         {
-            filters[i] = (FilterGH) filterGHList.get(filter);
+            filters[i] = (FilterGH) filterGHMap.get(new Integer(filterID));
         }
 
         this.level = level;

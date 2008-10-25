@@ -185,6 +185,30 @@ public class DctLSBPlugin extends ImagePluginTemplate
     }
 
     /**
+     * Method to get difference between original cover file and the stegged file
+     * @param stegoData Stego data containing the embedded data
+     * @param stegoFileName Name of the stego file
+     * @param coverData Original cover data
+     * @param coverFileName Name of the cover file
+     * @param diffFileName Name of the output difference file
+     * @return Difference data
+     * @throws OpenStegoException
+     */
+    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
+            String diffFileName) throws OpenStegoException
+    {
+        BufferedImage stegoImage = null;
+        BufferedImage coverImage = null;
+        BufferedImage diffImage = null;
+
+        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
+        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
+        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
+
+        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
+    }
+
+    /**
      * Method to get the list of supported file extensions for writing
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
