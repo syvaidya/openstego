@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Class to store the list of command line options
+ * @see CmdLineParser
  */
 public class CmdLineOptions
 {
@@ -24,6 +25,13 @@ public class CmdLineOptions
      * Map to store the standard command-line options as list
      */
     private ArrayList list = new ArrayList();
+
+    /**
+     * Default constructor
+     */
+    public CmdLineOptions()
+    {
+    }
 
     /**
      * Method to add the command-line option

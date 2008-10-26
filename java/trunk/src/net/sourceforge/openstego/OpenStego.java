@@ -403,7 +403,7 @@ public class OpenStego
         // Plugin is mandatory
         if(!isPluginExplicit)
         {
-            //TODO
+            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
 
         return plugin.checkMark(stegoData, stegoFileName, origSigData);

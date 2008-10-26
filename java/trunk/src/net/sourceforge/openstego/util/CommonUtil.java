@@ -30,6 +30,13 @@ import net.sourceforge.openstego.OpenStegoException;
 public class CommonUtil
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private CommonUtil()
+    {
+    }
+
+    /**
      * Method to get byte array data from given InputStream
      * @param is InputStream to read
      * @return Stream data as byte array

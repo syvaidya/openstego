@@ -60,7 +60,7 @@ public abstract class OpenStegoPlugin
      * Gives the display label for purpose(s) of the plugin
      * @return Display lable for purpose(s) of the plugin
      */
-    public String getPurposesLabel()
+    public final String getPurposesLabel()
     {
         StringBuffer sbf = new StringBuffer();
         LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
@@ -127,10 +127,7 @@ public abstract class OpenStegoPlugin
      * @return Signature data
      * @throws OpenStegoException
      */
-    public byte[] generateSignature() throws OpenStegoException
-    {
-        return null;
-    }
+    public abstract byte[] generateSignature() throws OpenStegoException;
 
     /**
      * Method to check the correlation for the given image and the original signature
@@ -140,7 +137,7 @@ public abstract class OpenStegoPlugin
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
+    public final double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
         return getWatermarkCorrelation(origSigData, extractData(stegoData, stegoFileName, origSigData));
     }
@@ -152,10 +149,7 @@ public abstract class OpenStegoPlugin
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
-    {
-        return 0.0;
-    }
+    public abstract double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException;
 
     /**
      * Method to get difference between original cover file and the stegged file
@@ -175,27 +169,7 @@ public abstract class OpenStegoPlugin
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
      */
-    public boolean canHandle(byte[] stegoData)
-    {
-        if(!getPurposes().contains(PURPOSE_DATA_HIDING))
-        {
-            return false;
-        }
-
-        try
-        {
-            extractMsgFileName(stegoData, "DUMMY");
-        }
-        catch(OpenStegoException osEx)
-        {
-            if(osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public abstract boolean canHandle(byte[] stegoData);
 
     /**
      * Method to get the list of supported file extensions for reading
@@ -251,7 +225,7 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public OpenStegoConfig createConfig() throws OpenStegoException
+    public final OpenStegoConfig createConfig() throws OpenStegoException
     {
         try
         {
@@ -271,7 +245,7 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
+    public final OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
     {
         try
         {
@@ -291,7 +265,7 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
+    public final OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
     {
         try
         {
@@ -309,7 +283,7 @@ public abstract class OpenStegoPlugin
      * Get method for config
      * @return Configuration data
      */
-    public OpenStegoConfig getConfig()
+    public final OpenStegoConfig getConfig()
     {
         return config;
     }

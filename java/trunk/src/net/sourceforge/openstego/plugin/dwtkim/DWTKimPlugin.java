@@ -13,11 +13,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
 import net.sourceforge.openstego.util.CommonUtil;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
@@ -35,7 +34,7 @@ import net.sourceforge.openstego.util.dwt.ImageTree;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
-public class DWTKimPlugin extends ImagePluginTemplate
+public class DWTKimPlugin extends WMImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels
@@ -63,17 +62,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
     public String getName()
     {
         return "DWTKim";
-    }
-
-    /**
-     * Gives the purpose(s) of the plugin
-     * @return Purpose(s) of the plugin
-     */
-    public List getPurposes()
-    {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_WATERMARKING);
-        return purposes;
     }
 
     /**
@@ -180,18 +168,6 @@ public class DWTKimPlugin extends ImagePluginTemplate
     }
 
     /**
-     * Method to extract the message file name from the stego data
-     * @param stegoData Stego data containing the message
-     * @param stegoFileName Name of the stego file
-     * @return Message file name
-     * @throws OpenStegoException
-     */
-    public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
-    {
-        return null;
-    }
-
-    /**
      * Method to extract the message from the stego data
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
@@ -221,27 +197,16 @@ public class DWTKimPlugin extends ImagePluginTemplate
     }
 
     /**
-     * Method to get difference between original cover file and the stegged file
-     * @param stegoData Stego data containing the embedded data
-     * @param stegoFileName Name of the stego file
-     * @param coverData Original cover data
-     * @param coverFileName Name of the cover file
-     * @param diffFileName Name of the output difference file
-     * @return Difference data
+     * Method to check the correlation between original signature and the extracted watermark
+     * @param origSigData Original signature data
+     * @param watermarkData Extracted watermark data
+     * @return Correlation
      * @throws OpenStegoException
      */
-    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
-            String diffFileName) throws OpenStegoException
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
     {
-        BufferedImage stegoImage = null;
-        BufferedImage coverImage = null;
-        BufferedImage diffImage = null;
-
-        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
-        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
-        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
-
-        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
+        // TODO
+        return 0.0;
     }
 
     /**

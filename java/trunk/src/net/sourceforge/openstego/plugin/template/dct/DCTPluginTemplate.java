@@ -9,11 +9,9 @@ package net.sourceforge.openstego.plugin.template.dct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.OpenStegoPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
@@ -138,37 +136,11 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
     }
 
     /**
-     * Method to create default configuration data (specific to this plugin)
-     * @return Configuration data
-     * @throws OpenStegoException
+     * Method to get the configuration class specific to this plugin
+     * @return Configuration class specific to this plugin
      */
-    public OpenStegoConfig createConfig() throws OpenStegoException
+    public Class getConfigClass()
     {
-        this.config = new DCTConfig();
-        return this.config;
-    }
-
-    /**
-     * Method to create configuration data (specific to this plugin) based on the property map
-     * @param propMap Property map
-     * @return Configuration data
-     * @throws OpenStegoException
-     */
-    public OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
-    {
-        this.config = new DCTConfig(propMap);
-        return this.config;
-    }
-
-    /**
-     * Method to create configuration data (specific to this plugin) based on the command-line options
-     * @param options Command-line options
-     * @return Configuration data
-     * @throws OpenStegoException
-     */
-    public OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException
-    {
-        this.config = new DCTConfig(options);
-        return this.config;
+        return DCTConfig.class;
     }
 }

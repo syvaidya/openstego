@@ -7,7 +7,8 @@
 package net.sourceforge.openstego.util;
 
 /**
- * Stores the master information about a command line option (used by <code>CmdLineParser</code>)
+ * Stores the master information about a command line option
+ * @see CmdLineParser
  */
 public class CmdLineOption
 {
@@ -47,7 +48,7 @@ public class CmdLineOption
     private String value = null;
 
     /**
-     * Constructor
+     * Default constructor
      * @param name Name of the option
      * @param altName Altername name of the option
      * @param type Type of the option

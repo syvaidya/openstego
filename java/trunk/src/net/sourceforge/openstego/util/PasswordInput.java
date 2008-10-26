@@ -18,6 +18,13 @@ import net.sourceforge.openstego.OpenStegoException;
 public class PasswordInput
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private PasswordInput()
+    {
+    }
+
+    /**
      * Method to read password from the console
      * @param prompt Prompt for the password input
      * @return The password as entered by the user

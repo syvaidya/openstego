@@ -8,12 +8,12 @@ package net.sourceforge.openstego.plugin.dctlsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.plugin.template.dct.DCTConfig;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
-import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.dct.DCT;
@@ -21,7 +21,7 @@ import net.sourceforge.openstego.util.dct.DCT;
 /**
  * Plugin for OpenStego which implements the DCT based Least-significant bit algorithm
  */
-public class DctLSBPlugin extends ImagePluginTemplate
+public class DctLSBPlugin extends WMImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels
@@ -49,17 +49,6 @@ public class DctLSBPlugin extends ImagePluginTemplate
     public String getName()
     {
         return "DctLSB";
-    }
-
-    /**
-     * Gives the purpose(s) of the plugin
-     * @return Purpose(s) of the plugin
-     */
-    public List getPurposes()
-    {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_WATERMARKING);
-        return purposes;
     }
 
     /**
@@ -113,32 +102,6 @@ public class DctLSBPlugin extends ImagePluginTemplate
     }
 
     /**
-     * Method to extract the message file name from the stego data
-     * @param stegoData Stego data containing the message
-     * @param stegoFileName Name of the stego file
-     * @return Message file name
-     * @throws OpenStegoException
-     */
-    public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
-    {
-        String fileName = null;
-        DctLSBInputStream is = null;
-
-        try
-        {
-            is = new DctLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
-            fileName = is.getDataHeader().getFileName();
-            is.close();
-        }
-        catch(IOException ioEx)
-        {
-            throw new OpenStegoException(ioEx);
-        }
-
-        return fileName;
-    }
-
-    /**
      * Method to extract the message from the stego data
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
@@ -185,30 +148,6 @@ public class DctLSBPlugin extends ImagePluginTemplate
     }
 
     /**
-     * Method to get difference between original cover file and the stegged file
-     * @param stegoData Stego data containing the embedded data
-     * @param stegoFileName Name of the stego file
-     * @param coverData Original cover data
-     * @param coverFileName Name of the cover file
-     * @param diffFileName Name of the output difference file
-     * @return Difference data
-     * @throws OpenStegoException
-     */
-    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
-            String diffFileName) throws OpenStegoException
-    {
-        BufferedImage stegoImage = null;
-        BufferedImage coverImage = null;
-        BufferedImage diffImage = null;
-
-        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
-        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
-        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
-
-        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
-    }
-
-    /**
      * Method to get the list of supported file extensions for writing
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
@@ -232,5 +171,27 @@ public class DctLSBPlugin extends ImagePluginTemplate
     public String getUsage() throws OpenStegoException
     {
         return labelUtil.getString("plugin.usage");
+    }
+
+    /**
+     * Method to check the correlation between original signature and the extracted watermark
+     * @param origSigData Original signature data
+     * @param watermarkData Extracted watermark data
+     * @return Correlation
+     * @throws OpenStegoException
+     */
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
+    {
+        // TODO
+        return 0.0;
+    }
+
+    /**
+     * Method to get the configuration class specific to this plugin
+     * @return Configuration class specific to this plugin
+     */
+    public Class getConfigClass()
+    {
+        return DCTConfig.class;
     }
 }
