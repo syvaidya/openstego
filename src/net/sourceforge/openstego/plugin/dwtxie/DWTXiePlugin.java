@@ -193,18 +193,19 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      */
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
+        ArrayList sigBitList = new ArrayList();
         BufferedImage image = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
         ImageTree p = null;
         Signature sig = null;
+        Pixel pixel1 = null;
+        Pixel pixel2 = null;
+        Pixel pixel3 = null;
         int[][] luminance = null;
         int cols = 0;
         int rows = 0;
         int n = 0;
-        Pixel pixel1 = null;
-        Pixel pixel2 = null;
-        Pixel pixel3 = null;
         double temp = 0.0;
 
         image = ImageUtil.makeImageSquare(ImageUtil.byteArrayToImage(stegoData, stegoFileName));
@@ -257,20 +258,13 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 }
 
                 // Apply inverse watermarking transformation to get the bit value
-                setWatermarkBit(sig.watermark, n, invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value,
-                    pixel3.value));
+                sigBitList.add(new Integer(invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value,
+                    pixel3.value)));
 
                 n++;
-                if(n >= sig.watermarkLength)
-                {
-                    break;
-                }
-            }
-            if(n >= sig.watermarkLength)
-            {
-                break;
             }
         }
+        sig.setWatermark(convertBitListToByteArray(sigBitList));
 
         return sig.getSigData();
     }
@@ -406,6 +400,24 @@ public class DWTXiePlugin extends WMImagePluginTemplate
     }
 
     /**
+     * Method to convert list of bits into byte array
+     * @param bitList List of bits
+     * @return Byte array
+     */
+    private byte[] convertBitListToByteArray(ArrayList bitList)
+    {
+        byte[] data = null;
+
+        data = new byte[bitList.size() >> 3];
+        for(int i = 0; i < ((bitList.size() >> 3) << 3); i++)
+        {
+            setWatermarkBit(data, i, ((Integer) bitList.get(i)).intValue());
+        }
+
+        return data;
+    }
+
+    /**
      * Private class for the data structure required for the signature
      */
     private class Signature
@@ -418,7 +430,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         /**
          * Length of the watermark (in bytes)
          */
-        int watermarkLength = 128;
+        int watermarkLength = 512;
 
         /**
          * Embedding strength
@@ -543,6 +555,16 @@ public class DWTXiePlugin extends WMImagePluginTemplate
             {
                 throw new OpenStegoException(ioEx);
             }
+        }
+
+        /**
+         * Method to replace the watermark data
+         * @param watermark Watermark data
+         */
+        public void setWatermark(byte[] watermark)
+        {
+            this.watermark = watermark;
+            this.watermarkLength = watermark.length;
         }
     }
 
