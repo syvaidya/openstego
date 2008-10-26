@@ -369,7 +369,8 @@ public class ImageUtil
             for(int j = 0; j < leftH; j++)
             {
                 diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
-                diffImage.setRGB(i, j, pixelRange((double) (diff - min) / (double) (max - min) * Math.pow(2, 24)));
+                diffImage.setRGB(i, j, pixelRange((double) (diff - min) / (double) (max - min) * Math.pow(2, 32)));
+                //TODO
             }
         }
 
