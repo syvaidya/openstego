@@ -76,6 +76,11 @@ public class OpenStegoException extends Exception
     public static final int PLUGIN_NOT_FOUND = 11;
 
     /**
+     * Error Code - Image sizes mismatch
+     */
+    public static final int IMAGE_SIZE_MISMATCH = 12;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static HashMap errMsgKeyMap = new HashMap();
@@ -106,6 +111,7 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, NO_PLUGIN_SPECIFIED, "err.plugin.notSpecified");
         addErrorCode(OpenStego.NAMESPACE, SIG_NA_PLUGIN_NOT_WM, "err.plugin.sigNotWm");
         addErrorCode(OpenStego.NAMESPACE, PLUGIN_NOT_FOUND, "err.plugin.notFound");
+        addErrorCode(OpenStego.NAMESPACE, IMAGE_SIZE_MISMATCH, "err.image.size.mismatch");
     }
 
     /**

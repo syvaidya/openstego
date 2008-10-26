@@ -17,20 +17,20 @@ public class CmdLineParser
     /**
      * Stores the list of parsed options
      */
-    CmdLineOptions parsedOptions = new CmdLineOptions();
+    private CmdLineOptions parsedOptions = new CmdLineOptions();
 
     /**
      * Stores the list of non-standard arguments
      */
-    ArrayList nonStdArgList = new ArrayList();
+    private ArrayList nonStdArgList = new ArrayList();
 
     /**
      * Flag to indicate whether non-standard options are mixed within standard options or not
      */
-    boolean nonStdMixedWithStdOptions = false;
+    private boolean nonStdMixedWithStdOptions = false;
 
     /**
-     * Constructor
+     * Default constructor
      * @param stdOptions List of standard options
      * @param args Command line arguments
      */

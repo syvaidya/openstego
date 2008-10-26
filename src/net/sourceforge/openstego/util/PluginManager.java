@@ -21,6 +21,13 @@ import net.sourceforge.openstego.OpenStegoPlugin;
 public class PluginManager
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private PluginManager()
+    {
+    }
+
+    /**
      * Name of the default plugin
      */
     private final static String DEFAULT_PLUGIN = "LSB";

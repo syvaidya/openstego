@@ -13,11 +13,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.StringUtil;
@@ -34,7 +33,7 @@ import net.sourceforge.openstego.util.dwt.ImageTree;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
-public class DWTXiePlugin extends ImagePluginTemplate
+public class DWTXiePlugin extends WMImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels
@@ -62,17 +61,6 @@ public class DWTXiePlugin extends ImagePluginTemplate
     public String getName()
     {
         return "DWTXie";
-    }
-
-    /**
-     * Gives the purpose(s) of the plugin
-     * @return Purpose(s) of the plugin
-     */
-    public List getPurposes()
-    {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_WATERMARKING);
-        return purposes;
     }
 
     /**
@@ -193,18 +181,6 @@ public class DWTXiePlugin extends ImagePluginTemplate
         image = ImageUtil.cropImage(ImageUtil.getImageFromYuv(yuv), origWidth, origHeight);
 
         return ImageUtil.imageToByteArray(image, stegoFileName, this);
-    }
-
-    /**
-     * Method to extract the message file name from the stego data
-     * @param stegoData Stego data containing the message
-     * @param stegoFileName Name of the stego file
-     * @return Message file name
-     * @throws OpenStegoException
-     */
-    public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
-    {
-        return null;
     }
 
     /**
@@ -341,30 +317,6 @@ public class DWTXiePlugin extends ImagePluginTemplate
         }
 
         return (double) corr / (double) (wm.watermarkLength * 8);
-    }
-
-    /**
-     * Method to get difference between original cover file and the stegged file
-     * @param stegoData Stego data containing the embedded data
-     * @param stegoFileName Name of the stego file
-     * @param coverData Original cover data
-     * @param coverFileName Name of the cover file
-     * @param diffFileName Name of the output difference file
-     * @return Difference data
-     * @throws OpenStegoException
-     */
-    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
-            String diffFileName) throws OpenStegoException
-    {
-        BufferedImage stegoImage = null;
-        BufferedImage coverImage = null;
-        BufferedImage diffImage = null;
-
-        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
-        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
-        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
-
-        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
     }
 
     /**

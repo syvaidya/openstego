@@ -8,7 +8,6 @@ package net.sourceforge.openstego.plugin.lsb;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.plugin.template.image.ImagePluginTemplate;
+import net.sourceforge.openstego.plugin.template.image.DHImagePluginTemplate;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
 import net.sourceforge.openstego.util.CmdLineOption;
@@ -28,7 +27,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography
  */
-public class LSBPlugin extends ImagePluginTemplate
+public class LSBPlugin extends DHImagePluginTemplate
 {
     /**
      * LabelUtil instance to retrieve labels
@@ -47,17 +46,6 @@ public class LSBPlugin extends ImagePluginTemplate
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.LSBPluginLabels");
         new LSBErrors(); // Initialize error codes
-    }
-
-    /**
-     * Gives the purpose(s) of the plugin
-     * @return Purpose(s) of the plugin
-     */
-    public List getPurposes()
-    {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_DATA_HIDING);
-        return purposes;
     }
 
     /**
@@ -174,30 +162,6 @@ public class LSBPlugin extends ImagePluginTemplate
         {
             throw new OpenStegoException(ex);
         }
-    }
-
-    /**
-     * Method to get difference between original cover file and the stegged file
-     * @param stegoData Stego data containing the embedded data
-     * @param stegoFileName Name of the stego file
-     * @param coverData Original cover data
-     * @param coverFileName Name of the cover file
-     * @param diffFileName Name of the output difference file
-     * @return Difference data
-     * @throws OpenStegoException
-     */
-    public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
-            String diffFileName) throws OpenStegoException
-    {
-        BufferedImage stegoImage = null;
-        BufferedImage coverImage = null;
-        BufferedImage diffImage = null;
-
-        stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
-        coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
-        diffImage = ImageUtil.getDiffImage(stegoImage, coverImage);
-
-        return ImageUtil.imageToByteArray(diffImage, diffFileName, this);
     }
 
     /**

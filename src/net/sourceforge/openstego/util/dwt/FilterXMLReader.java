@@ -25,6 +25,13 @@ import org.xml.sax.SAXException;
 public class FilterXMLReader
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private FilterXMLReader()
+    {
+    }
+
+    /**
      * This method parses the given XML file into the list of objects
      * 
      * @param fileURI URI for the XML file

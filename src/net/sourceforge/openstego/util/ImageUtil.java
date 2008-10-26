@@ -26,6 +26,13 @@ import net.sourceforge.openstego.OpenStegoPlugin;
 public class ImageUtil
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private ImageUtil()
+    {
+    }
+
+    /**
      * Default image type in case not provided
      */
     public static String DEFAULT_IMAGE_TYPE = "png";
@@ -312,12 +319,14 @@ public class ImageUtil
      * @param leftImage Left input image
      * @param rightImage Right input image
      * @return Difference image
+     * @throws OpenStegoException
      */
     public static BufferedImage getDiffImage(BufferedImage leftImage, BufferedImage rightImage)
+            throws OpenStegoException
     {
         int leftW = 0;
         int leftH = 0;
-        int rightW = 0; //TODO
+        int rightW = 0;
         int rightH = 0;
         int min = 0;
         int max = 0;
@@ -329,6 +338,10 @@ public class ImageUtil
         leftH = leftImage.getHeight();
         rightW = rightImage.getWidth();
         rightH = rightImage.getHeight();
+        if(leftW != rightW || leftH != rightH)
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, null);
+        }
         diffImage = new BufferedImage(leftW, leftH, BufferedImage.TYPE_INT_RGB);
 
         min = Math.abs(leftImage.getRGB(0, 0) - rightImage.getRGB(0, 0));

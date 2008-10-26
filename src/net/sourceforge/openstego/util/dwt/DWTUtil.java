@@ -20,6 +20,13 @@ import net.sourceforge.openstego.util.CommonUtil;
 public class DWTUtil
 {
     /**
+     * Constructor is private so that this class is not instantiated
+     */
+    private DWTUtil()
+    {
+    }
+
+    /**
      * Method to perform the wavelet transform
      * @param origImg Original image
      * @param level Decomposition level
