@@ -513,6 +513,7 @@ public class OpenStego
         String pluginName = null;
         List msgData = null;
         List coverFileList = null;
+        List stegoFileList = null;
         OpenStego stego = null;
         CmdLineParser parser = null;
         CmdLineOptions options = null;
@@ -793,7 +794,22 @@ public class OpenStego
                         return;
                     }
 
-                    System.out.println(stego.checkMark(new File(stegoFileName), new File(sigFileName)));
+                    stegoFileList = CommonUtil.parseFileList(stegoFileName, ";");
+                    // If only one stegofile is provided then use stegofile name given by the user
+                    if(stegoFileList.size() == 1)
+                    {
+                        System.out.println(stego.checkMark((File) stegoFileList.get(0), new File(sigFileName)));
+                    }
+                    // Else loop through all stegofiles and calculate correlation value for each
+                    else
+                    {
+                        for(int i = 0; i < stegoFileList.size(); i++)
+                        {
+                            stegoFileName = ((File) stegoFileList.get(i)).getName();
+                            System.out.println(stegoFileName + ": "
+                                    + stego.checkMark((File) stegoFileList.get(i), new File(sigFileName)));
+                        }
+                    }
                 }
                 else if(command.equals("gensig"))
                 {
