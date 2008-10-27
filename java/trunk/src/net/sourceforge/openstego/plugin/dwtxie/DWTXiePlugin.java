@@ -92,15 +92,15 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         ImageTree dwtTree = null;
         ImageTree p = null;
         Signature sig = null;
+        Pixel pixel1 = null;
+        Pixel pixel2 = null;
+        Pixel pixel3 = null;
         int[][] luminance = null;
         int origWidth = 0;
         int origHeight = 0;
         int cols = 0;
         int rows = 0;
         int n = 0;
-        Pixel pixel1 = null;
-        Pixel pixel2 = null;
-        Pixel pixel3 = null;
         double temp = 0.0;
 
         // Cover file is mandatory
@@ -310,7 +310,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
             }
         }
 
-        return (double) corr / (double) (wm.watermarkLength * 8);
+        return 0.5 + ((double) corr / (double) (wm.watermarkLength * 8 * 2));
     }
 
     /**
