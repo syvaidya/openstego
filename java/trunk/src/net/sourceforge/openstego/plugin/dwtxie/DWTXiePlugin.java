@@ -328,7 +328,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      */
     private double wmTransform(double alpha, double f1, double f2, double f3, int x)
     {
-        double s = alpha * (Math.abs(f3 - f1)) / 2.0;
+        double s = alpha * Math.abs(f3 - f1) / 2.0;
         double l = (x != 0) ? (f1 + s) : f1;
 
         while((l + 2 * s) < f2)
@@ -344,7 +344,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      */
     private int invWmTransform(double alpha, double f1, double f2, double f3)
     {
-        double s = alpha * (Math.abs(f3 - f1)) / 2.0;
+        double s = alpha * Math.abs(f3 - f1) / 2.0;
         double l = f1;
         int x = 0;
 
@@ -435,7 +435,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         /**
          * Embedding strength
          */
-        double embeddingStrength = 0.5;
+        double embeddingStrength = 0.05;
 
         /**
          * Wavelet filter method
@@ -450,7 +450,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         /**
          * Embedding level
          */
-        int embeddingLevel = 2;
+        int embeddingLevel = 5;
 
         /**
          * Watermark data
@@ -463,29 +463,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
          */
         public Signature(Random rand)
         {
-            double m = 0.0;
-            double d = 1.0;
-            double x = 0.0;
-            double x1 = 0.0;
-            double x2 = 0.0;
-
             watermark = new byte[watermarkLength];
-            for(int cnt = 0; cnt < (watermarkLength >> 1); cnt = cnt + 2)
-            {
-                do
-                {
-                    x1 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
-                    x2 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
-                    x = x1 * x1 + x2 * x2;
-                }
-                while(x >= 1.0);
-
-                x1 *= Math.sqrt((-2.0) * Math.log(x) / x);
-                x2 *= Math.sqrt((-2.0) * Math.log(x) / x);
-
-                watermark[cnt] = (byte) (m + (d * x1));
-                watermark[cnt + 1] = (byte) (m + (d * x2));
-            }
+            rand.nextBytes(watermark);
         }
 
         /**
@@ -514,10 +493,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 embeddingLevel = ois.readInt();
 
                 watermark = new byte[watermarkLength];
-                for(int i = 0; i < watermarkLength; i++)
-                {
-                    watermark[i] = ois.readByte();
-                }
+                ois.read(watermark);
             }
             catch(IOException ioEx)
             {
