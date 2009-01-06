@@ -171,17 +171,17 @@ public class ImageUtil
         width = image.getWidth();
         height = image.getHeight();
 
-        y = new int[width][height];
-        u = new int[width][height];
-        v = new int[width][height];
+        y = new int[height][width];
+        u = new int[height][width];
+        v = new int[height][width];
 
-        for(int i = 0; i < width; i++)
+        for(int i = 0; i < height; i++)
         {
-            for(int j = 0; j < height; j++)
+            for(int j = 0; j < width; j++)
             {
-                r = (image.getRGB(i, j) >> 16) & 0xFF;
-                g = (image.getRGB(i, j) >> 8) & 0xFF;
-                b = (image.getRGB(i, j) >> 0) & 0xFF;
+                r = (image.getRGB(j, i) >> 16) & 0xFF;
+                g = (image.getRGB(j, i) >> 8) & 0xFF;
+                b = (image.getRGB(j, i) >> 0) & 0xFF;
 
                 // Convert RGB to YUV colorspace
                 //y[i][j] = (int) ((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
@@ -224,13 +224,13 @@ public class ImageUtil
         u = (int[][]) yuv.get(1);
         v = (int[][]) yuv.get(2);
 
-        width = y.length;
-        height = y[0].length;
+        height = y.length;
+        width = y[0].length;
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        for(int i = 0; i < width; i++)
+        for(int i = 0; i < height; i++)
         {
-            for(int j = 0; j < height; j++)
+            for(int j = 0; j < width; j++)
             {
                 // Convert YUV back to RGB
                 //r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
@@ -243,7 +243,7 @@ public class ImageUtil
                 g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
                 b = pixelRange(y[i][j] + 2.032 * u[i][j]);
 
-                image.setRGB(i, j, (r << 16) + (g << 8) + b);
+                image.setRGB(j, i, (r << 16) + (g << 8) + b);
             }
         }
 

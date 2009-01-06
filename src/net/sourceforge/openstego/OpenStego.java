@@ -558,13 +558,17 @@ public class OpenStego
                         throw new OpenStegoException(NAMESPACE, OpenStegoException.PLUGIN_NOT_FOUND, pluginName, null);
                     }
                 }
-                else
+                // Functionality for Auto-select of plugin is removed
+                /*else
                 {
                     plugin = PluginManager.getDefaultPlugin();
-                }
+                }*/
 
                 // Second parse of the command-line (with plugin specific options)
-                parser = new CmdLineParser(getStdCmdLineOptions(plugin), args);
+                if(plugin != null)
+                {
+                    parser = new CmdLineParser(getStdCmdLineOptions(plugin), args);
+                }
 
                 optionList = parser.getParsedOptionsAsList();
                 options = parser.getParsedOptions();
@@ -590,6 +594,13 @@ public class OpenStego
                 {
                     displayUsage();
                     return;
+                }
+
+                // Check that algorithm is selected
+                if(!command.equals("help") && !command.equals("diff") && !command.equals("algorithms")
+                        && plugin == null)
+                {
+                    throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
                 }
 
                 // Create main stego object

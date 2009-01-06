@@ -260,7 +260,6 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 // Apply inverse watermarking transformation to get the bit value
                 sigBitList.add(new Integer(invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value,
                     pixel3.value)));
-
                 n++;
             }
         }
@@ -310,7 +309,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
             }
         }
 
-        return 0.5 + ((double) corr / (double) (wm.watermarkLength * 8 * 2));
+        return 0.5 + ((double) corr / (double) (wm.watermarkLength * 8)) / 2;
     }
 
     /**

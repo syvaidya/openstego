@@ -81,6 +81,11 @@ public class OpenStegoException extends Exception
     public static final int IMAGE_SIZE_MISMATCH = 12;
 
     /**
+     * Error Code - Out of memory
+     */
+    public static final int OUT_OF_MEMORY = 13;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static HashMap errMsgKeyMap = new HashMap();
