@@ -76,7 +76,10 @@ public class OpenStegoUI extends OpenStegoFrame
         super();
 
         // Populate the combo box with list of algorithm plugins available
-        extractAlgoComboBox.addItem(labelUtil.getString("gui.label.plugin.auto"));
+
+        // Functionality of Auto-select algorithm is removed
+        //extractAlgoComboBox.addItem(labelUtil.getString("gui.label.plugin.auto"));
+
         List algoList = PluginManager.getPluginNames();
         for(int i = 0; i < algoList.size(); i++)
         {
@@ -341,11 +344,8 @@ public class OpenStegoUI extends OpenStegoFrame
         File file = null;
         List stegoOutput = null;
 
-        if(extractAlgoComboBox.getSelectedIndex() > 0)
-        {
-            extractPlugin = PluginManager.getPluginByName((String) extractAlgoComboBox.getSelectedItem());
-            config = extractPlugin.createConfig();
-        }
+        extractPlugin = PluginManager.getPluginByName((String) extractAlgoComboBox.getSelectedItem());
+        config = extractPlugin.createConfig();
 
         openStego = new OpenStego(extractPlugin, config);
         config = openStego.getConfig();
@@ -510,7 +510,16 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void handleException(Throwable ex)
     {
-        String msg = ex.getMessage();
+        String msg = null;
+
+        if(ex instanceof OutOfMemoryError)
+        {
+            msg = labelUtil.getString("err.memory.full");
+        }
+        else
+        {
+            msg = ex.getMessage();
+        }
 
         if((msg == null) || (msg.trim().equals("")))
         {

@@ -713,7 +713,7 @@ public class DWTUtil
      */
     public static void setPixel(Image image, int x, int y, double val)
     {
-        if((image != null) && (x >= 0) && (x < image.getWidth()) && (y >= 0) && (y < image.getHeight()))
+        if(!(image == null || x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()))
         {
             image.getData()[x + (y * image.getWidth())] = val;
         }
@@ -728,13 +728,13 @@ public class DWTUtil
      */
     public static double getPixel(Image image, int x, int y)
     {
-        if((image != null) && (x >= 0) && (x < image.getWidth()) && (y >= 0) && (y < image.getHeight()))
+        if(image == null || x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight())
         {
-            return image.getData()[x + (y * image.getWidth())];
+            return 0.0;
         }
         else
         {
-            return Double.NaN;
+            return image.getData()[x + y * image.getWidth()];
         }
     }
 
