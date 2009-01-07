@@ -1,4 +1,4 @@
-OpenStego v0.5.0
+OpenStego v0.5.1
 ================
 
 OpenStego is a tool developed in Java for steganography. It supports
@@ -10,7 +10,7 @@ following algorithms are provided:
  - RandomLSB : Embedding data in Least Significant Bits (LSB) of image pixels
                in a pseudo-random order, to avoid steganalysis
 
-Support for other algorithms like FFT, etc. can be added using plugins.
+Support for other algorithms like FFT, etc. would be added later using plugins.
 
 USAGE:
 ------
@@ -36,11 +36,7 @@ Following option is common for all commands other than 'algorithms':
 
     -a, --algorithm <algorithm_name>
         Name of the steganography algorithm to use. List of the supported
-        algorithms can be retrieved using 'algorithms' command. For all
-        commands except 'extract', if this option is not provided, then
-        default algorithm (LSB) is used, whereas for 'extract' command if this
-        option is not provided then the algorithm is chosen automatically
-        based on the stego file provided
+        algorithms can be retrieved using 'algorithms' command
 
 'embed' options:
 
@@ -101,27 +97,27 @@ Examples:
 
   To embed secret.txt into wallpaper.png and generate the output into test.png:
 
-      java -jar <path>\openstego.jar embed -mf secret.txt -cf wallpaper.png \
-        -sf test.png
+      java -jar <path>\openstego.jar embed -a lsb -mf secret.txt \
+        -cf wallpaper.png -sf test.png
    OR
-      java -jar <path>\openstego.jar --embed --messagefile=secret.txt \
-        --coverfile=wallpaper.png --stegofile=test.png
+      java -jar <path>\openstego.jar --embed --algorithm=lsb \
+        --messagefile=secret.txt --coverfile=wallpaper.png --stegofile=test.png
 
   To extract embedded data from test.png to /data directory:
 
-      java -jar <path>\openstego.jar extract -sf test.png -xd /data
+      java -jar <path>\openstego.jar extract -a lsb -sf test.png -xd /data
    OR
-      java -jar <path>\openstego.jar extract --stegofile=test.png \
-        --extractdir=/data
+      java -jar <path>\openstego.jar extract --algorithm=lsb \
+        --stegofile=test.png --extractdir=/data
 
   Piping example:
 
-      ls -R | java -jar <path>\openstego.jar embed > test.png
+      ls -R | java -jar <path>\openstego.jar embed -a lsb > test.png
 
   Wildcard example (Please note that the double quotes are important):
 
-      java -jar <path>\openstego.jar embed -cf "img???.png;wall*.png" \
-        -mf watermark.txt
+      java -jar <path>\openstego.jar embed -a lsb \
+        -cf "img???.png;wall*.png" -mf watermark.txt
 
 PLUGINS HELP:
 -------------
@@ -137,19 +133,23 @@ ADDING NEW PLUGIN:
     - net.sourceforge.openstego.OpenStegoPlugin
     - net.sourceforge.openstego.ui.PluginEmbedOptionsUI
 
-  Read the API documentation for the details of the methods to be implemented. In addition, the following utility class
-  can be used to handle multilingual string labels for the plugin:
+  Read the API documentation for the details of the methods to be implemented.
+  In addition, the following utility class can be used to handle multilingual
+  string labels for the plugin:
 
     - net.sourceforge.openstego.util.LabelUtil
 
-  A new namespace should be added to LabelUtil class for each new plugin. Same namespace can also be used for exception
-  messages while throwing OpenStegoException.
+  A new namespace should be added to LabelUtil class for each new plugin. Same
+  namespace can also be used for exception messages while throwing
+  OpenStegoException.
 
-  After implementing the plugin classes, create new file named "OpenStegoPlugins.external" and put the fully qualified
-  name of the class which implements OpenStegoPlugin in the file. Make sure that this file is put directly under the
-  CLASSPATH while invoking the application.
+  After implementing the plugin classes, create new file named
+  "OpenStegoPlugins.external" and put the fully qualified name of the class
+  which implements OpenStegoPlugin in the file. Make sure that this file is
+  put directly under the CLASSPATH while invoking the application.
 
-  Please refer to the "net.sourceforge.openstego.plugin.lsb" package sources for sample plugin implementation.
+  Please refer to the "net.sourceforge.openstego.plugin.lsb" package sources
+  for sample plugin implementation.
 
 TODO:
 -----
@@ -159,12 +159,12 @@ TODO:
 AUTHOR:
 -------
   Samir Vaidya (syvaidya@gmail.com)
-  Copyright (c) 2007-2008
+  Copyright (c) 2007-2009
 
 SEE ALSO:
 ---------
-  http://openstego.sourceforge.net for more details
-  http://syvaidya.blogspot.com for my blog
+  Project homepage: http://openstego.sourceforge.net
+  Blog:             http://syvaidya.blogspot.com
 
 LICENSE:
 --------

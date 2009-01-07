@@ -8,7 +8,7 @@
   <property name="build.classpath" value="${src}"/>
   <property name="javadoc" value="./doc/api"/>
   <property name="jdk.docs.href" value="http://java.sun.com/j2se/1.4.2/docs/api/"/>
-  <property name="jdk.docs.dir" value="C:/j2sdk1.4.2_17/docs/api"/>
+  <property name="jdk.docs.dir" value="C:/j2sdk1.4.2_19/docs/api"/>
 
   <target name="init">
     <mkdir dir="${build.classesdir}"/>
