@@ -120,10 +120,11 @@ public class RandomLSBPlugin extends LSBPlugin
      * Method to extract the message from the stego data
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
+     * @param origSigData Optional signature data file for watermark
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
         int bytesRead = 0;
         byte[] data = null;
