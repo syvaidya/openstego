@@ -2,6 +2,8 @@
 
 <project name="OpenStego" default="compile" basedir=".">
 
+  <property name="author.name" value="Samir Vaidya"/>
+  <property name="author.mail" value="syvaidya@gmail.com"/>
   <property name="src" value="./src"/>
   <property name="build" value="./build"/>
   <property name="build.classesdir" value="${build}/classes"/>
@@ -24,6 +26,11 @@
   <tstamp>
     <format property="time.year" pattern="yyyy"/>
   </tstamp>
+
+  <path id="classpath">
+    <fileset dir="./lib" includes="ant-deb-*.jar"/>
+  </path>
+  <taskdef resource="ant_deb_task.properties" classpathref="classpath"/>
 
   <target name="init">
     <mkdir dir="${build.classesdir}"/>
@@ -48,7 +55,7 @@
              destdir="${javadoc}"
              windowtitle="${ant.project.name} API">
       <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} Samir Vaidya. All Rights Reserved.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
       <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
     </javadoc>
   </target>
@@ -62,7 +69,7 @@
     <delete file="./lib/openstego.jar"/>
   </target>
 
-  <target name="package" depends="compile,doc">
+  <target name="package" depends="">
 
     <mkdir dir="${package}/${package.bin}"/>
     <copy todir="${package}/${package.bin}">
@@ -87,141 +94,34 @@
     <zip destfile="${package}/${package.src}.zip" basedir="${package}" includes="${package.src}/**"/>
 
     <mkdir dir="${package}/${package.deb}"/>
-    <mkdir dir="${package}/${package.deb}/DEBIAN"/>
-    <mkdir dir="${package}/${package.deb}/usr"/>
-    <mkdir dir="${package}/${package.deb}/usr/bin"/>
-    <mkdir dir="${package}/${package.deb}/usr/share"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/applications"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/doc"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/doc/openstego"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/icons"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/menu"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/openstego"/>
-    <mkdir dir="${package}/${package.deb}/usr/share/pixmaps"/>
-    <echo file="${package}/${package.deb}/DEBIAN/control" append="false">Package: openstego
-Version: ${package.ver}-1
-Architecture: amd64
-Maintainer: Samir Vaidya &lt;syvaidya@gmail.com&gt;
-Installed-Size: 1024
-Depends: java-virtual-machine
-Section: utils
-Priority: extra
-Homepage: http://openstego.sourceforge.net/
-Description: Modular steganography solution
- OpenStego is a tool implemented in Java for generic steganography, with
- support for password-based encryption of the data. It supports plugins
- for various steganographic algorithms.
- .
- Using OpenStego, you can hide secret data within innocuous looking
- files like images.
-</echo>
-    <echo file="${package}/${package.deb}/DEBIAN/postinst" append="false">#!/bin/sh
-
-set -e
-
-case "$${1}" in
-	configure)
-		;;
-
-	abort-upgrade|abort-deconfigure|abort-remove)
-
-		;;
-
-	*)
-		echo "$${0} called with unknown argument \`$${1}'" 1>&amp;2
-		exit 1
-		;;
-esac
-
-# Automatically added by dh_installmenu
-if [ "$$1" = "configure" ] &amp;&amp; [ -x "`which update-menus 2>/dev/null`" ]; then
-	update-menus
-fi
-# End automatically added section
-# Automatically added by dh_installudev
-# End automatically added section
-# Automatically added by dh_installinit
-# End automatically added section
-# Automatically added by dh_installinit
-# End automatically added section
-
-
-exit 0
-</echo>
-    <chmod file="${package}/${package.deb}/DEBIAN/postinst" perm="ugo+rx"/>
-    <echo file="${package}/${package.deb}/DEBIAN/postrm" append="false">#!/bin/sh
-
-set -e
-
-case "$${1}" in
-	purge)
-		;;
-	remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-
-		;;
-
-	*)
-		echo "postrm called with unknown argument \`$${1}'" >&amp;2
-		exit 1
-		;;
-esac
-
-# Automatically added by dh_installmenu
-if [ -x "`which update-menus 2>/dev/null`" ]; then update-menus ; fi
-# End automatically added section
-# Automatically added by dh_installdebconf
-if [ "$$1" = purge ] &amp;&amp; [ -e /usr/share/debconf/confmodule ]; then
-	. /usr/share/debconf/confmodule
-	db_purge
-fi
-# End automatically added section
-# Automatically added by dh_installinit
-# End automatically added section
-# Automatically added by dh_installinit
-# End automatically added section
-
-
-exit 0
-</echo>
-    <chmod file="${package}/${package.deb}/DEBIAN/postrm" perm="ugo+rx"/>
-    <echo file="${package}/${package.deb}/usr/bin/openstego" append="false">#!/bin/sh
-java -Xmx512M -jar /usr/share/openstego/openstego.jar $$*
-</echo>
-    <chmod file="${package}/${package.deb}/usr/bin/openstego" perm="ugo+rx"/>
-    <echo file="${package}/${package.deb}/usr/share/applications/openstego.desktop" append="false">[Desktop Entry]
-Version=1.0
-Encoding=UTF-8
-Name=OpenStego
-GenericName=Generic Steganography Software
-Type=Application
-Comment=Hide secret data into innocuous files like images
-Exec=openstego
-TryExec=openstego
-Icon=openstego
-Categories=System;
-GenericName[en_IN]=Generic Steganography Software
-Comment[en_IN]=Hide secret data into innocuous files like images
-</echo>
-    <echo file="${package}/${package.deb}/usr/share/doc/openstego/changelog.Debian" append="false">OpenStego (${package.ver}-1) jaunty; urgency=low
+    <copy file="./openstego.sh" tofile="${package}/${package.deb}/openstego"/>
+    <copy file="./src/image/OpenStegoIcon.png" tofile="${package}/${package.deb}/openstego.png"/>
+    <desktopentry
+        toFile="${package}/${package.deb}/openstego.desktop"
+        name="OpenStego"
+        comment="Hide secret data into innocuous files like images"
+        icon="/usr/share/openstego/openstego.png"
+        exec="/usr/share/openstego/openstego"
+        categories="Graphics;Java"/>
+    <echo file="${package}/${package.deb}/changelog.Debian" append="false">OpenStego (${package.ver}-1) ; urgency=low
 
   * Fixed major bug where extract action was not working for RandomLSB
     plugin
 
- -- Samir Vaidya &lt;syvaidya@gmail.com&gt;  ${time.changelog}
+ -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>
-    <gzip src="${package}/${package.deb}/usr/share/doc/openstego/changelog.Debian"
-      destfile="${package}/${package.deb}/usr/share/doc/openstego/changelog.Debian.gz"/>
-    <delete file="${package}/${package.deb}/usr/share/doc/openstego/changelog.Debian"/>
-    <echo file="${package}/${package.deb}/usr/share/doc/openstego/copyright" append="false">This package was debianized by Samir Vaidya &lt;syvaidya@gmail.com&gt; on
+    <gzip src="${package}/${package.deb}/changelog.Debian" destfile="${package}/${package.deb}/changelog.Debian.gz"/>
+    <delete file="${package}/${package.deb}/changelog.Debian"/>
+    <echo file="${package}/${package.deb}/copyright" append="false">This package was debianized by ${author.name} &lt;${author.mail}&gt; on
 ${time.creation}
 
 It was downloaded from &lt;http://openstego.sourceforge.net/&gt;.
 
-Upstream Author: Samir Vaidya &lt;syvaidya@gmail.com&gt;
+Upstream Author: ${author.name} &lt;${author.mail}&gt;
 
 License:
 
-        Copyright (C) 2007-${time.year} Samir Vaidya
+        Copyright (C) 2007-${time.year} ${author.name}
 
         This file is part of OpenStego as available from
         http://openstego.sourceforge.net. This file is free software;
@@ -234,12 +134,38 @@ License:
 
 This applies to the complete sourcetree.
 </echo>
-    <copy file="./README" tofile="${package}/${package.deb}/usr/share/doc/openstego/README.Debian"/>
-    <copy file="./lib/openstego.jar" tofile="${package}/${package.deb}/usr/share/openstego/openstego.jar"/>
-    <copy file="./src/image/OpenStegoIcon.png" tofile="${package}/${package.deb}/usr/share/openstego/openstego.png"/>
-    <copy file="./src/image/openstego.xpm" tofile="${package}/${package.deb}/usr/share/pixmaps/openstego.xpm"/>
+    <deb todir="${package}" package="openstego" section="graphics" architecture="i386" depends="java-virtual-machine" priority="optional">
+      <version upstream="${package.ver}"/>
+      <maintainer name="${author.name}" email="${author.mail}"/>
+      <description synopsis="OpenStego: Modular steganography solution">OpenStego is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. It supports plugins for various steganographic algorithms.
 
-</target>
+Using OpenStego, you can hide secret data within innocuous looking files like images.</description>
+      <tarfileset file="${package}/${package.deb}/openstego.desktop" prefix="usr/share/applications"/>
+      <tarfileset file="${package}/${package.deb}/openstego" prefix="usr/share/openstego" filemode="755"/>
+      <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
+      <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
+      <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
+      <tarfileset file="./README" prefix="usr/share/doc/openstego"/>
+      <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
+      <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
+    </deb>
+    <deb todir="${package}" package="openstego" section="graphics" architecture="amd64" depends="java-virtual-machine" priority="optional">
+      <version upstream="${package.ver}"/>
+      <maintainer name="${author.name}" email="${author.mail}"/>
+      <description synopsis="OpenStego: Modular steganography solution">OpenStego is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. It supports plugins for various steganographic algorithms.
+
+Using OpenStego, you can hide secret data within innocuous looking files like images.</description>
+      <tarfileset file="${package}/${package.deb}/openstego.desktop" prefix="usr/share/applications"/>
+      <tarfileset file="${package}/${package.deb}/openstego" prefix="usr/share/openstego" filemode="755"/>
+      <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
+      <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
+      <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
+      <tarfileset file="./README" prefix="usr/share/doc/openstego"/>
+      <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
+      <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
+    </deb>
+
+  </target>
 
 </project>
 
