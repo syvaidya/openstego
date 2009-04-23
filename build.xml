@@ -31,12 +31,15 @@
     <fileset dir="./lib" includes="ant-deb-*.jar"/>
   </path>
   <taskdef resource="ant_deb_task.properties" classpathref="classpath"/>
+  <taskdef name="nsis" classname="net.sf.nsisant.Task">
+    <classpath location="./lib/nsisant-1.2.jar"/>
+  </taskdef>
 
   <target name="init">
     <mkdir dir="${build.classesdir}"/>
   </target>
 
-  <target name="compile" depends="init">
+  <target name="compile" depends="init" description="Compiles the source files">
     <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}"
         debug="true" deprecation="on" debuglevel="lines,vars,source"/>
     <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
@@ -48,7 +51,7 @@
     </jar>
   </target>
 
-  <target name="doc">
+  <target name="doc" description="Generates the JavaDoc API documentation">
     <javadoc packagenames="net.sourceforge.openstego.*"
              sourcepath="${src}"
              excludepackagenames="net.sourceforge.openstego.plugin.*"
@@ -60,39 +63,52 @@
     </javadoc>
   </target>
 
-  <target name="clean">
+  <target name="clean" description="Removes the in-process files">
     <delete dir="${build}"/>
     <delete dir="${package}"/>
   </target>
 
-  <target name="distclean" depends="clean">
-    <delete file="./lib/openstego.jar"/>
+  <target name="package" depends="package-bin,package-src,package-nsi,package-deb"
+    description="Generates the various binary and source packages for release">
   </target>
 
-  <target name="package" depends="">
-
+  <target name="package-bin" description="Generates the binary zipped package">
     <mkdir dir="${package}/${package.bin}"/>
     <copy todir="${package}/${package.bin}">
       <fileset dir="." includes="doc/**" excludes="**/.svn/**"/>
-      <fileset dir="." includes="lib/**" excludes="**/.svn/**"/>
+      <fileset dir="." includes="lib/openstego**" excludes="**/.svn/**"/>
+      <fileset file="./src/image/openstego.ico"/>
       <fileset file="openstego.bat"/>
       <fileset file="openstego.sh"/>
       <fileset file="LICENSE"/>
       <fileset file="README"/>
     </copy>
     <zip destfile="${package}/${package.bin}.zip" basedir="${package}" includes="${package.bin}/**"/>
+  </target>
 
+  <target name="package-src" description="Generates the sources zipped package">
     <mkdir dir="${package}/${package.src}"/>
     <copy todir="${package}/${package.src}">
       <fileset dir="." includes="src/**" excludes="**/.svn/**"/>
       <fileset file="openstego.bat"/>
       <fileset file="openstego.sh"/>
       <fileset file="build.xml"/>
+      <fileset file="installer.nsi"/>
       <fileset file="LICENSE"/>
       <fileset file="README"/>
     </copy>
     <zip destfile="${package}/${package.src}.zip" basedir="${package}" includes="${package.src}/**"/>
+  </target>
 
+  <target name="package-nsi" description="Generates Windows installer">
+    <nsis script="installer.nsi" verbosity="2">
+        <define name="AppName" value="${ant.project.name}"/>
+        <define name="AppVersion" value="${package.ver}"/>
+        <define name="AppDir" value="${package}/${package.bin}"/>
+    </nsis>
+  </target>
+
+  <target name="package-deb" description="Generates Debian (Ubuntu) installer">
     <mkdir dir="${package}/${package.deb}"/>
     <copy file="./openstego.sh" tofile="${package}/${package.deb}/openstego"/>
     <copy file="./src/image/OpenStegoIcon.png" tofile="${package}/${package.deb}/openstego.png"/>
@@ -164,8 +180,6 @@ Using OpenStego, you can hide secret data within innocuous looking files like im
       <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
       <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
     </deb>
-
   </target>
 
 </project>
-
