@@ -1,4 +1,18 @@
-!include "MUI2.nsh"
+;---------------------------------------------------------
+; Steganography utility to hide messages into cover files
+; Author: Samir Vaidya (mailto:syvaidya@gmail.com)
+; Copyright (c) 2007-2009 Samir Vaidya
+;---------------------------------------------------------
+!include MUI2.nsh
+
+!macro DETERMINE_CONTEXT
+  UserInfo::getAccountType
+  Pop $0
+  StrCmp $0 "Admin" +3
+  SetShellVarContext current
+  Goto +2
+  SetShellVarContext all
+!macroend
 
 ;--------------------------------
 ;General
@@ -12,11 +26,8 @@
   ;Default installation folder
   InstallDir "$PROGRAMFILES\${AppName}"
 
-  ;Get installation folder from registry if available
-  InstallDirRegKey HKLM "Software\${AppName}" ""
-
   ;Request application privileges for Windows Vista
-  RequestExecutionLevel user
+  RequestExecutionLevel highest
 
 ;--------------------------------
 ;Interface Settings
@@ -48,6 +59,8 @@
 
 Section "${AppName} (required)" InstSec
 
+  !insertmacro DETERMINE_CONTEXT
+
   SetOutPath "$INSTDIR"
   File /r ${AppDir}\doc
   File /r ${AppDir}\lib
@@ -56,14 +69,11 @@ Section "${AppName} (required)" InstSec
   File ${AppDir}\README
   File ${AppDir}\LICENSE
 
-  ;Store installation folder
-  WriteRegStr HKLM "Software\${AppName}" "" $INSTDIR
-
   ;Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "DisplayName" "${AppName} v${AppVersion}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoRepair" 1
+  WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "DisplayName" "${AppName} v${AppVersion}"
+  WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoModify" 1
+  WriteRegDWORD SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoRepair" 1
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -73,6 +83,8 @@ SectionEnd
 ;--------------------------------
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts" SMShort
+
+  !insertmacro DETERMINE_CONTEXT
 
   CreateDirectory "$SMPROGRAMS\${AppName}"
   CreateShortCut "$SMPROGRAMS\${AppName}\Uninstall OpenStego.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
@@ -98,8 +110,9 @@ SectionEnd
 
 Section "Uninstall"
 
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}"
-  DeleteRegKey HKLM "Software\${AppName}"
+  !insertmacro DETERMINE_CONTEXT
+
+  DeleteRegKey SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}"
 
   RMDir /r "$INSTDIR\doc"
   RMDir /r "$INSTDIR\lib"

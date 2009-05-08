@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-
+<!--
+  | Steganography utility to hide messages into cover files
+  | Author: Samir Vaidya (mailto:syvaidya@gmail.com)
+  | Copyright (c) 2007-2009 Samir Vaidya
+  -->
 <project name="OpenStego" default="compile" basedir=".">
 
   <property name="author.name" value="Samir Vaidya"/>
