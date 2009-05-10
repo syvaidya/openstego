@@ -12,6 +12,7 @@
   <property name="build" value="./build"/>
   <property name="build.classesdir" value="${build}/classes"/>
   <property name="build.classpath" value="${src}"/>
+  <property name="jre.minVer" value="1.4.1"/>
   <property name="package" value="./package"/>
   <property name="package.ver" value="0.5.2"/>
   <property name="package.bin" value="openstego-${package.ver}"/>
@@ -109,6 +110,7 @@
         <define name="AppName" value="${ant.project.name}"/>
         <define name="AppVersion" value="${package.ver}"/>
         <define name="AppDir" value="${package}/${package.bin}"/>
+        <define name="RequiredJREVersion" value="${jre.minVer}"/>
     </nsis>
   </target>
 
