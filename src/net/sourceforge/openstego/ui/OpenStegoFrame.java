@@ -15,6 +15,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,12 +28,14 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.FontUIResource;
 
 import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.OpenStegoException;
@@ -164,6 +168,7 @@ public class OpenStegoFrame extends JFrame
      */
     public OpenStegoFrame()
     {
+        setupUI();
         initComponents();
         setActionCommands();
     }
@@ -322,6 +327,30 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * This methos initializes the UI resources like fonts, size, etc.
+     */
+    private void setupUI()
+    {
+        // Special handling to ensure that Japanese fonts are readable
+        if(Locale.getDefault().getLanguage().equals(Locale.JAPANESE.getLanguage()))
+        {
+            Object key = null;
+            Object value = null;
+            Enumeration keys = UIManager.getDefaults().keys();
+            while(keys.hasMoreElements())
+            {
+                key = keys.nextElement();
+                value = UIManager.get(key);
+                if(value instanceof FontUIResource)
+                {
+                    UIManager.put(key, ((FontUIResource) value).deriveFont(12.0f));
+                }
+            }
+            mainTabbedPane.setFont(new Font("Japanese", Font.PLAIN, 12));
+        }
+    }
+
+    /**
      * This method is called from within the constructor to
      * initialize the form.
      */
@@ -377,6 +406,7 @@ public class OpenStegoFrame extends JFrame
         embedPanel.add(label, gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 
         msgFileTextField.setColumns(57);
         gridBagConstraints.gridy = 2;
@@ -517,6 +547,7 @@ public class OpenStegoFrame extends JFrame
         extractPanel.add(new JLabel(labelUtil.getString("gui.label.outputDataFolder")), gridBagConstraints);
 
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 
         gridBagConstraints.gridy = 2;
         inputStegoFileTextField.setColumns(57);
@@ -529,12 +560,14 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(20, 5, 0, 5);
         extractPanel.add(extractPwdPanel, gridBagConstraints);
+        ((FlowLayout) extractPwdPanel.getLayout()).setAlignment(FlowLayout.LEFT);
         extractPwdPanel.add(new JLabel(labelUtil.getString("gui.label.option.password")));
         extractPwdTextField.setColumns(20);
         extractPwdPanel.add(extractPwdTextField);
 
         gridBagConstraints.gridx = 1;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
+        gridBagConstraints.weightx = 0.01;
 
         gridBagConstraints.gridy = 2;
         inputStegoFileButton.setText("...");
