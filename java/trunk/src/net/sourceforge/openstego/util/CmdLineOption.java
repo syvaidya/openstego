@@ -8,6 +8,7 @@ package net.sourceforge.openstego.util;
 
 /**
  * Stores the master information about a command line option
+ * 
  * @see CmdLineParser
  */
 public class CmdLineOption
@@ -49,6 +50,7 @@ public class CmdLineOption
 
     /**
      * Default constructor
+     * 
      * @param name Name of the option
      * @param altName Altername name of the option
      * @param type Type of the option
@@ -70,6 +72,7 @@ public class CmdLineOption
 
     /**
      * Set method for value
+     * 
      * @param value Value
      */
     public void setValue(String value)
@@ -79,6 +82,7 @@ public class CmdLineOption
 
     /**
      * Get method for name
+     * 
      * @return name
      */
     public String getName()
@@ -88,6 +92,7 @@ public class CmdLineOption
 
     /**
      * Get method for altName
+     * 
      * @return altN
      */
     public String getAltName()
@@ -97,6 +102,7 @@ public class CmdLineOption
 
     /**
      * Get method for type
+     * 
      * @return type
      */
     public int getType()
@@ -106,6 +112,7 @@ public class CmdLineOption
 
     /**
      * Get method for takesArgVal
+     * 
      * @return takesArgVal
      */
     public boolean takesArg()
@@ -115,6 +122,7 @@ public class CmdLineOption
 
     /**
      * Get method for value
+     * 
      * @return value
      */
     public String getValue()

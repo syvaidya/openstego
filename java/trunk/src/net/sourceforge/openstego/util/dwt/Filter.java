@@ -88,7 +88,7 @@ public class Filter
      */
     public int getType()
     {
-        return type;
+        return this.type;
     }
 
     /**
@@ -123,7 +123,7 @@ public class Filter
      */
     public int getStart()
     {
-        return start;
+        return this.start;
     }
 
     /**
@@ -143,7 +143,7 @@ public class Filter
      */
     public int getEnd()
     {
-        return end;
+        return this.end;
     }
 
     /**
@@ -163,7 +163,7 @@ public class Filter
      */
     public boolean isHiPass()
     {
-        return hiPass;
+        return this.hiPass;
     }
 
     /**
@@ -183,7 +183,7 @@ public class Filter
      */
     public double[] getData()
     {
-        return data;
+        return this.data;
     }
 
     /**

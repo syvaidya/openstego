@@ -106,6 +106,7 @@ public class DctLSBOutputStream extends OutputStream
 
     /**
      * Default constructor
+     * 
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
@@ -130,32 +131,33 @@ public class DctLSBOutputStream extends OutputStream
         this.image = new BufferedImage(this.actualImgWidth, this.actualImgHeight, BufferedImage.TYPE_INT_RGB);
 
         // Calculate width and height rounded to 8
-        imgWidth = actualImgWidth - (actualImgWidth % DCT.NJPEG);
-        imgHeight = actualImgHeight - (actualImgHeight % DCT.NJPEG);
+        this.imgWidth = this.actualImgWidth - (this.actualImgWidth % DCT.NJPEG);
+        this.imgHeight = this.actualImgHeight - (this.actualImgHeight % DCT.NJPEG);
 
         yuv = ImageUtil.getYuvFromImage(image);
-        y = (int[][]) yuv.get(0);
-        u = (int[][]) yuv.get(1);
-        v = (int[][]) yuv.get(2);
-        for(int i = 0; i < actualImgWidth; i++)
+        this.y = (int[][]) yuv.get(0);
+        this.u = (int[][]) yuv.get(1);
+        this.v = (int[][]) yuv.get(2);
+        for(int i = 0; i < this.actualImgWidth; i++)
         {
-            for(int j = 0; j < actualImgHeight; j++)
+            for(int j = 0; j < this.actualImgHeight; j++)
             {
                 this.image.setRGB(i, j, image.getRGB(i, j));
             }
         }
 
-        dct = new DCT();
-        dct.initDct8x8();
-        dct.initQuantumJpegLumin();
-        dcts = new double[DCT.NJPEG][DCT.NJPEG];
+        this.dct = new DCT();
+        this.dct.initDct8x8();
+        this.dct.initQuantumJpegLumin();
+        this.dcts = new double[DCT.NJPEG][DCT.NJPEG];
 
-        rand = new Random(StringUtil.passwordHash(config.getPassword()));
+        this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
         writeHeader();
     }
 
     /**
      * Method to write header data to stream
+     * 
      * @throws OpenStegoException
      */
     private void writeHeader() throws OpenStegoException
@@ -164,13 +166,13 @@ public class DctLSBOutputStream extends OutputStream
 
         try
         {
-            header = new DCTDataHeader(dataLength, fileName, config);
+            header = new DCTDataHeader(this.dataLength, this.fileName, this.config);
 
-            if(((header.getHeaderSize() + dataLength) * 8) > (imgWidth * imgHeight / (DCT.NJPEG * DCT.NJPEG)))
+            if(((header.getHeaderSize() + this.dataLength) * 8) > (this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG)))
             {
                 throw new OpenStegoException(DctLSBPlugin.NAMESPACE, DctLSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
             }
-            coord = new Coordinates((header.getHeaderSize() + dataLength) * 8);
+            this.coord = new Coordinates((header.getHeaderSize() + this.dataLength) * 8);
             write(header.getHeaderData());
         }
         catch(IOException ioEx)
@@ -181,6 +183,7 @@ public class DctLSBOutputStream extends OutputStream
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
+     * 
      * @param data Byte to be written
      * @throws IOException
      */
@@ -193,7 +196,7 @@ public class DctLSBOutputStream extends OutputStream
 
         for(int count = 0; count < 8; count++)
         {
-            if(n >= (imgWidth * imgHeight * 8))
+            if(this.n >= (this.imgWidth * this.imgHeight * 8))
             {
                 throw new IOException("Image size insufficient");
             }
@@ -201,26 +204,26 @@ public class DctLSBOutputStream extends OutputStream
             // Randomly select a block, check to get distinct blocks (don't use a block twice)
             do
             {
-                xb = Math.abs(rand.nextInt()) % (imgWidth / DCT.NJPEG);
-                yb = Math.abs(rand.nextInt()) % (imgHeight / DCT.NJPEG);
+                xb = Math.abs(this.rand.nextInt()) % (this.imgWidth / DCT.NJPEG);
+                yb = Math.abs(this.rand.nextInt()) % (this.imgHeight / DCT.NJPEG);
             }
-            while(!coord.add(xb, yb));
+            while(!this.coord.add(xb, yb));
 
             // Do the forward 8x8 DCT of that block
-            dct.fwdDctBlock8x8(y, xb * DCT.NJPEG, yb * DCT.NJPEG, dcts);
+            this.dct.fwdDctBlock8x8(this.y, xb * DCT.NJPEG, yb * DCT.NJPEG, this.dcts);
 
             // Randomly select a coefficient. Only accept coefficient in the middle frequency range
             do
             {
-                coeffNum = (Math.abs(rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
+                coeffNum = (Math.abs(this.rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
             }
-            while(dct.isMidFreqCoeff8x8(coeffNum) == 0);
+            while(this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
 
             // Quantize block according to quantization quality parameter
-            dct.quantize8x8(dcts);
+            this.dct.quantize8x8(this.dcts);
 
             // Read the coefficient value and replace its LSB based on the message bit
-            coeff = (int) dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG];
+            coeff = (int) this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG];
             if(((data >> (7 - count)) & 1) == 1)
             {
                 coeff |= 1;
@@ -229,30 +232,31 @@ public class DctLSBOutputStream extends OutputStream
             {
                 coeff &= ~(1);
             }
-            dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = coeff;
+            this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = coeff;
 
             // Dequantize the block
-            dct.dequantize8x8(dcts);
+            this.dct.dequantize8x8(this.dcts);
 
             // Do the inverse DCT on the modified 8x8 block
-            dct.invDctBlock8x8(dcts, y, xb * DCT.NJPEG, yb * DCT.NJPEG);
+            this.dct.invDctBlock8x8(this.dcts, this.y, xb * DCT.NJPEG, yb * DCT.NJPEG);
 
-            n++;
+            this.n++;
         }
     }
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
+     * 
      * @return Image data
      */
     public BufferedImage getImage()
     {
         ArrayList yuv = new ArrayList();
-        yuv.add(y);
-        yuv.add(u);
-        yuv.add(v);
+        yuv.add(this.y);
+        yuv.add(this.u);
+        yuv.add(this.v);
 
-        image = ImageUtil.getImageFromYuv(yuv);
-        return image;
+        this.image = ImageUtil.getImageFromYuv(yuv);
+        return this.image;
     }
 }

@@ -30,7 +30,7 @@ import net.sourceforge.openstego.util.PasswordInput;
 import net.sourceforge.openstego.util.PluginManager;
 
 /**
- * This is the main class for OpenStego. It includes the {@link #main(java.lang.String[])} method which provides the
+ * This is the main class for OpenStego. It includes the {@link #main(String[])} method which provides the
  * command line interface for the tool. It also has API methods which can be used by external programs
  * when using OpenStego as a library.
  */
@@ -68,6 +68,7 @@ public class OpenStego
 
     /**
      * Constructor using the default configuration
+     * 
      * @param plugin Stego plugin to use
      * @throws OpenStegoException
      */
@@ -77,7 +78,8 @@ public class OpenStego
     }
 
     /**
-     * Constructor using <code>OpenStegoConfig</code> object
+     * Constructor using {@link OpenStegoConfig} object
+     * 
      * @param plugin Stego plugin to use
      * @param config OpenStegoConfig object with configuration data
      * @throws OpenStegoException
@@ -106,7 +108,8 @@ public class OpenStego
     }
 
     /**
-     * Constructor with configuration data in the form of <code>Map<code>
+     * Constructor with configuration data in the form of {@link Map}
+     * 
      * @param plugin Plugin object
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
@@ -118,6 +121,7 @@ public class OpenStego
 
     /**
      * Method to embed the message data into the cover data
+     * 
      * @param msg Message data to be embedded
      * @param msgFileName Name of the message file
      * @param cover Cover data into which message data needs to be embedded
@@ -132,7 +136,7 @@ public class OpenStego
         try
         {
             // Compress data, if requested
-            if(config.isUseCompression())
+            if(this.config.isUseCompression())
             {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 GZIPOutputStream zos = new GZIPOutputStream(bos);
@@ -145,13 +149,13 @@ public class OpenStego
             }
 
             // Encrypt data, if requested
-            if(config.isUseEncryption())
+            if(this.config.isUseEncryption())
             {
-                OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
+                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword());
                 msg = crypto.encrypt(msg);
             }
 
-            return plugin.embedData(msg, msgFileName, cover, coverFileName, stegoFileName);
+            return this.plugin.embedData(msg, msgFileName, cover, coverFileName, stegoFileName);
         }
         catch(OpenStegoException osEx)
         {
@@ -165,6 +169,7 @@ public class OpenStego
 
     /**
      * Method to embed the message data into the cover data (alternate API)
+     * 
      * @param msgFile File containing the message data to be embedded
      * @param coverFile Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
@@ -200,6 +205,7 @@ public class OpenStego
 
     /**
      * Method to embed the watermark signature data into the cover data
+     * 
      * @param sig Signature data to be embedded
      * @param sigFileName Name of the signature file
      * @param cover Cover data into which signature data needs to be embedded
@@ -214,8 +220,7 @@ public class OpenStego
         try
         {
             // No compression and encryption should be done as this is signature data
-
-            return plugin.embedData(sig, sigFileName, cover, coverFileName, stegoFileName);
+            return this.plugin.embedData(sig, sigFileName, cover, coverFileName, stegoFileName);
         }
         catch(OpenStegoException osEx)
         {
@@ -229,6 +234,7 @@ public class OpenStego
 
     /**
      * Method to embed the watermark signature data into the cover data (alternate API)
+     * 
      * @param sigFile File containing the signature data to be embedded
      * @param coverFile Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
@@ -264,6 +270,7 @@ public class OpenStego
 
     /**
      * Method to extract the message data from stego data
+     * 
      * @param stegoData Stego data from which the message needs to be extracted
      * @param stegoFileName Name of the stego file
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
@@ -280,18 +287,18 @@ public class OpenStego
         try
         {
             // If plugin is not specified explicitly, then determine the plugin to use
-            if(!isPluginExplicit)
+            if(!this.isPluginExplicit)
             {
                 pluginFound = false;
                 pluginList = PluginManager.getPlugins();
 
                 for(int i = 0; i < pluginList.size(); i++)
                 {
-                    plugin = (OpenStegoPlugin) pluginList.get(i);
-                    tempConfig = plugin.createConfig();
-                    tempConfig.setPassword(config.getPassword());
-                    config = tempConfig;
-                    if(plugin.canHandle(stegoData))
+                    this.plugin = (OpenStegoPlugin) pluginList.get(i);
+                    tempConfig = this.plugin.createConfig();
+                    tempConfig.setPassword(this.config.getPassword());
+                    this.config = tempConfig;
+                    if(this.plugin.canHandle(stegoData))
                     {
                         pluginFound = true;
                         break;
@@ -305,18 +312,18 @@ public class OpenStego
             }
 
             // Add file name as first element of output list
-            output.add(plugin.extractMsgFileName(stegoData, stegoFileName));
-            msg = plugin.extractData(stegoData, stegoFileName, null);
+            output.add(this.plugin.extractMsgFileName(stegoData, stegoFileName));
+            msg = this.plugin.extractData(stegoData, stegoFileName, null);
 
             // Decrypt data, if required
-            if(config.isUseEncryption())
+            if(this.config.isUseEncryption())
             {
-                OpenStegoCrypto crypto = new OpenStegoCrypto(config.getPassword());
+                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword());
                 msg = crypto.decrypt(msg);
             }
 
             // Decompress data, if required
-            if(config.isUseCompression())
+            if(this.config.isUseCompression())
             {
                 try
                 {
@@ -349,6 +356,7 @@ public class OpenStego
 
     /**
      * Method to extract the message data from stego data (alternate API)
+     * 
      * @param stegoFile Stego file from which message needs to be extracted
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
      * @throws OpenStegoException
@@ -360,6 +368,7 @@ public class OpenStego
 
     /**
      * Method to extract the watermark data from stego data
+     * 
      * @param stegoData Stego data from which the watermark needs to be extracted
      * @param stegoFileName Name of the stego file
      * @param origSigData Original signature data
@@ -369,16 +378,17 @@ public class OpenStego
     public byte[] extractMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
         // Plugin is mandatory
-        if(!isPluginExplicit)
+        if(!this.isPluginExplicit)
         {
             throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
 
-        return plugin.extractData(stegoData, stegoFileName, origSigData);
+        return this.plugin.extractData(stegoData, stegoFileName, origSigData);
     }
 
     /**
      * Method to extract the watermark data from stego data (alternate API)
+     * 
      * @param stegoFile Stego file from which watermark needs to be extracted
      * @param origSigFile Original signature file
      * @return Extracted watermark
@@ -392,6 +402,7 @@ public class OpenStego
 
     /**
      * Method to check the correlation for the given image and the original signature
+     * 
      * @param stegoData Stego data containing the watermark
      * @param stegoFileName Name of the stego file
      * @param origSigData Original signature data
@@ -401,16 +412,17 @@ public class OpenStego
     public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
         // Plugin is mandatory
-        if(!isPluginExplicit)
+        if(!this.isPluginExplicit)
         {
             throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
 
-        return plugin.checkMark(stegoData, stegoFileName, origSigData);
+        return this.plugin.checkMark(stegoData, stegoFileName, origSigData);
     }
 
     /**
      * Method to check the correlation for the given image and the original signature (alternate API)
+     * 
      * @param stegoFile Stego file from which watermark needs to be extracted
      * @param origSigFile Original signature file
      * @return Correlation
@@ -423,6 +435,7 @@ public class OpenStego
 
     /**
      * Method to generate the signature data using the given plugin
+     * 
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -430,15 +443,15 @@ public class OpenStego
     {
         try
         {
-            if(!isPluginExplicit)
+            if(!this.isPluginExplicit)
             {
                 throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
             }
-            if(!plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+            if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
             {
                 throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.SIG_NA_PLUGIN_NOT_WM, null);
             }
-            return plugin.generateSignature();
+            return this.plugin.generateSignature();
         }
         catch(OpenStegoException osEx)
         {
@@ -452,6 +465,7 @@ public class OpenStego
 
     /**
      * Method to get difference between original cover file and the stegged file
+     * 
      * @param stegoData Stego data containing the embedded data
      * @param stegoFileName Name of the stego file
      * @param coverData Original cover data
@@ -464,16 +478,17 @@ public class OpenStego
             String diffFileName) throws OpenStegoException
     {
         // Plugin is mandatory
-        if(!isPluginExplicit)
+        if(!this.isPluginExplicit)
         {
             throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
 
-        return plugin.getDiff(stegoData, stegoFileName, coverData, coverFileName, diffFileName);
+        return this.plugin.getDiff(stegoData, stegoFileName, coverData, coverFileName, diffFileName);
     }
 
     /**
      * Method to get difference between original cover file and the stegged file
+     * 
      * @param stegoFile Stego file containing the embedded data
      * @param coverFile Original cover file
      * @param diffFileName Name of the output difference file
@@ -488,16 +503,17 @@ public class OpenStego
 
     /**
      * Get method for configuration data
+     * 
      * @return Configuration data
      */
     public OpenStegoConfig getConfig()
     {
-        return config;
+        return this.config;
     }
 
     /**
      * Main method for calling openstego from command line.
-     *
+     * 
      * @param args Command line arguments
      */
     public static void main(String[] args)
@@ -559,10 +575,12 @@ public class OpenStego
                     }
                 }
                 // Functionality for Auto-select of plugin is removed
-                /*else
-                {
-                    plugin = PluginManager.getDefaultPlugin();
-                }*/
+                /*
+                 * else
+                 * {
+                 * plugin = PluginManager.getDefaultPlugin();
+                 * }
+                 */
 
                 // Second parse of the command-line (with plugin specific options)
                 if(plugin != null)
@@ -650,9 +668,9 @@ public class OpenStego
                         for(int i = 0; i < coverFileList.size(); i++)
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
-                            CommonUtil.writeFile(stego.embedData(
-                                (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
-                                (File) coverFileList.get(i), coverFileName), coverFileName);
+                            CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-"))
+                                    ? null : new File(msgFileName), (File) coverFileList.get(i), coverFileName),
+                                coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
                                 new Object[] { coverFileName }));
@@ -695,9 +713,9 @@ public class OpenStego
                         for(int i = 0; i < coverFileList.size(); i++)
                         {
                             coverFileName = ((File) coverFileList.get(i)).getName();
-                            CommonUtil.writeFile(stego.embedMark(
-                                (sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
-                                (File) coverFileList.get(i), coverFileName), coverFileName);
+                            CommonUtil.writeFile(stego.embedMark((sigFileName == null || sigFileName.equals("-"))
+                                    ? null : new File(sigFileName), (File) coverFileList.get(i), coverFileName),
+                                coverFileName);
 
                             System.err.println(labelUtil.getString("cmd.msg.coverProcessed",
                                 new Object[] { coverFileName }));
@@ -908,6 +926,7 @@ public class OpenStego
 
     /**
      * Method to display usage for OpenStego
+     * 
      * @throws OpenStegoException
      */
     private static void displayUsage() throws OpenStegoException
@@ -921,6 +940,7 @@ public class OpenStego
 
     /**
      * Method to generate the standard list of command-line options
+     * 
      * @param plugin Stego plugin for plugin-specific command-line options
      * @return Standard list of command-line options
      * @throws OpenStegoException

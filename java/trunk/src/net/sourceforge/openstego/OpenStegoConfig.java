@@ -63,6 +63,7 @@ public class OpenStegoConfig
     /**
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -73,6 +74,7 @@ public class OpenStegoConfig
 
     /**
      * Constructor which reads configuration data from the command line options.
+     * 
      * @param options Command-line options
      * @throws OpenStegoException
      */
@@ -110,6 +112,7 @@ public class OpenStegoConfig
 
     /**
      * Method to add properties from the map to this configuration data
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -128,11 +131,11 @@ public class OpenStegoConfig
                 value = propMap.get(key).toString().trim();
                 if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
                 {
-                    useCompression = true;
+                    this.useCompression = true;
                 }
                 else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
                 {
-                    useCompression = false;
+                    this.useCompression = false;
                 }
                 else
                 {
@@ -145,11 +148,11 @@ public class OpenStegoConfig
                 value = propMap.get(key).toString().trim();
                 if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
                 {
-                    useEncryption = true;
+                    this.useEncryption = true;
                 }
                 else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
                 {
-                    useEncryption = false;
+                    this.useEncryption = false;
                 }
                 else
                 {
@@ -159,22 +162,24 @@ public class OpenStegoConfig
             }
             else if(key.equals(PASSWORD))
             {
-                password = propMap.get(key).toString();
+                this.password = propMap.get(key).toString();
             }
         }
     }
 
     /**
      * Get method for configuration item - useCompression
+     * 
      * @return useCompression
      */
     public boolean isUseCompression()
     {
-        return useCompression;
+        return this.useCompression;
     }
 
     /**
      * Set method for configuration item - useCompression
+     * 
      * @param useCompression
      */
     public void setUseCompression(boolean useCompression)
@@ -184,15 +189,17 @@ public class OpenStegoConfig
 
     /**
      * Get Method for useEncryption
+     * 
      * @return useEncryption
      */
     public boolean isUseEncryption()
     {
-        return useEncryption;
+        return this.useEncryption;
     }
 
     /**
      * Set Method for useEncryption
+     * 
      * @param useEncryption
      */
     public void setUseEncryption(boolean useEncryption)
@@ -202,15 +209,17 @@ public class OpenStegoConfig
 
     /**
      * Get Method for password
+     * 
      * @return password
      */
     public String getPassword()
     {
-        return password;
+        return this.password;
     }
 
     /**
      * Set Method for password
+     * 
      * @param password
      */
     public void setPassword(String password)

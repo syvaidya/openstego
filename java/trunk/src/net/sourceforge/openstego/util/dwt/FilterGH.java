@@ -68,7 +68,7 @@ public class FilterGH
      */
     public Integer getId()
     {
-        return id;
+        return this.id;
     }
 
     /**
@@ -88,7 +88,7 @@ public class FilterGH
      */
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     /**
@@ -108,7 +108,7 @@ public class FilterGH
      */
     public int getType()
     {
-        return type;
+        return this.type;
     }
 
     /**
@@ -143,7 +143,7 @@ public class FilterGH
      */
     public Filter getG()
     {
-        return g;
+        return this.g;
     }
 
     /**
@@ -163,7 +163,7 @@ public class FilterGH
      */
     public Filter getH()
     {
-        return h;
+        return this.h;
     }
 
     /**
@@ -183,7 +183,7 @@ public class FilterGH
      */
     public Filter getGi()
     {
-        return gi;
+        return this.gi;
     }
 
     /**
@@ -203,7 +203,7 @@ public class FilterGH
      */
     public Filter getHi()
     {
-        return hi;
+        return this.hi;
     }
 
     /**

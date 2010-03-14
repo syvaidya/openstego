@@ -47,6 +47,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
     /**
      * Method to get the list of supported file extensions for reading
+     * 
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
@@ -82,6 +83,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
     /**
      * Method to get the list of supported file extensions for writing
+     * 
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
@@ -117,6 +119,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
     /**
      * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * 
      * @param stegoUI Reference to the parent OpenStegoUI object
      * @return UI object specific to this plugin
      * @throws OpenStegoException
@@ -128,6 +131,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
     /**
      * Method to populate the standard command-line options used by this plugin
+     * 
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      * @throws OpenStegoException
      */
@@ -137,6 +141,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
     /**
      * Method to get the configuration class specific to this plugin
+     * 
      * @return Configuration class specific to this plugin
      */
     public Class getConfigClass()

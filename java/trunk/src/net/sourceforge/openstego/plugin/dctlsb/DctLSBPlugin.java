@@ -44,6 +44,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Gives the name of the plugin
+     * 
      * @return Name of the plugin
      */
     public String getName()
@@ -53,6 +54,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
+     * 
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -62,9 +64,10 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
+     * 
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
-     *            the cover data
+     *        the cover data
      * @param cover Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
@@ -103,6 +106,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
+     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -139,6 +143,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to generate the signature data
+     * 
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -149,6 +154,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to get the list of supported file extensions for writing
+     * 
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
@@ -165,6 +171,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to get the usage details of the plugin
+     * 
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
@@ -175,6 +182,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to check the correlation between original signature and the extracted watermark
+     * 
      * @param origSigData Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
@@ -188,6 +196,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
 
     /**
      * Method to get the configuration class specific to this plugin
+     * 
      * @return Configuration class specific to this plugin
      */
     public Class getConfigClass()

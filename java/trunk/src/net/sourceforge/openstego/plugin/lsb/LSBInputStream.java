@@ -65,6 +65,7 @@ public class LSBInputStream extends InputStream
 
     /**
      * Default constructor
+     * 
      * @param image Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
@@ -87,27 +88,29 @@ public class LSBInputStream extends InputStream
 
     /**
      * Method to read header data from the input stream
+     * 
      * @throws OpenStegoException
      */
     private void readHeader() throws OpenStegoException
     {
-        dataHeader = new LSBDataHeader(this, config);
-        this.channelBitsUsed = dataHeader.getChannelBitsUsed();
+        this.dataHeader = new LSBDataHeader(this, this.config);
+        this.channelBitsUsed = this.dataHeader.getChannelBitsUsed();
 
-        if(currBit != 0)
+        if(this.currBit != 0)
         {
-            currBit = 0;
-            x++;
-            if(x == imgWidth)
+            this.currBit = 0;
+            this.x++;
+            if(this.x == this.imgWidth)
             {
-                x = 0;
-                y++;
+                this.x = 0;
+                this.y++;
             }
         }
     }
 
     /**
      * Implementation of <code>InputStream.read()</code> method
+     * 
      * @return Byte read from the stream
      * @throws IOException
      */
@@ -116,26 +119,26 @@ public class LSBInputStream extends InputStream
         int pixel = 0;
         byte[] bitSet = new byte[8];
 
-        if(y == imgHeight)
+        if(this.y == this.imgHeight)
         {
             return -1;
         }
 
         for(int i = 0; i < bitSet.length; i++)
         {
-            pixel = image.getRGB(x, y);
+            pixel = this.image.getRGB(this.x, this.y);
             bitSet[i] = getCurrBitFromPixel(pixel);
 
-            currBit++;
-            if(currBit == (3 * channelBitsUsed))
+            this.currBit++;
+            if(this.currBit == (3 * this.channelBitsUsed))
             {
-                currBit = 0;
-                x++;
-                if(x == imgWidth)
+                this.currBit = 0;
+                this.x++;
+                if(this.x == this.imgWidth)
                 {
-                    x = 0;
-                    y++;
-                    if(y == imgHeight)
+                    this.x = 0;
+                    this.y++;
+                    if(this.y == this.imgHeight)
                     {
                         return -1;
                     }
@@ -148,15 +151,17 @@ public class LSBInputStream extends InputStream
 
     /**
      * Get method for dataHeader
+     * 
      * @return Data header
      */
     public LSBDataHeader getDataHeader()
     {
-        return dataHeader;
+        return this.dataHeader;
     }
 
     /**
      * Gets the bit from pixel based on the current bit
+     * 
      * @param pixel
      * @return Bit
      */
@@ -165,9 +170,9 @@ public class LSBInputStream extends InputStream
         int group = 0;
         int groupBit = 0;
 
-        group = currBit / channelBitsUsed;
-        groupBit = currBit % channelBitsUsed;
+        group = this.currBit / this.channelBitsUsed;
+        groupBit = this.currBit % this.channelBitsUsed;
 
-        return (byte) (((pixel >> (16 - (group * 8))) >> (channelBitsUsed - groupBit - 1)) & 1);
+        return (byte) (((pixel >> (16 - (group * 8))) >> (this.channelBitsUsed - groupBit - 1)) & 1);
     }
 }

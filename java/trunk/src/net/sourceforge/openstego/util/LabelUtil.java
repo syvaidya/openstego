@@ -29,6 +29,7 @@ public class LabelUtil
 
     /**
      * Method to add new namespace using resource bundle
+     * 
      * @param namespace Namespace for the labels
      * @param bundle Resource bundle name
      */
@@ -39,6 +40,7 @@ public class LabelUtil
 
     /**
      * Method to get instance of LabelUtil based on the namespace
+     * 
      * @param namespace Namespace for the labels
      * @return Instance of LabelUtil
      */
@@ -63,6 +65,7 @@ public class LabelUtil
 
     /**
      * Constructor is protected
+     * 
      * @param namespace Namespace for the label
      */
     protected LabelUtil(String namespace)
@@ -72,16 +75,18 @@ public class LabelUtil
 
     /**
      * Method to get label value for the given label key
+     * 
      * @param key Key for the label
      * @return Display value for the label
      */
     public String getString(String key)
     {
-        return ((ResourceBundle) map.get(namespace)).getString(key);
+        return ((ResourceBundle) map.get(this.namespace)).getString(key);
     }
 
     /**
      * Method to get label value for the given label key (using optional parameters)
+     * 
      * @param key Key for the label
      * @param parameters Parameters to pass for a parameterized label
      * @return Display value for the label

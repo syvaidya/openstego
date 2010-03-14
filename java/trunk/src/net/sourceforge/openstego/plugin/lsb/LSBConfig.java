@@ -22,8 +22,8 @@ public class LSBConfig extends OpenStegoConfig
     /**
      * Key string for configuration item - maxBitsUsedPerChannel.
      * <p>
-     * Maximum bits to use per color channel. Allowing for higher number here might degrade the quality
-     * of the image in case the data size is big.
+     * Maximum bits to use per color channel. Allowing for higher number here might degrade the quality of the image in
+     * case the data size is big.
      */
     public static final String MAX_BITS_USED_PER_CHANNEL = "maxBitsUsedPerChannel";
 
@@ -48,6 +48,7 @@ public class LSBConfig extends OpenStegoConfig
     /**
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -58,6 +59,7 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Constructor which reads configuration data from the command line options.
+     * 
      * @param options Command-line options
      * @throws OpenStegoException
      */
@@ -76,6 +78,7 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Method to add properties from the map to this configuration data
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -96,14 +99,14 @@ public class LSBConfig extends OpenStegoConfig
                 value = propMap.get(key).toString().trim();
                 try
                 {
-                    maxBitsUsedPerChannel = Integer.parseInt(value);
+                    this.maxBitsUsedPerChannel = Integer.parseInt(value);
                 }
                 catch(NumberFormatException nfEx)
                 {
                     throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_NUMBER, value, nfEx);
                 }
 
-                if(maxBitsUsedPerChannel < 1 || maxBitsUsedPerChannel > 8)
+                if(this.maxBitsUsedPerChannel < 1 || this.maxBitsUsedPerChannel > 8)
                 {
                     throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_IN_RANGE, value, null);
                 }
@@ -113,15 +116,17 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Get method for configuration item - maxBitsUsedPerChannel
+     * 
      * @return maxBitsUsedPerChannel
      */
     public int getMaxBitsUsedPerChannel()
     {
-        return maxBitsUsedPerChannel;
+        return this.maxBitsUsedPerChannel;
     }
 
     /**
      * Set method for configuration item - maxBitsUsedPerChannel
+     * 
      * @param maxBitsUsedPerChannel
      */
     public void setMaxBitsUsedPerChannel(int maxBitsUsedPerChannel)
@@ -131,15 +136,17 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Get method for configuration item - imageFileExtension
+     * 
      * @return imageFileExtension
      */
     public String getImageFileExtension()
     {
-        return imageFileExtension;
+        return this.imageFileExtension;
     }
 
     /**
      * Set method for configuration item - imageFileExtension
+     * 
      * @param imageFileExtension
      */
     public void setImageFileExtension(String imageFileExtension)

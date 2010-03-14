@@ -13,6 +13,7 @@ import java.util.List;
  * Abstract class for stego plugins for OpenStego purpose of which is watermarking. It implements few methods which are
  * specific for watermarking, and provides dummy implementation for the methods which are specific to data hiding
  * purposes so that sub-class does not need to implement them
+ * 
  * @see DataHidingPlugin
  */
 public abstract class WatermarkingPlugin extends OpenStegoPlugin
@@ -21,6 +22,7 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin
 
     /**
      * Gives the purpose(s) of the plugin. This implementation returns only one value - Watermarking
+     * 
      * @return Purpose(s) of the plugin
      */
     public final List getPurposes()
@@ -35,6 +37,7 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin
     /**
      * Method to extract the message file name from the stego data. This implementation returns <code>null</code> as
      * this class is for watermarking plugins only
+     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
@@ -48,6 +51,7 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin
     /**
      * Method to find out whether given stego data can be handled by this plugin or not. This implementation returns
      * <code>false</code> as this class is for watermarking plugins only
+     * 
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
      */

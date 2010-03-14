@@ -39,6 +39,7 @@ public class ImageUtil
 
     /**
      * Method to generate a random image filled with noise.
+     * 
      * @param numOfPixels Number of pixels required in the image
      * @return Random image filled with noise
      * @throws OpenStegoException
@@ -80,6 +81,7 @@ public class ImageUtil
 
     /**
      * Method to convert BufferedImage to byte array
+     * 
      * @param image Image data
      * @param imageFileName Name of the image file
      * @param plugin Reference to the plugin
@@ -122,6 +124,7 @@ public class ImageUtil
 
     /**
      * Method to convert byte array to image
+     * 
      * @param imageData Image data as byte array
      * @param imgFileName Name of the image file
      * @return Buffered image
@@ -153,6 +156,7 @@ public class ImageUtil
 
     /**
      * Get YUV data from given image's RGB data
+     * 
      * @param image Image
      * @return List with three elements of two-dimensional int's - Y, U and V
      */
@@ -184,12 +188,12 @@ public class ImageUtil
                 b = (image.getRGB(j, i) >> 0) & 0xFF;
 
                 // Convert RGB to YUV colorspace
-                //y[i][j] = (int) ((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
-                //u[i][j] = (int) (-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
-                //v[i][j] = (int) ((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
-                //y[i][j] = (int) ((0.2990 * r) + (0.5870 * g) + (0.1140 * b));
-                //u[i][j] = (int) ((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
-                //v[i][j] = (int) ((0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
+                // y[i][j] = (int) ((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
+                // u[i][j] = (int) (-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
+                // v[i][j] = (int) ((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
+                // y[i][j] = (int) ((0.2990 * r) + (0.5870 * g) + (0.1140 * b));
+                // u[i][j] = (int) ((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
+                // v[i][j] = (int) ((0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
                 y[i][j] = (int) ((0.299 * r) + (0.587 * g) + (0.114 * b));
                 u[i][j] = (int) ((-0.147 * r) - (0.289 * g) + (0.436 * b));
                 v[i][j] = (int) ((0.615 * r) - (0.515 * g) - (0.100 * b));
@@ -205,6 +209,7 @@ public class ImageUtil
 
     /**
      * Get image (with RGB data) from given YUV data
+     * 
      * @param yuv List with three elements of two-dimensional int's - Y, U and V
      * @return Image
      */
@@ -233,12 +238,12 @@ public class ImageUtil
             for(int j = 0; j < width; j++)
             {
                 // Convert YUV back to RGB
-                //r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
-                //g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
-                //b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
-                //r = pixelRange(y[i][j] + 1.40200 * (v[i][j] - 128));
-                //g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
-                //b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128));
+                // r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
+                // g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
+                // b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
+                // r = pixelRange(y[i][j] + 1.40200 * (v[i][j] - 128));
+                // g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
+                // b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128));
                 r = pixelRange(y[i][j] + 1.140 * v[i][j]);
                 g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
                 b = pixelRange(y[i][j] + 2.032 * u[i][j]);
@@ -252,6 +257,7 @@ public class ImageUtil
 
     /**
      * Utility method to limit the value within [0,255] range
+     * 
      * @param p Input value
      * @return Limited value
      */
@@ -262,6 +268,7 @@ public class ImageUtil
 
     /**
      * Utility method to limit the value within [0,255] range
+     * 
      * @param p Input value
      * @return Limited value
      */
@@ -272,6 +279,7 @@ public class ImageUtil
 
     /**
      * Method to pad an image such that it becomes perfect square. The padding uses black color
+     * 
      * @param image Input image
      * @return Image with square dimensions
      */
@@ -286,6 +294,7 @@ public class ImageUtil
     /**
      * Method crop an image to the given dimensions. If dimensions are more than the input image size, then the image
      * gets padded with black color
+     * 
      * @param image Input image
      * @param cropWidth Width required for cropped image
      * @param cropHeight Height required for cropped image
@@ -322,6 +331,7 @@ public class ImageUtil
 
     /**
      * Method generate difference image between two given images
+     * 
      * @param leftImage Left input image
      * @param rightImage Right input image
      * @return Difference image
@@ -376,7 +386,7 @@ public class ImageUtil
             {
                 diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
                 diffImage.setRGB(i, j, pixelRange((double) (diff - min) / (double) (max - min) * Math.pow(2, 32)));
-                //TODO
+                // TODO
             }
         }
 

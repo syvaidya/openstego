@@ -75,6 +75,7 @@ public class DctLSBInputStream extends InputStream
 
     /**
      * Default constructor
+     * 
      * @param image Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
@@ -91,32 +92,34 @@ public class DctLSBInputStream extends InputStream
         this.imgHeight = image.getHeight();
 
         // Calculate widht and height rounded to 8
-        this.imgWidth = imgWidth - (imgWidth % DCT.NJPEG);
-        this.imgHeight = imgHeight - (imgHeight % DCT.NJPEG);
+        this.imgWidth = this.imgWidth - (this.imgWidth % DCT.NJPEG);
+        this.imgHeight = this.imgHeight - (this.imgHeight % DCT.NJPEG);
 
-        y = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
+        this.y = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
 
-        dct = new DCT();
-        dct.initDct8x8();
-        dct.initQuantumJpegLumin();
-        dcts = new double[DCT.NJPEG][DCT.NJPEG];
-        coord = new Coordinates((imgWidth * imgHeight * 8) / (DCT.NJPEG * DCT.NJPEG));
+        this.dct = new DCT();
+        this.dct.initDct8x8();
+        this.dct.initQuantumJpegLumin();
+        this.dcts = new double[DCT.NJPEG][DCT.NJPEG];
+        this.coord = new Coordinates((this.imgWidth * this.imgHeight * 8) / (DCT.NJPEG * DCT.NJPEG));
 
-        rand = new Random(StringUtil.passwordHash(this.config.getPassword()));
+        this.rand = new Random(StringUtil.passwordHash(this.config.getPassword()));
         readHeader();
     }
 
     /**
      * Method to read header data from the input stream
+     * 
      * @throws OpenStegoException
      */
     private void readHeader() throws OpenStegoException
     {
-        dataHeader = new DCTDataHeader(this, config);
+        this.dataHeader = new DCTDataHeader(this, this.config);
     }
 
     /**
      * Implementation of <code>InputStream.read()</code> method
+     * 
      * @return Byte read from the stream
      * @throws IOException
      */
@@ -129,35 +132,35 @@ public class DctLSBInputStream extends InputStream
 
         for(int count = 0; count < 8; count++)
         {
-            if(n >= (imgWidth * imgHeight * 8))
+            if(this.n >= (this.imgWidth * this.imgHeight * 8))
             {
                 return -1;
             }
 
             do
             {
-                xb = Math.abs(rand.nextInt()) % (imgWidth / DCT.NJPEG);
-                yb = Math.abs(rand.nextInt()) % (imgHeight / DCT.NJPEG);
+                xb = Math.abs(this.rand.nextInt()) % (this.imgWidth / DCT.NJPEG);
+                yb = Math.abs(this.rand.nextInt()) % (this.imgHeight / DCT.NJPEG);
             }
-            while(!coord.add(xb, yb));
+            while(!this.coord.add(xb, yb));
 
             // Do the forward 8x8 DCT of that block
-            dct.fwdDctBlock8x8(y, xb * DCT.NJPEG, yb * DCT.NJPEG, dcts);
+            this.dct.fwdDctBlock8x8(this.y, xb * DCT.NJPEG, yb * DCT.NJPEG, this.dcts);
 
             // Randomly select a coefficient. Only accept coefficient in the middle frequency range
             do
             {
-                coeffNum = (Math.abs(rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
+                coeffNum = (Math.abs(this.rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
             }
-            while(dct.isMidFreqCoeff8x8(coeffNum) == 0);
+            while(this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
 
             // Quantize block according to quantization quality parameter
-            dct.quantize8x8(dcts);
+            this.dct.quantize8x8(this.dcts);
 
             // Get the LSB of the coefficient
-            out = (out << 1) + (((int) dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG]) & 1);
+            out = (out << 1) + (((int) this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG]) & 1);
 
-            n++;
+            this.n++;
         }
 
         return out;
@@ -165,10 +168,11 @@ public class DctLSBInputStream extends InputStream
 
     /**
      * Get method for dataHeader
+     * 
      * @return Data header
      */
     public DCTDataHeader getDataHeader()
     {
-        return dataHeader;
+        return this.dataHeader;
     }
 }

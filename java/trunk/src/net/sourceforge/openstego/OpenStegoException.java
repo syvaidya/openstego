@@ -15,6 +15,8 @@ import net.sourceforge.openstego.util.LabelUtil;
  */
 public class OpenStegoException extends Exception
 {
+    private static final long serialVersionUID = 668241029491685413L;
+
     /**
      * Error Code - Unhandled exception
      */
@@ -121,6 +123,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor using default namespace for unhandled exceptions
+     * 
      * @param cause Original exception which caused this exception to be raised
      */
     public OpenStegoException(Throwable cause)
@@ -130,6 +133,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Default constructor
+     * 
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      * @param cause Original exception which caused this exception to be raised
@@ -141,6 +145,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor with a single parameter for the message
+     * 
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      * @param param Parameter for exception message
@@ -153,6 +158,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor which takes object array for parameters for the message
+     * 
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      * @param params Parameters for exception message
@@ -169,24 +175,27 @@ public class OpenStegoException extends Exception
 
     /**
      * Get method for errorCode
+     * 
      * @return errorCode
      */
     public int getErrorCode()
     {
-        return errorCode;
+        return this.errorCode;
     }
 
     /**
      * Get method for namespace
+     * 
      * @return namespace
      */
     public String getNamespace()
     {
-        return namespace;
+        return this.namespace;
     }
 
     /**
      * Method to add new error codes to the namespace
+     * 
      * @param namespace Namespace for the error
      * @param errorCode Error code of the error
      * @param labelKey Key of the label for the error
