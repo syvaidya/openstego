@@ -31,6 +31,8 @@ import net.sourceforge.openstego.util.LabelUtil;
  */
 public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 {
+    private static final long serialVersionUID = 6168148599483165215L;
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -53,6 +55,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Default constructor
+     * 
      * @param stegoUI Reference to the parent UI object
      */
     public LSBEmbedOptionsUI(OpenStegoUI stegoUI)
@@ -84,16 +87,16 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
         gridBagConstraints.weightx = 1.0;
 
         gridBagConstraints.gridy = 0;
-        add(randomImgCheckBox, gridBagConstraints);
+        add(this.randomImgCheckBox, gridBagConstraints);
 
         gridBagConstraints.gridy = 1;
         for(int i = 0; i < 8; i++)
         {
             maxBitsList[i] = new Integer(i + 1);
         }
-        maxBitsComboBox = new JComboBox(maxBitsList);
-        maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
-        add(maxBitsComboBox, gridBagConstraints);
+        this.maxBitsComboBox = new JComboBox(maxBitsList);
+        this.maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
+        add(this.maxBitsComboBox, gridBagConstraints);
 
         ChangeListener changeListener = new ChangeListener()
         {
@@ -102,7 +105,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
                 useRandomImgChanged();
             }
         };
-        randomImgCheckBox.addChangeListener(changeListener);
+        this.randomImgCheckBox.addChangeListener(changeListener);
         useRandomImgChanged();
     }
 
@@ -111,10 +114,10 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      */
     private void useRandomImgChanged()
     {
-        JTextField coverFileTextField = stegoUI.getCoverFileTextField();
-        JButton coverFileButton = stegoUI.getCoverFileButton();
+        JTextField coverFileTextField = this.stegoUI.getCoverFileTextField();
+        JButton coverFileButton = this.stegoUI.getCoverFileButton();
 
-        if(randomImgCheckBox.isSelected())
+        if(this.randomImgCheckBox.isSelected())
         {
             CommonUtil.setEnabled(coverFileTextField, false);
             coverFileTextField.setText("");
@@ -130,6 +133,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Method to validate plugin options for "Embed" action
+     * 
      * @return Boolean indicating whether validation was successful or not
      * @throws OpenStegoException
      */
@@ -140,21 +144,23 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Method to populate the plugin GUI options based on the config data
+     * 
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
     public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException
     {
-        maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
+        this.maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
     }
 
     /**
      * Method to populate the config object based on the GUI data
+     * 
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
     public void setConfigFromGUI(OpenStegoConfig config) throws OpenStegoException
     {
-        ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) maxBitsComboBox.getSelectedItem()).intValue());
+        ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) this.maxBitsComboBox.getSelectedItem()).intValue());
     }
 }

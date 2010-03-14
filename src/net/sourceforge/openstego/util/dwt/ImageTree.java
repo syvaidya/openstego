@@ -36,7 +36,7 @@ public class ImageTree
      */
     public double getEntropy()
     {
-        return entropy;
+        return this.entropy;
     }
 
     /**
@@ -56,7 +56,7 @@ public class ImageTree
      */
     public ImageTree getCoarse()
     {
-        return coarse;
+        return this.coarse;
     }
 
     /**
@@ -76,7 +76,7 @@ public class ImageTree
      */
     public ImageTree getHorizontal()
     {
-        return horizontal;
+        return this.horizontal;
     }
 
     /**
@@ -96,7 +96,7 @@ public class ImageTree
      */
     public ImageTree getVertical()
     {
-        return vertical;
+        return this.vertical;
     }
 
     /**
@@ -116,7 +116,7 @@ public class ImageTree
      */
     public ImageTree getDiagonal()
     {
-        return diagonal;
+        return this.diagonal;
     }
 
     /**
@@ -136,7 +136,7 @@ public class ImageTree
      */
     public ImageTree getDoubleTree()
     {
-        return doubleTree;
+        return this.doubleTree;
     }
 
     /**
@@ -156,7 +156,7 @@ public class ImageTree
      */
     public Image getImage()
     {
-        return image;
+        return this.image;
     }
 
     /**
@@ -176,7 +176,7 @@ public class ImageTree
      */
     public int getLevel()
     {
-        return level;
+        return this.level;
     }
 
     /**
@@ -196,7 +196,7 @@ public class ImageTree
      */
     public int getFlag()
     {
-        return flag;
+        return this.flag;
     }
 
     /**

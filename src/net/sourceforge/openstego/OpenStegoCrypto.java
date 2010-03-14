@@ -44,6 +44,7 @@ public class OpenStegoCrypto
 
     /**
      * Default constructor
+     * 
      * @param password Password to use for encryption
      * @throws OpenStegoException
      */
@@ -61,17 +62,17 @@ public class OpenStegoCrypto
             }
 
             // Create the key
-            keySpec = new PBEKeySpec(password.toCharArray(), SALT, ITER_COUNT);
+            keySpec = new PBEKeySpec(password.toCharArray(), this.SALT, this.ITER_COUNT);
             secretKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-            encryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
-            decryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
+            this.encryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
+            this.decryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
 
             // Prepare cipher parameters
-            algoParamSpec = new PBEParameterSpec(SALT, ITER_COUNT);
+            algoParamSpec = new PBEParameterSpec(this.SALT, this.ITER_COUNT);
 
             // Initialize the ciphers
-            encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, algoParamSpec);
-            decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, algoParamSpec);
+            this.encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, algoParamSpec);
+            this.decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, algoParamSpec);
         }
         catch(Exception ex)
         {
@@ -88,6 +89,7 @@ public class OpenStegoCrypto
 
     /**
      * Method to encrypt the data
+     * 
      * @param input Data to be encrypted
      * @return Encrypted data
      * @throws OpenStegoException
@@ -96,7 +98,7 @@ public class OpenStegoCrypto
     {
         try
         {
-            return encryptCipher.doFinal(input);
+            return this.encryptCipher.doFinal(input);
         }
         catch(Exception ex)
         {
@@ -113,6 +115,7 @@ public class OpenStegoCrypto
 
     /**
      * Method to decrypt the data
+     * 
      * @param input Data to be decrypted
      * @return Decrypted data (returns <code>null</code> if password is invalid)
      * @throws OpenStegoException
@@ -121,7 +124,7 @@ public class OpenStegoCrypto
     {
         try
         {
-            return decryptCipher.doFinal(input);
+            return this.decryptCipher.doFinal(input);
         }
         catch(BadPaddingException bpEx)
         {

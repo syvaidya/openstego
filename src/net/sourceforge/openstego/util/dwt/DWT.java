@@ -12,10 +12,10 @@ import net.sourceforge.openstego.util.ImageUtil;
 
 /**
  * Class to handle Discrete Wavelet Transforms (DWT).
- * 
- * This class is conversion of C to Java for the file "dwt.c" file provided by Peter Meerwald at:
- * http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/
- * 
+ * <p>
+ * This class is conversion of C to Java for the file "dwt.c" file provided by Peter Meerwald at:<a
+ * href="http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/">http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/</a>
+ * <p>
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
@@ -58,6 +58,7 @@ public class DWT
 
     /**
      * Default constructor
+     * 
      * @param cols Image width
      * @param rows Image height
      * @param filterID Filter ID to use
@@ -69,13 +70,13 @@ public class DWT
         // Read the master filter file if it is not already loaded
         if(filterGHMap == null)
         {
-            filterGHMap = FilterXMLReader.parse(filterFile);
+            filterGHMap = FilterXMLReader.parse(this.filterFile);
         }
 
-        filters = new FilterGH[level + 1];
+        this.filters = new FilterGH[level + 1];
         for(int i = 0; i <= level; i++)
         {
-            filters[i] = (FilterGH) filterGHMap.get(new Integer(filterID));
+            this.filters[i] = (FilterGH) filterGHMap.get(new Integer(filterID));
         }
 
         this.level = level;
@@ -86,6 +87,7 @@ public class DWT
 
     /**
      * Method to perform forward DWT on the pixel data
+     * 
      * @param pixels Image pixel data
      * @return Image tree data after DWT
      */
@@ -94,22 +96,23 @@ public class DWT
         Image image = null;
         ImageTree tree = null;
 
-        image = new Image(cols, rows);
+        image = new Image(this.cols, this.rows);
 
-        for(int i = 0; i < rows; i++)
+        for(int i = 0; i < this.rows; i++)
         {
-            for(int j = 0; j < cols; j++)
+            for(int j = 0; j < this.cols; j++)
             {
                 DWTUtil.setPixel(image, j, i, pixels[i][j]);
             }
         }
 
-        tree = DWTUtil.waveletTransform(image, level, filters, method);
+        tree = DWTUtil.waveletTransform(image, this.level, this.filters, this.method);
         return tree;
     }
 
     /**
      * Method to perform forward DWT (WP) on the pixel data
+     * 
      * @param pixels Image pixel data
      * @return Image tree data after DWT
      */
@@ -118,22 +121,23 @@ public class DWT
         Image image = null;
         ImageTree tree = null;
 
-        image = new Image(cols, rows);
+        image = new Image(this.cols, this.rows);
 
-        for(int i = 0; i < rows; i++)
+        for(int i = 0; i < this.rows; i++)
         {
-            for(int j = 0; j < cols; j++)
+            for(int j = 0; j < this.cols; j++)
             {
                 DWTUtil.setPixel(image, j, i, pixels[i][j]);
             }
         }
 
-        tree = DWTUtil.waveletTransformWp(image, 0, level, filters, method);
+        tree = DWTUtil.waveletTransformWp(image, 0, this.level, this.filters, this.method);
         return tree;
     }
 
     /**
      * Method to perform inverse DWT to get back the pixel data
+     * 
      * @param dwts DWT data as image tree
      * @param pixels Image pixel data
      */
@@ -141,11 +145,11 @@ public class DWT
     {
         Image image = null;
 
-        image = DWTUtil.inverseTransform(dwts, filters, method + 1);
+        image = DWTUtil.inverseTransform(dwts, this.filters, this.method + 1);
 
-        for(int i = 0; i < rows; i++)
+        for(int i = 0; i < this.rows; i++)
         {
-            for(int j = 0; j < cols; j++)
+            for(int j = 0; j < this.cols; j++)
             {
                 pixels[i][j] = ImageUtil.pixelRange((int) (DWTUtil.getPixel(image, j, i) + 0.5));
             }

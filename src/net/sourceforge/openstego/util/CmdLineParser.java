@@ -31,6 +31,7 @@ public class CmdLineParser
 
     /**
      * Default constructor
+     * 
      * @param stdOptions List of standard options
      * @param args Command line arguments
      */
@@ -60,15 +61,15 @@ public class CmdLineParser
 
             if(option == null) // Non-standard option
             {
-                nonStdArgList.add(arg);
+                this.nonStdArgList.add(arg);
             }
             else
             // Standard option
             {
                 // If non-standard option is already parsed then standard option should not be provided now
-                if(!nonStdMixedWithStdOptions && nonStdArgList.size() > 0)
+                if(!this.nonStdMixedWithStdOptions && this.nonStdArgList.size() > 0)
                 {
-                    nonStdMixedWithStdOptions = true;
+                    this.nonStdMixedWithStdOptions = true;
                 }
 
                 if(option.takesArg())
@@ -91,7 +92,7 @@ public class CmdLineParser
                         }
                     }
                 }
-                parsedOptions.add(option);
+                this.parsedOptions.add(option);
             }
             i++;
         }
@@ -100,6 +101,7 @@ public class CmdLineParser
     /**
      * Method to check whether the command-line options are valid or not. This should be called immediately
      * after the constructor is called.
+     * 
      * @return Flag to indicate whether options are valid or not
      */
     public boolean isValid()
@@ -107,12 +109,12 @@ public class CmdLineParser
         List list = null;
         CmdLineOption option = null;
 
-        if(nonStdMixedWithStdOptions)
+        if(this.nonStdMixedWithStdOptions)
         {
             return false;
         }
 
-        list = parsedOptions.getList();
+        list = this.parsedOptions.getList();
         for(int i = 0; i < list.size(); i++)
         {
             option = (CmdLineOption) list.get(i);
@@ -127,57 +129,63 @@ public class CmdLineParser
 
     /**
      * Method to get the value of the given option (by name)
+     * 
      * @param name Name of the option
      * @return Value of the command-line option
      */
     public String getOptionValue(String name)
     {
-        return parsedOptions.getOptionValue(name);
+        return this.parsedOptions.getOptionValue(name);
     }
 
     /**
      * Method to get the name of the option by index
+     * 
      * @param index Index of the option
      * @return Name of the command-line option
      */
     public String getOptionName(int index)
     {
-        return parsedOptions.getOption(index).getName();
+        return this.parsedOptions.getOption(index).getName();
     }
 
     /**
      * Method to get the list of standard options
+     * 
      * @return List of standard options
      */
     public List getParsedOptionsAsList()
     {
-        return parsedOptions.getList();
+        return this.parsedOptions.getList();
     }
 
     /**
      * Method to get the list of non-standard options
+     * 
      * @return List of non-standard options
      */
     public List getNonStdOptions()
     {
-        return nonStdArgList;
+        return this.nonStdArgList;
     }
 
     /**
      * Get method for parsedOptions
+     * 
      * @return parsedOptions
      */
     public CmdLineOptions getParsedOptions()
     {
-        return parsedOptions;
+        return this.parsedOptions;
     }
 
     /**
      * Method to get the total number of options (standard plus non-standard) provided in the command-line
+     * 
      * @return Total number of options provided in the command-line
      */
     public int getNumOfOptions()
     {
-        return parsedOptions.size() + nonStdArgList.size();
+        return this.parsedOptions.size() + this.nonStdArgList.size();
     }
 }

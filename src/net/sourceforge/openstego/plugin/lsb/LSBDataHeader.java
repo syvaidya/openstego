@@ -57,6 +57,7 @@ public class LSBDataHeader
 
     /**
      * This constructor should normally be used when writing the data.
+     * 
      * @param dataLength Length of the data embedded in the image (excluding the header data)
      * @param channelBitsUsed Number of bits used per color channel for embedding the data
      * @param fileName Name of the file of data being embedded
@@ -87,6 +88,7 @@ public class LSBDataHeader
 
     /**
      * This constructor should be used when reading embedded data from an InputStream.
+     * 
      * @param dataInStream Data input stream containing the embedded data
      * @param config OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
@@ -122,7 +124,7 @@ public class LSBDataHeader
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
-            dataLength = (CommonUtil.byteToInt(header[0]) + (CommonUtil.byteToInt(header[1]) << 8)
+            this.dataLength = (CommonUtil.byteToInt(header[0]) + (CommonUtil.byteToInt(header[1]) << 8)
                     + (CommonUtil.byteToInt(header[2]) << 16) + (CommonUtil.byteToInt(header[3]) << 32));
             channelBits = header[4];
             fileNameLen = header[5];
@@ -131,12 +133,12 @@ public class LSBDataHeader
 
             if(fileNameLen == 0)
             {
-                fileName = new byte[0];
+                this.fileName = new byte[0];
             }
             else
             {
-                fileName = new byte[fileNameLen];
-                dataInStream.read(fileName, 0, fileNameLen);
+                this.fileName = new byte[fileNameLen];
+                dataInStream.read(this.fileName, 0, fileNameLen);
             }
         }
         catch(OpenStegoException osEx)
@@ -148,12 +150,13 @@ public class LSBDataHeader
             throw new OpenStegoException(ex);
         }
 
-        channelBitsUsed = channelBits;
+        this.channelBitsUsed = channelBits;
         this.config = config;
     }
 
     /**
      * This method generates the header in the form of byte array based on the parameters provided in the constructor.
+     * 
      * @return Header data
      */
     public byte[] getHeaderData()
@@ -165,7 +168,7 @@ public class LSBDataHeader
 
         stampLen = DATA_STAMP.length;
         versionLen = HEADER_VERSION.length;
-        out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + fileName.length];
+        out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + this.fileName.length];
 
         System.arraycopy(DATA_STAMP, 0, out, currIndex, stampLen);
         currIndex += stampLen;
@@ -173,19 +176,19 @@ public class LSBDataHeader
         System.arraycopy(HEADER_VERSION, 0, out, currIndex, versionLen);
         currIndex += versionLen;
 
-        out[currIndex++] = (byte) ((dataLength & 0x000000FF));
-        out[currIndex++] = (byte) ((dataLength & 0x0000FF00) >> 8);
-        out[currIndex++] = (byte) ((dataLength & 0x00FF0000) >> 16);
-        out[currIndex++] = (byte) ((dataLength & 0xFF000000) >> 32);
-        out[currIndex++] = (byte) channelBitsUsed;
-        out[currIndex++] = (byte) fileName.length;
-        out[currIndex++] = (byte) (config.isUseCompression() ? 1 : 0);
-        out[currIndex++] = (byte) (config.isUseEncryption() ? 1 : 0);
+        out[currIndex++] = (byte) ((this.dataLength & 0x000000FF));
+        out[currIndex++] = (byte) ((this.dataLength & 0x0000FF00) >> 8);
+        out[currIndex++] = (byte) ((this.dataLength & 0x00FF0000) >> 16);
+        out[currIndex++] = (byte) ((this.dataLength & 0xFF000000) >> 32);
+        out[currIndex++] = (byte) this.channelBitsUsed;
+        out[currIndex++] = (byte) this.fileName.length;
+        out[currIndex++] = (byte) (this.config.isUseCompression() ? 1 : 0);
+        out[currIndex++] = (byte) (this.config.isUseEncryption() ? 1 : 0);
 
-        if(fileName.length > 0)
+        if(this.fileName.length > 0)
         {
-            System.arraycopy(fileName, 0, out, currIndex, fileName.length);
-            currIndex += fileName.length;
+            System.arraycopy(this.fileName, 0, out, currIndex, this.fileName.length);
+            currIndex += this.fileName.length;
         }
 
         return out;
@@ -193,15 +196,17 @@ public class LSBDataHeader
 
     /**
      * Get Method for channelBitsUsed
+     * 
      * @return channelBitsUsed
      */
     public int getChannelBitsUsed()
     {
-        return channelBitsUsed;
+        return this.channelBitsUsed;
     }
 
     /**
      * Set Method for channelBitsUsed
+     * 
      * @param channelBitsUsed
      */
     public void setChannelBitsUsed(int channelBitsUsed)
@@ -211,15 +216,17 @@ public class LSBDataHeader
 
     /**
      * Get Method for dataLength
+     * 
      * @return dataLength
      */
     public int getDataLength()
     {
-        return dataLength;
+        return this.dataLength;
     }
 
     /**
      * Get Method for fileName
+     * 
      * @return fileName
      */
     public String getFileName()
@@ -228,26 +235,28 @@ public class LSBDataHeader
 
         try
         {
-            name = new String(fileName, "UTF-8");
+            name = new String(this.fileName, "UTF-8");
         }
         catch(UnsupportedEncodingException unEx)
         {
-            name = new String(fileName);
+            name = new String(this.fileName);
         }
         return name;
     }
 
     /**
      * Method to get size of the current header
+     * 
      * @return Header size
      */
     public int getHeaderSize()
     {
-        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + fileName.length;
+        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + this.fileName.length;
     }
 
     /**
      * Method to get the maximum possible size of the header
+     * 
      * @return Maximum possible header size
      */
     public static int getMaxHeaderSize()

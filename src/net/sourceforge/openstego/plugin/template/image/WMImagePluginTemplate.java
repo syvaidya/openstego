@@ -38,6 +38,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
     /**
      * Method to get difference between original cover file and the stegged file
+     * 
      * @param stegoData Stego data containing the embedded data
      * @param stegoFileName Name of the stego file
      * @param coverData Original cover data
@@ -62,6 +63,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
     /**
      * Method to get the list of supported file extensions for reading
+     * 
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
@@ -96,6 +98,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
     /**
      * Method to get the list of supported file extensions for writing
+     * 
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
@@ -152,6 +155,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
     /**
      * Method to get the configuration class specific to this plugin
+     * 
      * @return Configuration class specific to this plugin
      */
     public Class getConfigClass()

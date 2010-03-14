@@ -10,13 +10,12 @@ import net.sourceforge.openstego.util.ImageUtil;
 
 /**
  * Class to handle Discrete Cosine Transforms (DCT).
- *
- * This class is conversion of C to Java for the file "dct.c" file provided by Peter Meerwald at:
- *    http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/
- *
- * Refer to his thesis on watermarking:
- *    Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
- *    Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
+ * <p>
+ * This class is conversion of C to Java for the file "dct.c" file provided by Peter Meerwald at:<a
+ * href="http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/">http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/</a>
+ * <p>
+ * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
+ * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
 public class DCT
 {
@@ -38,30 +37,18 @@ public class DCT
     /**
      * JPEG Luminance Quantization Table
      */
-    private static final int[][] JPEG_LUMIN_QUANT_TBL = {
-        { 16, 11, 10, 16, 24, 40, 51, 61 },
-        { 12, 12, 14, 19, 26, 58, 60, 55 },
-        { 14, 13, 16, 24, 40, 57, 69, 56 },
-        { 14, 17, 22, 29, 51, 87, 80, 62 },
-        { 18, 22, 37, 56, 68, 109, 103, 77 },
-        { 24, 35, 55, 64, 81, 104, 113, 92 },
-        { 49, 64, 78, 87, 103, 121, 120, 101 },
-        { 72, 92, 95, 98, 112, 100, 103, 99 }
-    };
+    private static final int[][] JPEG_LUMIN_QUANT_TBL = { { 16, 11, 10, 16, 24, 40, 51, 61 },
+            { 12, 12, 14, 19, 26, 58, 60, 55 }, { 14, 13, 16, 24, 40, 57, 69, 56 }, { 14, 17, 22, 29, 51, 87, 80, 62 },
+            { 18, 22, 37, 56, 68, 109, 103, 77 }, { 24, 35, 55, 64, 81, 104, 113, 92 },
+            { 49, 64, 78, 87, 103, 121, 120, 101 }, { 72, 92, 95, 98, 112, 100, 103, 99 } };
 
     /**
      * JPEG Chrominance Quantization Table
      */
-    private static final int[][] JPEG_CHROMIN_QUANT_TBL = {
-        { 17, 18, 24, 47, 99, 99, 99, 99 },
-        { 18, 21, 26, 66, 99, 99, 99, 99 },
-        { 24, 26, 56, 99, 99, 99, 99, 99 },
-        { 47, 66, 99, 99, 99, 99, 99, 99 },
-        { 99, 99, 99, 99, 99, 99, 99, 99 },
-        { 99, 99, 99, 99, 99, 99, 99, 99 },
-        { 99, 99, 99, 99, 99, 99, 99, 99 },
-        { 99, 99, 99, 99, 99, 99, 99, 99 }
-    };
+    private static final int[][] JPEG_CHROMIN_QUANT_TBL = { { 17, 18, 24, 47, 99, 99, 99, 99 },
+            { 18, 21, 26, 66, 99, 99, 99, 99 }, { 24, 26, 56, 99, 99, 99, 99, 99 }, { 47, 66, 99, 99, 99, 99, 99, 99 },
+            { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 },
+            { 99, 99, 99, 99, 99, 99, 99, 99 } };
 
     private double[][] nxmCosTableX = null;
 
@@ -87,6 +74,7 @@ public class DCT
 
     /**
      * Initialize DCT mechanism for N x M matrix
+     * 
      * @param cols Number of columns
      * @param rows Number of rows
      * @throws IllegalArgumentException
@@ -103,32 +91,32 @@ public class DCT
         double cx = Math.sqrt(2.0 / cols);
         double cy = Math.sqrt(2.0 / rows);
 
-        if(nxmCosTableX != null && N != cols)
+        if(this.nxmCosTableX != null && this.N != cols)
         {
-            nxmCosTableX = null;
+            this.nxmCosTableX = null;
         }
-        if(nxmCosTableY != null && M != rows)
+        if(this.nxmCosTableY != null && this.M != rows)
         {
-            nxmCosTableY = null;
-        }
-
-        if(nxmCosTableX == null)
-        {
-            nxmCosTableX = new double[cols][cols];
-        }
-        if(nxmCosTableY == null)
-        {
-            nxmCosTableY = new double[rows][rows];
+            this.nxmCosTableY = null;
         }
 
-        N = cols;
-        M = rows;
+        if(this.nxmCosTableX == null)
+        {
+            this.nxmCosTableX = new double[cols][cols];
+        }
+        if(this.nxmCosTableY == null)
+        {
+            this.nxmCosTableY = new double[rows][rows];
+        }
+
+        this.N = cols;
+        this.M = rows;
 
         for(i = 0; i < cols; i++)
         {
             for(j = 0; j < cols; j++)
             {
-                nxmCosTableX[i][j] = cx * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * N));
+                this.nxmCosTableX[i][j] = cx * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * this.N));
             }
         }
 
@@ -136,13 +124,14 @@ public class DCT
         {
             for(j = 0; j < rows; j++)
             {
-                nxmCosTableY[i][j] = cy * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * M));
+                this.nxmCosTableY[i][j] = cy * Math.cos((Math.PI * ((2 * i + 1) * j)) / (2 * this.M));
             }
         }
     }
 
     /**
      * Perform forward DCT for N x M matrix
+     * 
      * @param pixels Input matrix
      * @param dcts DCT matrix
      */
@@ -153,54 +142,54 @@ public class DCT
         int i = 0;
         int j = 0;
         double t = 0.0;
-        double cx0 = Math.sqrt(1.0 / N);
-        double cy0 = Math.sqrt(1.0 / M);
+        double cx0 = Math.sqrt(1.0 / this.N);
+        double cy0 = Math.sqrt(1.0 / this.M);
 
-        for(x = 0; x < N; x++)
+        for(x = 0; x < this.N; x++)
         {
-            for(y = 0; y < M; y++)
+            for(y = 0; y < this.M; y++)
             {
                 t += (pixels[x][y] - 128);
             }
         }
         dcts[0][0] = cx0 * cy0 * t;
 
-        for(i = 1; i < N; i++)
+        for(i = 1; i < this.N; i++)
         {
             t = 0.0;
-            for(x = 0; x < N; x++)
+            for(x = 0; x < this.N; x++)
             {
-                for(y = 0; y < M; y++)
+                for(y = 0; y < this.M; y++)
                 {
-                    t += (pixels[x][y] - 128) * nxmCosTableX[x][i];
+                    t += (pixels[x][y] - 128) * this.nxmCosTableX[x][i];
                 }
             }
             dcts[i][0] = cy0 * t;
         }
 
-        for(j = 1; j < M; j++)
+        for(j = 1; j < this.M; j++)
         {
             t = 0.0;
-            for(x = 0; x < N; x++)
+            for(x = 0; x < this.N; x++)
             {
-                for(y = 0; y < M; y++)
+                for(y = 0; y < this.M; y++)
                 {
-                    t += (pixels[x][y] - 128) * nxmCosTableY[y][j];
+                    t += (pixels[x][y] - 128) * this.nxmCosTableY[y][j];
                 }
             }
             dcts[0][j] = cx0 * t;
         }
 
-        for(i = 1; i < N; i++)
+        for(i = 1; i < this.N; i++)
         {
-            for(j = 1; j < M; j++)
+            for(j = 1; j < this.M; j++)
             {
                 t = 0.0;
-                for(x = 0; x < N; x++)
+                for(x = 0; x < this.N; x++)
                 {
-                    for(y = 0; y < M; y++)
+                    for(y = 0; y < this.M; y++)
                     {
-                        t += (pixels[x][y] - 128) * nxmCosTableX[x][i] * nxmCosTableY[y][j];
+                        t += (pixels[x][y] - 128) * this.nxmCosTableX[x][i] * this.nxmCosTableY[y][j];
                     }
                 }
                 dcts[i][j] = t;
@@ -210,6 +199,7 @@ public class DCT
 
     /**
      * Perform inverse DCT on the N x M matrix
+     * 
      * @param dcts Input DCT matrix
      * @param pixels Output matrix
      */
@@ -220,30 +210,30 @@ public class DCT
         int i = 0;
         int j = 0;
         double t = 0.0;
-        double cx0 = Math.sqrt(1.0 / N);
-        double cy0 = Math.sqrt(1.0 / M);
+        double cx0 = Math.sqrt(1.0 / this.N);
+        double cy0 = Math.sqrt(1.0 / this.M);
 
-        for(x = 0; x < N; x++)
+        for(x = 0; x < this.N; x++)
         {
-            for(y = 0; y < M; y++)
+            for(y = 0; y < this.M; y++)
             {
                 t = cx0 * cy0 * dcts[0][0];
 
-                for(i = 1; i < N; i++)
+                for(i = 1; i < this.N; i++)
                 {
-                    t += cy0 * dcts[i][0] * nxmCosTableX[x][i];
+                    t += cy0 * dcts[i][0] * this.nxmCosTableX[x][i];
                 }
 
-                for(j = 1; j < M; j++)
+                for(j = 1; j < this.M; j++)
                 {
-                    t += cx0 * dcts[0][j] * nxmCosTableY[y][j];
+                    t += cx0 * dcts[0][j] * this.nxmCosTableY[y][j];
                 }
 
-                for(i = 1; i < N; i++)
+                for(i = 1; i < this.N; i++)
                 {
-                    for(j = 1; j < M; j++)
+                    for(j = 1; j < this.M; j++)
                     {
-                        t += dcts[i][j] * nxmCosTableX[x][i] * nxmCosTableY[y][j];
+                        t += dcts[i][j] * this.nxmCosTableX[x][i] * this.nxmCosTableY[y][j];
                     }
                 }
 
@@ -254,6 +244,7 @@ public class DCT
 
     /**
      * Initialize DCT mechanism for N x M matrix
+     * 
      * @param width Width of the matrix
      * @param height Height of the matrix
      * @throws IllegalArgumentException
@@ -265,20 +256,21 @@ public class DCT
             throw new IllegalArgumentException("Dimensions out of range");
         }
 
-        if(nxnTmp != null && M != height)
+        if(this.nxnTmp != null && this.M != height)
         {
-            nxnTmp = null;
+            this.nxnTmp = null;
         }
 
-        N = width;
-        M = height;
+        this.N = width;
+        this.M = height;
 
-        nxnTmp = new double[height];
+        this.nxnTmp = new double[height];
         initCosArray();
     }
 
     /**
      * Perform forward DCT for N x N matrix
+     * 
      * @param pixels Input matrix
      * @param dcts DCT matrix
      */
@@ -286,38 +278,39 @@ public class DCT
     {
         int u = 0;
         int v = 0;
-        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) N * M);
+        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
-        for(u = 0; u < N; u++)
+        for(u = 0; u < this.N; u++)
         {
-            for(v = 0; v < M; v++)
+            for(v = 0; v < this.M; v++)
             {
                 dcts[u][v] = (pixels[u][v] - 128);
             }
         }
 
-        for(u = 0; u <= M - 1; u++)
+        for(u = 0; u <= this.M - 1; u++)
         {
             fctNoScale(dcts[u]);
         }
 
-        for(v = 0; v <= N - 1; v++)
+        for(v = 0; v <= this.N - 1; v++)
         {
-            for(u = 0; u <= M - 1; u++)
+            for(u = 0; u <= this.M - 1; u++)
             {
-                nxnTmp[u] = dcts[u][v];
+                this.nxnTmp[u] = dcts[u][v];
             }
 
-            fctNoScale(nxnTmp);
-            for(u = 0; u <= M - 1; u++)
+            fctNoScale(this.nxnTmp);
+            for(u = 0; u <= this.M - 1; u++)
             {
-                dcts[u][v] = nxnTmp[u] * two_over_sqrtncolsnrows;
+                dcts[u][v] = this.nxnTmp[u] * two_over_sqrtncolsnrows;
             }
         }
     }
 
     /**
      * Perform inverse DCT on the N x N matrix
+     * 
      * @param dcts Input DCT matrix
      * @param pixels Output matrix
      */
@@ -325,40 +318,40 @@ public class DCT
     {
         int u = 0;
         int v = 0;
-        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) N * M);
+        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
         double[][] tmp = null;
 
-        tmp = new double[N][N];
-        for(u = 0; u < N; u++)
+        tmp = new double[this.N][this.N];
+        for(u = 0; u < this.N; u++)
         {
-            for(v = 0; v < M; v++)
+            for(v = 0; v < this.M; v++)
             {
                 tmp[u][v] = dcts[u][v];
             }
         }
 
-        for(u = 0; u <= M - 1; u++)
+        for(u = 0; u <= this.M - 1; u++)
         {
             invFctNoScale(tmp[u]);
         }
 
-        for(v = 0; v <= N - 1; v++)
+        for(v = 0; v <= this.N - 1; v++)
         {
-            for(u = 0; u <= M - 1; u++)
+            for(u = 0; u <= this.M - 1; u++)
             {
-                nxnTmp[u] = tmp[u][v];
+                this.nxnTmp[u] = tmp[u][v];
             }
 
-            invFctNoScale(nxnTmp);
-            for(u = 0; u <= M - 1; u++)
+            invFctNoScale(this.nxnTmp);
+            for(u = 0; u <= this.M - 1; u++)
             {
-                tmp[u][v] = nxnTmp[u] * two_over_sqrtncolsnrows;
+                tmp[u][v] = this.nxnTmp[u] * two_over_sqrtncolsnrows;
             }
         }
 
-        for(u = 0; u < N; u++)
+        for(u = 0; u < this.N; u++)
         {
-            for(v = 0; v < M; v++)
+            for(v = 0; v < this.M; v++)
             {
                 pixels[u][v] = ImageUtil.pixelRange((int) (tmp[u][v] + 128.5));
             }
@@ -369,60 +362,62 @@ public class DCT
 
     /**
      * Perform forward DCT in place for N x N matrix
+     * 
      * @param coeffs DCT matrix
      */
     public void fwdDctInPlaceNxN(double[][] coeffs)
     {
         int u = 0;
         int v = 0;
-        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) N * M);
+        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
-        for(u = 0; u <= M - 1; u++)
+        for(u = 0; u <= this.M - 1; u++)
         {
             fctNoScale(coeffs[u]);
         }
 
-        for(v = 0; v <= N - 1; v++)
+        for(v = 0; v <= this.N - 1; v++)
         {
-            for(u = 0; u <= M - 1; u++)
+            for(u = 0; u <= this.M - 1; u++)
             {
-                nxnTmp[u] = coeffs[u][v];
+                this.nxnTmp[u] = coeffs[u][v];
             }
 
-            fctNoScale(nxnTmp);
-            for(u = 0; u <= M - 1; u++)
+            fctNoScale(this.nxnTmp);
+            for(u = 0; u <= this.M - 1; u++)
             {
-                coeffs[u][v] = nxnTmp[u] * two_over_sqrtncolsnrows;
+                coeffs[u][v] = this.nxnTmp[u] * two_over_sqrtncolsnrows;
             }
         }
     }
 
     /**
      * Perform inverse DCT in place for N x N matrix
+     * 
      * @param coeffs DCT matrix
      */
     public void invDctInPlaceNxN(double[][] coeffs)
     {
         int u = 0;
         int v = 0;
-        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) N * M);
+        double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
-        for(u = 0; u <= M - 1; u++)
+        for(u = 0; u <= this.M - 1; u++)
         {
             invFctNoScale(coeffs[u]);
         }
 
-        for(v = 0; v <= N - 1; v++)
+        for(v = 0; v <= this.N - 1; v++)
         {
-            for(u = 0; u <= M - 1; u++)
+            for(u = 0; u <= this.M - 1; u++)
             {
-                nxnTmp[u] = coeffs[u][v];
+                this.nxnTmp[u] = coeffs[u][v];
             }
 
-            invFctNoScale(nxnTmp);
-            for(u = 0; u <= M - 1; u++)
+            invFctNoScale(this.nxnTmp);
+            for(u = 0; u <= this.M - 1; u++)
             {
-                coeffs[u][v] = nxnTmp[u] * two_over_sqrtncolsnrows;
+                coeffs[u][v] = this.nxnTmp[u] * two_over_sqrtncolsnrows;
             }
         }
     }
@@ -436,13 +431,13 @@ public class DCT
         {
             for(int j = 0; j < NJPEG; j++)
             {
-                Quantum[i][j] = 1 + ((1 + i + j) * QUALITY);
+                this.Quantum[i][j] = 1 + ((1 + i + j) * QUALITY);
             }
         }
     }
 
     /**
-     * Initialize quantization table based on JPEG luminance quantization 
+     * Initialize quantization table based on JPEG luminance quantization
      */
     public void initQuantumJpegLumin()
     {
@@ -463,18 +458,18 @@ public class DCT
             {
                 if(quality != 0)
                 {
-                    Quantum[i][j] = (JPEG_LUMIN_QUANT_TBL[i][j] * quality + 50) / 100;
+                    this.Quantum[i][j] = (JPEG_LUMIN_QUANT_TBL[i][j] * quality + 50) / 100;
                 }
                 else
                 {
-                    Quantum[i][j] = JPEG_LUMIN_QUANT_TBL[i][j];
+                    this.Quantum[i][j] = JPEG_LUMIN_QUANT_TBL[i][j];
                 }
             }
         }
     }
 
     /**
-     * Initialize quantization table based on JPEG chrominance quantization 
+     * Initialize quantization table based on JPEG chrominance quantization
      */
     public void initQuantumJpegChromin()
     {
@@ -495,11 +490,11 @@ public class DCT
             {
                 if(quality != 0)
                 {
-                    Quantum[i][j] = (JPEG_CHROMIN_QUANT_TBL[i][j] * quality + 50) / 100;
+                    this.Quantum[i][j] = (JPEG_CHROMIN_QUANT_TBL[i][j] * quality + 50) / 100;
                 }
                 else
                 {
-                    Quantum[i][j] = JPEG_CHROMIN_QUANT_TBL[i][j];
+                    this.Quantum[i][j] = JPEG_CHROMIN_QUANT_TBL[i][j];
                 }
             }
         }
@@ -507,6 +502,7 @@ public class DCT
 
     /**
      * Quantize the DCT matrix based on the quantization table
+     * 
      * @param transform DCT matrix
      */
     public void quantize8x8(double[][] transform)
@@ -515,13 +511,14 @@ public class DCT
         {
             for(int j = 0; j < NJPEG; j++)
             {
-                transform[i][j] = round(transform[i][j] / Quantum[i][j]);
+                transform[i][j] = round(transform[i][j] / this.Quantum[i][j]);
             }
         }
     }
 
     /**
-     * De-quantize the DCT matrix based on the quantization table 
+     * De-quantize the DCT matrix based on the quantization table
+     * 
      * @param transform DCT matrix
      */
     public void dequantize8x8(double[][] transform)
@@ -530,13 +527,13 @@ public class DCT
         {
             for(int j = 0; j < NJPEG; j++)
             {
-                transform[i][j] = round(transform[i][j] * Quantum[i][j]);
+                transform[i][j] = round(transform[i][j] * this.Quantum[i][j]);
             }
         }
     }
 
     /**
-     * Initialize DCT mechanism  for 8x8 block
+     * Initialize DCT mechanism for 8x8 block
      */
     public void initDct8x8()
     {
@@ -547,22 +544,23 @@ public class DCT
 
         for(j = 0; j < NJPEG; j++)
         {
-            C[0][j] = 1.0 / sqJpeg;
-            Ct[j][0] = C[0][j];
+            this.C[0][j] = 1.0 / sqJpeg;
+            this.Ct[j][0] = this.C[0][j];
         }
 
         for(i = 1; i < NJPEG; i++)
         {
             for(j = 0; j < NJPEG; j++)
             {
-                C[i][j] = sqJpeg2 * Math.cos(Math.PI * (2 * j + 1) * i / (2.0 * NJPEG));
-                Ct[j][i] = C[i][j];
+                this.C[i][j] = sqJpeg2 * Math.cos(Math.PI * (2 * j + 1) * i / (2.0 * NJPEG));
+                this.Ct[j][i] = this.C[i][j];
             }
         }
     }
 
     /**
      * Perform forward DCT on the 8x8 matrix
+     * 
      * @param input Input matrix
      * @param output Output matrix
      */
@@ -582,7 +580,7 @@ public class DCT
                 temp[i][j] = 0.0;
                 for(k = 0; k < NJPEG; k++)
                 {
-                    temp[i][j] += (input[i][k] - 128) * Ct[k][j];
+                    temp[i][j] += (input[i][k] - 128) * this.Ct[k][j];
                 }
             }
         }
@@ -595,7 +593,7 @@ public class DCT
                 temp1 = 0.0;
                 for(k = 0; k < NJPEG; k++)
                 {
-                    temp1 += C[i][k] * temp[k][j];
+                    temp1 += this.C[i][k] * temp[k][j];
                 }
                 output[i][j] = temp1;
             }
@@ -604,6 +602,7 @@ public class DCT
 
     /**
      * Perform forward DCT on a given 8x8 block of the input matrix
+     * 
      * @param input Input matrix
      * @param col Starting column number for the 8x8 block
      * @param row Starting row number for the 8x8 block
@@ -615,15 +614,16 @@ public class DCT
         {
             for(int j = 0; j < NJPEG; j++)
             {
-                tmpIntArray[i][j] = input[col + i][row + j];
+                this.tmpIntArray[i][j] = input[col + i][row + j];
             }
         }
 
-        fwdDct8x8(tmpIntArray, output);
+        fwdDct8x8(this.tmpIntArray, output);
     }
 
     /**
      * Perform inverse DCT on the 8x8 matrix
+     * 
      * @param input Input matrix
      * @param output Output matrix
      */
@@ -643,7 +643,7 @@ public class DCT
                 temp[i][j] = 0.0;
                 for(k = 0; k < NJPEG; k++)
                 {
-                    temp[i][j] += input[i][k] * C[k][j];
+                    temp[i][j] += input[i][k] * this.C[k][j];
                 }
             }
         }
@@ -656,7 +656,7 @@ public class DCT
                 temp1 = 0.0;
                 for(k = 0; k < NJPEG; k++)
                 {
-                    temp1 += Ct[i][k] * temp[k][j];
+                    temp1 += this.Ct[i][k] * temp[k][j];
                 }
                 temp1 += 128.0;
                 output[i][j] = ImageUtil.pixelRange(round(temp1));
@@ -666,6 +666,7 @@ public class DCT
 
     /**
      * Perform inverse DCT to given 8x8 block of the output matrix
+     * 
      * @param input Input matrix (8x8)
      * @param output Output matrix
      * @param col Starting column number for the 8x8 block
@@ -673,19 +674,20 @@ public class DCT
      */
     public void invDctBlock8x8(double[][] input, int[][] output, int col, int row)
     {
-        invDct8x8(input, tmpIntArray);
+        invDct8x8(input, this.tmpIntArray);
 
         for(int i = 0; i < NJPEG; i++)
         {
             for(int j = 0; j < NJPEG; j++)
             {
-                output[col + i][row + j] = tmpIntArray[i][j];
+                output[col + i][row + j] = this.tmpIntArray[i][j];
             }
         }
     }
 
     /**
      * Check whether the coefficient is part of the middle frequencies
+     * 
      * @param coeff Coefficient number
      * @return Integer to indicate band of frequency
      */
@@ -732,6 +734,7 @@ public class DCT
 
     /**
      * Utility rounding method
+     * 
      * @param a Input value
      * @return Rounded value
      */
@@ -750,38 +753,38 @@ public class DCT
         int halfN;
         double factor;
 
-        nxnLog2N = -1;
+        this.nxnLog2N = -1;
         do
         {
-            nxnLog2N++;
-            if((1 << nxnLog2N) > N)
+            this.nxnLog2N++;
+            if((1 << this.nxnLog2N) > this.N)
             {
-                throw new IllegalArgumentException("dct_NxN: " + N + " is not a power of 2");
+                throw new IllegalArgumentException("dct_NxN: " + this.N + " is not a power of 2");
             }
         }
-        while((1 << nxnLog2N) < N);
+        while((1 << this.nxnLog2N) < this.N);
 
-        nxnCosTable = new double[N];
-        halfN = N / 2;
+        this.nxnCosTable = new double[this.N];
+        halfN = this.N / 2;
 
         for(i = 0; i <= halfN - 1; i++)
         {
-            nxnCosTable[halfN + i] = 4 * i + 1;
+            this.nxnCosTable[halfN + i] = 4 * i + 1;
         }
-        for(group = 1; group <= nxnLog2N - 1; group++)
+        for(group = 1; group <= this.nxnLog2N - 1; group++)
         {
             base = 1 << (group - 1);
             nitems = base;
-            factor = 1.0 * (1 << (nxnLog2N - group));
+            factor = 1.0 * (1 << (this.nxnLog2N - group));
             for(item = 1; item <= nitems; item++)
             {
-                nxnCosTable[base + item - 1] = factor * nxnCosTable[halfN + item - 1];
+                this.nxnCosTable[base + item - 1] = factor * this.nxnCosTable[halfN + item - 1];
             }
         }
 
-        for(i = 1; i <= N - 1; i++)
+        for(i = 1; i <= this.N - 1; i++)
         {
-            nxnCosTable[i] = 1.0 / (2.0 * Math.cos(nxnCosTable[i] * Math.PI / (2.0 * N)));
+            this.nxnCosTable[i] = 1.0 / (2.0 * Math.cos(this.nxnCosTable[i] * Math.PI / (2.0 * this.N)));
         }
     }
 
@@ -793,7 +796,9 @@ public class DCT
         double tmp;
 
         if(len <= 2)
+        {
             return; /* No action necessary if n=1 or n=2 */
+        }
 
         j = 1;
         for(i = 1; i <= len; i++)
@@ -825,15 +830,15 @@ public class DCT
         int step;
         int nsteps;
 
-        for(stage = 1; stage <= nxnLog2N - 1; stage++)
+        for(stage = 1; stage <= this.nxnLog2N - 1; stage++)
         {
             nthreads = 1 << (stage - 1);
             stepsize = nthreads << 1;
-            nsteps = (1 << (nxnLog2N - stage)) - 1;
+            nsteps = (1 << (this.nxnLog2N - stage)) - 1;
 
             for(thread = 1; thread <= nthreads; thread++)
             {
-                curptr = N - thread;
+                curptr = this.N - thread;
                 for(step = 1; step <= nsteps; step++)
                 {
                     f[curptr] += f[curptr - stepsize];
@@ -853,11 +858,11 @@ public class DCT
         int step;
         int nsteps;
 
-        for(stage = nxnLog2N - 1; stage >= 1; stage--)
+        for(stage = this.nxnLog2N - 1; stage >= 1; stage--)
         {
             nthreads = 1 << (stage - 1);
             stepsize = nthreads << 1;
-            nsteps = (1 << (nxnLog2N - stage)) - 1;
+            nsteps = (1 << (this.nxnLog2N - stage)) - 1;
             for(thread = 1; thread <= nthreads; thread++)
             {
                 curptr = nthreads + thread - 1;
@@ -933,14 +938,14 @@ public class DCT
         double Cfac;
         double T;
 
-        for(stage = 1; stage <= nxnLog2N; stage++)
+        for(stage = 1; stage <= this.nxnLog2N; stage++)
         {
-            ngroups = 1 << (nxnLog2N - stage);
+            ngroups = 1 << (this.nxnLog2N - stage);
             wingspan = 1 << (stage - 1);
             increment = wingspan << 1;
             for(butterfly = 1; butterfly <= wingspan; butterfly++)
             {
-                Cfac = nxnCosTable[wingspan + butterfly - 1];
+                Cfac = this.nxnCosTable[wingspan + butterfly - 1];
                 baseptr = 0;
                 for(group = 1; group <= ngroups; group++)
                 {
@@ -969,14 +974,14 @@ public class DCT
         double Cfac;
         double T;
 
-        for(stage = nxnLog2N; stage >= 1; stage--)
+        for(stage = this.nxnLog2N; stage >= 1; stage--)
         {
-            ngroups = 1 << (nxnLog2N - stage);
+            ngroups = 1 << (this.nxnLog2N - stage);
             wingspan = 1 << (stage - 1);
             increment = wingspan << 1;
             for(butterfly = 1; butterfly <= wingspan; butterfly++)
             {
-                Cfac = nxnCosTable[wingspan + butterfly - 1];
+                Cfac = this.nxnCosTable[wingspan + butterfly - 1];
                 baseptr = 0;
                 for(group = 1; group <= ngroups; group++)
                 {
@@ -995,16 +1000,16 @@ public class DCT
     {
         f[0] *= INVROOT2;
         invSums(f);
-        bitrev(f, N, 0);
+        bitrev(f, this.N, 0);
         invButterflies(f);
-        unscramble(f, N);
+        unscramble(f, this.N);
     }
 
     private void fctNoScale(double[] f)
     {
-        scramble(f, N);
+        scramble(f, this.N);
         fwdButterflies(f);
-        bitrev(f, N, 0);
+        bitrev(f, this.N, 0);
         fwdSums(f);
         f[0] *= INVROOT2;
     }

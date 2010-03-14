@@ -38,6 +38,7 @@ public class CommonUtil
 
     /**
      * Method to get byte array data from given InputStream
+     * 
      * @param is InputStream to read
      * @return Stream data as byte array
      * @throws OpenStegoException
@@ -72,6 +73,7 @@ public class CommonUtil
 
     /**
      * Method to get byte array data from given file
+     * 
      * @param file File to read
      * @return File data as byte array
      * @throws OpenStegoException
@@ -90,6 +92,7 @@ public class CommonUtil
 
     /**
      * Method to write file data to disk
+     * 
      * @param fileData File data
      * @param fileName File name (If this is <code>null</code>, then data is written to stdout)
      * @throws OpenStegoException
@@ -107,6 +110,7 @@ public class CommonUtil
 
     /**
      * Method to write file data to disk
+     * 
      * @param fileData File data
      * @param file File object (If this is <code>null</code>, then data is written to stdout)
      * @throws OpenStegoException
@@ -137,6 +141,7 @@ public class CommonUtil
 
     /**
      * Method to enable/disable a Swing JTextField object
+     * 
      * @param textField Swing JTextField object
      * @param enabled Flag to indicate whether to enable or disable the object
      */
@@ -157,6 +162,7 @@ public class CommonUtil
     /**
      * Method to parse a delimiter separated list of files into arraylist of filenames. It supports wildcard characters
      * "*" and "?" within the filenames.
+     * 
      * @param fileList Delimiter separated list of filenames
      * @param delimiter Delimiter for tokenization
      * @return List of filenames after tokenizing and wildcard expansion
@@ -207,6 +213,7 @@ public class CommonUtil
 
     /**
      * Byte to Int converter
+     * 
      * @param b Input byte value
      * @return Int value
      */
@@ -222,6 +229,7 @@ public class CommonUtil
 
     /**
      * Helper method to replace file wildcard characters with Java regexp wildcard chararcters
+     * 
      * @param input Input String
      * @return String containing modified wildcard characters
      */
@@ -265,6 +273,7 @@ public class CommonUtil
 
         /**
          * Default constructor
+         * 
          * @param filter Filter string
          */
         public WildcardFilenameFilter(String filter)
@@ -274,13 +283,14 @@ public class CommonUtil
 
         /**
          * Implementation of <code>accept</code> method
+         * 
          * @param dir Directory to traverse
          * @param name Name of the file
          * @return Whether file is accepted by the filter or not
          */
         public boolean accept(File dir, String name)
         {
-            return (name.toLowerCase().matches(filter));
+            return (name.toLowerCase().matches(this.filter));
         }
     }
 
@@ -340,7 +350,8 @@ public class CommonUtil
     }
 
     /**
-     * Get maximum of two given values 
+     * Get maximum of two given values
+     * 
      * @param x Value 1
      * @param y value 2
      * @return Max of the two values
@@ -351,7 +362,8 @@ public class CommonUtil
     }
 
     /**
-     * Get maximum of two given values 
+     * Get maximum of two given values
+     * 
      * @param x Value 1
      * @param y value 2
      * @return Max of the two values
@@ -362,7 +374,8 @@ public class CommonUtil
     }
 
     /**
-     * Get minimum of two given values 
+     * Get minimum of two given values
+     * 
      * @param x Value 1
      * @param y value 2
      * @return Min of the two values
@@ -373,7 +386,8 @@ public class CommonUtil
     }
 
     /**
-     * Get minimum of two given values 
+     * Get minimum of two given values
+     * 
      * @param x Value 1
      * @param y value 2
      * @return Min of the two values

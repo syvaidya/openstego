@@ -81,6 +81,7 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Default constructor
+     * 
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
@@ -100,9 +101,9 @@ public class LSBOutputStream extends OutputStream
         this.imgHeight = image.getHeight();
         this.config = config;
         this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
-        for(int x = 0; x < imgWidth; x++)
+        for(int x = 0; x < this.imgWidth; x++)
         {
-            for(int y = 0; y < imgHeight; y++)
+            for(int y = 0; y < this.imgHeight; y++)
             {
                 this.image.setRGB(x, y, image.getRGB(x, y));
             }
@@ -116,6 +117,7 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Method to write header data to stream
+     * 
      * @throws OpenStegoException
      */
     private void writeHeader() throws OpenStegoException
@@ -127,16 +129,16 @@ public class LSBOutputStream extends OutputStream
 
         try
         {
-            noOfPixels = imgWidth * imgHeight;
-            header = new LSBDataHeader(dataLength, channelBits, fileName, config);
+            noOfPixels = this.imgWidth * this.imgHeight;
+            header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
             headerSize = header.getHeaderSize();
 
             while(true)
             {
-                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
+                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength))
                 {
                     channelBits++;
-                    if(channelBits > ((LSBConfig) config).getMaxBitsUsedPerChannel())
+                    if(channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel())
                     {
                         throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
@@ -151,9 +153,9 @@ public class LSBOutputStream extends OutputStream
             header.setChannelBitsUsed(channelBits);
             write(header.getHeaderData());
 
-            if(currBit != 0)
+            if(this.currBit != 0)
             {
-                currBit = 0;
+                this.currBit = 0;
                 writeCurrentBitSet();
                 nextPixel();
             }
@@ -173,6 +175,7 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
+     * 
      * @param data Byte to be written
      * @throws IOException
      */
@@ -180,11 +183,11 @@ public class LSBOutputStream extends OutputStream
     {
         for(int bit = 0; bit < 8; bit++)
         {
-            bitSet[currBit] = (byte) ((data >> (7 - bit)) & 1);
-            currBit++;
-            if(currBit == bitSet.length)
+            this.bitSet[this.currBit] = (byte) ((data >> (7 - bit)) & 1);
+            this.currBit++;
+            if(this.currBit == this.bitSet.length)
             {
-                currBit = 0;
+                this.currBit = 0;
                 writeCurrentBitSet();
                 nextPixel();
             }
@@ -193,6 +196,7 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Flushes the stream
+     * 
      * @throws IOException
      */
     public void flush() throws IOException
@@ -202,17 +206,18 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Closes the stream
+     * 
      * @throws IOException
      */
     public void close() throws IOException
     {
-        if(currBit != 0)
+        if(this.currBit != 0)
         {
-            for(int i = currBit; i < bitSet.length; i++)
+            for(int i = this.currBit; i < this.bitSet.length; i++)
             {
-                bitSet[i] = 0;
+                this.bitSet[i] = 0;
             }
-            currBit = 0;
+            this.currBit = 0;
             writeCurrentBitSet();
             nextPixel();
         }
@@ -221,6 +226,7 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
+     * 
      * @return Image data
      * @throws OpenStegoException
      */
@@ -234,11 +240,12 @@ public class LSBOutputStream extends OutputStream
         {
             throw new OpenStegoException(ioEx);
         }
-        return image;
+        return this.image;
     }
 
     /**
      * Method to write current bit set
+     * 
      * @throws IOException
      */
     private void writeCurrentBitSet() throws IOException
@@ -249,25 +256,25 @@ public class LSBOutputStream extends OutputStream
         int maskPerByte = 0;
         int bitOffset = 0;
 
-        if(y == imgHeight)
+        if(this.y == this.imgHeight)
         {
             throw new IOException(labelUtil.getString("err.image.insufficientSize"));
         }
 
-        maskPerByte = (int) (Math.pow(2, channelBitsUsed) - 1);
+        maskPerByte = (int) (Math.pow(2, this.channelBitsUsed) - 1);
         mask = (maskPerByte << 16) + (maskPerByte << 8) + maskPerByte;
-        pixel = image.getRGB(x, y) & (0xFFFFFFFF - mask);
+        pixel = this.image.getRGB(this.x, this.y) & (0xFFFFFFFF - mask);
 
         for(int bit = 0; bit < 3; bit++)
         {
             bitOffset = 0;
-            for(int i = 0; i < channelBitsUsed; i++)
+            for(int i = 0; i < this.channelBitsUsed; i++)
             {
-                bitOffset = (bitOffset << 1) + bitSet[(bit * channelBitsUsed) + i];
+                bitOffset = (bitOffset << 1) + this.bitSet[(bit * this.channelBitsUsed) + i];
             }
             offset = (offset << 8) + bitOffset;
         }
-        image.setRGB(x, y, pixel + offset);
+        this.image.setRGB(this.x, this.y, pixel + offset);
     }
 
     /**
@@ -275,11 +282,11 @@ public class LSBOutputStream extends OutputStream
      */
     private void nextPixel()
     {
-        x++;
-        if(x == imgWidth)
+        this.x++;
+        if(this.x == this.imgWidth)
         {
-            x = 0;
-            y++;
+            this.x = 0;
+            this.y++;
         }
     }
 }

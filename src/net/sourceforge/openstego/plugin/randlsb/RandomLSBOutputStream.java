@@ -71,6 +71,7 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Default constructor
+     * 
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
@@ -98,9 +99,9 @@ public class RandomLSBOutputStream extends OutputStream
 
             default:
                 this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
-                for(int x = 0; x < imgWidth; x++)
+                for(int x = 0; x < this.imgWidth; x++)
                 {
-                    for(int y = 0; y < imgHeight; y++)
+                    for(int y = 0; y < this.imgHeight; y++)
                     {
                         this.image.setRGB(x, y, image.getRGB(x, y));
                     }
@@ -110,13 +111,14 @@ public class RandomLSBOutputStream extends OutputStream
         this.channelBitsUsed = 1;
         this.fileName = fileName;
 
-        //Initialize random number generator with seed generated using password
-        rand = new Random(StringUtil.passwordHash(config.getPassword()));
+        // Initialize random number generator with seed generated using password
+        this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
         writeHeader();
     }
 
     /**
      * Method to write header data to stream
+     * 
      * @throws OpenStegoException
      */
     private void writeHeader() throws OpenStegoException
@@ -128,16 +130,16 @@ public class RandomLSBOutputStream extends OutputStream
 
         try
         {
-            noOfPixels = imgWidth * imgHeight;
-            header = new LSBDataHeader(dataLength, channelBits, fileName, config);
+            noOfPixels = this.imgWidth * this.imgHeight;
+            header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
             headerSize = header.getHeaderSize();
 
             while(true)
             {
-                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + dataLength))
+                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength))
                 {
                     channelBits++;
-                    if(channelBits > ((LSBConfig) config).getMaxBitsUsedPerChannel())
+                    if(channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel())
                     {
                         throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
                     }
@@ -159,9 +161,9 @@ public class RandomLSBOutputStream extends OutputStream
                 {
                     for(int k = 0; k < channelBits; k++)
                     {
-                        bitWritten[i][j][0][k] = false;
-                        bitWritten[i][j][1][k] = false;
-                        bitWritten[i][j][2][k] = false;
+                        this.bitWritten[i][j][0][k] = false;
+                        this.bitWritten[i][j][1][k] = false;
+                        this.bitWritten[i][j][2][k] = false;
                     }
                 }
             }
@@ -181,6 +183,7 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
+     * 
      * @param data Byte to be written
      * @throws IOException
      */
@@ -198,13 +201,13 @@ public class RandomLSBOutputStream extends OutputStream
 
             do
             {
-                x = rand.nextInt(this.imgWidth);
-                y = rand.nextInt(this.imgHeight);
-                channel = rand.nextInt(3);
-                bit = rand.nextInt(channelBitsUsed);
+                x = this.rand.nextInt(this.imgWidth);
+                y = this.rand.nextInt(this.imgHeight);
+                channel = this.rand.nextInt(3);
+                bit = this.rand.nextInt(this.channelBitsUsed);
             }
-            while(bitWritten[x][y][channel][bit]);
-            bitWritten[x][y][channel][bit] = true;
+            while(this.bitWritten[x][y][channel][bit]);
+            this.bitWritten[x][y][channel][bit] = true;
 
             setPixelBit(x, y, channel, bit, bitValue);
         }
@@ -212,16 +215,17 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
+     * 
      * @return Image data
      */
     public BufferedImage getImage()
     {
-        return image;
+        return this.image;
     }
 
     /**
      * Sets the pixel bit at the given location to the new value.
-     *
+     * 
      * @param x The x position of the pixel
      * @param y The y position of the pixel
      * @param channel The color channel of the bit
@@ -234,10 +238,10 @@ public class RandomLSBOutputStream extends OutputStream
         int newColor = 0;
         int newPixel = 0;
 
-        //Get the pixel value
+        // Get the pixel value
         pixel = this.image.getRGB(x, y);
 
-        //Set the bit value
+        // Set the bit value
         if(bitValue)
         {
             newPixel = pixel | 1 << (bit + (channel * 8));
@@ -252,7 +256,7 @@ public class RandomLSBOutputStream extends OutputStream
             newPixel = pixel & newColor;
         }
 
-        //Set the pixel value back in image
+        // Set the pixel value back in image
         this.image.setRGB(x, y, newPixel);
     }
 }

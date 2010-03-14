@@ -32,6 +32,7 @@ public class DCTConfig extends OpenStegoConfig
     /**
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -42,6 +43,7 @@ public class DCTConfig extends OpenStegoConfig
 
     /**
      * Constructor which reads configuration data from the command line options.
+     * 
      * @param options Command-line options
      * @throws OpenStegoException
      */
@@ -52,6 +54,7 @@ public class DCTConfig extends OpenStegoConfig
 
     /**
      * Method to add properties from the map to this configuration data
+     * 
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -62,15 +65,17 @@ public class DCTConfig extends OpenStegoConfig
 
     /**
      * Get method for configuration item - imageFileExtension
+     * 
      * @return imageFileExtension
      */
     public String getImageFileExtension()
     {
-        return imageFileExtension;
+        return this.imageFileExtension;
     }
 
     /**
      * Set method for configuration item - imageFileExtension
+     * 
      * @param imageFileExtension
      */
     public void setImageFileExtension(String imageFileExtension)

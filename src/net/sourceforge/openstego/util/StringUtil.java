@@ -24,13 +24,9 @@ public class StringUtil
     /**
      * Hexadecimal characters
      */
-    private static final byte[] HEX_CHAR_TABLE =
-    {
-        (byte) '0', (byte) '1', (byte) '2', (byte) '3',
-        (byte) '4', (byte) '5', (byte) '6', (byte) '7',
-        (byte) '8', (byte) '9', (byte) 'a', (byte) 'b',
-        (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f'
-    };
+    private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4',
+            (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd',
+            (byte) 'e', (byte) 'f' };
 
     /**
      * Constructor is private so that this class is not instantiated
@@ -41,6 +37,7 @@ public class StringUtil
 
     /**
      * Method to convert byte array to hexadecimal string
+     * 
      * @param raw Raw byte array
      * @return Hex string
      */
@@ -61,6 +58,7 @@ public class StringUtil
 
     /**
      * Method to get the long hash from the password. This is used for seeding the random number generator
+     * 
      * @param password Password to hash
      * @return Long hash of the password
      */
@@ -92,6 +90,7 @@ public class StringUtil
 
     /**
      * Method to tokenize a string by line breaks
+     * 
      * @param input Input string
      * @return List of strings tokenized by line breaks
      * @throws OpenStegoException
@@ -121,5 +120,16 @@ public class StringUtil
         }
 
         return stringList;
+    }
+
+    /**
+     * Checks whether the given string is null or empty
+     * 
+     * @param val Input string
+     * @return flag
+     */
+    public static boolean isNullOrEmpty(String val)
+    {
+        return (val == null || val.length() == 0);
     }
 }

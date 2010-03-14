@@ -50,6 +50,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Gives the name of the plugin
+     * 
      * @return Name of the plugin
      */
     public String getName()
@@ -59,6 +60,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
+     * 
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -68,9 +70,10 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
+     * 
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be
-     *                    embedded in the cover data
+     *        embedded in the cover data
      * @param cover Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
@@ -90,7 +93,7 @@ public class LSBPlugin extends DHImagePluginTemplate
             if(cover == null)
             {
                 numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) config).getMaxBitsUsedPerChannel()));
+                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) this.config).getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
             }
             else
@@ -111,6 +114,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to extract the message file name from the stego data
+     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
@@ -126,6 +130,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
+     * 
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -166,6 +171,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the list of supported file extensions for writing
+     * 
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
@@ -212,7 +218,7 @@ public class LSBPlugin extends DHImagePluginTemplate
             }
         }
 
-        //Expicilty removing GIF and WBMP formats, as they use unsupported color models
+        // Expicilty removing GIF and WBMP formats, as they use unsupported color models
         writeFormats.remove("gif");
         writeFormats.remove("wbmp");
 
@@ -221,6 +227,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
+     * 
      * @param stegoUI Reference to the parent OpenStegoUI object
      * @return UI object specific to this plugin
      * @throws OpenStegoException
@@ -232,6 +239,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to populate the standard command-line options used by this plugin
+     * 
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      * @throws OpenStegoException
      */
@@ -242,6 +250,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the configuration class specific to this plugin
+     * 
      * @return Configuration class specific to this plugin
      */
     public Class getConfigClass()
@@ -251,6 +260,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the usage details of the plugin
+     * 
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */

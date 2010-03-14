@@ -16,8 +16,11 @@ import net.sourceforge.openstego.OpenStegoException;
  */
 public abstract class PluginEmbedOptionsUI extends JPanel
 {
+    private static final long serialVersionUID = 6932223460790839609L;
+
     /**
      * Method to validate plugin options for "Embed" action
+     * 
      * @return Boolean indicating whether validation was successful or not
      * @throws OpenStegoException
      */
@@ -25,6 +28,7 @@ public abstract class PluginEmbedOptionsUI extends JPanel
 
     /**
      * Method to populate the plugin GUI options based on the config data
+     * 
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
@@ -32,6 +36,7 @@ public abstract class PluginEmbedOptionsUI extends JPanel
 
     /**
      * Method to populate the config object based on the GUI data
+     * 
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */

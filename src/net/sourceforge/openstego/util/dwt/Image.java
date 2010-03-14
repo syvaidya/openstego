@@ -46,7 +46,7 @@ public class Image
      */
     public double[] getData()
     {
-        return data;
+        return this.data;
     }
 
     /**
@@ -66,7 +66,7 @@ public class Image
      */
     public int getWidth()
     {
-        return width;
+        return this.width;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Image
      */
     public int getHeight()
     {
-        return height;
+        return this.height;
     }
 
     /**

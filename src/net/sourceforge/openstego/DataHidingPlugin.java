@@ -13,6 +13,7 @@ import java.util.List;
  * Abstract class for stego plugins for OpenStego purpose of which is data hiding. It implements few methods which are
  * specific for data hiding, and provides dummy implementation for the methods which are specific to watermarking
  * purposes so that sub-class does not need to implement them
+ * 
  * @see WatermarkingPlugin
  */
 public abstract class DataHidingPlugin extends OpenStegoPlugin
@@ -21,6 +22,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
 
     /**
      * Gives the purpose(s) of the plugin. This implementation returns only one value - Data Hiding
+     * 
      * @return Purpose(s) of the plugin
      */
     public final List getPurposes()
@@ -35,6 +37,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
     /**
      * Method to generate the signature data. This implementation returns <code>null</code> as this class is for data
      * hiding plugins only
+     * 
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -46,6 +49,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
     /**
      * Method to check the correlation between original signature and the extracted watermark. This implementation
      * returns <code>0.0</code> as this class is for data hiding plugins only
+     * 
      * @param origSigData Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
@@ -58,6 +62,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
 
     /**
      * Method to find out whether given stego data can be handled by this plugin or not
+     * 
      * @param stegoData Stego data containing the message
      * @return Boolean indicating whether the stego data can be handled by this plugin or not
      */

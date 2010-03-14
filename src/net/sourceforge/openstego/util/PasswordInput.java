@@ -26,6 +26,7 @@ public class PasswordInput
 
     /**
      * Method to read password from the console
+     * 
      * @param prompt Prompt for the password input
      * @return The password as entered by the user
      * @throws OpenStegoException
@@ -70,6 +71,7 @@ public class PasswordInput
 
         /**
          * Constructor
+         * 
          * @param prompt Prompt for the password input
          */
         public EraserThread(String prompt)
@@ -82,7 +84,7 @@ public class PasswordInput
          */
         public void run()
         {
-            while(stop)
+            while(this.stop)
             {
                 System.out.print("\b ");
             }

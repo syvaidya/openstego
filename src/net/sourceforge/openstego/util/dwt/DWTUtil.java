@@ -10,10 +10,10 @@ import net.sourceforge.openstego.util.CommonUtil;
 
 /**
  * Class to handle Wavelet filters and other DWT utilities.
- * 
- * This class is conversion of C to Java for the file "wavelet.c" file provided by Peter Meerwald at:
- * http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/
- * 
+ * <p>
+ * This class is conversion of C to Java for the file "wavelet.c" file provided by Peter Meerwald at:<a
+ * href="http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/">http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/</a>
+ * <p>
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
@@ -28,6 +28,7 @@ public class DWTUtil
 
     /**
      * Method to perform the wavelet transform
+     * 
      * @param origImg Original image
      * @param level Decomposition level
      * @param filterGHList List of filters
@@ -121,6 +122,7 @@ public class DWTUtil
 
     /**
      * Method to perform the wavelet transform (WP)
+     * 
      * @param origImg Original image
      * @param currLevel Current decomposition level
      * @param level Decomposition level
@@ -211,6 +213,7 @@ public class DWTUtil
 
     /**
      * Method to decompose the image
+     * 
      * @param inputImg Input image
      * @param coarseImg Coarse image
      * @param horizontalImg Horizontal image
@@ -244,6 +247,7 @@ public class DWTUtil
 
     /**
      * Method to convolute lines
+     * 
      * @param outputImg Output image
      * @param inputImg Input image
      * @param filter Filter to use
@@ -296,6 +300,7 @@ public class DWTUtil
 
     /**
      * Method to convolute rows
+     * 
      * @param outputImg Output image
      * @param inputImg Input image
      * @param filter Filter to use
@@ -342,6 +347,7 @@ public class DWTUtil
 
     /**
      * Method to apply cut-off filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -373,6 +379,7 @@ public class DWTUtil
 
     /**
      * Method to apply inverse cut-off filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -404,6 +411,7 @@ public class DWTUtil
 
     /**
      * Method to apply periodical filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -442,6 +450,7 @@ public class DWTUtil
 
     /**
      * Method to apply inverse periodical filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -480,6 +489,7 @@ public class DWTUtil
 
     /**
      * Method to apply mirror filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -529,6 +539,7 @@ public class DWTUtil
 
     /**
      * Method to apply inverse mirror filter
+     * 
      * @param inputImg Input image
      * @param inStart Start point for input image
      * @param inLen Length of data for input image
@@ -592,6 +603,7 @@ public class DWTUtil
 
     /**
      * Method to perform inverse wavelet transform
+     * 
      * @param tree Forward transformed DWT data
      * @param filterGHList List of filters
      * @param method Wavelet filter method
@@ -639,6 +651,7 @@ public class DWTUtil
 
     /**
      * Method to perform inverse decomposition
+     * 
      * @param sumImg Sum image
      * @param coarseImg Coarse image
      * @param horizontalImg Horizontal image
@@ -684,6 +697,7 @@ public class DWTUtil
 
     /**
      * Method to get the deepest level possible for given image width and height
+     * 
      * @param width Image width
      * @param height Image height
      * @return Deepest possible level
@@ -706,6 +720,7 @@ public class DWTUtil
 
     /**
      * Set pixel value in the image
+     * 
      * @param image Image
      * @param x X position of pixel
      * @param y Y position of pixel
@@ -721,6 +736,7 @@ public class DWTUtil
 
     /**
      * Get pixel value from the image
+     * 
      * @param image Image
      * @param x X position of pixel
      * @param y Y position of pixel
@@ -740,6 +756,7 @@ public class DWTUtil
 
     /**
      * Utility method to copy image data to another image portion
+     * 
      * @param img1 Output image
      * @param img2 Input image
      * @param x X position in output image
