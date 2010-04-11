@@ -1,7 +1,7 @@
 ;----------------------------------------------------------------------------------------
 ; Steganography utility to hide messages into cover files
 ; Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-; Copyright (c) 2007-2009 Samir Vaidya
+; Copyright (c) 2007-2010 Samir Vaidya
 ;----------------------------------------------------------------------------------------
 
 !define JRE_DOWNLOAD_URL "http://www.java.com/getjava/"
