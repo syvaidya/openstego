@@ -93,6 +93,11 @@ public class OpenStegoException extends Exception
     public static final int PLUGIN_DOES_NOT_SUPPORT_DH = 14;
 
     /**
+     * Error Code - Password is mandatory for 'gensig' operation
+     */
+    public static final int PWD_MANDATORY_FOR_GENSIG = 15;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static HashMap errMsgKeyMap = new HashMap();
@@ -125,6 +130,7 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, PLUGIN_DOES_NOT_SUPPORT_DH, "err.plugin.dhNotSupported");
         addErrorCode(OpenStego.NAMESPACE, PLUGIN_NOT_FOUND, "err.plugin.notFound");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_SIZE_MISMATCH, "err.image.size.mismatch");
+        addErrorCode(OpenStego.NAMESPACE, PWD_MANDATORY_FOR_GENSIG, "err.gensig.pwdMandatory");
     }
 
     /**
