@@ -68,9 +68,9 @@ public class OpenStegoException extends Exception
     public static final int NO_PLUGIN_SPECIFIED = 9;
 
     /**
-     * Error Code - No plugin specified
+     * Error Code - Plugin does not support watermarking
      */
-    public static final int SIG_NA_PLUGIN_NOT_WM = 10;
+    public static final int PLUGIN_DOES_NOT_SUPPORT_WM = 10;
 
     /**
      * Error Code - Plugin not found
@@ -86,6 +86,11 @@ public class OpenStegoException extends Exception
      * Error Code - Out of memory
      */
     public static final int OUT_OF_MEMORY = 13;
+
+    /**
+     * Error Code - Plugin does not support data hiding
+     */
+    public static final int PLUGIN_DOES_NOT_SUPPORT_DH = 14;
 
     /**
      * Map to store error code to message key mapping
@@ -116,7 +121,8 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_FILE_INVALID, "err.image.file.invalid");
         addErrorCode(OpenStego.NAMESPACE, NO_PLUGIN_SPECIFIED, "err.plugin.notSpecified");
-        addErrorCode(OpenStego.NAMESPACE, SIG_NA_PLUGIN_NOT_WM, "err.plugin.sigNotWm");
+        addErrorCode(OpenStego.NAMESPACE, PLUGIN_DOES_NOT_SUPPORT_WM, "err.plugin.wmNotSupported");
+        addErrorCode(OpenStego.NAMESPACE, PLUGIN_DOES_NOT_SUPPORT_DH, "err.plugin.dhNotSupported");
         addErrorCode(OpenStego.NAMESPACE, PLUGIN_NOT_FOUND, "err.plugin.notFound");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_SIZE_MISMATCH, "err.image.size.mismatch");
     }

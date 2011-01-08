@@ -56,11 +56,6 @@ public class OpenStego
      */
     private OpenStegoPlugin plugin = null;
 
-    /**
-     * Flag to indicate whether plugin to be used is explicitly provided or not
-     */
-    private boolean isPluginExplicit = false;
-
     static
     {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.OpenStegoLabels");
@@ -86,25 +81,13 @@ public class OpenStego
      */
     public OpenStego(OpenStegoPlugin plugin, OpenStegoConfig config) throws OpenStegoException
     {
+        // Plugin is mandatory
         if(plugin == null)
         {
-            this.plugin = PluginManager.getDefaultPlugin();
-            this.isPluginExplicit = false;
+            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
         }
-        else
-        {
-            this.plugin = plugin;
-            this.isPluginExplicit = true;
-        }
-
-        if(config == null)
-        {
-            this.config = this.plugin.createConfig();
-        }
-        else
-        {
-            this.config = config;
-        }
+        this.plugin = plugin;
+        this.config = (config == null) ? new OpenStegoConfig() : config;
     }
 
     /**
@@ -133,6 +116,11 @@ public class OpenStego
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
             throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+        }
+
         try
         {
             // Compress data, if requested
@@ -178,6 +166,11 @@ public class OpenStego
      */
     public byte[] embedData(File msgFile, File coverFile, String stegoFileName) throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+        }
+
         InputStream is = null;
         String filename = null;
 
@@ -194,8 +187,9 @@ public class OpenStego
                 filename = msgFile.getName();
             }
 
-            return embedData(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
-                    .getFileBytes(coverFile), coverFile == null ? null : coverFile.getName(), stegoFileName);
+            return embedData(CommonUtil.getStreamBytes(is), filename,
+                coverFile == null ? null : CommonUtil.getFileBytes(coverFile),
+                coverFile == null ? null : coverFile.getName(), stegoFileName);
         }
         catch(IOException ioEx)
         {
@@ -217,6 +211,11 @@ public class OpenStego
     public byte[] embedMark(byte[] sig, String sigFileName, byte[] cover, String coverFileName, String stegoFileName)
             throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+        }
+
         try
         {
             // No compression and encryption should be done as this is signature data
@@ -243,6 +242,11 @@ public class OpenStego
      */
     public byte[] embedMark(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+        }
+
         InputStream is = null;
         String filename = null;
 
@@ -259,8 +263,9 @@ public class OpenStego
                 filename = sigFile.getName();
             }
 
-            return embedMark(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil
-                    .getFileBytes(coverFile), coverFile == null ? null : coverFile.getName(), stegoFileName);
+            return embedMark(CommonUtil.getStreamBytes(is), filename,
+                coverFile == null ? null : CommonUtil.getFileBytes(coverFile),
+                coverFile == null ? null : coverFile.getName(), stegoFileName);
         }
         catch(IOException ioEx)
         {
@@ -278,39 +283,16 @@ public class OpenStego
      */
     public List extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+        }
+
         byte[] msg = null;
         List output = new ArrayList();
-        List pluginList = null;
-        boolean pluginFound = false;
-        OpenStegoConfig tempConfig = null;
 
         try
         {
-            // If plugin is not specified explicitly, then determine the plugin to use
-            if(!this.isPluginExplicit)
-            {
-                pluginFound = false;
-                pluginList = PluginManager.getPlugins();
-
-                for(int i = 0; i < pluginList.size(); i++)
-                {
-                    this.plugin = (OpenStegoPlugin) pluginList.get(i);
-                    tempConfig = this.plugin.createConfig();
-                    tempConfig.setPassword(this.config.getPassword());
-                    this.config = tempConfig;
-                    if(this.plugin.canHandle(stegoData))
-                    {
-                        pluginFound = true;
-                        break;
-                    }
-                }
-
-                if(!pluginFound)
-                {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_VALID_PLUGIN, null);
-                }
-            }
-
             // Add file name as first element of output list
             output.add(this.plugin.extractMsgFileName(stegoData, stegoFileName));
             msg = this.plugin.extractData(stegoData, stegoFileName, null);
@@ -363,6 +345,11 @@ public class OpenStego
      */
     public List extractData(File stegoFile) throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+        }
+
         return extractData(CommonUtil.getFileBytes(stegoFile), stegoFile.getName());
     }
 
@@ -377,10 +364,9 @@ public class OpenStego
      */
     public byte[] extractMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
-        // Plugin is mandatory
-        if(!this.isPluginExplicit)
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
         {
-            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
         }
 
         return this.plugin.extractData(stegoData, stegoFileName, origSigData);
@@ -396,8 +382,13 @@ public class OpenStego
      */
     public byte[] extractMark(File stegoFile, File origSigFile) throws OpenStegoException
     {
-        return extractMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil
-                .getFileBytes(origSigFile));
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+        }
+
+        return extractMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(),
+            CommonUtil.getFileBytes(origSigFile));
     }
 
     /**
@@ -411,10 +402,9 @@ public class OpenStego
      */
     public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
-        // Plugin is mandatory
-        if(!this.isPluginExplicit)
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
         {
-            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
         }
 
         return this.plugin.checkMark(stegoData, stegoFileName, origSigData);
@@ -430,6 +420,11 @@ public class OpenStego
      */
     public double checkMark(File stegoFile, File origSigFile) throws OpenStegoException
     {
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+        }
+
         return checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
     }
 
@@ -441,26 +436,12 @@ public class OpenStego
      */
     public byte[] generateSignature() throws OpenStegoException
     {
-        try
+        if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
         {
-            if(!this.isPluginExplicit)
-            {
-                throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
-            }
-            if(!this.plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
-            {
-                throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.SIG_NA_PLUGIN_NOT_WM, null);
-            }
-            return this.plugin.generateSignature();
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
         }
-        catch(OpenStegoException osEx)
-        {
-            throw osEx;
-        }
-        catch(Exception ex)
-        {
-            throw new OpenStegoException(ex);
-        }
+
+        return this.plugin.generateSignature();
     }
 
     /**
@@ -477,12 +458,6 @@ public class OpenStego
     public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
             String diffFileName) throws OpenStegoException
     {
-        // Plugin is mandatory
-        if(!this.isPluginExplicit)
-        {
-            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
-        }
-
         return this.plugin.getDiff(stegoData, stegoFileName, coverData, coverFileName, diffFileName);
     }
 
@@ -565,7 +540,7 @@ public class OpenStego
             {
                 pluginName = parser.getParsedOptions().getOptionValue("-a");
 
-                // Get the plugin object, and refresh the command-line parser data
+                // Get the plugin object
                 if(pluginName != null && !pluginName.equals(""))
                 {
                     plugin = PluginManager.getPluginByName(pluginName);
@@ -574,13 +549,40 @@ public class OpenStego
                         throw new OpenStegoException(NAMESPACE, OpenStegoException.PLUGIN_NOT_FOUND, pluginName, null);
                     }
                 }
-                // Functionality for Auto-select of plugin is removed
-                /*
-                 * else
-                 * {
-                 * plugin = PluginManager.getDefaultPlugin();
-                 * }
-                 */
+                // Try to auto-select plugin
+                else
+                {
+                    List plugins = PluginManager.getPlugins();
+                    if(plugins.size() == 1)
+                    {
+                        plugin = (OpenStegoPlugin) plugins.get(0);
+                    }
+                    else if(plugins.size() > 1)
+                    {
+                        optionList = parser.getParsedOptionsAsList();
+                        if(optionList.size() > 0)
+                        {
+                            command = ((CmdLineOption) optionList.get(0)).getName();
+                            if(command.equals("embed") || command.equals("extract"))
+                            {
+                                plugins = PluginManager.getDataHidingPlugins();
+                                if(plugins.size() == 1)
+                                {
+                                    plugin = (OpenStegoPlugin) plugins.get(0);
+                                }
+                            }
+                            else if(command.equals("gensig") || command.equals("embedmark")
+                                    || command.equals("extractmark") || command.equals("checkmark"))
+                            {
+                                plugins = PluginManager.getWatermarkingPlugins();
+                                if(plugins.size() == 1)
+                                {
+                                    plugin = (OpenStegoPlugin) plugins.get(0);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // Second parse of the command-line (with plugin specific options)
                 if(plugin != null)
@@ -615,15 +617,18 @@ public class OpenStego
                 }
 
                 // Check that algorithm is selected
-                if(!command.equals("help") && !command.equals("diff") && !command.equals("algorithms")
-                        && plugin == null)
+                if(!command.equals("help") && !command.equals("algorithms"))
                 {
-                    throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+                    if(plugin == null)
+                    {
+                        throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+                    }
+                    else
+                    {
+                        // Create main stego object
+                        stego = new OpenStego(plugin, plugin.createConfig(parser.getParsedOptions()));
+                    }
                 }
-
-                // Create main stego object
-                stego = new OpenStego((pluginName != null && !pluginName.equals("")) ? plugin : null, plugin
-                        .createConfig(parser.getParsedOptions()));
 
                 if(command.equals("embed"))
                 {
@@ -843,8 +848,8 @@ public class OpenStego
                 else if(command.equals("gensig"))
                 {
                     signatureFileName = options.getOptionValue("-gf");
-                    CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null || signatureFileName
-                            .equals("-")) ? null : signatureFileName);
+                    CommonUtil.writeFile(stego.generateSignature(),
+                        (signatureFileName == null || signatureFileName.equals("-")) ? null : signatureFileName);
                 }
                 else if(command.equals("diff"))
                 {
@@ -858,8 +863,9 @@ public class OpenStego
                         extractFileName = extractDir + File.separator + extractFileName;
                     }
 
-                    CommonUtil.writeFile(stego.getDiff(new File(stegoFileName), new File(coverFileName),
-                        extractFileName), extractFileName);
+                    CommonUtil.writeFile(
+                        stego.getDiff(new File(stegoFileName), new File(coverFileName), extractFileName),
+                        extractFileName);
                 }
                 else if(command.equals("readformats"))
                 {
@@ -934,8 +940,7 @@ public class OpenStego
         PluginManager.loadPlugins();
 
         System.err.print(labelUtil.getString("versionString"));
-        System.err.println(labelUtil.getString("cmd.usage", new Object[] { File.separator,
-                PluginManager.getDefaultPlugin().getName() }));
+        System.err.println(labelUtil.getString("cmd.usage", new Object[] { File.separator }));
     }
 
     /**
