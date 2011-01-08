@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2008 Samir Vaidya
+ * Copyright (c) 2007-2011 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtxie;
@@ -151,26 +151,20 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 // Bring selected pixels in ascending order
                 if(pixel1.value > pixel2.value)
                 {
-                    temp = pixel1.value;
-                    pixel1.value = pixel2.value;
-                    pixel2.value = temp;
+                    swapPix(pixel1, pixel2);
                 }
                 if(pixel2.value > pixel3.value)
                 {
-                    temp = pixel2.value;
-                    pixel2.value = pixel3.value;
-                    pixel3.value = temp;
+                    swapPix(pixel2, pixel3);
                 }
                 if(pixel1.value > pixel2.value)
                 {
-                    temp = pixel1.value;
-                    pixel1.value = pixel2.value;
-                    pixel2.value = temp;
+                    swapPix(pixel1, pixel2);
                 }
 
                 // Apply watermarking transformation (modify median pixel)
-                temp = wmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value, getWatermarkBit(
-                    sig.watermark, n % (sig.watermarkLength * 8)));
+                temp = wmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value,
+                    getWatermarkBit(sig.watermark, n % (sig.watermarkLength * 8)));
 
                 // Write modified pixel
                 DWTUtil.setPixel(p.getImage(), col + pixel2.pos, row, temp);
@@ -210,7 +204,6 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         int cols = 0;
         int rows = 0;
         int n = 0;
-        double temp = 0.0;
 
         image = ImageUtil.makeImageSquare(ImageUtil.byteArrayToImage(stegoData, stegoFileName));
 
@@ -244,21 +237,15 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 // Bring selected pixels in ascending order
                 if(pixel1.value > pixel2.value)
                 {
-                    temp = pixel1.value;
-                    pixel1.value = pixel2.value;
-                    pixel2.value = temp;
+                    swapPix(pixel1, pixel2);
                 }
                 if(pixel2.value > pixel3.value)
                 {
-                    temp = pixel2.value;
-                    pixel2.value = pixel3.value;
-                    pixel3.value = temp;
+                    swapPix(pixel2, pixel3);
                 }
                 if(pixel1.value > pixel2.value)
                 {
-                    temp = pixel1.value;
-                    pixel1.value = pixel2.value;
-                    pixel2.value = temp;
+                    swapPix(pixel1, pixel2);
                 }
 
                 // Apply inverse watermarking transformation to get the bit value
@@ -426,6 +413,20 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         return data;
     }
 
+    private void swapPix(Pixel pixel1, Pixel pixel2)
+    {
+        int tmpPixPos;
+        double tmpPixVal;
+
+        tmpPixPos = pixel1.pos;
+        pixel1.pos = pixel2.pos;
+        pixel2.pos = tmpPixPos;
+
+        tmpPixVal = pixel1.value;
+        pixel1.value = pixel2.value;
+        pixel2.value = tmpPixVal;
+    }
+
     /**
      * Private class for the data structure required for the signature
      */
@@ -439,12 +440,12 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         /**
          * Length of the watermark (in bytes)
          */
-        int watermarkLength = 512;
+        int watermarkLength = 64;
 
         /**
          * Embedding strength
          */
-        double embeddingStrength = 0.05;
+        double embeddingStrength = 0.5;
 
         /**
          * Wavelet filter method
@@ -454,7 +455,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         /**
          * Filter number
          */
-        int filterID = 2;
+        int filterID = 1;
 
         /**
          * Embedding level

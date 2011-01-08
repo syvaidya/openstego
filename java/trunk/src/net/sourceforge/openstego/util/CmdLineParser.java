@@ -83,7 +83,10 @@ public class CmdLineParser
                     {
                         // Get the next argument from command line (for value of the option)
                         i++;
-                        arg = args[i];
+                        if(i < args.length)
+                        {
+                            arg = args[i];
+                        }
 
                         // Check that next arg is not an option itself
                         if(stdOptions.getOption(arg) == null)

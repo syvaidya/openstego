@@ -155,6 +155,45 @@ public class ImageUtil
     }
 
     /**
+     * Get RGB data array from given image
+     * 
+     * @param image Image
+     * @return List with three elements of two-dimensional int's - R, G and B
+     */
+    public static ArrayList getRgbFromImage(BufferedImage image)
+    {
+        ArrayList rgb = new ArrayList();
+        int[][] r = null;
+        int[][] g = null;
+        int[][] b = null;
+        int width = 0;
+        int height = 0;
+
+        width = image.getWidth();
+        height = image.getHeight();
+
+        r = new int[height][width];
+        g = new int[height][width];
+        b = new int[height][width];
+
+        for(int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < width; j++)
+            {
+                r[i][j] = (image.getRGB(j, i) >> 16) & 0xFF;
+                g[i][j] = (image.getRGB(j, i) >> 8) & 0xFF;
+                b[i][j] = (image.getRGB(j, i) >> 0) & 0xFF;
+            }
+        }
+
+        rgb.add(r);
+        rgb.add(g);
+        rgb.add(b);
+
+        return rgb;
+    }
+
+    /**
      * Get YUV data from given image's RGB data
      * 
      * @param image Image
@@ -205,6 +244,40 @@ public class ImageUtil
         yuv.add(v);
 
         return yuv;
+    }
+
+    /**
+     * Get image from given RGB data
+     * 
+     * @param rgb List with three elements of two-dimensional int's - R, G and B
+     * @return Image
+     */
+    public static BufferedImage getImageFromRgb(ArrayList rgb)
+    {
+        BufferedImage image = null;
+        int width = 0;
+        int height = 0;
+        int[][] r = null;
+        int[][] g = null;
+        int[][] b = null;
+
+        r = (int[][]) rgb.get(0);
+        g = (int[][]) rgb.get(1);
+        b = (int[][]) rgb.get(2);
+
+        height = r.length;
+        width = r[0].length;
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for(int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < width; j++)
+            {
+                image.setRGB(j, i, (r[i][j] << 16) + (g[i][j] << 8) + b[i][j]);
+            }
+        }
+
+        return image;
     }
 
     /**

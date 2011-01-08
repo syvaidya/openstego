@@ -28,11 +28,6 @@ public class PluginManager
     }
 
     /**
-     * Name of the default plugin
-     */
-    private final static String DEFAULT_PLUGIN = "LSB";
-
-    /**
      * Static variable to hold the list of available plugins
      */
     private static List plugins = new ArrayList();
@@ -107,6 +102,48 @@ public class PluginManager
     }
 
     /**
+     * Method to get the list of the data hiding plugins
+     * 
+     * @return List of the data hiding plugins
+     */
+    public static List getDataHidingPlugins()
+    {
+        OpenStegoPlugin plugin = null;
+        List dhPlugins = new ArrayList();
+
+        for(int i = 0; i < plugins.size(); i++)
+        {
+            plugin = (OpenStegoPlugin) plugins.get(i);
+            if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+            {
+                dhPlugins.add(plugin);
+            }
+        }
+        return dhPlugins;
+    }
+
+    /**
+     * Method to get the list of the watermarking plugins
+     * 
+     * @return List of the watermarking plugins
+     */
+    public static List getWatermarkingPlugins()
+    {
+        OpenStegoPlugin plugin = null;
+        List dhPlugins = new ArrayList();
+
+        for(int i = 0; i < plugins.size(); i++)
+        {
+            plugin = (OpenStegoPlugin) plugins.get(i);
+            if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+            {
+                dhPlugins.add(plugin);
+            }
+        }
+        return dhPlugins;
+    }
+
+    /**
      * Method to get the plugin object based on the name of the plugin
      * 
      * @param name Name of the plugin
@@ -115,15 +152,5 @@ public class PluginManager
     public static OpenStegoPlugin getPluginByName(String name)
     {
         return (OpenStegoPlugin) pluginsMap.get(name.toUpperCase());
-    }
-
-    /**
-     * Method to get the default plugin
-     * 
-     * @return Default plugin object
-     */
-    public static OpenStegoPlugin getDefaultPlugin()
-    {
-        return getPluginByName(DEFAULT_PLUGIN);
     }
 }
