@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2008 Samir Vaidya
+ * Copyright (c) 2007-2011 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -441,6 +441,11 @@ public class OpenStego
             throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
         }
 
+        if(this.config.getPassword() == null || this.config.getPassword().trim().length() == 0)
+        {
+            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PWD_MANDATORY_FOR_GENSIG, null);
+        }
+
         return this.plugin.generateSignature();
     }
 
@@ -572,7 +577,7 @@ public class OpenStego
                                 }
                             }
                             else if(command.equals("gensig") || command.equals("embedmark")
-                                    || command.equals("extractmark") || command.equals("checkmark"))
+                                    || command.equals("checkmark"))
                             {
                                 plugins = PluginManager.getWatermarkingPlugins();
                                 if(plugins.size() == 1)
@@ -796,27 +801,6 @@ public class OpenStego
                     CommonUtil.writeFile((byte[]) msgData.get(1), extractFileName);
                     System.err.println(labelUtil.getString("cmd.msg.fileExtracted", new Object[] { extractFileName }));
                 }
-                else if(command.equals("extractmark"))
-                {
-                    stegoFileName = options.getOptionValue("-sf");
-                    sigFileName = options.getOptionValue("-gf");
-                    extractDir = options.getOptionValue("-xd");
-                    extractFileName = options.getOptionValue("-xf");
-
-                    if(stegoFileName == null || extractFileName == null)
-                    {
-                        displayUsage();
-                        return;
-                    }
-
-                    if(extractDir != null)
-                    {
-                        extractFileName = extractDir + File.separator + extractFileName;
-                    }
-
-                    CommonUtil.writeFile(stego.extractMark(new File(stegoFileName), new File(sigFileName)),
-                        extractFileName);
-                }
                 else if(command.equals("checkmark"))
                 {
                     stegoFileName = options.getOptionValue("-sf");
@@ -847,6 +831,13 @@ public class OpenStego
                 }
                 else if(command.equals("gensig"))
                 {
+                    // Check if we need to prompt for password
+                    if(stego.getConfig().getPassword() == null)
+                    {
+                        stego.getConfig().setPassword(
+                            PasswordInput.readPassword(labelUtil.getString("cmd.msg.enterPassword") + " "));
+                    }
+
                     signatureFileName = options.getOptionValue("-gf");
                     CommonUtil.writeFile(stego.generateSignature(),
                         (signatureFileName == null || signatureFileName.equals("-")) ? null : signatureFileName);
@@ -959,7 +950,6 @@ public class OpenStego
         options.add("extract", "--extract", CmdLineOption.TYPE_COMMAND, false);
         options.add("gensig", "--gensig", CmdLineOption.TYPE_COMMAND, false);
         options.add("embedmark", "--embedmark", CmdLineOption.TYPE_COMMAND, false);
-        options.add("extractmark", "--extractmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("checkmark", "--checkmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("diff", "--diff", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
