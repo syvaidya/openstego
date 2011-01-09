@@ -52,7 +52,7 @@ public class LSBConfig extends OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public LSBConfig(Map propMap) throws OpenStegoException
+    public LSBConfig(Map<String, String> propMap) throws OpenStegoException
     {
         addProperties(propMap);
     }
@@ -67,7 +67,7 @@ public class LSBConfig extends OpenStegoConfig
     {
         super(options);
 
-        HashMap map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         if(options.getOption("-b") != null) // maxBitsUsedPerChannel
         {
             map.put(MAX_BITS_USED_PER_CHANNEL, options.getOptionValue("-b"));
@@ -82,18 +82,18 @@ public class LSBConfig extends OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    protected void addProperties(Map propMap) throws OpenStegoException
+    protected void addProperties(Map<String, String> propMap) throws OpenStegoException
     {
         super.addProperties(propMap);
 
-        Iterator keys = null;
+        Iterator<String> keys = null;
         String key = null;
         String value = null;
 
         keys = propMap.keySet().iterator();
         while(keys.hasNext())
         {
-            key = (String) keys.next();
+            key = keys.next();
             if(key.equals(MAX_BITS_USED_PER_CHANNEL))
             {
                 value = propMap.get(key).toString().trim();

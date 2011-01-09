@@ -12,7 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
@@ -91,7 +91,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
             throws OpenStegoException
     {
         BufferedImage image = null;
-        ArrayList yuv = null;
+        List<int[][]> yuv = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
         ImageTree p = null;
@@ -118,7 +118,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         cols = image.getWidth();
         rows = image.getHeight();
         yuv = ImageUtil.getYuvFromImage(image);
-        luminance = (int[][]) yuv.get(0);
+        luminance = yuv.get(0);
         sig = new Signature(msg);
 
         // Check that level is okay

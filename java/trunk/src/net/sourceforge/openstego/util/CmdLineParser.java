@@ -22,7 +22,7 @@ public class CmdLineParser
     /**
      * Stores the list of non-standard arguments
      */
-    private ArrayList nonStdArgList = new ArrayList();
+    private List<String> nonStdArgList = new ArrayList<String>();
 
     /**
      * Flag to indicate whether non-standard options are mixed within standard options or not
@@ -109,7 +109,7 @@ public class CmdLineParser
      */
     public boolean isValid()
     {
-        List list = null;
+        List<CmdLineOption> list = null;
         CmdLineOption option = null;
 
         if(this.nonStdMixedWithStdOptions)
@@ -120,7 +120,7 @@ public class CmdLineParser
         list = this.parsedOptions.getList();
         for(int i = 0; i < list.size(); i++)
         {
-            option = (CmdLineOption) list.get(i);
+            option = list.get(i);
             if(option.takesArg() && option.getValue() == null)
             {
                 return false;
@@ -157,7 +157,7 @@ public class CmdLineParser
      * 
      * @return List of standard options
      */
-    public List getParsedOptionsAsList()
+    public List<CmdLineOption> getParsedOptionsAsList()
     {
         return this.parsedOptions.getList();
     }
@@ -167,7 +167,7 @@ public class CmdLineParser
      * 
      * @return List of non-standard options
      */
-    public List getNonStdOptions()
+    public List<String> getNonStdOptions()
     {
         return this.nonStdArgList;
     }

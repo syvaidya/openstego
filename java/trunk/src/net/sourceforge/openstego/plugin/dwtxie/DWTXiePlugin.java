@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
@@ -90,7 +91,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
             throws OpenStegoException
     {
         BufferedImage image = null;
-        ArrayList yuv = null;
+        List<int[][]> yuv = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
         ImageTree p = null;
@@ -123,7 +124,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         cols = image.getWidth();
         rows = image.getHeight();
         yuv = ImageUtil.getYuvFromImage(image);
-        luminance = (int[][]) yuv.get(0);
+        luminance = yuv.get(0);
         sig = new Signature(msg);
 
         // Wavelet transform
@@ -191,7 +192,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      */
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
     {
-        ArrayList sigBitList = new ArrayList();
+        List<Integer> sigBitList = new ArrayList<Integer>();
         BufferedImage image = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
@@ -209,7 +210,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         cols = image.getWidth();
         rows = image.getHeight();
-        luminance = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
+        luminance = ImageUtil.getYuvFromImage(image).get(0);
         sig = new Signature(origSigData);
 
         // Wavelet transform
@@ -249,8 +250,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 }
 
                 // Apply inverse watermarking transformation to get the bit value
-                sigBitList.add(new Integer(invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value,
-                    pixel3.value)));
+                sigBitList.add(invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value));
                 n++;
             }
         }
@@ -400,14 +400,14 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @param bitList List of bits
      * @return Byte array
      */
-    private byte[] convertBitListToByteArray(ArrayList bitList)
+    private byte[] convertBitListToByteArray(List<Integer> bitList)
     {
         byte[] data = null;
 
         data = new byte[bitList.size() >> 3];
         for(int i = 0; i < ((bitList.size() >> 3) << 3); i++)
         {
-            setWatermarkBit(data, i, ((Integer) bitList.get(i)).intValue());
+            setWatermarkBit(data, i, (bitList.get(i)).intValue());
         }
 
         return data;

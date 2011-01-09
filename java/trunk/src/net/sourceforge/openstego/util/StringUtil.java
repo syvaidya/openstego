@@ -95,10 +95,10 @@ public class StringUtil
      * @return List of strings tokenized by line breaks
      * @throws OpenStegoException
      */
-    public static List getStringLines(String input) throws OpenStegoException
+    public static List<String> getStringLines(String input) throws OpenStegoException
     {
         String str = null;
-        ArrayList stringList = new ArrayList();
+        List<String> stringList = new ArrayList<String>();
         BufferedReader reader = null;
 
         try

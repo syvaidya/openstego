@@ -7,6 +7,7 @@
 package net.sourceforge.openstego.plugin.dctlsb;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for storing co-ordinate hits
@@ -21,7 +22,7 @@ public class Coordinates
     /**
      * Map to store the hits
      */
-    private HashMap map = new HashMap();
+    private Map<String, String> map = new HashMap<String, String>();
 
     /**
      * Default constructor

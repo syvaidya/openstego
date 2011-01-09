@@ -24,7 +24,7 @@ public class DWT
     /**
      * Master map of filters
      */
-    private static Map filterGHMap = null;
+    private static Map<Integer, FilterGH> filterGHMap = null;
 
     /**
      * URI for the filter file
@@ -76,7 +76,7 @@ public class DWT
         this.filters = new FilterGH[level + 1];
         for(int i = 0; i <= level; i++)
         {
-            this.filters[i] = (FilterGH) filterGHMap.get(new Integer(filterID));
+            this.filters[i] = filterGHMap.get(new Integer(filterID));
         }
 
         this.level = level;

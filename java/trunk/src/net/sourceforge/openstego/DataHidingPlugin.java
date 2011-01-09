@@ -25,10 +25,10 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
      * 
      * @return Purpose(s) of the plugin
      */
-    public final List getPurposes()
+    public final List<Purpose> getPurposes()
     {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_DATA_HIDING);
+        List<Purpose> purposes = new ArrayList<Purpose>();
+        purposes.add(Purpose.DATA_HIDING);
         return purposes;
     }
 
