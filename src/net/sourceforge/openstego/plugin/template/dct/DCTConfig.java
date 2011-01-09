@@ -36,7 +36,7 @@ public class DCTConfig extends OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public DCTConfig(Map propMap) throws OpenStegoException
+    public DCTConfig(Map<String, String> propMap) throws OpenStegoException
     {
         addProperties(propMap);
     }
@@ -58,7 +58,7 @@ public class DCTConfig extends OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    protected void addProperties(Map propMap) throws OpenStegoException
+    protected void addProperties(Map<String, String> propMap) throws OpenStegoException
     {
         super.addProperties(propMap);
     }

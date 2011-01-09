@@ -67,7 +67,7 @@ public class OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public OpenStegoConfig(Map propMap) throws OpenStegoException
+    public OpenStegoConfig(Map<String, String> propMap) throws OpenStegoException
     {
         addProperties(propMap);
     }
@@ -80,7 +80,7 @@ public class OpenStegoConfig
      */
     public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException
     {
-        HashMap map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
 
         if(options.getOption("-c") != null) // compress
         {
@@ -116,16 +116,16 @@ public class OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    protected void addProperties(Map propMap) throws OpenStegoException
+    protected void addProperties(Map<String, String> propMap) throws OpenStegoException
     {
-        Iterator keys = null;
+        Iterator<String> keys = null;
         String key = null;
         String value = null;
 
         keys = propMap.keySet().iterator();
         while(keys.hasNext())
         {
-            key = (String) keys.next();
+            key = keys.next();
             if(key.equals(USE_COMPRESSION))
             {
                 value = propMap.get(key).toString().trim();
@@ -139,8 +139,7 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE,
-                            value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
                 }
             }
             else if(key.equals(USE_ENCRYPTION))
@@ -156,8 +155,7 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE,
-                            value, null);
+                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
                 }
             }
             else if(key.equals(PASSWORD))

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -160,9 +161,9 @@ public class ImageUtil
      * @param image Image
      * @return List with three elements of two-dimensional int's - R, G and B
      */
-    public static ArrayList getRgbFromImage(BufferedImage image)
+    public static List<int[][]> getRgbFromImage(BufferedImage image)
     {
-        ArrayList rgb = new ArrayList();
+        List<int[][]> rgb = new ArrayList<int[][]>();
         int[][] r = null;
         int[][] g = null;
         int[][] b = null;
@@ -199,9 +200,9 @@ public class ImageUtil
      * @param image Image
      * @return List with three elements of two-dimensional int's - Y, U and V
      */
-    public static ArrayList getYuvFromImage(BufferedImage image)
+    public static List<int[][]> getYuvFromImage(BufferedImage image)
     {
-        ArrayList yuv = new ArrayList();
+        List<int[][]> yuv = new ArrayList<int[][]>();
         int[][] y = null;
         int[][] u = null;
         int[][] v = null;
@@ -252,7 +253,7 @@ public class ImageUtil
      * @param rgb List with three elements of two-dimensional int's - R, G and B
      * @return Image
      */
-    public static BufferedImage getImageFromRgb(ArrayList rgb)
+    public static BufferedImage getImageFromRgb(List<int[][]> rgb)
     {
         BufferedImage image = null;
         int width = 0;
@@ -261,9 +262,9 @@ public class ImageUtil
         int[][] g = null;
         int[][] b = null;
 
-        r = (int[][]) rgb.get(0);
-        g = (int[][]) rgb.get(1);
-        b = (int[][]) rgb.get(2);
+        r = rgb.get(0);
+        g = rgb.get(1);
+        b = rgb.get(2);
 
         height = r.length;
         width = r[0].length;
@@ -286,7 +287,7 @@ public class ImageUtil
      * @param yuv List with three elements of two-dimensional int's - Y, U and V
      * @return Image
      */
-    public static BufferedImage getImageFromYuv(ArrayList yuv)
+    public static BufferedImage getImageFromYuv(List<int[][]> yuv)
     {
         BufferedImage image = null;
         int width = 0;
@@ -298,9 +299,9 @@ public class ImageUtil
         int[][] u = null;
         int[][] v = null;
 
-        y = (int[][]) yuv.get(0);
-        u = (int[][]) yuv.get(1);
-        v = (int[][]) yuv.get(2);
+        y = yuv.get(0);
+        u = yuv.get(1);
+        v = yuv.get(2);
 
         height = y.length;
         width = y[0].length;

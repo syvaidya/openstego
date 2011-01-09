@@ -355,7 +355,7 @@ public class OpenStegoFrame extends JFrame
         {
             Object key = null;
             Object value = null;
-            Enumeration keys = UIManager.getDefaults().keys();
+            Enumeration<?> keys = UIManager.getDefaults().keys();
             while(keys.hasMoreElements())
             {
                 key = keys.nextElement();
@@ -606,10 +606,10 @@ public class OpenStegoFrame extends JFrame
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         extractPanel.add(new JLabel(" "), gridBagConstraints);
 
-        this.mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass().getResource(
-            "/image/EmbedIcon.png")), embedPanel);
-        this.mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.extract"), new ImageIcon(getClass().getResource(
-            "/image/ExtractIcon.png")), extractPanel);
+        this.mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.embed"),
+            new ImageIcon(getClass().getResource("/image/EmbedIcon.png")), embedPanel);
+        this.mainTabbedPane.addTab(labelUtil.getString("gui.label.tab.extract"),
+            new ImageIcon(getClass().getResource("/image/ExtractIcon.png")), extractPanel);
 
         mainPanel.add(this.mainTabbedPane);
         getContentPane().add(mainPanel, BorderLayout.CENTER);

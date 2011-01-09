@@ -7,6 +7,7 @@
 package net.sourceforge.openstego;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.openstego.util.LabelUtil;
 
@@ -20,7 +21,7 @@ public class OpenStegoException extends Exception
     /**
      * Error Code - Unhandled exception
      */
-    private static final int UNHANDLED_EXCEPTION = 0;
+    static final int UNHANDLED_EXCEPTION = 0;
 
     /**
      * Error Code - Invalid password
@@ -100,7 +101,7 @@ public class OpenStegoException extends Exception
     /**
      * Map to store error code to message key mapping
      */
-    private static HashMap errMsgKeyMap = new HashMap();
+    private static Map<String, String> errMsgKeyMap = new HashMap<String, String>();
 
     /**
      * Error code for the exception
@@ -179,7 +180,7 @@ public class OpenStegoException extends Exception
     public OpenStegoException(String namespace, int errorCode, Object[] params, Throwable cause)
     {
         super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString() : LabelUtil
-                .getInstance(namespace).getString((String) errMsgKeyMap.get(namespace + errorCode), params), cause);
+                .getInstance(namespace).getString(errMsgKeyMap.get(namespace + errorCode), params), cause);
 
         this.namespace = namespace;
         this.errorCode = errorCode;

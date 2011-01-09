@@ -30,12 +30,12 @@ public class PluginManager
     /**
      * Static variable to hold the list of available plugins
      */
-    private static List plugins = new ArrayList();
+    private static List<OpenStegoPlugin> plugins = new ArrayList<OpenStegoPlugin>();
 
     /**
      * Static variable to hold a map of available plugins
      */
-    private static Map pluginsMap = new HashMap();
+    private static Map<String, OpenStegoPlugin> pluginsMap = new HashMap<String, OpenStegoPlugin>();
 
     /**
      * Method to load the stego plugin classes
@@ -44,7 +44,7 @@ public class PluginManager
      */
     public static void loadPlugins() throws OpenStegoException
     {
-        List pluginList = null;
+        List<String> pluginList = null;
         OpenStegoPlugin plugin = null;
         InputStream is = null;
 
@@ -63,7 +63,7 @@ public class PluginManager
 
             for(int i = 0; i < pluginList.size(); i++)
             {
-                plugin = (OpenStegoPlugin) Class.forName((String) pluginList.get(i)).newInstance();
+                plugin = (OpenStegoPlugin) Class.forName(pluginList.get(i)).newInstance();
                 plugins.add(plugin);
                 pluginsMap.put(plugin.getName().toUpperCase(), plugin);
             }
@@ -79,13 +79,13 @@ public class PluginManager
      * 
      * @return List of names of the loaded plugins
      */
-    public static List getPluginNames()
+    public static List<String> getPluginNames()
     {
-        List nameList = new ArrayList();
+        List<String> nameList = new ArrayList<String>();
 
         for(int i = 0; i < plugins.size(); i++)
         {
-            nameList.add(((OpenStegoPlugin) plugins.get(i)).getName());
+            nameList.add((plugins.get(i)).getName());
         }
 
         return nameList;
@@ -96,7 +96,7 @@ public class PluginManager
      * 
      * @return List of the loaded plugins
      */
-    public static List getPlugins()
+    public static List<OpenStegoPlugin> getPlugins()
     {
         return plugins;
     }
@@ -106,15 +106,15 @@ public class PluginManager
      * 
      * @return List of the data hiding plugins
      */
-    public static List getDataHidingPlugins()
+    public static List<OpenStegoPlugin> getDataHidingPlugins()
     {
         OpenStegoPlugin plugin = null;
-        List dhPlugins = new ArrayList();
+        List<OpenStegoPlugin> dhPlugins = new ArrayList<OpenStegoPlugin>();
 
         for(int i = 0; i < plugins.size(); i++)
         {
-            plugin = (OpenStegoPlugin) plugins.get(i);
-            if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_DATA_HIDING))
+            plugin = plugins.get(i);
+            if(plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING))
             {
                 dhPlugins.add(plugin);
             }
@@ -127,15 +127,15 @@ public class PluginManager
      * 
      * @return List of the watermarking plugins
      */
-    public static List getWatermarkingPlugins()
+    public static List<OpenStegoPlugin> getWatermarkingPlugins()
     {
         OpenStegoPlugin plugin = null;
-        List dhPlugins = new ArrayList();
+        List<OpenStegoPlugin> dhPlugins = new ArrayList<OpenStegoPlugin>();
 
         for(int i = 0; i < plugins.size(); i++)
         {
-            plugin = (OpenStegoPlugin) plugins.get(i);
-            if(plugin.getPurposes().contains(OpenStegoPlugin.PURPOSE_WATERMARKING))
+            plugin = plugins.get(i);
+            if(plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
             {
                 dhPlugins.add(plugin);
             }
@@ -151,6 +151,6 @@ public class PluginManager
      */
     public static OpenStegoPlugin getPluginByName(String name)
     {
-        return (OpenStegoPlugin) pluginsMap.get(name.toUpperCase());
+        return pluginsMap.get(name.toUpperCase());
     }
 }

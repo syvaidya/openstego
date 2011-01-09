@@ -167,13 +167,13 @@ public class CommonUtil
      * @param delimiter Delimiter for tokenization
      * @return List of filenames after tokenizing and wildcard expansion
      */
-    public static List parseFileList(String fileList, String delimiter)
+    public static List<File> parseFileList(String fileList, String delimiter)
     {
         int index = 0;
         StringTokenizer tokenizer = null;
         String fileName = null;
         String dirName = null;
-        ArrayList output = new ArrayList();
+        List<File> output = new ArrayList<File>();
         File fileDir = null;
         File[] arrFile = null;
 

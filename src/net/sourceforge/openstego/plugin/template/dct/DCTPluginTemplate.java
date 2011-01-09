@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.OpenStegoPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
@@ -32,12 +33,12 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
     /**
      * Static list of supported read formats
      */
-    private static List readFormats = null;
+    private static List<String> readFormats = null;
 
     /**
      * Static list of supported write formats
      */
-    private static List writeFormats = null;
+    private static List<String> writeFormats = null;
 
     static
     {
@@ -51,7 +52,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
-    public List getReadableFileExtensions() throws OpenStegoException
+    public List<String> getReadableFileExtensions() throws OpenStegoException
     {
         if(readFormats != null)
         {
@@ -60,7 +61,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
         String format = null;
         String[] formats = null;
-        List formatList = new ArrayList();
+        List<String> formatList = new ArrayList<String>();
 
         formats = ImageIO.getReaderFormatNames();
         for(int i = 0; i < formats.length; i++)
@@ -87,7 +88,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List getWritableFileExtensions() throws OpenStegoException
+    public List<String> getWritableFileExtensions() throws OpenStegoException
     {
         if(writeFormats != null)
         {
@@ -96,7 +97,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
 
         String format = null;
         String[] formats = null;
-        List formatList = new ArrayList();
+        List<String> formatList = new ArrayList<String>();
 
         formats = ImageIO.getWriterFormatNames();
         for(int i = 0; i < formats.length; i++)
@@ -144,7 +145,7 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin
      * 
      * @return Configuration class specific to this plugin
      */
-    public Class getConfigClass()
+    public Class<? extends OpenStegoConfig> getConfigClass()
     {
         return DCTConfig.class;
     }

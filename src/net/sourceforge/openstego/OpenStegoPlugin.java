@@ -22,14 +22,20 @@ import net.sourceforge.openstego.util.LabelUtil;
 public abstract class OpenStegoPlugin
 {
     /**
-     * Constant for the purpose of the plugin - Data Hiding
+     * Enumeration of plugin purposes
      */
-    public static final String PURPOSE_DATA_HIDING = "DH";
+    public enum Purpose
+    {
+        /**
+         * Purpose - data hiding
+         */
+        DATA_HIDING,
 
-    /**
-     * Constant for the purpose of the plugin - Watermarking
-     */
-    public static final String PURPOSE_WATERMARKING = "WM";
+        /**
+         * Purpose - watermarking
+         */
+        WATERMARKING
+    }
 
     /**
      * Configuration data to be used while embedding / extracting data
@@ -50,7 +56,7 @@ public abstract class OpenStegoPlugin
      * 
      * @return Purpose(s) of the plugin
      */
-    public abstract List getPurposes();
+    public abstract List<Purpose> getPurposes();
 
     /**
      * Gives a short description of the plugin
@@ -68,7 +74,7 @@ public abstract class OpenStegoPlugin
     {
         StringBuffer sbf = new StringBuffer();
         LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
-        List purposes = getPurposes();
+        List<Purpose> purposes = getPurposes();
 
         if(purposes == null || purposes.size() == 0)
         {
@@ -189,7 +195,7 @@ public abstract class OpenStegoPlugin
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
-    public abstract List getReadableFileExtensions() throws OpenStegoException;
+    public abstract List<String> getReadableFileExtensions() throws OpenStegoException;
 
     /**
      * Method to get the list of supported file extensions for writing
@@ -197,7 +203,7 @@ public abstract class OpenStegoPlugin
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public abstract List getWritableFileExtensions() throws OpenStegoException;
+    public abstract List<String> getWritableFileExtensions() throws OpenStegoException;
 
     // ------------- Command-line Related Methods -------------
 
@@ -236,7 +242,7 @@ public abstract class OpenStegoPlugin
      * 
      * @return Configuration class specific to this plugin
      */
-    public abstract Class getConfigClass();
+    public abstract Class<? extends OpenStegoConfig> getConfigClass();
 
     /**
      * Method to create default configuration data (specific to this plugin)
@@ -248,8 +254,8 @@ public abstract class OpenStegoPlugin
     {
         try
         {
-            Constructor constructor = getConfigClass().getConstructor(new Class[0]);
-            this.config = (OpenStegoConfig) constructor.newInstance(new Object[0]);
+            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(new Class[0]);
+            this.config = constructor.newInstance(new Object[0]);
         }
         catch(Exception ex)
         {
@@ -265,12 +271,13 @@ public abstract class OpenStegoPlugin
      * @return Configuration data
      * @throws OpenStegoException
      */
-    public final OpenStegoConfig createConfig(Map propMap) throws OpenStegoException
+    public final OpenStegoConfig createConfig(Map<String, String> propMap) throws OpenStegoException
     {
         try
         {
-            Constructor constructor = getConfigClass().getConstructor(new Class[] { Map.class });
-            this.config = (OpenStegoConfig) constructor.newInstance(new Object[] { propMap });
+            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(
+                new Class[] { Map.class });
+            this.config = constructor.newInstance(new Object[] { propMap });
         }
         catch(Exception ex)
         {
@@ -290,8 +297,9 @@ public abstract class OpenStegoPlugin
     {
         try
         {
-            Constructor constructor = getConfigClass().getConstructor(new Class[] { CmdLineOptions.class });
-            this.config = (OpenStegoConfig) constructor.newInstance(new Object[] { options });
+            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(
+                new Class[] { CmdLineOptions.class });
+            this.config = constructor.newInstance(new Object[] { options });
         }
         catch(Exception ex)
         {

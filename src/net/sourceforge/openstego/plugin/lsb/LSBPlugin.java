@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
+import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.DHImagePluginTemplate;
 import net.sourceforge.openstego.ui.OpenStegoUI;
@@ -175,7 +176,7 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List getWritableFileExtensions() throws OpenStegoException
+    public List<String> getWritableFileExtensions() throws OpenStegoException
     {
         if(writeFormats != null)
         {
@@ -185,16 +186,16 @@ public class LSBPlugin extends DHImagePluginTemplate
         super.getWritableFileExtensions();
         String format = null;
         String[] compTypes = null;
-        Iterator iter = null;
+        Iterator<ImageWriter> iter = null;
         ImageWriteParam writeParam = null;
 
         for(int i = writeFormats.size() - 1; i >= 0; i--)
         {
-            format = (String) writeFormats.get(i);
+            format = writeFormats.get(i);
             iter = ImageIO.getImageWritersBySuffix(format);
             while(iter.hasNext())
             {
-                writeParam = ((ImageWriter) iter.next()).getDefaultWriteParam();
+                writeParam = (iter.next()).getDefaultWriteParam();
                 try
                 {
                     writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
@@ -253,7 +254,7 @@ public class LSBPlugin extends DHImagePluginTemplate
      * 
      * @return Configuration class specific to this plugin
      */
-    public Class getConfigClass()
+    public Class<? extends OpenStegoConfig> getConfigClass()
     {
         return LSBConfig.class;
     }

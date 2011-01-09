@@ -9,6 +9,7 @@ package net.sourceforge.openstego.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to store the list of command line options
@@ -20,12 +21,12 @@ public class CmdLineOptions
     /**
      * Map to store the standard command-line options as map
      */
-    private HashMap map = new HashMap();
+    private Map<String, CmdLineOption> map = new HashMap<String, CmdLineOption>();
 
     /**
      * Map to store the standard command-line options as list
      */
-    private ArrayList list = new ArrayList();
+    private List<CmdLineOption> list = new ArrayList<CmdLineOption>();
 
     /**
      * Default constructor
@@ -72,7 +73,7 @@ public class CmdLineOptions
      */
     public CmdLineOption getOption(String name)
     {
-        return (CmdLineOption) this.map.get(name);
+        return this.map.get(name);
     }
 
     /**
@@ -83,7 +84,7 @@ public class CmdLineOptions
      */
     public CmdLineOption getOption(int index)
     {
-        return (CmdLineOption) this.list.get(index);
+        return this.list.get(index);
     }
 
     /**
@@ -110,7 +111,7 @@ public class CmdLineOptions
      * 
      * @return List of options
      */
-    public List getList()
+    public List<CmdLineOption> getList()
     {
         return this.list;
     }

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoConfig;
@@ -116,7 +117,7 @@ public class DctLSBOutputStream extends OutputStream
     public DctLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
             throws OpenStegoException
     {
-        ArrayList yuv = null;
+        List<int[][]> yuv = null;
 
         if(image == null)
         {
@@ -135,9 +136,9 @@ public class DctLSBOutputStream extends OutputStream
         this.imgHeight = this.actualImgHeight - (this.actualImgHeight % DCT.NJPEG);
 
         yuv = ImageUtil.getYuvFromImage(image);
-        this.y = (int[][]) yuv.get(0);
-        this.u = (int[][]) yuv.get(1);
-        this.v = (int[][]) yuv.get(2);
+        this.y = yuv.get(0);
+        this.u = yuv.get(1);
+        this.v = yuv.get(2);
         for(int i = 0; i < this.actualImgWidth; i++)
         {
             for(int j = 0; j < this.actualImgHeight; j++)
@@ -251,7 +252,7 @@ public class DctLSBOutputStream extends OutputStream
      */
     public BufferedImage getImage()
     {
-        ArrayList yuv = new ArrayList();
+        List<int[][]> yuv = new ArrayList<int[][]>();
         yuv.add(this.y);
         yuv.add(this.u);
         yuv.add(this.v);

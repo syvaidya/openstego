@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTConfig;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
@@ -158,9 +159,9 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List getWritableFileExtensions() throws OpenStegoException
+    public List<String> getWritableFileExtensions() throws OpenStegoException
     {
-        List formatList = super.getWritableFileExtensions();
+        List<String> formatList = super.getWritableFileExtensions();
 
         // Expicilty removing unsupported formats
         formatList.remove("jpeg");
@@ -199,7 +200,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * 
      * @return Configuration class specific to this plugin
      */
-    public Class getConfigClass()
+    public Class<? extends OpenStegoConfig> getConfigClass()
     {
         return DCTConfig.class;
     }

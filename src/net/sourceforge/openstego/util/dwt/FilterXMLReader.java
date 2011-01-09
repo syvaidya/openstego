@@ -37,9 +37,9 @@ public class FilterXMLReader
      * @param fileURI URI for the XML file
      * @return Map of filters with key being Integer object for filter ID
      */
-    public static Map parse(String fileURI)
+    public static Map<Integer, FilterGH> parse(String fileURI)
     {
-        HashMap filterGHMap = new HashMap();
+        Map<Integer, FilterGH> filterGHMap = new HashMap<Integer, FilterGH>();
         DocumentBuilder db = null;
         Document dom = null;
         Element el = null;

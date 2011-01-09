@@ -29,12 +29,12 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
     /**
      * Static list of supported read formats
      */
-    protected static List readFormats = null;
+    protected static List<String> readFormats = null;
 
     /**
      * Static list of supported write formats
      */
-    protected static List writeFormats = null;
+    protected static List<String> writeFormats = null;
 
     /**
      * Method to get difference between original cover file and the stegged file
@@ -67,7 +67,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
-    public List getReadableFileExtensions() throws OpenStegoException
+    public List<String> getReadableFileExtensions() throws OpenStegoException
     {
         if(readFormats != null)
         {
@@ -76,7 +76,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
         String format = null;
         String[] formats = null;
-        readFormats = new ArrayList();
+        readFormats = new ArrayList<String>();
 
         formats = ImageIO.getReaderFormatNames();
         for(int i = 0; i < formats.length; i++)
@@ -102,7 +102,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List getWritableFileExtensions() throws OpenStegoException
+    public List<String> getWritableFileExtensions() throws OpenStegoException
     {
         if(writeFormats != null)
         {
@@ -111,7 +111,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
 
         String format = null;
         String[] formats = null;
-        writeFormats = new ArrayList();
+        writeFormats = new ArrayList<String>();
 
         formats = ImageIO.getWriterFormatNames();
         for(int i = 0; i < formats.length; i++)
@@ -158,7 +158,7 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin
      * 
      * @return Configuration class specific to this plugin
      */
-    public Class getConfigClass()
+    public Class<? extends OpenStegoConfig> getConfigClass()
     {
         return OpenStegoConfig.class;
     }

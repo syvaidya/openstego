@@ -25,10 +25,10 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin
      * 
      * @return Purpose(s) of the plugin
      */
-    public final List getPurposes()
+    public final List<Purpose> getPurposes()
     {
-        List purposes = new ArrayList();
-        purposes.add(PURPOSE_WATERMARKING);
+        List<Purpose> purposes = new ArrayList<Purpose>();
+        purposes.add(Purpose.WATERMARKING);
         return purposes;
     }
 
