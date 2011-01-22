@@ -12,8 +12,8 @@ import java.util.Map;
 
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
-import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Abstract class for stego plugins for OpenStego. Abstract methods need to be implemented to add support for more

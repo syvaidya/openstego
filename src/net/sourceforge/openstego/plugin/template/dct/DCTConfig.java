@@ -10,7 +10,7 @@ import java.util.Map;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
-import net.sourceforge.openstego.util.CmdLineOptions;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Class to store configuration data for DCT plugin template

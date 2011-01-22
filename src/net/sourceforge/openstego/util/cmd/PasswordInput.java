@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2008 Samir Vaidya
  */
 
-package net.sourceforge.openstego.util;
+package net.sourceforge.openstego.util.cmd;
 
 import java.io.BufferedReader;
 import java.io.IOException;

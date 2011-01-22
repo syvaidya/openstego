@@ -9,13 +9,13 @@ package net.sourceforge.openstego;
 import java.io.File;
 import java.util.List;
 
-import net.sourceforge.openstego.util.CmdLineOption;
-import net.sourceforge.openstego.util.CmdLineOptions;
-import net.sourceforge.openstego.util.CmdLineParser;
 import net.sourceforge.openstego.util.CommonUtil;
 import net.sourceforge.openstego.util.LabelUtil;
-import net.sourceforge.openstego.util.PasswordInput;
 import net.sourceforge.openstego.util.PluginManager;
+import net.sourceforge.openstego.util.cmd.CmdLineOption;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
+import net.sourceforge.openstego.util.cmd.CmdLineParser;
+import net.sourceforge.openstego.util.cmd.PasswordInput;
 
 /**
  * This is the main class for OpenStego command line

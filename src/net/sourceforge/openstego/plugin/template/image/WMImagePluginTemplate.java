@@ -18,8 +18,8 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.WatermarkingPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
-import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.ImageUtil;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Template plugin for OpenStego which implements image based steganography for watermarking
