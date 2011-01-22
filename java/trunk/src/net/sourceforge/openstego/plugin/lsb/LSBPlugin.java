@@ -20,10 +20,10 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.DHImagePluginTemplate;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
-import net.sourceforge.openstego.util.CmdLineOption;
-import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.cmd.CmdLineOption;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography

@@ -4,7 +4,7 @@
  * Copyright (c) 2007-2011 Samir Vaidya
  */
 
-package net.sourceforge.openstego.util;
+package net.sourceforge.openstego.util.cmd;
 
 import java.util.ArrayList;
 import java.util.List;

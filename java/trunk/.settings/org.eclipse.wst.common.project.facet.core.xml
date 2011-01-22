@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <faceted-project>
-  <runtime name="jdk1.6.0_23"/>
+  <runtime name="java-6-sun-1.6.0.22"/>
   <installed facet="java" version="1.5"/>
 </faceted-project>

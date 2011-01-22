@@ -17,8 +17,8 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.OpenStegoPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
-import net.sourceforge.openstego.util.CmdLineOptions;
 import net.sourceforge.openstego.util.LabelUtil;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Template plugin for OpenStego which implements the DCT based steganography for images (transfer domain)

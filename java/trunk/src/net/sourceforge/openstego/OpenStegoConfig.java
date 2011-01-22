@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sourceforge.openstego.util.CmdLineOptions;
+import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
 /**
  * Class to store configuration data for OpenStego
