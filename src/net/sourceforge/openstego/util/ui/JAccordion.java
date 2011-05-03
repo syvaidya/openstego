@@ -34,8 +34,7 @@ import javax.swing.JPanel;
  * href="http://greybeardedgeek.net/wordpress/wp-content/uploads/2008/04/jaccordion.java">
  * http://greybeardedgeek.net/wordpress/wp-content/uploads/2008/04/jaccordion.java</a>
  * <p>
- * This class provides accordion UI component. It is slightly modified from original source to have tab panel occupy
- * minimum space and leave rest of the space at the bottom of the accordion
+ * This class provides accordion UI component. It is slightly modified from original source
  */
 public class JAccordion extends JPanel implements ActionListener
 {
