@@ -126,7 +126,7 @@ Abstract class for stego plugins for OpenStego. Abstract methods need to be impl
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#PURPOSE_DATA_HIDING">PURPOSE_DATA_HIDING</A></B></CODE>
+<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#Purpose.DATA_HIDING">Purpose.DATA_HIDING</A></B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constant for the purpose of the plugin - Data Hiding</TD>
@@ -134,7 +134,7 @@ Abstract class for stego plugins for OpenStego. Abstract methods need to be impl
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#PURPOSE_WATERMARKING">PURPOSE_WATERMARKING</A></B></CODE>
+<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#Purpose.WATERMARKING">Purpose.WATERMARKING</A></B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constant for the purpose of the plugin - Watermarking</TD>
@@ -194,7 +194,7 @@ Abstract class for stego plugins for OpenStego. Abstract methods need to be impl
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../net/sourceforge/openstego/OpenStegoConfig.html" title="class in net.sourceforge.openstego">OpenStegoConfig</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#createConfig(net.sourceforge.openstego.util.CmdLineOptions)">createConfig</A></B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)</CODE>
+<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#createConfig(net.sourceforge.openstego.util.cmd.CmdLineOptions)">createConfig</A></B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method to create configuration data (specific to this plugin) based on the command-line options</TD>
@@ -350,7 +350,7 @@ Abstract class for stego plugins for OpenStego. Abstract methods need to be impl
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>abstract &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#populateStdCmdLineOptions(net.sourceforge.openstego.util.CmdLineOptions)">populateStdCmdLineOptions</A></B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)</CODE>
+<TD><CODE><B><A HREF="../../../net/sourceforge/openstego/OpenStegoPlugin.html#populateStdCmdLineOptions(net.sourceforge.openstego.util.cmd.CmdLineOptions)">populateStdCmdLineOptions</A></B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method to populate the standard command-line options used by this plugin</TD>
@@ -378,27 +378,27 @@ Abstract class for stego plugins for OpenStego. Abstract methods need to be impl
 </TR>
 </TABLE>
 
-<A NAME="PURPOSE_DATA_HIDING"><!-- --></A><H3>
-PURPOSE_DATA_HIDING</H3>
+<A NAME="Purpose.DATA_HIDING"><!-- --></A><H3>
+Purpose.DATA_HIDING</H3>
 <PRE>
-public static final <A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A> <B>PURPOSE_DATA_HIDING</B></PRE>
+public static final <A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A> <B>Purpose.DATA_HIDING</B></PRE>
 <DL>
 <DD>Constant for the purpose of the plugin - Data Hiding
 <P>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#net.sourceforge.openstego.OpenStegoPlugin.PURPOSE_DATA_HIDING">Constant Field Values</A></DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#net.sourceforge.openstego.OpenStegoPlugin.Purpose.DATA_HIDING">Constant Field Values</A></DL>
 </DL>
 <HR>
 
-<A NAME="PURPOSE_WATERMARKING"><!-- --></A><H3>
-PURPOSE_WATERMARKING</H3>
+<A NAME="Purpose.WATERMARKING"><!-- --></A><H3>
+Purpose.WATERMARKING</H3>
 <PRE>
-public static final <A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A> <B>PURPOSE_WATERMARKING</B></PRE>
+public static final <A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A> <B>Purpose.WATERMARKING</B></PRE>
 <DL>
 <DD>Constant for the purpose of the plugin - Watermarking
 <P>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#net.sourceforge.openstego.OpenStegoPlugin.PURPOSE_WATERMARKING">Constant Field Values</A></DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#net.sourceforge.openstego.OpenStegoPlugin.Purpose.WATERMARKING">Constant Field Values</A></DL>
 </DL>
 <HR>
 
@@ -679,7 +679,7 @@ public abstract <A HREF="http://java.sun.com/j2se/1.4.2/docs/api/java/util/List.
 </DL>
 <HR>
 
-<A NAME="populateStdCmdLineOptions(net.sourceforge.openstego.util.CmdLineOptions)"><!-- --></A><H3>
+<A NAME="populateStdCmdLineOptions(net.sourceforge.openstego.util.cmd.CmdLineOptions)"><!-- --></A><H3>
 populateStdCmdLineOptions</H3>
 <PRE>
 public abstract void <B>populateStdCmdLineOptions</B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)
@@ -778,7 +778,7 @@ public final <A HREF="../../../net/sourceforge/openstego/OpenStegoConfig.html" t
 </DL>
 <HR>
 
-<A NAME="createConfig(net.sourceforge.openstego.util.CmdLineOptions)"><!-- --></A><H3>
+<A NAME="createConfig(net.sourceforge.openstego.util.cmd.CmdLineOptions)"><!-- --></A><H3>
 createConfig</H3>
 <PRE>
 public final <A HREF="../../../net/sourceforge/openstego/OpenStegoConfig.html" title="class in net.sourceforge.openstego">OpenStegoConfig</A> <B>createConfig</B>(<A HREF="../../../net/sourceforge/openstego/util/CmdLineOptions.html" title="class in net.sourceforge.openstego.util">CmdLineOptions</A>&nbsp;options)

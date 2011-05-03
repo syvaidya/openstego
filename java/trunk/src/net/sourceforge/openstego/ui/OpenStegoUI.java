@@ -6,6 +6,7 @@
 
 package net.sourceforge.openstego.ui;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -86,8 +87,12 @@ public class OpenStegoUI extends OpenStegoFrame
 
         Listener listener = new Listener();
         addWindowListener(listener);
-        getOkButton().addActionListener(listener);
-        getCancelButton().addActionListener(listener);
+        getEmbedButton().addActionListener(listener);
+        getExtractButton().addActionListener(listener);
+        getSignWmButton().addActionListener(listener);
+        getVerifyWmButton().addActionListener(listener);
+        getRunEmbedButton().addActionListener(listener);
+        getRunExtractButton().addActionListener(listener);
         getMsgFileButton().addActionListener(listener);
         getCoverFileButton().addActionListener(listener);
         getStegoFileButton().addActionListener(listener);
@@ -216,14 +221,6 @@ public class OpenStegoUI extends OpenStegoFrame
             }
         }
 
-        if(!checkMandatory(getPasswordTextField(), labelUtil.getString("gui.label.option.password")))
-        {
-            return;
-        }
-        if(!checkMandatory(getConfPasswordTextField(), labelUtil.getString("gui.label.option.confPassword")))
-        {
-            return;
-        }
         if(!password.equals(confPassword))
         {
             JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.passwordMismatch"),
@@ -615,21 +612,46 @@ public class OpenStegoUI extends OpenStegoFrame
                 {
                     selectFile(action);
                 }
-                else if(action.equals("OK"))
+                else if(action.startsWith("SWITCH_"))
                 {
-                    if(OpenStegoUI.this.getMainTabbedPane().getSelectedIndex() == 0) // Embed tab
+                    getMainPanel().removeAll();
+                    if(action.equals("SWITCH_EMBED"))
                     {
-                        embedData();
+                        getMainPanel().add(getEmbedPanel());
                     }
-                    else
-                    // Extract tab
+                    else if(action.equals("SWITCH_EXTRACT"))
                     {
-                        extractData();
+                        getMainPanel().add(getExtractPanel());
                     }
+                    else if(action.equals("SWITCH_EMBEDWM"))
+                    {
+                        // getMainPanel().add(getEmbedPanel());
+                    }
+                    else if(action.equals("SWITCH_VERIFYWM"))
+                    {
+                        // getMainPanel().add(getEmbedPanel());
+                    }
+                    getMainPanel().revalidate();
+                    getMainPanel().repaint();
                 }
-                else if(action.equals("CANCEL"))
+                else if(action.startsWith("RUN_"))
                 {
-                    close();
+                    try
+                    {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        if(action.equals("RUN_EMBED"))
+                        {
+                            embedData();
+                        }
+                        else if(action.equals("RUN_EXTRACT"))
+                        {
+                            extractData();
+                        }
+                    }
+                    finally
+                    {
+                        setCursor(Cursor.getDefaultCursor());
+                    }
                 }
             }
             catch(Throwable ex)
