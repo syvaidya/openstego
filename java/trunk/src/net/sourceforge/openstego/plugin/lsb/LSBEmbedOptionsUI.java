@@ -114,8 +114,8 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      */
     private void useRandomImgChanged()
     {
-        JTextField coverFileTextField = this.stegoUI.getCoverFileTextField();
-        JButton coverFileButton = this.stegoUI.getCoverFileButton();
+        JTextField coverFileTextField = this.stegoUI.getEmbedPanel().getCoverFileTextField();
+        JButton coverFileButton = this.stegoUI.getEmbedPanel().getCoverFileButton();
 
         if(this.randomImgCheckBox.isSelected())
         {

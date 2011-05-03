@@ -91,13 +91,13 @@ public class OpenStegoUI extends OpenStegoFrame
         getExtractButton().addActionListener(listener);
         getSignWmButton().addActionListener(listener);
         getVerifyWmButton().addActionListener(listener);
-        getRunEmbedButton().addActionListener(listener);
-        getRunExtractButton().addActionListener(listener);
-        getMsgFileButton().addActionListener(listener);
-        getCoverFileButton().addActionListener(listener);
-        getStegoFileButton().addActionListener(listener);
-        getInputStegoFileButton().addActionListener(listener);
-        getOutputFolderButton().addActionListener(listener);
+        getEmbedPanel().getRunEmbedButton().addActionListener(listener);
+        getExtractPanel().getRunExtractButton().addActionListener(listener);
+        getEmbedPanel().getMsgFileButton().addActionListener(listener);
+        getEmbedPanel().getCoverFileButton().addActionListener(listener);
+        getEmbedPanel().getStegoFileButton().addActionListener(listener);
+        getExtractPanel().getInputStegoFileButton().addActionListener(listener);
+        getExtractPanel().getOutputFolderButton().addActionListener(listener);
 
         // "Esc" key handling
         KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
@@ -129,12 +129,12 @@ public class OpenStegoUI extends OpenStegoFrame
         pack();
         setResizable(false);
 
-        getMsgFileTextField().setText("");
-        getCoverFileTextField().setText("");
-        getStegoFileTextField().setText("");
-        getPasswordTextField().setText("");
-        getConfPasswordTextField().setText("");
-        getMsgFileTextField().requestFocus();
+        getEmbedPanel().getMsgFileTextField().setText("");
+        getEmbedPanel().getCoverFileTextField().setText("");
+        getEmbedPanel().getStegoFileTextField().setText("");
+        getEmbedPanel().getPasswordTextField().setText("");
+        getEmbedPanel().getConfPasswordTextField().setText("");
+        getEmbedPanel().getMsgFileTextField().requestFocus();
     }
 
     /**
@@ -166,23 +166,23 @@ public class OpenStegoUI extends OpenStegoFrame
         int processCount = 0;
         int skipCount = 0;
 
-        dataFileName = getMsgFileTextField().getText();
-        coverFileList = CommonUtil.parseFileList(getCoverFileTextField().getText(), ";");
-        outputFileName = getStegoFileTextField().getText();
+        dataFileName = getEmbedPanel().getMsgFileTextField().getText();
+        coverFileList = CommonUtil.parseFileList(getEmbedPanel().getCoverFileTextField().getText(), ";");
+        outputFileName = getEmbedPanel().getStegoFileTextField().getText();
         outputFile = new File(outputFileName);
-        password = new String(getPasswordTextField().getPassword());
-        confPassword = new String(getConfPasswordTextField().getPassword());
+        password = new String(getEmbedPanel().getPasswordTextField().getPassword());
+        confPassword = new String(getEmbedPanel().getConfPasswordTextField().getPassword());
 
         // START: Input Validations
-        if(!checkMandatory(getMsgFileTextField(), labelUtil.getString("gui.label.msgFile")))
+        if(!checkMandatory(getEmbedPanel().getMsgFileTextField(), labelUtil.getString("gui.label.msgFile")))
         {
             return;
         }
-        if(!checkMandatory(getCoverFileTextField(), labelUtil.getString("gui.label.coverFile")))
+        if(!checkMandatory(getEmbedPanel().getCoverFileTextField(), labelUtil.getString("gui.label.coverFile")))
         {
             return;
         }
-        if(!checkMandatory(getStegoFileTextField(), labelUtil.getString("gui.label.outputStegoFile")))
+        if(!checkMandatory(getEmbedPanel().getStegoFileTextField(), labelUtil.getString("gui.label.outputStegoFile")))
         {
             return;
         }
@@ -192,12 +192,12 @@ public class OpenStegoUI extends OpenStegoFrame
         {
             // If user has provided a wildcard for cover file name, and parser returns zero length, then it means that
             // there are no matching files with that wildcard
-            if(coverFileList.size() == 0 && !getCoverFileTextField().getText().trim().equals(""))
+            if(coverFileList.size() == 0 && !getEmbedPanel().getCoverFileTextField().getText().trim().equals(""))
             {
                 JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.coverFileNotFound",
-                    new Object[] { getCoverFileTextField().getText() }), labelUtil.getString("gui.msg.title.err"),
-                    JOptionPane.ERROR_MESSAGE);
-                getStegoFileTextField().requestFocus();
+                    new Object[] { getEmbedPanel().getCoverFileTextField().getText() }), labelUtil
+                        .getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                getEmbedPanel().getStegoFileTextField().requestFocus();
                 return;
             }
             // If single cover file is given, then output stego file must not be a directory
@@ -205,7 +205,7 @@ public class OpenStegoUI extends OpenStegoFrame
             {
                 JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.outputIsDir"),
                     labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
-                getStegoFileTextField().requestFocus();
+                getEmbedPanel().getStegoFileTextField().requestFocus();
                 return;
             }
         }
@@ -216,7 +216,7 @@ public class OpenStegoUI extends OpenStegoFrame
             {
                 JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.outputShouldBeDir"),
                     labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
-                getStegoFileTextField().requestFocus();
+                getEmbedPanel().getStegoFileTextField().requestFocus();
                 return;
             }
         }
@@ -225,7 +225,7 @@ public class OpenStegoUI extends OpenStegoFrame
         {
             JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.passwordMismatch"),
                 labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
-            getConfPasswordTextField().requestFocus();
+            getEmbedPanel().getConfPasswordTextField().requestFocus();
             return;
         }
 
@@ -325,16 +325,18 @@ public class OpenStegoUI extends OpenStegoFrame
 
         openStego = new OpenStego(extractPlugin, config);
         config = openStego.getConfig();
-        config.setPassword(new String(getExtractPwdTextField().getPassword()));
-        imgFileName = getInputStegoFileTextField().getText();
-        outputFolder = getOutputFolderTextField().getText();
+        config.setPassword(new String(getExtractPanel().getExtractPwdTextField().getPassword()));
+        imgFileName = getExtractPanel().getInputStegoFileTextField().getText();
+        outputFolder = getExtractPanel().getOutputFolderTextField().getText();
 
         // START: Input Validations
-        if(!checkMandatory(getInputStegoFileTextField(), labelUtil.getString("gui.label.inputStegoFile")))
+        if(!checkMandatory(getExtractPanel().getInputStegoFileTextField(),
+            labelUtil.getString("gui.label.inputStegoFile")))
         {
             return;
         }
-        if(!checkMandatory(getOutputFolderTextField(), labelUtil.getString("gui.label.outputDataFolder")))
+        if(!checkMandatory(getExtractPanel().getOutputFolderTextField(),
+            labelUtil.getString("gui.label.outputDataFolder")))
         {
             return;
         }
@@ -358,10 +360,10 @@ public class OpenStegoUI extends OpenStegoFrame
             labelUtil.getString("gui.msg.success.extract", new Object[] { outputFileName }),
             labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
-        getInputStegoFileTextField().setText("");
-        getOutputFolderTextField().setText("");
-        getExtractPwdTextField().setText("");
-        getInputStegoFileTextField().requestFocus();
+        getExtractPanel().getInputStegoFileTextField().setText("");
+        getExtractPanel().getOutputFolderTextField().setText("");
+        getExtractPanel().getExtractPwdTextField().setText("");
+        getExtractPanel().getInputStegoFileTextField().requestFocus();
     }
 
     /**
@@ -381,11 +383,11 @@ public class OpenStegoUI extends OpenStegoFrame
         int coverFileListSize = 0;
         JTextField textField = null;
 
-        coverFileListSize = CommonUtil.parseFileList(getCoverFileTextField().getText(), ";").size();
+        coverFileListSize = CommonUtil.parseFileList(getEmbedPanel().getCoverFileTextField().getText(), ";").size();
         if(action.equals("BROWSE_SRC_DATA"))
         {
             title = labelUtil.getString("gui.filechooser.title.msgFile");
-            textField = getMsgFileTextField();
+            textField = getEmbedPanel().getMsgFileTextField();
         }
         else if(action.equals("BROWSE_SRC_IMG"))
         {
@@ -393,7 +395,7 @@ public class OpenStegoUI extends OpenStegoFrame
             filterDesc = labelUtil.getString("gui.filechooser.filter.coverFiles",
                 new Object[] { getExtensionsString("R") });
             allowedExts = getExtensionsList("R");
-            textField = getCoverFileTextField();
+            textField = getEmbedPanel().getCoverFileTextField();
             multiSelect = true;
         }
         else if(action.equals("BROWSE_TGT_IMG"))
@@ -409,7 +411,7 @@ public class OpenStegoUI extends OpenStegoFrame
                     new Object[] { getExtensionsString("W") });
                 allowedExts = getExtensionsList("W");
             }
-            textField = getStegoFileTextField();
+            textField = getEmbedPanel().getStegoFileTextField();
         }
         else if(action.equals("BROWSE_IMG_FOR_EXTRACT"))
         {
@@ -417,13 +419,13 @@ public class OpenStegoUI extends OpenStegoFrame
             filterDesc = labelUtil.getString("gui.filechooser.filter.stegoFiles",
                 new Object[] { getExtensionsString("W") });
             allowedExts = getExtensionsList("W");
-            textField = getInputStegoFileTextField();
+            textField = getExtractPanel().getInputStegoFileTextField();
         }
         else if(action.equals("BROWSE_TGT_DATA"))
         {
             title = labelUtil.getString("gui.filechooser.title.outputDataFolder");
             allowFileDir = "D";
-            textField = getOutputFolderTextField();
+            textField = getExtractPanel().getOutputFolderTextField();
         }
 
         fileName = browser.getFileName(title, filterDesc, allowedExts, allowFileDir, multiSelect);
@@ -472,7 +474,7 @@ public class OpenStegoUI extends OpenStegoFrame
     {
         this.config.setUseCompression(true);
         this.config.setUseEncryption(true);
-        this.config.setPassword(new String(getPasswordTextField().getPassword()));
+        this.config.setPassword(new String(getEmbedPanel().getPasswordTextField().getPassword()));
 
         if(this.pluginEmbedOptionsUI != null)
         {
@@ -625,7 +627,7 @@ public class OpenStegoUI extends OpenStegoFrame
                     }
                     else if(action.equals("SWITCH_EMBEDWM"))
                     {
-                        // getMainPanel().add(getEmbedPanel());
+                        getMainPanel().add(getEmbedWmPanel());
                     }
                     else if(action.equals("SWITCH_VERIFYWM"))
                     {
