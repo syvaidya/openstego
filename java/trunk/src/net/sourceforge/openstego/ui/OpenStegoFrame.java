@@ -56,12 +56,14 @@ public class OpenStegoFrame extends JFrame
     private ButtonGroup actionButtonGroup = new ButtonGroup();
     private JToggleButton embedButton;
     private JToggleButton extractButton;
+    private JToggleButton genSigButton;
     private JToggleButton signWmButton;
     private JToggleButton verifyWmButton;
 
     private JPanel mainPanel;
     private EmbedPanel embedPanel;
     private ExtractPanel extractPanel;
+    private GenerateSignaturePanel genSigPanel;
     private EmbedWatermarkPanel embedWmPanel;
     private VerifyWatermarkPanel verifyWmPanel;
 
@@ -155,6 +157,7 @@ public class OpenStegoFrame extends JFrame
         {
             this.wmPanel = new JPanel();
             this.wmPanel.setLayout(new GridLayout(0, 1));
+            this.wmPanel.add(getGenSigButton());
             this.wmPanel.add(getSignWmButton());
             this.wmPanel.add(getVerifyWmButton());
         }
@@ -205,6 +208,29 @@ public class OpenStegoFrame extends JFrame
             this.actionButtonGroup.add(this.extractButton);
         }
         return this.extractButton;
+    }
+
+    /**
+     * Getter method for genSigButton
+     * 
+     * @return genSigButton
+     */
+    public JToggleButton getGenSigButton()
+    {
+        if(this.genSigButton == null)
+        {
+            this.genSigButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmGenSig"), new ImageIcon(
+                    getClass().getResource("/image/EmbedIcon.png"))); // TODO
+            if(toggleUiHack)
+            {
+                this.genSigButton.setUI(new MetalToggleButtonUI());
+            }
+            this.genSigButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            this.genSigButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            this.genSigButton.setFocusable(false);
+            this.actionButtonGroup.add(this.genSigButton);
+        }
+        return this.genSigButton;
     }
 
     /**
@@ -300,6 +326,20 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * Getter method for genSigPanel
+     * 
+     * @return genSigPanel
+     */
+    public GenerateSignaturePanel getGenSigPanel()
+    {
+        if(this.genSigPanel == null)
+        {
+            this.genSigPanel = new GenerateSignaturePanel();
+        }
+        return this.genSigPanel;
+    }
+
+    /**
      * Getter method for embedWmPanel
      * 
      * @return embedWmPanel
@@ -375,6 +415,7 @@ public class OpenStegoFrame extends JFrame
     {
         getEmbedButton().setActionCommand(ActionCommands.SWITCH_DH_EMBED);
         getExtractButton().setActionCommand(ActionCommands.SWITCH_DH_EXTRACT);
+        getGenSigButton().setActionCommand(ActionCommands.SWITCH_WM_GENSIG);
         getSignWmButton().setActionCommand(ActionCommands.SWITCH_WM_EMBED);
         getVerifyWmButton().setActionCommand(ActionCommands.SWITCH_WM_VERIFY);
 
@@ -386,6 +427,9 @@ public class OpenStegoFrame extends JFrame
         getExtractPanel().getInputStegoFileButton().setActionCommand(ActionCommands.BROWSE_DH_EXT_STGFILE);
         getExtractPanel().getOutputFolderButton().setActionCommand(ActionCommands.BROWSE_DH_EXT_OUTDIR);
         getExtractPanel().getRunExtractButton().setActionCommand(ActionCommands.RUN_DH_EXTRACT);
+
+        getGenSigPanel().getSignatureFileButton().setActionCommand(ActionCommands.BROWSE_WM_GSG_SIGFILE);
+        getGenSigPanel().getRunGenSigButton().setActionCommand(ActionCommands.RUN_WM_GENSIG);
 
         getEmbedWmPanel().getFileForWmButton().setActionCommand(ActionCommands.BROWSE_WM_EMB_INPFILE);
         getEmbedWmPanel().getSignatureFileButton().setActionCommand(ActionCommands.BROWSE_WM_EMB_SIGFILE);
@@ -410,6 +454,10 @@ public class OpenStegoFrame extends JFrame
          * Switch to Data Hiding - Extract panel
          */
         public static String SWITCH_DH_EXTRACT = "SWITCH_DH_EXTRACT";
+        /**
+         * Switch to Watermarking - GenSig panel
+         */
+        public static String SWITCH_WM_GENSIG = "SWITCH_WM_GENSIG";
         /**
          * Switch to Watermarking - Embed panel
          */
@@ -448,6 +496,15 @@ public class OpenStegoFrame extends JFrame
          * Execute DH-Extract
          */
         public static String RUN_DH_EXTRACT = "RUN_DH_EXTRACT";
+
+        /**
+         * Browse action for WM-GenSig-SigFile
+         */
+        public static String BROWSE_WM_GSG_SIGFILE = "BROWSE_WM_GSG_SIGFILE";
+        /**
+         * Execute WM-GenSig
+         */
+        public static String RUN_WM_GENSIG = "RUN_WM_GENSIG";
 
         /**
          * Browse action for WM-Embed-InputFile
