@@ -110,7 +110,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         // Cover file is mandatory
         if(cover == null)
         {
-            throw new OpenStegoException(NAMESPACE, DWTXieErrors.ERR_NO_COVER_FILE, null);
+            throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_NO_COVER_FILE);
         }
         else
         {
@@ -495,7 +495,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 ois.read(inputSig, 0, this.sig.length);
                 if(!(new String(this.sig)).equals(new String(inputSig)))
                 {
-                    throw new OpenStegoException(NAMESPACE, DWTXieErrors.ERR_SIG_NOT_VALID, null);
+                    throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_SIG_NOT_VALID);
                 }
 
                 this.watermarkLength = ois.readInt();

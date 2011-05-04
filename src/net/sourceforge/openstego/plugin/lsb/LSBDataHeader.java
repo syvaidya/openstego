@@ -114,13 +114,13 @@ public class LSBDataHeader
             dataInStream.read(stamp, 0, stampLen);
             if(!(new String(stamp)).equals(new String(DATA_STAMP)))
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER, null);
+                throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER);
             }
 
             dataInStream.read(version, 0, versionLen);
             if(!(new String(version)).equals(new String(HEADER_VERSION)))
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.INVALID_HEADER_VERSION, null);
+                throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_HEADER_VERSION);
             }
 
             dataInStream.read(header, 0, FIXED_HEADER_LENGTH);

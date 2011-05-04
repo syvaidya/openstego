@@ -139,7 +139,8 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value, null);
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE,
+                            value);
                 }
             }
             else if(key.equals(USE_ENCRYPTION))
@@ -155,7 +156,8 @@ public class OpenStegoConfig
                 }
                 else
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value, null);
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE,
+                            OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value);
                 }
             }
             else if(key.equals(PASSWORD))

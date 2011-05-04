@@ -83,7 +83,7 @@ public class RandomLSBOutputStream extends OutputStream
     {
         if(image == null)
         {
-            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
         this.dataLength = dataLength;
@@ -141,7 +141,7 @@ public class RandomLSBOutputStream extends OutputStream
                     channelBits++;
                     if(channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel())
                     {
-                        throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
+                        throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT);
                     }
                 }
                 else

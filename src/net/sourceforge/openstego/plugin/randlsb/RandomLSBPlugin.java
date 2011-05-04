@@ -145,7 +145,7 @@ public class RandomLSBPlugin extends LSBPlugin
             bytesRead = lsbIS.read(data, 0, data.length);
             if(bytesRead != data.length)
             {
-                throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ);
             }
             lsbIS.close();
 
@@ -170,7 +170,6 @@ public class RandomLSBPlugin extends LSBPlugin
     public String getUsage() throws OpenStegoException
     {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage",
-            new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+        return labelUtil.getString("plugin.usage", new Integer(defaultConfig.getMaxBitsUsedPerChannel()));
     }
 }

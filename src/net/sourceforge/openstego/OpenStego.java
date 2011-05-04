@@ -75,7 +75,7 @@ public class OpenStego
         // Plugin is mandatory
         if(plugin == null)
         {
-            throw new OpenStegoException(NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+            throw new OpenStegoException(null, NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED);
         }
         this.plugin = plugin;
         this.config = (config == null) ? new OpenStegoConfig() : config;
@@ -109,7 +109,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         try
@@ -159,7 +159,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         InputStream is = null;
@@ -204,7 +204,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         try
@@ -235,7 +235,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         InputStream is = null;
@@ -276,7 +276,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         byte[] msg = null;
@@ -308,7 +308,7 @@ public class OpenStego
                 }
                 catch(IOException ioEx)
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.CORRUPT_DATA, ioEx);
+                    throw new OpenStegoException(ioEx, OpenStego.NAMESPACE, OpenStegoException.CORRUPT_DATA);
                 }
             }
 
@@ -338,7 +338,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         return extractData(CommonUtil.getFileBytes(stegoFile), stegoFile.getName());
@@ -357,7 +357,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         return this.plugin.extractData(stegoData, stegoFileName, origSigData);
@@ -375,7 +375,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         return extractMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(),
@@ -395,7 +395,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         return this.plugin.checkMark(stegoData, stegoFileName, origSigData);
@@ -413,7 +413,7 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         return checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
@@ -429,12 +429,12 @@ public class OpenStego
     {
         if(!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING))
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         if(this.config.getPassword() == null || this.config.getPassword().trim().length() == 0)
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PWD_MANDATORY_FOR_GENSIG, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PWD_MANDATORY_FOR_GENSIG);
         }
 
         return this.plugin.generateSignature();

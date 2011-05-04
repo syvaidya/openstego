@@ -6,7 +6,6 @@
 package net.sourceforge.openstego.ui;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,150 +13,116 @@ import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
- * Panel for "Extract"
+ * Panel for "Verify Watermark"
  */
-public class ExtractPanel extends JPanel
+public class VerifyWatermarkPanel extends JPanel
 {
     /**
      * LabelUtil instance to retrieve labels
      */
     private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
-    private JTextField inputStegoFileTextField;
-    private JButton inputStegoFileButton;
-    private JTextField outputFolderTextField;
-    private JButton outputFolderButton;
-    private JPasswordField extractPwdTextField;
-    private JButton runExtractButton;
-    private JPanel extractPwdPanel;
+    private JTextField inputFileTextField;
+    private JButton inputFileButton;
+    private JTextField signatureFileTextField;
+    private JButton signatureFileButton;
+    private JButton runVerifyWmButton;
 
     /**
      * Default constructor
      */
-    public ExtractPanel()
+    public VerifyWatermarkPanel()
     {
         super();
         initialize();
     }
 
     /**
-     * Get method for "Input Stego File" text field
+     * Get method for "Input File" text field
      * 
-     * @return inputStegoFileTextField
+     * @return inputFileTextField
      */
-    public JTextField getInputStegoFileTextField()
+    public JTextField getInputFileTextField()
     {
-        if(this.inputStegoFileTextField == null)
+        if(this.inputFileTextField == null)
         {
-            this.inputStegoFileTextField = new JTextField();
-            this.inputStegoFileTextField.setColumns(57);
+            this.inputFileTextField = new JTextField();
+            this.inputFileTextField.setColumns(57);
         }
-        return this.inputStegoFileTextField;
+        return this.inputFileTextField;
     }
 
     /**
      * Get method for "Input Stego File" browse file button
      * 
-     * @return inputStegoFileButton
+     * @return inputFileButton
      */
-    public JButton getInputStegoFileButton()
+    public JButton getInputFileButton()
     {
-        if(this.inputStegoFileButton == null)
+        if(this.inputFileButton == null)
         {
-            this.inputStegoFileButton = new JButton();
-            this.inputStegoFileButton.setText("...");
-            this.inputStegoFileButton.setPreferredSize(new Dimension(22, 22));
+            this.inputFileButton = new JButton();
+            this.inputFileButton.setText("...");
+            this.inputFileButton.setPreferredSize(new Dimension(22, 22));
         }
-        return this.inputStegoFileButton;
+        return this.inputFileButton;
     }
 
     /**
-     * Get method for "Output Folder" text field
+     * Get method for "Signature File" text field
      * 
-     * @return outputFolderTextField
+     * @return signatureFileTextField
      */
-    public JTextField getOutputFolderTextField()
+    public JTextField getSignatureFileTextField()
     {
-        if(this.outputFolderTextField == null)
+        if(this.signatureFileTextField == null)
         {
-            this.outputFolderTextField = new JTextField();
-            this.outputFolderTextField.setColumns(57);
+            this.signatureFileTextField = new JTextField();
+            this.signatureFileTextField.setColumns(57);
         }
-        return this.outputFolderTextField;
+        return this.signatureFileTextField;
     }
 
     /**
-     * Get method for "Output Folder" browse file button
+     * Get method for "Signature File" browse file button
      * 
-     * @return outputFolderButton
+     * @return signatureFileButton
      */
-    public JButton getOutputFolderButton()
+    public JButton getSignatureFileButton()
     {
-        if(this.outputFolderButton == null)
+        if(this.signatureFileButton == null)
         {
-            this.outputFolderButton = new JButton();
-            this.outputFolderButton.setText("...");
-            this.outputFolderButton.setPreferredSize(new Dimension(22, 22));
+            this.signatureFileButton = new JButton();
+            this.signatureFileButton.setText("...");
+            this.signatureFileButton.setPreferredSize(new Dimension(22, 22));
         }
-        return this.outputFolderButton;
+        return this.signatureFileButton;
     }
 
     /**
-     * Get method for "Password for Extract" text field
+     * Get method for "Verify Watermark" button
      * 
-     * @return extractPwdTextField
+     * @return runVerifyWmButton
      */
-    public JPasswordField getExtractPwdTextField()
+    public JButton getRunVerifyWmButton()
     {
-        if(this.extractPwdTextField == null)
+        if(this.runVerifyWmButton == null)
         {
-            this.extractPwdTextField = new JPasswordField();
-            this.extractPwdTextField.setColumns(20);
+            this.runVerifyWmButton = new JButton();
+            this.runVerifyWmButton.setText(labelUtil.getString("gui.button.wmVerify.run"));
         }
-        return this.extractPwdTextField;
-    }
-
-    /**
-     * Get method for Extract "OK" button
-     * 
-     * @return runExtractButton
-     */
-    public JButton getRunExtractButton()
-    {
-        if(this.runExtractButton == null)
-        {
-            this.runExtractButton = new JButton();
-            this.runExtractButton.setText(labelUtil.getString("gui.button.dhExtract.run"));
-        }
-        return this.runExtractButton;
-    }
-
-    /**
-     * Getter method for extractPwdPanel
-     * 
-     * @return extractPwdPanel
-     */
-    public JPanel getExtractPwdPanel()
-    {
-        if(this.extractPwdPanel == null)
-        {
-            this.extractPwdPanel = new JPanel();
-            ((FlowLayout) this.extractPwdPanel.getLayout()).setAlignment(FlowLayout.LEFT);
-            this.extractPwdPanel.add(new JLabel(labelUtil.getString("gui.label.dhEmbed.option.password")));
-            this.extractPwdPanel.add(getExtractPwdTextField());
-        }
-        return this.extractPwdPanel;
+        return this.runVerifyWmButton;
     }
 
     private void initialize()
     {
+        JLabel label;
         setLayout(new GridBagLayout());
 
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -167,7 +132,9 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JLabel(labelUtil.getString("gui.label.dhExtract.stegoFile")), gridBagConstraints);
+        label = new JLabel(labelUtil.getString("gui.label.wmVerify.inputWmFile"));
+        label.setLabelFor(getInputFileTextField());
+        add(label, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -176,7 +143,9 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JLabel(labelUtil.getString("gui.label.dhExtract.outputDir")), gridBagConstraints);
+        label = new JLabel(labelUtil.getString("gui.label.wmVerify.sigFile"));
+        label.setLabelFor(getSignatureFileTextField());
+        add(label, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -186,7 +155,7 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(getInputStegoFileTextField(), gridBagConstraints);
+        add(getInputFileTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -196,17 +165,7 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(getOutputFolderTextField(), gridBagConstraints);
-
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.insets = new Insets(20, 5, 0, 5);
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.0;
-        add(getExtractPwdPanel(), gridBagConstraints);
+        add(getSignatureFileTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -216,7 +175,7 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
-        add(getInputStegoFileButton(), gridBagConstraints);
+        add(getInputFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -226,24 +185,24 @@ public class ExtractPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
-        add(getOutputFolderButton(), gridBagConstraints);
+        add(getSignatureFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.EAST;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
-        add(getRunExtractButton(), gridBagConstraints);
+        add(getRunVerifyWmButton(), gridBagConstraints);
 
         // Dummy padding
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 1.0;

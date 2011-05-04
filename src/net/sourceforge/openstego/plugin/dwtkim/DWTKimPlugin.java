@@ -108,7 +108,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         // Cover file is mandatory
         if(cover == null)
         {
-            throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_NO_COVER_FILE, null);
+            throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_NO_COVER_FILE);
         }
         else
         {
@@ -125,7 +125,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         levels = DWTUtil.findDeepestLevel(cols, rows) - 1;
         if(sig.decompositionLevel > levels)
         {
-            throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_DECOMP_LEVEL_NOT_ENOUGH, null);
+            throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_DECOMP_LEVEL_NOT_ENOUGH);
         }
 
         // Wavelet transform
@@ -422,7 +422,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
                 ois.read(inputSig, 0, this.sig.length);
                 if(!(new String(this.sig)).equals(new String(inputSig)))
                 {
-                    throw new OpenStegoException(NAMESPACE, DWTKimErrors.ERR_SIG_NOT_VALID, null);
+                    throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_SIG_NOT_VALID);
                 }
 
                 this.watermarkLength = ois.readInt();

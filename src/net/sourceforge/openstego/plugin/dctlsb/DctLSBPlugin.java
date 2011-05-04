@@ -130,7 +130,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
             bytesRead = is.read(msg, 0, msg.length);
             if(bytesRead != msg.length)
             {
-                throw new OpenStegoException(NAMESPACE, DctLSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(null, NAMESPACE, DctLSBErrors.ERR_IMAGE_DATA_READ);
             }
             is.close();
         }

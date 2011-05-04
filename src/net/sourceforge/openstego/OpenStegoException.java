@@ -141,43 +141,43 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(Throwable cause)
     {
-        this(OpenStego.NAMESPACE, UNHANDLED_EXCEPTION, (Object[]) null, cause);
+        this(cause, OpenStego.NAMESPACE, UNHANDLED_EXCEPTION, (Object[]) null);
     }
 
     /**
      * Default constructor
      * 
+     * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
-     * @param cause Original exception which caused this exception to be raised
      */
-    public OpenStegoException(String namespace, int errorCode, Throwable cause)
+    public OpenStegoException(Throwable cause, String namespace, int errorCode)
     {
-        this(namespace, errorCode, (Object[]) null, cause);
+        this(cause, namespace, errorCode, (Object[]) null);
     }
 
     /**
      * Constructor with a single parameter for the message
      * 
+     * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      * @param param Parameter for exception message
-     * @param cause Original exception which caused this exception to be raised
      */
-    public OpenStegoException(String namespace, int errorCode, String param, Throwable cause)
+    public OpenStegoException(Throwable cause, String namespace, int errorCode, String param)
     {
-        this(namespace, errorCode, new Object[] { param }, cause);
+        this(cause, namespace, errorCode, new Object[] { param });
     }
 
     /**
      * Constructor which takes object array for parameters for the message
      * 
+     * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      * @param params Parameters for exception message
-     * @param cause Original exception which caused this exception to be raised
      */
-    public OpenStegoException(String namespace, int errorCode, Object[] params, Throwable cause)
+    public OpenStegoException(Throwable cause, String namespace, int errorCode, Object... params)
     {
         super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString() : LabelUtil
                 .getInstance(namespace).getString(errMsgKeyMap.get(namespace + errorCode), params), cause);

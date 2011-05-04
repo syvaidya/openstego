@@ -63,6 +63,7 @@ public class OpenStegoFrame extends JFrame
     private EmbedPanel embedPanel;
     private ExtractPanel extractPanel;
     private EmbedWatermarkPanel embedWmPanel;
+    private VerifyWatermarkPanel verifyWmPanel;
 
     /**
      * Default constructor
@@ -120,8 +121,8 @@ public class OpenStegoFrame extends JFrame
         if(this.accordion == null)
         {
             this.accordion = new JAccordion();
-            this.accordion.addTab("Data Hiding", getDhPanel());
-            this.accordion.addTab("Digital Watermarking", getWmPanel());
+            this.accordion.addTab(labelUtil.getString("gui.label.tabHeader.dataHiding"), getDhPanel());
+            this.accordion.addTab(labelUtil.getString("gui.label.tabHeader.watermarking"), getWmPanel());
         }
         return this.accordion;
     }
@@ -169,7 +170,7 @@ public class OpenStegoFrame extends JFrame
     {
         if(this.embedButton == null)
         {
-            this.embedButton = new JToggleButton(labelUtil.getString("gui.label.tab.embed"), new ImageIcon(getClass()
+            this.embedButton = new JToggleButton(labelUtil.getString("gui.label.tab.dhEmbed"), new ImageIcon(getClass()
                     .getResource("/image/EmbedIcon.png")), true);
             if(toggleUiHack)
             {
@@ -192,7 +193,7 @@ public class OpenStegoFrame extends JFrame
     {
         if(this.extractButton == null)
         {
-            this.extractButton = new JToggleButton(labelUtil.getString("gui.label.tab.extract"), new ImageIcon(
+            this.extractButton = new JToggleButton(labelUtil.getString("gui.label.tab.dhExtract"), new ImageIcon(
                     getClass().getResource("/image/ExtractIcon.png")));
             if(toggleUiHack)
             {
@@ -215,8 +216,8 @@ public class OpenStegoFrame extends JFrame
     {
         if(this.signWmButton == null)
         {
-            this.signWmButton = new JToggleButton("Embed Watermark", new ImageIcon(getClass().getResource(
-                "/image/EmbedIcon.png")));
+            this.signWmButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmEmbed"), new ImageIcon(
+                    getClass().getResource("/image/EmbedIcon.png")));
             if(toggleUiHack)
             {
                 this.signWmButton.setUI(new MetalToggleButtonUI());
@@ -238,8 +239,8 @@ public class OpenStegoFrame extends JFrame
     {
         if(this.verifyWmButton == null)
         {
-            this.verifyWmButton = new JToggleButton("Verify Watermark", new ImageIcon(getClass().getResource(
-                "/image/ExtractIcon.png")));
+            this.verifyWmButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmVerify"), new ImageIcon(
+                    getClass().getResource("/image/ExtractIcon.png")));
             if(toggleUiHack)
             {
                 this.verifyWmButton.setUI(new MetalToggleButtonUI());
@@ -313,6 +314,20 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * Getter method for verifyWmPanel
+     * 
+     * @return verifyWmPanel
+     */
+    public VerifyWatermarkPanel getVerifyWmPanel()
+    {
+        if(this.verifyWmPanel == null)
+        {
+            this.verifyWmPanel = new VerifyWatermarkPanel();
+        }
+        return this.verifyWmPanel;
+    }
+
+    /**
      * This methos initializes the UI resources like fonts, size, etc.
      */
     private void setupUI()
@@ -358,19 +373,110 @@ public class OpenStegoFrame extends JFrame
      */
     private void setActionCommands()
     {
-        getEmbedPanel().getMsgFileButton().setActionCommand("BROWSE_SRC_DATA");
-        getEmbedPanel().getCoverFileButton().setActionCommand("BROWSE_SRC_IMG");
-        getEmbedPanel().getStegoFileButton().setActionCommand("BROWSE_TGT_IMG");
+        getEmbedButton().setActionCommand(ActionCommands.SWITCH_DH_EMBED);
+        getExtractButton().setActionCommand(ActionCommands.SWITCH_DH_EXTRACT);
+        getSignWmButton().setActionCommand(ActionCommands.SWITCH_WM_EMBED);
+        getVerifyWmButton().setActionCommand(ActionCommands.SWITCH_WM_VERIFY);
 
-        getExtractPanel().getInputStegoFileButton().setActionCommand("BROWSE_IMG_FOR_EXTRACT");
-        getExtractPanel().getOutputFolderButton().setActionCommand("BROWSE_TGT_DATA");
+        getEmbedPanel().getMsgFileButton().setActionCommand(ActionCommands.BROWSE_DH_EMB_MSGFILE);
+        getEmbedPanel().getCoverFileButton().setActionCommand(ActionCommands.BROWSE_DH_EMB_CVRFILE);
+        getEmbedPanel().getStegoFileButton().setActionCommand(ActionCommands.BROWSE_DH_EMB_STGFILE);
+        getEmbedPanel().getRunEmbedButton().setActionCommand(ActionCommands.RUN_DH_EMBED);
 
-        getEmbedButton().setActionCommand("SWITCH_EMBED");
-        getExtractButton().setActionCommand("SWITCH_EXTRACT");
-        getSignWmButton().setActionCommand("SWITCH_EMBEDWM");
-        getVerifyWmButton().setActionCommand("SWITCH_VERIFYWM");
+        getExtractPanel().getInputStegoFileButton().setActionCommand(ActionCommands.BROWSE_DH_EXT_STGFILE);
+        getExtractPanel().getOutputFolderButton().setActionCommand(ActionCommands.BROWSE_DH_EXT_OUTDIR);
+        getExtractPanel().getRunExtractButton().setActionCommand(ActionCommands.RUN_DH_EXTRACT);
 
-        getEmbedPanel().getRunEmbedButton().setActionCommand("RUN_EMBED");
-        getExtractPanel().getRunExtractButton().setActionCommand("RUN_EXTRACT");
+        getEmbedWmPanel().getFileForWmButton().setActionCommand(ActionCommands.BROWSE_WM_EMB_INPFILE);
+        getEmbedWmPanel().getSignatureFileButton().setActionCommand(ActionCommands.BROWSE_WM_EMB_SIGFILE);
+        getEmbedWmPanel().getOutputWmFileButton().setActionCommand(ActionCommands.BROWSE_WM_EMB_OUTFILE);
+        getEmbedWmPanel().getRunEmbedWmButton().setActionCommand(ActionCommands.RUN_WM_EMBED);
+
+        getVerifyWmPanel().getInputFileButton().setActionCommand(ActionCommands.BROWSE_WM_VER_INPFILE);
+        getVerifyWmPanel().getSignatureFileButton().setActionCommand(ActionCommands.BROWSE_WM_VER_SIGFILE);
+        getVerifyWmPanel().getRunVerifyWmButton().setActionCommand(ActionCommands.RUN_WM_VERIFY);
+    }
+
+    /**
+     * Enumeration for button actions
+     */
+    public interface ActionCommands
+    {
+        /**
+         * Switch to Data Hiding - Embed panel
+         */
+        public static String SWITCH_DH_EMBED = "SWITCH_DH_EMBED";
+        /**
+         * Switch to Data Hiding - Extract panel
+         */
+        public static String SWITCH_DH_EXTRACT = "SWITCH_DH_EXTRACT";
+        /**
+         * Switch to Watermarking - Embed panel
+         */
+        public static String SWITCH_WM_EMBED = "SWITCH_WM_EMBED";
+        /**
+         * Switch to Watermarking - Verify panel
+         */
+        public static String SWITCH_WM_VERIFY = "SWITCH_WM_VERIFY";
+
+        /**
+         * Browse action for DH-Embed-MessageFile
+         */
+        public static String BROWSE_DH_EMB_MSGFILE = "BROWSE_DH_EMB_MSGFILE";
+        /**
+         * Browse action for DH-Embed-CoverFile
+         */
+        public static String BROWSE_DH_EMB_CVRFILE = "BROWSE_DH_EMB_CVRFILE";
+        /**
+         * Browse action for DH-Embed-StegoFile
+         */
+        public static String BROWSE_DH_EMB_STGFILE = "BROWSE_DH_EMB_STGFILE";
+        /**
+         * Execute DH-Embed
+         */
+        public static String RUN_DH_EMBED = "RUN_DH_EMBED";
+
+        /**
+         * Browse action for DH-Extract-StegoFile
+         */
+        public static String BROWSE_DH_EXT_STGFILE = "BROWSE_DH_EXT_STGFILE";
+        /**
+         * Browse action for DH-Extract-OutputFolder
+         */
+        public static String BROWSE_DH_EXT_OUTDIR = "BROWSE_DH_EXT_OUTDIR";
+        /**
+         * Execute DH-Extract
+         */
+        public static String RUN_DH_EXTRACT = "RUN_DH_EXTRACT";
+
+        /**
+         * Browse action for WM-Embed-InputFile
+         */
+        public static String BROWSE_WM_EMB_INPFILE = "BROWSE_WM_EMB_INPFILE";
+        /**
+         * Browse action for WM-Embed-SignatureFile
+         */
+        public static String BROWSE_WM_EMB_SIGFILE = "BROWSE_WM_EMB_SIGFILE";
+        /**
+         * Browse action for WM-Embed-OutputFile
+         */
+        public static String BROWSE_WM_EMB_OUTFILE = "BROWSE_WM_EMB_OUTFILE";
+        /**
+         * Execute WM-Embed
+         */
+        public static String RUN_WM_EMBED = "RUN_WM_EMBED";
+
+        /**
+         * Browse action for WM-Verify-InputFile
+         */
+        public static String BROWSE_WM_VER_INPFILE = "BROWSE_WM_VER_INPFILE";
+        /**
+         * Browse action for WM-Verify-SignatureFile
+         */
+        public static String BROWSE_WM_VER_SIGFILE = "BROWSE_WM_VER_SIGFILE";
+        /**
+         * Execute WM-Verify
+         */
+        public static String RUN_WM_VERIFY = "RUN_WM_VERIFY";
     }
 }

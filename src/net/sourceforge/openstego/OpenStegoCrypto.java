@@ -128,7 +128,7 @@ public class OpenStegoCrypto
         }
         catch(BadPaddingException bpEx)
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.INVALID_PASSWORD, bpEx);
+            throw new OpenStegoException(bpEx, OpenStego.NAMESPACE, OpenStegoException.INVALID_PASSWORD);
         }
         catch(Exception ex)
         {

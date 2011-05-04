@@ -71,8 +71,8 @@ public class OpenStegoCmd
                 plugin = PluginManager.getPluginByName(pluginName);
                 if(plugin == null)
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.PLUGIN_NOT_FOUND, pluginName,
-                            null);
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_NOT_FOUND,
+                            pluginName);
                 }
             }
             // Try to auto-select plugin
@@ -146,7 +146,7 @@ public class OpenStegoCmd
             {
                 if(plugin == null)
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED, null);
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED);
                 }
                 else
                 {
@@ -174,8 +174,7 @@ public class OpenStegoCmd
                 {
                     if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                     {
-                        System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                            new Object[] { coverFileName }));
+                        System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound", coverFileName));
                         return;
                     }
 
@@ -200,8 +199,7 @@ public class OpenStegoCmd
                         CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
                                 : new File(msgFileName), coverFileList.get(i), coverFileName), coverFileName);
 
-                        System.err.println(labelUtil
-                                .getString("cmd.msg.coverProcessed", new Object[] { coverFileName }));
+                        System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
                     }
                 }
             }
@@ -217,8 +215,7 @@ public class OpenStegoCmd
                 {
                     if(coverFileList.size() == 0 && coverFileName != null && !coverFileName.equals("-"))
                     {
-                        System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound",
-                            new Object[] { coverFileName }));
+                        System.err.println(labelUtil.getString("cmd.msg.coverFileNotFound", coverFileName));
                         return;
                     }
 
@@ -243,8 +240,7 @@ public class OpenStegoCmd
                         CommonUtil.writeFile(stego.embedMark((sigFileName == null || sigFileName.equals("-")) ? null
                                 : new File(sigFileName), coverFileList.get(i), coverFileName), coverFileName);
 
-                        System.err.println(labelUtil
-                                .getString("cmd.msg.coverProcessed", new Object[] { coverFileName }));
+                        System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
                     }
                 }
             }
@@ -315,7 +311,7 @@ public class OpenStegoCmd
                 }
 
                 CommonUtil.writeFile((byte[]) msgData.get(1), extractFileName);
-                System.err.println(labelUtil.getString("cmd.msg.fileExtracted", new Object[] { extractFileName }));
+                System.err.println(labelUtil.getString("cmd.msg.fileExtracted", extractFileName));
             }
             else if(command.equals("checkmark"))
             {
@@ -445,7 +441,7 @@ public class OpenStegoCmd
         PluginManager.loadPlugins();
 
         System.err.print(labelUtil.getString("versionString"));
-        System.err.println(labelUtil.getString("cmd.usage", new Object[] { File.separator }));
+        System.err.println(labelUtil.getString("cmd.usage", File.separator));
     }
 
     /**

@@ -91,7 +91,7 @@ public class LabelUtil
      * @param parameters Parameters to pass for a parameterized label
      * @return Display value for the label
      */
-    public String getString(String key, Object[] parameters)
+    public String getString(String key, Object... parameters)
     {
         return MessageFormat.format(getString(key), parameters);
     }
