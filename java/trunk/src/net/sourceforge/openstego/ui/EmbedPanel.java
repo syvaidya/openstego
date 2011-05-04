@@ -66,7 +66,7 @@ public class EmbedPanel extends JPanel
             JLabel label;
             this.optionPanel = new JPanel();
             this.optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5,
-                    5)), new EtchedBorder()), " " + labelUtil.getString("gui.label.option.title") + " "));
+                    5)), new EtchedBorder()), " " + labelUtil.getString("gui.label.dhEmbed.option.title") + " "));
             this.optionPanel.setLayout(new GridBagLayout());
 
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -76,7 +76,7 @@ public class EmbedPanel extends JPanel
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
-            label = new JLabel(labelUtil.getString("gui.label.option.password"));
+            label = new JLabel(labelUtil.getString("gui.label.dhEmbed.option.password"));
             label.setLabelFor(getPasswordTextField());
             this.optionPanel.add(label, gridBagConstraints);
 
@@ -96,7 +96,7 @@ public class EmbedPanel extends JPanel
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
-            label = new JLabel(labelUtil.getString("gui.label.option.confPassword"));
+            label = new JLabel(labelUtil.getString("gui.label.dhEmbed.option.confPassword"));
             label.setLabelFor(getConfPasswordTextField());
             this.optionPanel.add(label, gridBagConstraints);
 
@@ -245,7 +245,7 @@ public class EmbedPanel extends JPanel
         if(this.runEmbedButton == null)
         {
             this.runEmbedButton = new JButton();
-            this.runEmbedButton.setText(labelUtil.getString("gui.button.ok"));
+            this.runEmbedButton.setText(labelUtil.getString("gui.button.dhEmbed.run"));
         }
         return this.runEmbedButton;
     }
@@ -262,7 +262,7 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel(labelUtil.getString("gui.label.msgFile"));
+        label = new JLabel(labelUtil.getString("gui.label.dhEmbed.msgFile"));
         label.setLabelFor(getMsgFileTextField());
         add(label, gridBagConstraints);
 
@@ -273,7 +273,7 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel(labelUtil.getString("gui.label.coverFile"));
+        label = new JLabel(labelUtil.getString("gui.label.dhEmbed.coverFile"));
         label.setLabelFor(getCoverFileTextField());
         add(label, gridBagConstraints);
 
@@ -284,7 +284,7 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.gridy = 6;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel(labelUtil.getString("gui.label.outputStegoFile"));
+        label = new JLabel(labelUtil.getString("gui.label.dhEmbed.stegoFile"));
         label.setLabelFor(getStegoFileTextField());
         add(label, gridBagConstraints);
 
@@ -295,7 +295,7 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel(labelUtil.getString("gui.label.coverFileMsg"));
+        label = new JLabel(labelUtil.getString("gui.label.dhEmbed.coverFileMsg"));
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         add(label, gridBagConstraints);
 

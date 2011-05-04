@@ -103,12 +103,12 @@ public class LSBConfig extends OpenStegoConfig
                 }
                 catch(NumberFormatException nfEx)
                 {
-                    throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_NUMBER, value, nfEx);
+                    throw new OpenStegoException(nfEx, LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_NUMBER, value);
                 }
 
                 if(this.maxBitsUsedPerChannel < 1 || this.maxBitsUsedPerChannel > 8)
                 {
-                    throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_IN_RANGE, value, null);
+                    throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_IN_RANGE, value);
                 }
             }
         }

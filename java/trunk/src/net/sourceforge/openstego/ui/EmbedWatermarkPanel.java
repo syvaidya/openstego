@@ -5,6 +5,7 @@
  */
 package net.sourceforge.openstego.ui;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,6 +29,14 @@ public class EmbedWatermarkPanel extends JPanel
      */
     private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
+    private JTextField fileForWmTextField;
+    private JButton fileForWmButton;
+    private JTextField signatureFileTextField;
+    private JButton signatureFileButton;
+    private JTextField outputWmFileTextField;
+    private JButton outputWmFileButton;
+    private JButton runEmbedWmButton;
+
     /**
      * Default constructor
      */
@@ -35,6 +44,114 @@ public class EmbedWatermarkPanel extends JPanel
     {
         super();
         initialize();
+    }
+
+    /**
+     * Getter method for fileForWmTextField
+     * 
+     * @return fileForWmTextField
+     */
+    public JTextField getFileForWmTextField()
+    {
+        if(this.fileForWmTextField == null)
+        {
+            this.fileForWmTextField = new JTextField();
+            this.fileForWmTextField.setColumns(57);
+        }
+        return this.fileForWmTextField;
+    }
+
+    /**
+     * Getter method for fileForWmButton
+     * 
+     * @return fileForWmButton
+     */
+    public JButton getFileForWmButton()
+    {
+        if(this.fileForWmButton == null)
+        {
+            this.fileForWmButton = new JButton();
+            this.fileForWmButton.setText("...");
+            this.fileForWmButton.setPreferredSize(new Dimension(22, 22));
+        }
+        return this.fileForWmButton;
+    }
+
+    /**
+     * Getter method for signatureFileTextField
+     * 
+     * @return signatureFileTextField
+     */
+    public JTextField getSignatureFileTextField()
+    {
+        if(this.signatureFileTextField == null)
+        {
+            this.signatureFileTextField = new JTextField();
+            this.signatureFileTextField.setColumns(57);
+        }
+        return this.signatureFileTextField;
+    }
+
+    /**
+     * Getter method for signatureFileButton
+     * 
+     * @return signatureFileButton
+     */
+    public JButton getSignatureFileButton()
+    {
+        if(this.signatureFileButton == null)
+        {
+            this.signatureFileButton = new JButton();
+            this.signatureFileButton.setText("...");
+            this.signatureFileButton.setPreferredSize(new Dimension(22, 22));
+        }
+        return this.signatureFileButton;
+    }
+
+    /**
+     * Getter method for outputWmFileTextField
+     * 
+     * @return outputWmFileTextField
+     */
+    public JTextField getOutputWmFileTextField()
+    {
+        if(this.outputWmFileTextField == null)
+        {
+            this.outputWmFileTextField = new JTextField();
+            this.outputWmFileTextField.setColumns(57);
+        }
+        return this.outputWmFileTextField;
+    }
+
+    /**
+     * Getter method for outputWmFileButton
+     * 
+     * @return outputWmFileButton
+     */
+    public JButton getOutputWmFileButton()
+    {
+        if(this.outputWmFileButton == null)
+        {
+            this.outputWmFileButton = new JButton();
+            this.outputWmFileButton.setText("...");
+            this.outputWmFileButton.setPreferredSize(new Dimension(22, 22));
+        }
+        return this.outputWmFileButton;
+    }
+
+    /**
+     * Getter method for runEmbedWmButton
+     * 
+     * @return runEmbedWmButton
+     */
+    public JButton getRunEmbedWmButton()
+    {
+        if(this.runEmbedWmButton == null)
+        {
+            this.runEmbedWmButton = new JButton();
+            this.runEmbedWmButton.setText(labelUtil.getString("gui.button.wmEmbed.run"));
+        }
+        return this.runEmbedWmButton;
     }
 
     private void initialize()
@@ -49,8 +166,8 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel("File to be watermarked");
-        // label.setLabelFor(getCoverFileTextField());
+        label = new JLabel(labelUtil.getString("gui.label.wmEmbed.fileForWm"));
+        label.setLabelFor(getFileForWmTextField());
         add(label, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
@@ -60,7 +177,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel("(Select multiple files or provide wildcard (*, ?) to sign multiple files)");
+        label = new JLabel(labelUtil.getString("gui.label.wmEmbed.fileForWmMsg"));
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         add(label, gridBagConstraints);
 
@@ -71,8 +188,8 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel("Signature file");
-        // label.setLabelFor(getMsgFileTextField());
+        label = new JLabel(labelUtil.getString("gui.label.wmEmbed.sigFile"));
+        label.setLabelFor(getSignatureFileTextField());
         add(label, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
@@ -82,8 +199,8 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.gridy = 6;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        label = new JLabel("Output watermarked file");
-        // label.setLabelFor(getStegoFileTextField());
+        label = new JLabel(labelUtil.getString("gui.label.wmEmbed.outputWmFile"));
+        label.setLabelFor(getOutputWmFileTextField());
         add(label, gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
@@ -94,7 +211,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JTextField(), gridBagConstraints);
+        add(getFileForWmTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -104,7 +221,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JTextField(), gridBagConstraints);
+        add(getSignatureFileTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -114,7 +231,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JTextField(), gridBagConstraints);
+        add(getOutputWmFileTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -124,7 +241,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JButton("..."), gridBagConstraints);
+        add(getFileForWmButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -134,7 +251,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JButton("..."), gridBagConstraints);
+        add(getSignatureFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -144,7 +261,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JButton("..."), gridBagConstraints);
+        add(getOutputWmFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.EAST;
@@ -154,7 +271,7 @@ public class EmbedWatermarkPanel extends JPanel
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
-        add(new JButton("OK"), gridBagConstraints);
+        add(getRunEmbedWmButton(), gridBagConstraints);
 
         // Dummy padding
         gridBagConstraints = new GridBagConstraints();

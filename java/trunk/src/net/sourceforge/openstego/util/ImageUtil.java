@@ -102,8 +102,8 @@ public class ImageUtil
                 imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
                 if(!plugin.getWritableFileExtensions().contains(imageType))
                 {
-                    throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.IMAGE_TYPE_INVALID, imageType,
-                            null);
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_TYPE_INVALID,
+                            imageType);
                 }
                 if(imageType.equals("jp2"))
                 {
@@ -144,8 +144,8 @@ public class ImageUtil
             image = ImageIO.read(new ByteArrayInputStream(imageData));
             if(image == null)
             {
-                throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, imgFileName,
-                        null);
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID,
+                        imgFileName);
             }
             return image;
         }
@@ -430,7 +430,7 @@ public class ImageUtil
         rightH = rightImage.getHeight();
         if(leftW != rightW || leftH != rightH)
         {
-            throw new OpenStegoException(OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, null);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID);
         }
         diffImage = new BufferedImage(leftW, leftH, BufferedImage.TYPE_INT_RGB);
 

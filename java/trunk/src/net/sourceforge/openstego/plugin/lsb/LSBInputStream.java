@@ -74,7 +74,7 @@ public class LSBInputStream extends InputStream
     {
         if(image == null)
         {
-            throw new OpenStegoException(LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT, null);
+            throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
         this.image = image;

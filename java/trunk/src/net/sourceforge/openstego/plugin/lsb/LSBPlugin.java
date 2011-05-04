@@ -154,7 +154,7 @@ public class LSBPlugin extends DHImagePluginTemplate
             bytesRead = lsbIS.read(data, 0, data.length);
             if(bytesRead != data.length)
             {
-                throw new OpenStegoException(NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ, null);
+                throw new OpenStegoException(null, NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ);
             }
             lsbIS.close();
 
@@ -268,7 +268,6 @@ public class LSBPlugin extends DHImagePluginTemplate
     public String getUsage() throws OpenStegoException
     {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage",
-            new Object[] { new Integer(defaultConfig.getMaxBitsUsedPerChannel()) });
+        return labelUtil.getString("plugin.usage", new Integer(defaultConfig.getMaxBitsUsedPerChannel()));
     }
 }

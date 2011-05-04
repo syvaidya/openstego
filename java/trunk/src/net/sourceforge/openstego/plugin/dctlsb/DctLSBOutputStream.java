@@ -171,7 +171,7 @@ public class DctLSBOutputStream extends OutputStream
 
             if(((header.getHeaderSize() + this.dataLength) * 8) > (this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG)))
             {
-                throw new OpenStegoException(DctLSBPlugin.NAMESPACE, DctLSBErrors.IMAGE_SIZE_INSUFFICIENT, null);
+                throw new OpenStegoException(null, DctLSBPlugin.NAMESPACE, DctLSBErrors.IMAGE_SIZE_INSUFFICIENT);
             }
             this.coord = new Coordinates((header.getHeaderSize() + this.dataLength) * 8);
             write(header.getHeaderData());
