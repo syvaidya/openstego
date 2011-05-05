@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2008 Samir Vaidya
+ * Copyright (c) 2007-2011 Samir Vaidya
  */
 package net.sourceforge.openstego.ui;
 
@@ -625,15 +625,15 @@ public class OpenStegoUI extends OpenStegoFrame
             resultMsg.append("</td><td nowrap style='color:");
             if(correlation > 0.5)
             {
-                resultMsg.append("green'>● High");
+                resultMsg.append("green'>\u25cf High");
             }
             else if(correlation > 0.3)
             {
-                resultMsg.append("#FFBF00'>● Med");
+                resultMsg.append("#FFBF00'>\u25cf Med");
             }
             else
             {
-                resultMsg.append("red'>● Low");
+                resultMsg.append("red'>\u25cf Low");
             }
 
             resultMsg.append("</td></tr>");
