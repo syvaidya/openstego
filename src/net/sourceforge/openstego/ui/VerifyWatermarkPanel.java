@@ -6,6 +6,7 @@
 package net.sourceforge.openstego.ui;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -139,7 +140,18 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new Insets(0, 5, 0, 5);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 0.0;
+        label = new JLabel(labelUtil.getString("gui.label.wmVerify.inputWmFileMsg"));
+        label.setFont(label.getFont().deriveFont(Font.ITALIC));
+        add(label, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new Insets(5, 5, 0, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
@@ -151,7 +163,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
@@ -161,7 +173,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
@@ -171,7 +183,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
@@ -181,7 +193,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
@@ -191,7 +203,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.EAST;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
@@ -202,7 +214,7 @@ public class VerifyWatermarkPanel extends JPanel
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 1.0;
