@@ -1,1 +1,1 @@
-@java -Xmx512m -jar .\lib\openstego.jar %*
+@java -Xmx512m -jar %~dp0\lib\openstego.jar %*
