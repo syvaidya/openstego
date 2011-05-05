@@ -385,11 +385,6 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         int watermarkLength = 1000;
 
         /**
-         * Embedding strength
-         */
-        double embeddingStrength = 0.5;
-
-        /**
          * Wavelet filter method
          */
         int waveletFilterMethod = 2;
@@ -434,7 +429,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
             double x, x1, x2;
             this.watermark = new double[this.watermarkLength];
 
-            for(int i = 0; i < (this.watermarkLength / 2); i += 2)
+            for(int i = 0; i < this.watermarkLength; i += 2)
             {
                 do
                 {
@@ -472,7 +467,6 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 }
 
                 this.watermarkLength = ois.readInt();
-                this.embeddingStrength = ois.readDouble();
                 this.waveletFilterMethod = ois.readInt();
                 this.filterID = ois.readInt();
                 this.decompositionLevel = ois.readInt();
@@ -509,7 +503,6 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 oos = new ObjectOutputStream(baos);
                 oos.write(this.sig);
                 oos.writeInt(this.watermarkLength);
-                oos.writeDouble(this.embeddingStrength);
                 oos.writeInt(this.waveletFilterMethod);
                 oos.writeInt(this.filterID);
                 oos.writeInt(this.decompositionLevel);
