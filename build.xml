@@ -46,7 +46,7 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-            deprecation="on" debuglevel="lines,vars,source" source="1.4" target="1.4">
+            deprecation="on" debuglevel="lines,vars,source" source="5" target="5">
             <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>

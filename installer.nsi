@@ -69,7 +69,6 @@ Section "${AppName}"
   !insertmacro DETERMINE_CONTEXT
 
   SetOutPath "$INSTDIR"
-  File /r ${AppDir}\doc
   File /r ${AppDir}\lib
   File ${AppDir}\openstego.bat
   File ${AppDir}\openstego.ico
@@ -112,7 +111,6 @@ Section "Uninstall"
 
   DeleteRegKey SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}"
 
-  RMDir /r "$INSTDIR\doc"
   RMDir /r "$INSTDIR\lib"
   Delete "$INSTDIR\openstego.bat"
   Delete "$INSTDIR\openstego.ico"
