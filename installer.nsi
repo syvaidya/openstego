@@ -1,7 +1,7 @@
 ;----------------------------------------------------------------------------------------
 ; Steganography utility to hide messages into cover files
 ; Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-; Copyright (c) 2007-2010 Samir Vaidya
+; Copyright (c) 2007-2011 Samir Vaidya
 ;----------------------------------------------------------------------------------------
 
 !define JRE_DOWNLOAD_URL "http://www.java.com/getjava/"
@@ -78,7 +78,7 @@ Section "${AppName}"
 
   ;Write the uninstall keys for Windows
   WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "DisplayName" "${AppName} v${AppVersion}"
-  WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegDWORD SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoModify" 1
   WriteRegDWORD SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AppName}" "NoRepair" 1
 

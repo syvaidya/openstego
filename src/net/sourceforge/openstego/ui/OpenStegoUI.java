@@ -878,7 +878,7 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         else
         {
-            return PluginManager.getPluginByName("DWTXie");
+            return PluginManager.getPluginByName("DWTDugad");
         }
     }
 
