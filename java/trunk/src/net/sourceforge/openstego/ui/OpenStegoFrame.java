@@ -6,11 +6,13 @@
 
 package net.sourceforge.openstego.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 import java.util.Locale;
 
@@ -18,12 +20,15 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
@@ -47,6 +52,12 @@ public class OpenStegoFrame extends JFrame
      */
     private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
+    private JMenuBar topMenuBar;
+    private JMenu fileMenu;
+    private JMenuItem fileExitMenuItem;
+    private JMenu helpMenu;
+    private JMenuItem helpAboutMenuItem;
+
     private JPanel mainContentPane;
 
     private JScrollPane accordionPane;
@@ -59,6 +70,9 @@ public class OpenStegoFrame extends JFrame
     private JToggleButton genSigButton;
     private JToggleButton signWmButton;
     private JToggleButton verifyWmButton;
+
+    private JPanel headerPanel;
+    private JLabel header;
 
     private JPanel mainPanel;
     private EmbedPanel embedPanel;
@@ -79,6 +93,84 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * Getter method for topMenuBar
+     * 
+     * @return topMenuBar
+     */
+    public JMenuBar getTopMenuBar()
+    {
+        if(this.topMenuBar == null)
+        {
+            this.topMenuBar = new JMenuBar();
+            this.topMenuBar.add(getFileMenu());
+            this.topMenuBar.add(getHelpMenu());
+        }
+        return this.topMenuBar;
+    }
+
+    /**
+     * Getter method for fileMenu
+     * 
+     * @return fileMenu
+     */
+    public JMenu getFileMenu()
+    {
+        if(this.fileMenu == null)
+        {
+            this.fileMenu = new JMenu(labelUtil.getString("gui.menu.file"));
+            this.fileMenu.setMnemonic(KeyEvent.VK_F);
+            this.fileMenu.add(getFileExitMenuItem());
+        }
+        return this.fileMenu;
+    }
+
+    /**
+     * Getter method for fileExitMenuItem
+     * 
+     * @return fileExitMenuItem
+     */
+    public JMenuItem getFileExitMenuItem()
+    {
+        if(this.fileExitMenuItem == null)
+        {
+            this.fileExitMenuItem = new JMenuItem(labelUtil.getString("gui.menu.file.exit"));
+            this.fileExitMenuItem.setMnemonic(KeyEvent.VK_X);
+        }
+        return this.fileExitMenuItem;
+    }
+
+    /**
+     * Getter method for helpMenu
+     * 
+     * @return helpMenu
+     */
+    public JMenu getHelpMenu()
+    {
+        if(this.helpMenu == null)
+        {
+            this.helpMenu = new JMenu(labelUtil.getString("gui.menu.help"));
+            this.helpMenu.setMnemonic(KeyEvent.VK_H);
+            this.helpMenu.add(getHelpAboutMenuItem());
+        }
+        return this.helpMenu;
+    }
+
+    /**
+     * Getter method for helpAboutMenuItem
+     * 
+     * @return helpAboutMenuItem
+     */
+    public JMenuItem getHelpAboutMenuItem()
+    {
+        if(this.helpAboutMenuItem == null)
+        {
+            this.helpAboutMenuItem = new JMenuItem(labelUtil.getString("gui.menu.help.about"));
+            this.helpAboutMenuItem.setMnemonic(KeyEvent.VK_A);
+        }
+        return this.helpAboutMenuItem;
+    }
+
+    /**
      * Getter method for mainContentPane
      * 
      * @return mainContentPane
@@ -88,10 +180,31 @@ public class OpenStegoFrame extends JFrame
         if(this.mainContentPane == null)
         {
             this.mainContentPane = new JPanel();
-            this.mainContentPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-            this.mainContentPane.setLayout(new BorderLayout());
-            this.mainContentPane.add(getMainPanel(), BorderLayout.CENTER);
-            this.mainContentPane.add(getAccordionPane(), BorderLayout.WEST);
+            // this.mainContentPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+            this.mainContentPane.setLayout(new GridBagLayout());
+
+            GridBagConstraints g = new GridBagConstraints();
+            g.gridx = 0;
+            g.gridy = 0;
+            g.gridheight = 2;
+            g.weightx = 0.0;
+            g.fill = GridBagConstraints.VERTICAL;
+            this.mainContentPane.add(getAccordionPane(), g);
+
+            g = new GridBagConstraints();
+            g.gridx = 1;
+            g.gridy = 0;
+            g.weighty = 0.0;
+            g.fill = GridBagConstraints.HORIZONTAL;
+            this.mainContentPane.add(getHeaderPanel(), g);
+
+            g = new GridBagConstraints();
+            g.gridx = 1;
+            g.gridy = 1;
+            g.weightx = 1.0;
+            g.weighty = 1.0;
+            g.fill = GridBagConstraints.BOTH;
+            this.mainContentPane.add(getMainPanel(), g);
         }
         return this.mainContentPane;
     }
@@ -280,6 +393,40 @@ public class OpenStegoFrame extends JFrame
     }
 
     /**
+     * Getter method for headerPanel
+     * 
+     * @return headerPanel
+     */
+    public JPanel getHeaderPanel()
+    {
+        if(this.headerPanel == null)
+        {
+            this.headerPanel = new JPanel();
+            this.headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 1, Color.DARK_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            this.headerPanel.setLayout(new GridLayout());
+            this.headerPanel.add(getHeader());
+        }
+        return this.headerPanel;
+    }
+
+    /**
+     * Getter method for header
+     * 
+     * @return header
+     */
+    public JLabel getHeader()
+    {
+        if(this.header == null)
+        {
+            this.header = new JLabel();
+            this.header.setFont(this.header.getFont().deriveFont(Font.BOLD, this.header.getFont().getSize2D() + 3f));
+        }
+        return this.header;
+    }
+
+    /**
      * Getter method for mainPanel
      * 
      * @return mainPanel
@@ -404,8 +551,10 @@ public class OpenStegoFrame extends JFrame
         }
         this.setContentPane(getMainContentPane());
         this.setTitle(labelUtil.getString("gui.window.title"));
+        this.setJMenuBar(getTopMenuBar());
 
         getMainPanel().add(getEmbedPanel());
+        getHeader().setText(labelUtil.getString("gui.label.panelHeader.dhEmbed"));
     }
 
     /**
@@ -413,6 +562,9 @@ public class OpenStegoFrame extends JFrame
      */
     private void setActionCommands()
     {
+        getFileExitMenuItem().setActionCommand(ActionCommands.MENU_FILE_EXIT);
+        getHelpAboutMenuItem().setActionCommand(ActionCommands.MENU_HELP_ABOUT);
+
         getEmbedButton().setActionCommand(ActionCommands.SWITCH_DH_EMBED);
         getExtractButton().setActionCommand(ActionCommands.SWITCH_DH_EXTRACT);
         getGenSigButton().setActionCommand(ActionCommands.SWITCH_WM_GENSIG);
@@ -446,6 +598,15 @@ public class OpenStegoFrame extends JFrame
      */
     public interface ActionCommands
     {
+        /**
+         * Menu - File - Exit
+         */
+        public static String MENU_FILE_EXIT = "MENU_FILE_EXIT";
+        /**
+         * Menu - Help - About
+         */
+        public static String MENU_HELP_ABOUT = "MENU_HELP_ABOUT";
+
         /**
          * Switch to Data Hiding - Embed panel
          */

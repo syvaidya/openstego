@@ -49,6 +49,30 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin
     }
 
     /**
+     * Method to get correlation value which above which it can be considered that watermark strength is high (default
+     * to 0.5 which is safe for general watermarking)
+     * 
+     * @return High watermark
+     * @throws OpenStegoException
+     */
+    public double getHighWatermarkLevel() throws OpenStegoException
+    {
+        return 0.5;
+    }
+
+    /**
+     * Method to get correlation value which below which it can be considered that watermark strength is low (default to
+     * 0.2 which is safe for general watermarking)
+     * 
+     * @return Low watermark
+     * @throws OpenStegoException
+     */
+    public double getLowWatermarkLevel() throws OpenStegoException
+    {
+        return 0.2;
+    }
+
+    /**
      * Method to find out whether given stego data can be handled by this plugin or not. This implementation returns
      * <code>false</code> as this class is for watermarking plugins only
      * 

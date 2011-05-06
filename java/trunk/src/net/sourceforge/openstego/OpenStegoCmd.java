@@ -440,7 +440,8 @@ public class OpenStegoCmd
     {
         PluginManager.loadPlugins();
 
-        System.err.print(labelUtil.getString("versionString"));
+        System.err.print(labelUtil.getString("appName") + " " + labelUtil.getString("appVersion") + ". ");
+        System.err.println(labelUtil.getString("copyright") + "\n");
         System.err.println(labelUtil.getString("cmd.usage", File.separator));
     }
 

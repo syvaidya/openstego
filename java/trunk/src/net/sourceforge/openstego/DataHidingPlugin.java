@@ -61,6 +61,28 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin
     }
 
     /**
+     * Method to get correlation value which above which it can be considered that watermark strength is high
+     * 
+     * @return High watermark
+     * @throws OpenStegoException
+     */
+    public double getHighWatermarkLevel() throws OpenStegoException
+    {
+        return 0;
+    }
+
+    /**
+     * Method to get correlation value which below which it can be considered that watermark strength is low
+     * 
+     * @return Low watermark
+     * @throws OpenStegoException
+     */
+    public double getLowWatermarkLevel() throws OpenStegoException
+    {
+        return 0;
+    }
+
+    /**
      * Method to find out whether given stego data can be handled by this plugin or not
      * 
      * @param stegoData Stego data containing the message

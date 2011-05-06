@@ -10,25 +10,21 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import net.sourceforge.openstego.OpenStego;
@@ -79,6 +75,9 @@ public class OpenStegoUI extends OpenStegoFrame
         Listener listener = new Listener();
         addWindowListener(listener);
 
+        getFileExitMenuItem().addActionListener(listener);
+        getHelpAboutMenuItem().addActionListener(listener);
+
         getEmbedButton().addActionListener(listener);
         getExtractButton().addActionListener(listener);
         getGenSigButton().addActionListener(listener);
@@ -105,21 +104,6 @@ public class OpenStegoUI extends OpenStegoFrame
         getVerifyWmPanel().getInputFileButton().addActionListener(listener);
         getVerifyWmPanel().getSignatureFileButton().addActionListener(listener);
         getVerifyWmPanel().getRunVerifyWmButton().addActionListener(listener);
-
-        // "Esc" key handling
-        KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
-        Action escapeAction = new AbstractAction()
-        {
-            private static final long serialVersionUID = -4890560722044735566L;
-
-            public void actionPerformed(ActionEvent ev)
-            {
-                close();
-            }
-        };
-
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, "ESCAPE");
-        getRootPane().getActionMap().put("ESCAPE", escapeAction);
 
         pack();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -578,6 +562,7 @@ public class OpenStegoUI extends OpenStegoFrame
         List<File> inputFileList = null;
         File sigFile = null;
         StringBuffer resultMsg = new StringBuffer();
+        NumberFormat formatter = NumberFormat.getPercentInstance();
         double correlation = 0.0;
 
         inputFileList = CommonUtil.parseFileList(getVerifyWmPanel().getInputFileTextField().getText(), ";");
@@ -623,20 +608,20 @@ public class OpenStegoUI extends OpenStegoFrame
             correlation = openStego.checkMark(inputFile, sigFile);
             resultMsg.append("<tr style='background-color:white'><td>").append(inputFile.getName());
             resultMsg.append("</td><td nowrap style='color:");
-            if(correlation > 0.5)
+            if(correlation > plugin.getHighWatermarkLevel())
             {
-                resultMsg.append("green'>\u25cf High");
+                resultMsg.append("green'>\u25cf ");
             }
-            else if(correlation > 0.3)
+            else if(correlation > plugin.getLowWatermarkLevel())
             {
-                resultMsg.append("#FFBF00'>\u25cf Med");
+                resultMsg.append("#FFBF00'>\u25cf ");
             }
             else
             {
-                resultMsg.append("red'>\u25cf Low");
+                resultMsg.append("red'>\u25cf ");
             }
 
-            resultMsg.append("</td></tr>");
+            resultMsg.append(formatter.format(correlation)).append("</td></tr>");
         }
         resultMsg.append("</table></html>");
 
@@ -797,6 +782,15 @@ public class OpenStegoUI extends OpenStegoFrame
     }
 
     /**
+     * This method displays the About dialog box
+     */
+    private void showHelpAbout()
+    {
+        HelpAboutDialog aboutDialog = new HelpAboutDialog(this);
+        aboutDialog.setVisible(true);
+    }
+
+    /**
      * This method handles all the exceptions in the GUI
      * 
      * @param ex Exception to be handled
@@ -932,7 +926,18 @@ public class OpenStegoUI extends OpenStegoFrame
             {
                 String action = ev.getActionCommand();
 
-                if(action.startsWith("BROWSE_"))
+                if(action.startsWith("MENU_"))
+                {
+                    if(action.equals(OpenStegoFrame.ActionCommands.MENU_FILE_EXIT))
+                    {
+                        close();
+                    }
+                    else if(action.equals(OpenStegoFrame.ActionCommands.MENU_HELP_ABOUT))
+                    {
+                        showHelpAbout();
+                    }
+                }
+                else if(action.startsWith("BROWSE_"))
                 {
                     selectFile(action);
                 }
@@ -942,22 +947,27 @@ public class OpenStegoUI extends OpenStegoFrame
                     if(action.equals(OpenStegoFrame.ActionCommands.SWITCH_DH_EMBED))
                     {
                         getMainPanel().add(getEmbedPanel());
+                        getHeader().setText(labelUtil.getString("gui.label.panelHeader.dhEmbed"));
                     }
                     else if(action.equals(OpenStegoFrame.ActionCommands.SWITCH_DH_EXTRACT))
                     {
                         getMainPanel().add(getExtractPanel());
+                        getHeader().setText(labelUtil.getString("gui.label.panelHeader.dhExtract"));
                     }
                     else if(action.equals(OpenStegoFrame.ActionCommands.SWITCH_WM_GENSIG))
                     {
                         getMainPanel().add(getGenSigPanel());
+                        getHeader().setText(labelUtil.getString("gui.label.panelHeader.wmGenSig"));
                     }
                     else if(action.equals(OpenStegoFrame.ActionCommands.SWITCH_WM_EMBED))
                     {
                         getMainPanel().add(getEmbedWmPanel());
+                        getHeader().setText(labelUtil.getString("gui.label.panelHeader.wmEmbed"));
                     }
                     else if(action.equals(OpenStegoFrame.ActionCommands.SWITCH_WM_VERIFY))
                     {
                         getMainPanel().add(getVerifyWmPanel());
+                        getHeader().setText(labelUtil.getString("gui.label.panelHeader.wmVerify"));
                     }
                     getMainPanel().revalidate();
                     getMainPanel().repaint();
