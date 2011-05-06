@@ -168,6 +168,22 @@ public abstract class OpenStegoPlugin
     public abstract double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException;
 
     /**
+     * Method to get correlation value which above which it can be considered that watermark strength is high
+     * 
+     * @return High watermark
+     * @throws OpenStegoException
+     */
+    public abstract double getHighWatermarkLevel() throws OpenStegoException;
+
+    /**
+     * Method to get correlation value which below which it can be considered that watermark strength is low
+     * 
+     * @return Low watermark
+     * @throws OpenStegoException
+     */
+    public abstract double getLowWatermarkLevel() throws OpenStegoException;
+
+    /**
      * Method to get difference between original cover file and the stegged file
      * 
      * @param stegoData Stego data containing the embedded data
