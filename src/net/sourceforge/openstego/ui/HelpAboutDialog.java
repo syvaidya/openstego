@@ -55,24 +55,26 @@ public class HelpAboutDialog extends JDialog
             StringBuffer buf = new StringBuffer();
 
             buf.append("<html>");
-            buf.append("  <table width=100% cellspacing=0 cellpadding=4 style='font:serif;'>");
+            buf.append("  <table width=100% cellspacing=0 cellpadding=0 style='font:serif;'>");
             buf.append("    <tr style='background-color:white'>");
             buf.append("      <td align=left style='padding-left:8px'>");
-            buf.append("        <span style='font-size:16px; font-weight:bold'>");
+            buf.append("        <span style='font-size:24px; font-weight:bold'>");
             buf.append("          ").append(labelUtil.getString("appName")).append("</span>");
             buf.append("        <p style='font-size:9px; margin-top:6px'>");
             buf.append("          ").append(labelUtil.getString("appVersion")).append("</p>");
             buf.append("      </td>");
             buf.append("      <td align=right>");
-            buf.append("        <img src='").append(getClass().getResource("/image/OpenStegoIcon.png").toString())
+            buf.append("        <img src='").append(getClass().getResource("/image/About.png").toString())
                     .append("'/></td>");
             buf.append("    </tr>");
             buf.append("    <tr>");
-            buf.append("      <td colspan=2>");
-            buf.append("        <span style='font-size:8px'>");
-            buf.append("          ").append(labelUtil.getString("copyright")).append("</span><br/><br/>");
-            buf.append("        <span style='font-size:9px'>");
-            buf.append("          ").append(labelUtil.getString("gui.label.help.sitelink")).append("</span>");
+            buf.append("      <td colspan=2 style='padding:5px;font-size:8px'>");
+            buf.append("        <p>").append(labelUtil.getString("copyright")).append("</p><br/>");
+            buf.append("        <p>").append(labelUtil.getString("gui.label.help.sitelink")).append("</p><br/>");
+            buf.append("        <p><u>").append(labelUtil.getString("gui.label.help.ackHeader")).append("</u></p>");
+            buf.append("        <ol style='margin-left:10px; margin-top:2px;'>");
+            buf.append("          <li>").append(labelUtil.getString("gui.label.help.acknowledgement")).append("</li>");
+            buf.append("        </ol>");
             buf.append("      </td>");
             buf.append("    </tr>");
             buf.append("  </table>");
@@ -82,7 +84,7 @@ public class HelpAboutDialog extends JDialog
             this.content.setEditable(false);
             this.content.setBorder(BorderFactory.createEmptyBorder());
             this.content.setBackground(getBackground());
-            this.content.setPreferredSize(new Dimension(400, 200));
+            this.content.setPreferredSize(new Dimension(400, 280));
 
             this.content.addHyperlinkListener(new HyperlinkListener()
             {
@@ -91,7 +93,14 @@ public class HelpAboutDialog extends JDialog
                     if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
                     {
                         JEditorPane pane = (JEditorPane) e.getSource();
-                        BareBonesBrowserLaunch.openURL(labelUtil.getString("homepage"), pane);
+                        if(e.getURL() == null)
+                        {
+                            BareBonesBrowserLaunch.openURL(labelUtil.getString("homepage"), pane);
+                        }
+                        else
+                        {
+                            BareBonesBrowserLaunch.openURL(e.getURL().toString(), pane);
+                        }
                     }
                 }
             });
@@ -160,6 +169,7 @@ public class HelpAboutDialog extends JDialog
         getRootPane().getActionMap().put("ESCAPE", escapeAction);
 
         pack();
+        setResizable(false);
         Dimension parentSize = parent.getSize();
         setLocation(parent.getLocation().x + parentSize.width / 2 - (getWidth() / 2), parent.getLocation().y
                 + parentSize.height / 2 - (getHeight() / 2));

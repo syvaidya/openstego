@@ -8,19 +8,21 @@
 
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
+    <property name="homepage.url" value="http://www.openstego.info"/>
+    <property name="package.ver" value="0.6.1"/>
+    <property name="jre.minVer" value="1.5.0"/>
+    <property name="jdk.docs.href" value="http://download.oracle.com/javase/1.5.0/docs/api/"/>
+    <property name="jdk.docs.dir" value="D:/jdk-1.5.0/docs/api"/>
+
     <property name="src" value="./src"/>
     <property name="build" value="./build"/>
     <property name="build.classesdir" value="${build}/classes"/>
     <property name="build.classpath" value="${src}"/>
-    <property name="jre.minVer" value="1.5.0"/>
     <property name="package" value="./package"/>
-    <property name="package.ver" value="0.6.1"/>
     <property name="package.bin" value="openstego-${package.ver}"/>
     <property name="package.src" value="openstego-src-${package.ver}"/>
     <property name="package.deb" value="openstego-${package.ver}-1"/>
     <property name="javadoc" value="./doc/api"/>
-    <property name="jdk.docs.href" value="http://download.oracle.com/javase/1.5.0/docs/api/"/>
-    <property name="jdk.docs.dir" value="D:/jdk-1.5.0/docs/api"/>
 
     <tstamp>
         <format property="time.changelog" pattern="EEE, dd MMM yyyy HH:mm:ss Z"/>
@@ -32,13 +34,14 @@
         <format property="time.year" pattern="yyyy"/>
     </tstamp>
 
-    <path id="classpath">
+    <path id="ant-deb-cp">
         <fileset dir="./lib" includes="ant-deb-*.jar"/>
     </path>
-    <taskdef resource="ant_deb_task.properties" classpathref="classpath"/>
-    <taskdef name="nsis" classname="net.sf.nsisant.Task">
-        <classpath location="./lib/nsisant-1.2.jar"/>
-    </taskdef>
+    <taskdef resource="ant_deb_task.properties" classpathref="ant-deb-cp"/>
+    <path id="nsisant-cp">
+        <fileset dir="./lib" includes="nsisant-*.jar"/>
+    </path>
+    <taskdef name="nsis" classname="com.danielreese.nsisant.Task" classpathref="nsisant-cp"/>
 
     <target name="init">
         <mkdir dir="${build.classesdir}"/>
@@ -46,7 +49,7 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-            deprecation="on" debuglevel="lines,vars,source" source="5" target="5">
+            deprecation="on" debuglevel="lines,vars,source" source="5" target="5" includeantruntime="false">
             <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>
@@ -54,7 +57,21 @@
             <exclude name="net/sourceforge/openstego/util/dct/**"/>
         </javac>
         <native2ascii encoding="UTF-8" src="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"
-            dest="${build.classesdir}" />
+            dest="${build.classesdir}">
+            <exclude name="net/sourceforge/openstego/resource/DctLSB*"/>
+            <exclude name="net/sourceforge/openstego/resource/DCTPlugin*"/>
+            <exclude name="net/sourceforge/openstego/resource/DWTKim*"/>
+            <exclude name="net/sourceforge/openstego/resource/DWTXie*"/>
+            <exclude name="net/sourceforge/openstego/resource/*_ja.properties"/>
+        </native2ascii>
+        <replace dir="${build.classesdir}/net/sourceforge/openstego/resource">
+            <include name="**/*.properties"/>
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
         <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
             <fileset dir="${build.classesdir}"/>
             <fileset dir="${src}" includes="image/*.png"/>
@@ -91,6 +108,13 @@
             <fileset file="LICENSE"/>
             <fileset file="README"/>
         </copy>
+        <replace file="${package}/${package.bin}/README">
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
         <zip destfile="${package}/${package.bin}.zip" basedir="${package}" includes="${package.bin}/**"/>
     </target>
 
@@ -106,6 +130,13 @@
             <fileset file="LICENSE"/>
             <fileset file="README"/>
         </copy>
+        <replace file="${package}/${package.src}/README">
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
         <zip destfile="${package}/${package.src}.zip" basedir="${package}" includes="${package.src}/**"/>
     </target>
 
@@ -174,7 +205,7 @@ Using OpenStego, you can hide secret data within innocuous looking files like im
             <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
             <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
             <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
-            <tarfileset file="./README" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.bin}/README" prefix="usr/share/doc/openstego"/>
             <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
             <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
         </deb>
@@ -190,7 +221,7 @@ Using OpenStego, you can hide secret data within innocuous looking files like im
             <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
             <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
             <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
-            <tarfileset file="./README" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.bin}/README" prefix="usr/share/doc/openstego"/>
             <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
             <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
         </deb>

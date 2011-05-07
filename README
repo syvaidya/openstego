@@ -1,4 +1,4 @@
-OpenStego v0.6.1
+OpenStego v@package.ver@
 ================
 
 OpenStego is a tool developed in Java for steganography. It supports
@@ -128,10 +128,9 @@ Please use the following command to get plugin specific help:
 
 ADDING NEW PLUGIN:
 ------------------
-  To add a new plugin, the following abstract classes must be implemented:
+  To add a new plugin, the following abstract class must be implemented:
 
     - net.sourceforge.openstego.OpenStegoPlugin
-    - net.sourceforge.openstego.ui.PluginEmbedOptionsUI
 
   Read the API documentation for the details of the methods to be implemented.
   In addition, the following utility class can be used to handle multilingual
@@ -158,12 +157,12 @@ TODO:
 
 AUTHOR:
 -------
-  Samir Vaidya (syvaidya@gmail.com)
-  Copyright (c) 2007-2009
+  @author.name@ (@author.mail@)
+  Copyright (c) 2007-@time.year@
 
 SEE ALSO:
 ---------
-  Project homepage: http://openstego.sourceforge.net
+  Project homepage: @homepage.url@
   Blog:             http://syvaidya.blogspot.com
 
 LICENSE:
