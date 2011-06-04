@@ -248,16 +248,17 @@ public class DctLSBOutputStream extends OutputStream
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      * 
+     * @param imgType Type of image
      * @return Image data
      */
-    public BufferedImage getImage()
+    public BufferedImage getImage(int imgType)
     {
         List<int[][]> yuv = new ArrayList<int[][]>();
         yuv.add(this.y);
         yuv.add(this.u);
         yuv.add(this.v);
 
-        this.image = ImageUtil.getImageFromYuv(yuv);
+        this.image = ImageUtil.getImageFromYuv(yuv, imgType);
         return this.image;
     }
 }

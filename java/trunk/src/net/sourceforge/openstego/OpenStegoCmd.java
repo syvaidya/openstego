@@ -336,7 +336,7 @@ public class OpenStegoCmd
                     for(int i = 0; i < stegoFileList.size(); i++)
                     {
                         stegoFileName = (stegoFileList.get(i)).getName();
-                        System.out.println(stegoFileName + ": "
+                        System.out.println(stegoFileName + "\t"
                                 + stego.checkMark(stegoFileList.get(i), new File(sigFileName)));
                     }
                 }

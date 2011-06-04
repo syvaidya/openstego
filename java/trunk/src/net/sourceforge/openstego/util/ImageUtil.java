@@ -285,9 +285,10 @@ public class ImageUtil
      * Get image (with RGB data) from given YUV data
      * 
      * @param yuv List with three elements of two-dimensional int's - Y, U and V
+     * @param imgType Type of image (e.g. BufferedImage.TYPE_INT_RGB)
      * @return Image
      */
-    public static BufferedImage getImageFromYuv(List<int[][]> yuv)
+    public static BufferedImage getImageFromYuv(List<int[][]> yuv, int imgType)
     {
         BufferedImage image = null;
         int width = 0;
@@ -305,7 +306,7 @@ public class ImageUtil
 
         height = y.length;
         width = y[0].length;
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(width, height, (imgType == 0 ? BufferedImage.TYPE_INT_RGB : imgType));
 
         for(int i = 0; i < height; i++)
         {

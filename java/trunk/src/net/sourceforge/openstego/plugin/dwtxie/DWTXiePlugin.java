@@ -100,6 +100,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         Pixel pixel2 = null;
         Pixel pixel3 = null;
         int[][] luminance = null;
+        int imgType = 0;
         int origWidth = 0;
         int origHeight = 0;
         int cols = 0;
@@ -117,6 +118,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
+        imgType = image.getType();
         origWidth = image.getWidth();
         origHeight = image.getHeight();
         image = ImageUtil.makeImageSquare(image);
@@ -176,7 +178,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
-        image = ImageUtil.cropImage(ImageUtil.getImageFromYuv(yuv), origWidth, origHeight);
+        image = ImageUtil.cropImage(ImageUtil.getImageFromYuv(yuv, imgType), origWidth, origHeight);
 
         return ImageUtil.imageToByteArray(image, stegoFileName, this);
     }

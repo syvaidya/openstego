@@ -80,6 +80,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
     {
         BufferedImage image = null;
         DctLSBOutputStream os = null;
+        int imgType = 0;
 
         try
         {
@@ -93,11 +94,12 @@ public class DctLSBPlugin extends WMImagePluginTemplate
             {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
+            imgType = image.getType();
             os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config);
             os.write(msg);
             os.close();
 
-            return ImageUtil.imageToByteArray(os.getImage(), stegoFileName, this);
+            return ImageUtil.imageToByteArray(os.getImage(imgType), stegoFileName, this);
         }
         catch(IOException ioEx)
         {

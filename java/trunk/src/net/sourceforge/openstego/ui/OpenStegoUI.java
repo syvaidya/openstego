@@ -5,6 +5,7 @@
  */
 package net.sourceforge.openstego.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -20,10 +21,16 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
@@ -34,6 +41,7 @@ import net.sourceforge.openstego.OpenStegoPlugin;
 import net.sourceforge.openstego.util.CommonUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.PluginManager;
+import net.sourceforge.openstego.util.ui.WorkerTask;
 
 /**
  * This is the main class for OpenStego GUI and it implements the action and window listeners.
@@ -556,18 +564,7 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void checkMark() throws OpenStegoException
     {
-        OpenStego openStego = null;
-        OpenStegoConfig config = null;
-        OpenStegoPlugin plugin = null;
         List<File> inputFileList = null;
-        File sigFile = null;
-        StringBuffer resultMsg = new StringBuffer();
-        NumberFormat formatter = NumberFormat.getPercentInstance();
-        double correlation = 0.0;
-
-        inputFileList = CommonUtil.parseFileList(getVerifyWmPanel().getInputFileTextField().getText(), ";");
-        plugin = getDefaultPlugin(OpenStegoPlugin.Purpose.WATERMARKING);
-        config = plugin.createConfig();
 
         // START: Input Validations
         if(!checkMandatory(getVerifyWmPanel().getInputFileTextField(),
@@ -583,6 +580,7 @@ public class OpenStegoUI extends OpenStegoFrame
 
         // If user has provided a wildcard for file name, and parser returns zero length, then it means that
         // there are no matching files with that wildcard
+        inputFileList = CommonUtil.parseFileList(getVerifyWmPanel().getInputFileTextField().getText(), ";");
         if(inputFileList.size() == 0 && !getVerifyWmPanel().getInputFileTextField().getText().trim().equals(""))
         {
             JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.wmVerify.inputFileNotFound",
@@ -593,45 +591,110 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        openStego = new OpenStego(plugin, config);
-        sigFile = new File(getVerifyWmPanel().getSignatureFileTextField().getText());
-
-        resultMsg.append("<html><p>").append(labelUtil.getString("gui.msg.success.wmVerify")).append("</p><br/>");
-        resultMsg.append("<table cellspacing=1 cellpadding=1 style='background-color:#444444' width='80%'>");
-        resultMsg.append("<tr style='color:white'><th align=left width=99%>");
-        resultMsg.append(labelUtil.getString("gui.label.wmVerify.result.header.fileName"));
-        resultMsg.append("</th><th align=left nowrap>");
-        resultMsg.append(labelUtil.getString("gui.label.wmVerify.result.header.strength"));
-        resultMsg.append("</th></tr>");
-        for(File inputFile : inputFileList)
+        WorkerTask task = new WorkerTask(this)
         {
-            correlation = openStego.checkMark(inputFile, sigFile);
-            resultMsg.append("<tr style='background-color:white'><td>").append(inputFile.getName());
-            resultMsg.append("</td><td nowrap style='color:");
-            if(correlation > plugin.getHighWatermarkLevel())
+            @Override
+            protected Object doInBackground() throws Exception
             {
-                resultMsg.append("green'>\u25cf ");
-            }
-            else if(correlation > plugin.getLowWatermarkLevel())
-            {
-                resultMsg.append("#FFBF00'>\u25cf ");
-            }
-            else
-            {
-                resultMsg.append("red'>\u25cf ");
+                List<File> inputFileList = null;
+                File sigFile = null;
+                OpenStego openStego = null;
+                OpenStegoConfig config = null;
+                OpenStegoPlugin plugin = null;
+                NumberFormat formatter = NumberFormat.getPercentInstance();
+                double correlation = 0.0;
+
+                inputFileList = CommonUtil.parseFileList(getVerifyWmPanel().getInputFileTextField().getText(), ";");
+                plugin = getDefaultPlugin(OpenStegoPlugin.Purpose.WATERMARKING);
+                config = plugin.createConfig();
+
+                openStego = new OpenStego(plugin, config);
+                sigFile = new File(getVerifyWmPanel().getSignatureFileTextField().getText());
+
+                Object[][] tblData = new Object[inputFileList.size()][2];
+                for(int i = 0; i < inputFileList.size(); i++)
+                {
+                    setProgress(i * 100 / inputFileList.size());
+                    File inputFile = inputFileList.get(i);
+                    correlation = openStego.checkMark(inputFile, sigFile);
+                    tblData[i][0] = inputFile.getName();
+                    String color = null;
+                    if(correlation > plugin.getHighWatermarkLevel())
+                    {
+                        color = "green";
+                    }
+                    else if(correlation > plugin.getLowWatermarkLevel())
+                    {
+                        color = "#FFBF00";
+                    }
+                    else
+                    {
+                        color = "red";
+                    }
+                    tblData[i][1] = "<html><span style='color:" + color + "'>\u25cf " + formatter.format(correlation)
+                            + "</span></html>";
+                }
+                setProgress(100);
+
+                return tblData;
             }
 
-            resultMsg.append(formatter.format(correlation)).append("</td></tr>");
-        }
-        resultMsg.append("</table></html>");
+            @Override
+            public void done()
+            {
+                super.done();
+                if(isCancelled())
+                {
+                    return;
+                }
 
-        JOptionPane.showMessageDialog(this, resultMsg.toString(), labelUtil.getString("gui.msg.title.results"),
-            JOptionPane.INFORMATION_MESSAGE);
+                Object[][] tblData = null;
+                try
+                {
+                    tblData = (Object[][]) get();
+                }
+                catch(InterruptedException exc)
+                {
+                    exc.printStackTrace();
+                }
+                catch(ExecutionException exc)
+                {
+                    exc.printStackTrace();
+                }
 
-        // Reset GUI
-        getVerifyWmPanel().getInputFileTextField().setText("");
-        getVerifyWmPanel().getSignatureFileTextField().setText("");
-        getVerifyWmPanel().getInputFileTextField().requestFocus();
+                JTable table = new JTable(tblData, new Object[] {
+                        labelUtil.getString("gui.label.wmVerify.result.header.fileName"),
+                        labelUtil.getString("gui.label.wmVerify.result.header.strength") })
+                {
+                    public boolean isCellEditable(int rowIndex, int colIndex)
+                    {
+                        return false;
+                    }
+                };
+                JScrollPane pane = new JScrollPane(table);
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+                table.setDragEnabled(false);
+                table.setCellSelectionEnabled(false);
+                table.setRowSelectionAllowed(false);
+                table.setPreferredScrollableViewportSize(new Dimension(400, 150));
+
+                JPanel panel = new JPanel(new BorderLayout());
+                JLabel header = new JLabel(labelUtil.getString("gui.msg.success.wmVerify"));
+                header.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+                panel.add(header, BorderLayout.NORTH);
+                panel.add(pane, BorderLayout.CENTER);
+
+                JOptionPane.showMessageDialog(this.parent, panel, labelUtil.getString("gui.msg.title.results"),
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                // Reset GUI
+                getVerifyWmPanel().getInputFileTextField().setText("");
+                getVerifyWmPanel().getSignatureFileTextField().setText("");
+                getVerifyWmPanel().getInputFileTextField().requestFocus();
+            }
+        };
+
+        WorkerTask.exec(task);
     }
 
     /**
