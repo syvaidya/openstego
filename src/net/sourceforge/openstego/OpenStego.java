@@ -416,7 +416,13 @@ public class OpenStego
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
-        return checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
+        double correl = checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(),
+            CommonUtil.getFileBytes(origSigFile));
+        if(Double.isNaN(correl))
+        {
+            correl = 0.0;
+        }
+        return correl;
     }
 
     /**

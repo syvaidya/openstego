@@ -99,6 +99,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         ImageTree s = null;
         Signature sig = null;
         int[][] luminance = null;
+        int imgType = 0;
         int cols = 0;
         int rows = 0;
 
@@ -112,6 +113,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
+        imgType = image.getType();
         cols = image.getWidth();
         rows = image.getHeight();
         yuv = ImageUtil.getYuvFromImage(image);
@@ -135,7 +137,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
-        image = ImageUtil.getImageFromYuv(yuv);
+        image = ImageUtil.getImageFromYuv(yuv, imgType);
 
         return ImageUtil.imageToByteArray(image, stegoFileName, this);
     }
