@@ -120,10 +120,8 @@ public class OpenStegoUI extends OpenStegoFrame
 
     /**
      * Method to reset the GUI components from scratch
-     * 
-     * @throws OpenStegoException
      */
-    private void resetGUI() throws OpenStegoException
+    protected void resetGUI()
     {
         pack();
         setResizable(false);
@@ -143,27 +141,15 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void embedData() throws OpenStegoException
     {
-        OpenStego openStego = null;
-        byte[] stegoData = null;
-        String dataFileName = null;
         String outputFileName = null;
         String password = null;
         String confPassword = null;
-        List<File> coverFileList = null;
-        File cvrFile = null;
         File outputFile = null;
-        int processCount = 0;
-        int skipCount = 0;
-        OpenStegoConfig config = null;
-        OpenStegoPlugin embedPlugin = null;
+        List<File> coverFileList = null;
 
-        embedPlugin = getDefaultPlugin(OpenStegoPlugin.Purpose.DATA_HIDING);
-        config = embedPlugin.createConfig();
-
-        dataFileName = getEmbedPanel().getMsgFileTextField().getText();
-        coverFileList = CommonUtil.parseFileList(getEmbedPanel().getCoverFileTextField().getText(), ";");
         outputFileName = getEmbedPanel().getStegoFileTextField().getText();
         outputFile = new File(outputFileName);
+        coverFileList = CommonUtil.parseFileList(getEmbedPanel().getCoverFileTextField().getText(), ";");
         password = new String(getEmbedPanel().getPasswordTextField().getPassword());
         confPassword = new String(getEmbedPanel().getConfPasswordTextField().getPassword());
 
@@ -224,72 +210,132 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        config.setUseCompression(true);
-        config.setUseEncryption(true);
-        config.setPassword(password);
-        openStego = new OpenStego(embedPlugin, config);
-        if(coverFileList.size() <= 1)
+        WorkerTask task = new WorkerTask(this, coverFileList)
         {
-            if(coverFileList.size() == 1)
+            @Override
+            protected Object doInBackground() throws Exception
             {
-                cvrFile = coverFileList.get(0);
-            }
+                OpenStego openStego = null;
+                OpenStegoConfig config = null;
+                OpenStegoPlugin embedPlugin = null;
+                String outputFileName = null;
+                String dataFileName = null;
+                String password = null;
+                File outputFile = null;
+                File cvrFile = null;
+                int processCount = 0;
+                int skipCount = 0;
+                byte[] stegoData = null;
 
-            if(outputFile.exists())
-            {
-                if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                    labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                @SuppressWarnings("unchecked")
+                List<File> coverFileList = (List<File>) this.data;
+
+                password = new String(getEmbedPanel().getPasswordTextField().getPassword());
+                dataFileName = getEmbedPanel().getMsgFileTextField().getText();
+                outputFileName = getEmbedPanel().getStegoFileTextField().getText();
+                outputFile = new File(outputFileName);
+
+                embedPlugin = getDefaultPlugin(OpenStegoPlugin.Purpose.DATA_HIDING);
+                config = embedPlugin.createConfig();
+                config.setUseCompression(true);
+                config.setUseEncryption(true);
+                config.setPassword(password);
+                openStego = new OpenStego(embedPlugin, config);
+
+                setProgress(0);
+                if(coverFileList.size() <= 1)
                 {
-                    return;
-                }
-            }
-
-            processCount++;
-            stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(
-                    dataFileName), cvrFile, outputFileName);
-            CommonUtil.writeFile(stegoData, outputFile);
-        }
-        else
-        {
-            for(int i = 0; i < coverFileList.size(); i++)
-            {
-                cvrFile = coverFileList.get(i);
-
-                // Use cover file name as the output file name. Change the folder to given output folder
-                outputFileName = outputFile.getPath() + File.separator + cvrFile.getName();
-
-                // If the output filename extension is not supported for writing, then change the same
-                if(!embedPlugin.getWritableFileExtensions().contains(
-                    outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
-                {
-                    outputFileName = outputFileName + "." + embedPlugin.getWritableFileExtensions().get(0);
-                }
-
-                if((new File(outputFileName)).exists())
-                {
-                    if(JOptionPane.showConfirmDialog(this,
-                        labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                        labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                    if(coverFileList.size() == 1)
                     {
-                        skipCount++;
-                        continue;
+                        cvrFile = coverFileList.get(0);
+                    }
+
+                    if(outputFile.exists())
+                    {
+                        if(JOptionPane.showConfirmDialog(this.parent,
+                            labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
+                            labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                        {
+                            return null;
+                        }
+                    }
+
+                    processCount++;
+                    stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(
+                            dataFileName), cvrFile, outputFileName);
+                    CommonUtil.writeFile(stegoData, outputFile);
+                }
+                else
+                {
+                    for(int i = 0; i < coverFileList.size(); i++)
+                    {
+                        setProgress(i * 100 / coverFileList.size());
+                        cvrFile = coverFileList.get(i);
+
+                        // Use cover file name as the output file name. Change the folder to given output folder
+                        outputFileName = outputFile.getPath() + File.separator + cvrFile.getName();
+
+                        // If the output filename extension is not supported for writing, then change the same
+                        if(!embedPlugin.getWritableFileExtensions().contains(
+                            outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
+                        {
+                            outputFileName = outputFileName + "." + embedPlugin.getWritableFileExtensions().get(0);
+                        }
+
+                        if((new File(outputFileName)).exists())
+                        {
+                            if(JOptionPane.showConfirmDialog(this.parent,
+                                labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
+                                labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                            {
+                                skipCount++;
+                                continue;
+                            }
+                        }
+
+                        processCount++;
+                        stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null
+                                : new File(dataFileName), cvrFile, outputFileName);
+                        CommonUtil.writeFile(stegoData, outputFileName);
                     }
                 }
 
-                processCount++;
-                stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(
-                        dataFileName), cvrFile, outputFileName);
-                CommonUtil.writeFile(stegoData, outputFileName);
+                return new Integer[] { processCount, skipCount };
             }
-        }
 
-        JOptionPane.showMessageDialog(this,
-            labelUtil.getString("gui.msg.success.dhEmbed", new Integer(processCount), new Integer(skipCount)),
-            labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+            @Override
+            public void done()
+            {
+                super.done();
+                if(isCancelled())
+                {
+                    return;
+                }
 
-        // Reset configuration
-        resetGUI();
+                Integer[] val = null;
+                try
+                {
+                    val = (Integer[]) get();
+                }
+                catch(InterruptedException exc)
+                {
+                    exc.printStackTrace();
+                }
+                catch(ExecutionException exc)
+                {
+                    exc.printStackTrace();
+                }
+                JOptionPane.showMessageDialog(this.parent,
+                    labelUtil.getString("gui.msg.success.dhEmbed", val[0], val[1]),
+                    labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+
+                // Reset configuration
+                ((OpenStegoUI) this.parent).resetGUI();
+            }
+        };
+        task.start();
     }
 
     /**
@@ -591,12 +637,11 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        WorkerTask task = new WorkerTask(this)
+        WorkerTask task = new WorkerTask(this, inputFileList)
         {
             @Override
             protected Object doInBackground() throws Exception
             {
-                List<File> inputFileList = null;
                 File sigFile = null;
                 OpenStego openStego = null;
                 OpenStegoConfig config = null;
@@ -604,7 +649,9 @@ public class OpenStegoUI extends OpenStegoFrame
                 NumberFormat formatter = NumberFormat.getPercentInstance();
                 double correlation = 0.0;
 
-                inputFileList = CommonUtil.parseFileList(getVerifyWmPanel().getInputFileTextField().getText(), ";");
+                @SuppressWarnings("unchecked")
+                List<File> inputFileList = (List<File>) this.data;
+
                 plugin = getDefaultPlugin(OpenStegoPlugin.Purpose.WATERMARKING);
                 config = plugin.createConfig();
 
@@ -693,8 +740,7 @@ public class OpenStegoUI extends OpenStegoFrame
                 getVerifyWmPanel().getInputFileTextField().requestFocus();
             }
         };
-
-        WorkerTask.exec(task);
+        task.start();
     }
 
     /**

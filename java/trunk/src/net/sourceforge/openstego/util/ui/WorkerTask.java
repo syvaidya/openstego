@@ -5,8 +5,9 @@
  */
 package net.sourceforge.openstego.util.ui;
 
-import java.awt.Container;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,16 +17,20 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+import javax.swing.border.BevelBorder;
+
+import net.sourceforge.openstego.OpenStego;
+import net.sourceforge.openstego.util.LabelUtil;
 
 /**
  * Helper class to execute tasks asynchronously
@@ -33,17 +38,22 @@ import javax.swing.SwingWorker;
 public abstract class WorkerTask extends SwingWorker<Object, Void>
 {
     /**
+     * LabelUtil instance to retrieve labels
+     */
+    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+
+    /**
      * Parent component
      */
     protected JFrame parent;
     /**
+     * Data for task
+     */
+    protected Object data;
+    /**
      * Progress bar
      */
     protected JProgressBar progressBar;
-    /**
-     * Dialog box
-     */
-    protected JFrame dialog;
     /**
      * Cancel button
      */
@@ -57,43 +67,54 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
      * Default constructor
      * 
      * @param parent Parent component
+     * @param data Any data to be passed to task
      */
-    public WorkerTask(JFrame parent)
+    public WorkerTask(JFrame parent, Object data)
     {
         this.parent = parent;
+        this.data = data;
 
         this.progressBar = new JProgressBar(0, 100);
         this.progressBar.setPreferredSize(new Dimension(300, 20));
         this.progressBar.setStringPainted(true);
         this.progressBar.setValue(0);
 
-        this.dialog = new JFrame("Processing");
-        Container rootPane = this.dialog.getContentPane();
-        rootPane.setLayout(new GridBagLayout());
-
-        GridBagConstraints g = new GridBagConstraints();
-        g.fill = GridBagConstraints.BOTH;
-        g.gridx = 0;
-        g.gridy = 0;
-        g.insets = new Insets(10, 10, 10, 10);
-        rootPane.add(this.progressBar, g);
-
-        this.cancelButton = new JButton("Cancel");
-        g.fill = GridBagConstraints.NONE;
-        g.anchor = GridBagConstraints.EAST;
-        g.gridx = 0;
-        g.gridy = 1;
-        g.insets = new Insets(0, 10, 10, 10);
-        rootPane.add(this.cancelButton, g);
-
-        this.dialog.pack();
-        this.dialog.setLocationRelativeTo(parent);
-        this.dialog.setLocation((parent.getWidth() - this.dialog.getWidth()) / 2,
-            (parent.getHeight() - this.dialog.getHeight()) / 2);
-
         this.glass = new GlassPane();
         this.glass.setSize(parent.getSize());
         this.glass.setOpaque(false);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+
+        GridBagConstraints g = new GridBagConstraints();
+        g.fill = GridBagConstraints.BOTH;
+        g.anchor = GridBagConstraints.WEST;
+        g.gridx = 0;
+        g.gridy = 0;
+        g.insets = new Insets(10, 10, 10, 10);
+        panel.add(new JLabel(labelUtil.getString("gui.label.progress.processing")), g);
+
+        g.fill = GridBagConstraints.BOTH;
+        g.gridx = 0;
+        g.gridy = 1;
+        g.insets = new Insets(0, 10, 10, 10);
+        panel.add(this.progressBar, g);
+
+        this.cancelButton = new JButton(labelUtil.getString("gui.label.progress.cancel"));
+        g.fill = GridBagConstraints.NONE;
+        g.anchor = GridBagConstraints.EAST;
+        g.gridx = 0;
+        g.gridy = 2;
+        g.insets = new Insets(0, 10, 10, 10);
+        panel.add(this.cancelButton, g);
+
+        this.glass.setLayout(new GridBagLayout());
+        g.fill = GridBagConstraints.NONE;
+        g.anchor = GridBagConstraints.CENTER;
+        g.gridx = 0;
+        g.gridy = 0;
+        this.glass.add(panel, g);
         this.parent.setGlassPane(this.glass);
     }
 
@@ -103,27 +124,22 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
      */
     protected void done()
     {
-        this.dialog.setVisible(false);
         this.glass.setVisible(false);
     }
 
     /**
-     * Static method to execute tasks
-     * 
-     * @param task
+     * Method to execute task
      */
-    public static void exec(WorkerTask task)
+    public void start()
     {
-        Listener listener = new Listener(task);
-        task.glass.setVisible(true);
-        task.dialog.setVisible(true);
-        task.dialog.addWindowListener(listener);
-        task.cancelButton.addActionListener(listener);
-        task.addPropertyChangeListener(listener);
-        task.execute();
+        Listener listener = new Listener(this);
+        this.glass.setVisible(true);
+        this.cancelButton.addActionListener(listener);
+        addPropertyChangeListener(listener);
+        execute();
     }
 
-    static class Listener extends WindowAdapter implements PropertyChangeListener, ActionListener
+    class Listener implements PropertyChangeListener, ActionListener
     {
         WorkerTask task;
 
@@ -153,15 +169,6 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
         {
             this.task.cancel(true);
         }
-
-        /*
-         * (non-Javadoc)
-         * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
-         */
-        public void windowClosing(WindowEvent e)
-        {
-            this.task.cancel(true);
-        }
     }
 
     class GlassPane extends JPanel implements MouseListener, FocusListener
@@ -170,6 +177,12 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
         {
             addMouseListener(this);
             addFocusListener(this);
+        }
+
+        public void paintComponent(Graphics g)
+        {
+            g.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
+            g.fillRect(0, 0, this.getWidth(), this.getHeight());
         }
 
         public void setVisible(boolean visible)
