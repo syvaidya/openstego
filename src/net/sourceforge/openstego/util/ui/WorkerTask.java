@@ -68,16 +68,25 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
      * 
      * @param parent Parent component
      * @param data Any data to be passed to task
+     * @param determinate Flag to indicate whether task progress is determinable or not
      */
-    public WorkerTask(JFrame parent, Object data)
+    public WorkerTask(JFrame parent, Object data, boolean determinate)
     {
         this.parent = parent;
         this.data = data;
 
         this.progressBar = new JProgressBar(0, 100);
         this.progressBar.setPreferredSize(new Dimension(300, 20));
-        this.progressBar.setStringPainted(true);
         this.progressBar.setValue(0);
+        if(determinate)
+        {
+            this.progressBar.setStringPainted(true);
+        }
+        else
+        {
+            this.progressBar.setIndeterminate(true);
+            this.progressBar.setStringPainted(false);
+        }
 
         this.glass = new GlassPane();
         this.glass.setSize(parent.getSize());
