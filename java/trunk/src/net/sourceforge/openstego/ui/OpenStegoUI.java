@@ -210,7 +210,7 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        WorkerTask task = new WorkerTask(this, coverFileList)
+        WorkerTask task = new WorkerTask(this, coverFileList, coverFileList.size() > 1)
         {
             @Override
             protected Object doInBackground() throws Exception
@@ -242,64 +242,45 @@ public class OpenStegoUI extends OpenStegoFrame
                 config.setPassword(password);
                 openStego = new OpenStego(embedPlugin, config);
 
-                setProgress(0);
-                if(coverFileList.size() <= 1)
+                for(int i = 0; i < coverFileList.size(); i++)
                 {
-                    if(coverFileList.size() == 1)
+                    setProgress(i * 100 / coverFileList.size());
+                    cvrFile = coverFileList.get(i);
+
+                    if(outputFile.isDirectory())
                     {
-                        cvrFile = coverFileList.get(0);
+                        // Use cover file name as the output file name. Change the folder to given output folder
+                        outputFileName = outputFile.getPath() + File.separator + cvrFile.getName();
                     }
 
-                    if(outputFile.exists())
+                    // If the output filename extension is not supported for writing, then change the same
+                    if(!embedPlugin.getWritableFileExtensions().contains(
+                        outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
+                    {
+                        outputFileName = outputFileName + "." + embedPlugin.getWritableFileExtensions().get(0);
+                    }
+
+                    if((new File(outputFileName)).exists())
                     {
                         if(JOptionPane.showConfirmDialog(this.parent,
                             labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
                             labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
                             JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
                         {
-                            return null;
+                            if(coverFileList.size() == 1)
+                            {
+                                this.cancel(true);
+                                return null;
+                            }
+                            skipCount++;
+                            continue;
                         }
                     }
 
                     processCount++;
                     stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null : new File(
                             dataFileName), cvrFile, outputFileName);
-                    CommonUtil.writeFile(stegoData, outputFile);
-                }
-                else
-                {
-                    for(int i = 0; i < coverFileList.size(); i++)
-                    {
-                        setProgress(i * 100 / coverFileList.size());
-                        cvrFile = coverFileList.get(i);
-
-                        // Use cover file name as the output file name. Change the folder to given output folder
-                        outputFileName = outputFile.getPath() + File.separator + cvrFile.getName();
-
-                        // If the output filename extension is not supported for writing, then change the same
-                        if(!embedPlugin.getWritableFileExtensions().contains(
-                            outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
-                        {
-                            outputFileName = outputFileName + "." + embedPlugin.getWritableFileExtensions().get(0);
-                        }
-
-                        if((new File(outputFileName)).exists())
-                        {
-                            if(JOptionPane.showConfirmDialog(this.parent,
-                                labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                                labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
-                            {
-                                skipCount++;
-                                continue;
-                            }
-                        }
-
-                        processCount++;
-                        stegoData = openStego.embedData(dataFileName == null || dataFileName.equals("") ? null
-                                : new File(dataFileName), cvrFile, outputFileName);
-                        CommonUtil.writeFile(stegoData, outputFileName);
-                    }
+                    CommonUtil.writeFile(stegoData, outputFileName);
                 }
 
                 return new Integer[] { processCount, skipCount };
@@ -345,24 +326,6 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void extractData() throws OpenStegoException
     {
-        OpenStego openStego = null;
-        OpenStegoConfig config = null;
-        OpenStegoPlugin extractPlugin = null;
-        String stegoFileName = null;
-        String outputFolder = null;
-        String outputFileName = null;
-        File file = null;
-        List<?> stegoOutput = null;
-
-        extractPlugin = getDefaultPlugin(OpenStegoPlugin.Purpose.DATA_HIDING);
-        config = extractPlugin.createConfig();
-
-        openStego = new OpenStego(extractPlugin, config);
-        config = openStego.getConfig();
-        config.setPassword(new String(getExtractPanel().getExtractPwdTextField().getPassword()));
-        stegoFileName = getExtractPanel().getInputStegoFileTextField().getText();
-        outputFolder = getExtractPanel().getOutputFolderTextField().getText();
-
         // START: Input Validations
         if(!checkMandatory(getExtractPanel().getInputStegoFileTextField(),
             labelUtil.getString("gui.label.dhExtract.stegoFile")))
@@ -376,27 +339,81 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        stegoOutput = openStego.extractData(new File(stegoFileName));
-        outputFileName = (String) stegoOutput.get(0);
-        file = new File(outputFolder + File.separator + outputFileName);
-        if(file.exists())
+        WorkerTask task = new WorkerTask(this, null, false)
         {
-            if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+            @Override
+            protected Object doInBackground() throws Exception
             {
-                return;
+                OpenStego openStego = null;
+                OpenStegoConfig config = null;
+                OpenStegoPlugin extractPlugin = null;
+                String stegoFileName = null;
+                String outputFolder = null;
+                String outputFileName = null;
+                File file = null;
+                List<?> stegoOutput = null;
+
+                extractPlugin = getDefaultPlugin(OpenStegoPlugin.Purpose.DATA_HIDING);
+                config = extractPlugin.createConfig();
+
+                openStego = new OpenStego(extractPlugin, config);
+                config = openStego.getConfig();
+                config.setPassword(new String(getExtractPanel().getExtractPwdTextField().getPassword()));
+                stegoFileName = getExtractPanel().getInputStegoFileTextField().getText();
+                outputFolder = getExtractPanel().getOutputFolderTextField().getText();
+
+                stegoOutput = openStego.extractData(new File(stegoFileName));
+                outputFileName = (String) stegoOutput.get(0);
+                file = new File(outputFolder + File.separator + outputFileName);
+                if(file.exists())
+                {
+                    if(JOptionPane.showConfirmDialog(this.parent,
+                        labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
+                        labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                    {
+                        this.cancel(true);
+                    }
+                }
+
+                CommonUtil.writeFile((byte[]) stegoOutput.get(1), outputFolder + File.separator + outputFileName);
+                return outputFileName;
             }
-        }
 
-        CommonUtil.writeFile((byte[]) stegoOutput.get(1), outputFolder + File.separator + outputFileName);
-        JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.success.dhExtract", outputFileName),
-            labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+            @Override
+            public void done()
+            {
+                super.done();
+                if(isCancelled())
+                {
+                    return;
+                }
 
-        // Reset GUI
-        getExtractPanel().getInputStegoFileTextField().setText("");
-        getExtractPanel().getOutputFolderTextField().setText("");
-        getExtractPanel().getExtractPwdTextField().setText("");
-        getExtractPanel().getInputStegoFileTextField().requestFocus();
+                String outputFileName = null;
+                try
+                {
+                    outputFileName = (String) get();
+                }
+                catch(InterruptedException exc)
+                {
+                    exc.printStackTrace();
+                }
+                catch(ExecutionException exc)
+                {
+                    exc.printStackTrace();
+                }
+                JOptionPane.showMessageDialog(this.parent,
+                    labelUtil.getString("gui.msg.success.dhExtract", outputFileName),
+                    labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+
+                // Reset GUI
+                getExtractPanel().getInputStegoFileTextField().setText("");
+                getExtractPanel().getOutputFolderTextField().setText("");
+                getExtractPanel().getExtractPwdTextField().setText("");
+                getExtractPanel().getInputStegoFileTextField().requestFocus();
+            }
+        };
+        task.start();
     }
 
     /**
@@ -463,25 +480,11 @@ public class OpenStegoUI extends OpenStegoFrame
      */
     private void embedMark() throws OpenStegoException
     {
-        OpenStego openStego = null;
-        byte[] wmData = null;
-        String sigFileName = null;
-        String outputFileName = null;
         List<File> inputFileList = null;
-        File inputFile = null;
         File outputFile = null;
-        int processCount = 0;
-        int skipCount = 0;
-        OpenStegoConfig config = null;
-        OpenStegoPlugin plugin = null;
-
-        plugin = getDefaultPlugin(OpenStegoPlugin.Purpose.WATERMARKING);
-        config = plugin.createConfig();
 
         inputFileList = CommonUtil.parseFileList(getEmbedWmPanel().getFileForWmTextField().getText(), ";");
-        sigFileName = getEmbedWmPanel().getSignatureFileTextField().getText();
-        outputFileName = getEmbedWmPanel().getOutputWmFileTextField().getText();
-        outputFile = new File(outputFileName);
+        outputFile = new File(getEmbedWmPanel().getOutputWmFileTextField().getText());
 
         // START: Input Validations
         if(!checkMandatory(getEmbedWmPanel().getFileForWmTextField(),
@@ -535,72 +538,112 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        openStego = new OpenStego(plugin, config);
-        if(inputFileList.size() <= 1)
+        WorkerTask task = new WorkerTask(this, inputFileList, inputFileList.size() > 1)
         {
-            if(inputFileList.size() == 1)
+            @Override
+            protected Object doInBackground() throws Exception
             {
-                inputFile = inputFileList.get(0);
+                OpenStego openStego = null;
+                byte[] wmData = null;
+                String sigFileName = null;
+                String outputFileName = null;
+                File inputFile = null;
+                File outputFile = null;
+                int processCount = 0;
+                int skipCount = 0;
+                OpenStegoConfig config = null;
+                OpenStegoPlugin plugin = null;
+
+                @SuppressWarnings("unchecked")
+                List<File> inputFileList = (List<File>) this.data;
+
+                plugin = getDefaultPlugin(OpenStegoPlugin.Purpose.WATERMARKING);
+                config = plugin.createConfig();
+                openStego = new OpenStego(plugin, config);
+
+                sigFileName = getEmbedWmPanel().getSignatureFileTextField().getText();
+                outputFileName = getEmbedWmPanel().getOutputWmFileTextField().getText();
+                outputFile = new File(outputFileName);
+
+                for(int i = 0; i < inputFileList.size(); i++)
+                {
+                    setProgress(i * 100 / inputFileList.size());
+                    inputFile = inputFileList.get(i);
+
+                    if(outputFile.isDirectory())
+                    {
+                        // Use input file name as the output file name. Change the folder to given output folder
+                        outputFileName = outputFile.getPath() + File.separator + inputFile.getName();
+                    }
+
+                    // If the output filename extension is not supported for writing, then change the same
+                    if(!plugin.getWritableFileExtensions().contains(
+                        outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
+                    {
+                        outputFileName = outputFileName + "." + plugin.getWritableFileExtensions().get(0);
+                    }
+
+                    if((new File(outputFileName)).exists())
+                    {
+                        if(JOptionPane.showConfirmDialog(this.parent,
+                            labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
+                            labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                        {
+                            if(inputFileList.size() == 1)
+                            {
+                                this.cancel(true);
+                                return null;
+                            }
+                            skipCount++;
+                            continue;
+                        }
+                    }
+
+                    processCount++;
+                    wmData = openStego.embedMark(sigFileName == null || sigFileName.equals("") ? null : new File(
+                            sigFileName), inputFile, outputFileName);
+                    CommonUtil.writeFile(wmData, outputFileName);
+                }
+
+                return new Integer[] { processCount, skipCount };
             }
 
-            if(outputFile.exists())
+            @Override
+            public void done()
             {
-                if(JOptionPane.showConfirmDialog(this, labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                    labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                super.done();
+                if(isCancelled())
                 {
                     return;
                 }
-            }
 
-            processCount++;
-            wmData = openStego.embedMark(sigFileName == null || sigFileName.equals("") ? null : new File(sigFileName),
-                inputFile, outputFileName);
-            CommonUtil.writeFile(wmData, outputFile);
-        }
-        else
-        {
-            for(int i = 0; i < inputFileList.size(); i++)
-            {
-                inputFile = inputFileList.get(i);
-
-                // Use input file name as the output file name. Change the folder to given output folder
-                outputFileName = outputFile.getPath() + File.separator + inputFile.getName();
-
-                // If the output filename extension is not supported for writing, then change the same
-                if(!plugin.getWritableFileExtensions().contains(
-                    outputFileName.substring(outputFileName.lastIndexOf('.') + 1).toLowerCase()))
+                Integer[] val = null;
+                try
                 {
-                    outputFileName = outputFileName + "." + plugin.getWritableFileExtensions().get(0);
+                    val = (Integer[]) get();
+                }
+                catch(InterruptedException exc)
+                {
+                    exc.printStackTrace();
+                }
+                catch(ExecutionException exc)
+                {
+                    exc.printStackTrace();
                 }
 
-                if((new File(outputFileName)).exists())
-                {
-                    if(JOptionPane.showConfirmDialog(this,
-                        labelUtil.getString("gui.msg.warn.fileExists", outputFileName),
-                        labelUtil.getString("gui.msg.title.warn"), JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
-                    {
-                        skipCount++;
-                        continue;
-                    }
-                }
+                JOptionPane.showMessageDialog(this.parent,
+                    labelUtil.getString("gui.msg.success.wmEmbed", val[0], val[1]),
+                    labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
 
-                processCount++;
-                wmData = openStego.embedMark(sigFileName == null || sigFileName.equals("") ? null : new File(
-                        sigFileName), inputFile, outputFileName);
-                CommonUtil.writeFile(wmData, outputFileName);
+                // Reset GUI
+                getEmbedWmPanel().getFileForWmTextField().setText("");
+                getEmbedWmPanel().getSignatureFileTextField().setText("");
+                getEmbedWmPanel().getOutputWmFileTextField().setText("");
+                getEmbedWmPanel().getFileForWmTextField().requestFocus();
             }
-        }
-
-        JOptionPane.showMessageDialog(this,
-            labelUtil.getString("gui.msg.success.wmEmbed", new Integer(processCount), new Integer(skipCount)),
-            labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
-
-        // Reset GUI
-        getEmbedWmPanel().getFileForWmTextField().setText("");
-        getEmbedWmPanel().getSignatureFileTextField().setText("");
-        getEmbedWmPanel().getOutputWmFileTextField().setText("");
-        getEmbedWmPanel().getFileForWmTextField().requestFocus();
+        };
+        task.start();
     }
 
     /**
@@ -637,7 +680,7 @@ public class OpenStegoUI extends OpenStegoFrame
         }
         // END: Input Validations
 
-        WorkerTask task = new WorkerTask(this, inputFileList)
+        WorkerTask task = new WorkerTask(this, inputFileList, inputFileList.size() > 1)
         {
             @Override
             protected Object doInBackground() throws Exception
