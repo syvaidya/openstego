@@ -221,7 +221,7 @@ public class OpenStegoFrame extends JFrame
             this.accordionPane = new JScrollPane();
             this.accordionPane.setBorder(null);
             this.accordionPane.setViewportView(getAccordion());
-            this.accordionPane.setPreferredSize(new Dimension(150, 0));
+            this.accordionPane.setPreferredSize(new Dimension(180, 0));
         }
         return this.accordionPane;
     }
@@ -402,9 +402,8 @@ public class OpenStegoFrame extends JFrame
         if(this.headerPanel == null)
         {
             this.headerPanel = new JPanel();
-            this.headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 1, Color.DARK_GRAY),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            this.headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 1,
+                Color.DARK_GRAY), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
             this.headerPanel.setLayout(new GridLayout());
             this.headerPanel.add(getHeader());
         }
@@ -436,9 +435,8 @@ public class OpenStegoFrame extends JFrame
         if(this.mainPanel == null)
         {
             this.mainPanel = new JPanel();
-            this.mainPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 1, 1, Color.DARK_GRAY),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            this.mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 1, 1,
+                Color.DARK_GRAY), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
             this.mainPanel.setLayout(new GridLayout());
         }
         return this.mainPanel;
