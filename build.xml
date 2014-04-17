@@ -2,7 +2,7 @@
 <!--
   | Steganography utility to hide messages into cover files
   | Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-  | Copyright (c) 2007-2011 Samir Vaidya
+  | Copyright (c) 2007-2014 Samir Vaidya
   -->
 <project name="OpenStego" default="compile" basedir=".">
 
@@ -11,8 +11,8 @@
     <property name="homepage.url" value="http://www.openstego.info"/>
     <property name="package.ver" value="0.6.1"/>
     <property name="jre.minVer" value="1.5.0"/>
-    <property name="jdk.docs.href" value="http://download.oracle.com/javase/1.5.0/docs/api/"/>
-    <property name="jdk.docs.dir" value="D:/jdk-1.5.0/docs/api"/>
+    <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
+    <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
 
     <property name="src" value="./src"/>
     <property name="build" value="./build"/>

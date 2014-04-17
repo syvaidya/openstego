@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2008 Samir Vaidya
+ * Copyright (c) 2007-2014 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -95,7 +95,7 @@ public class DctLSBInputStream extends InputStream
         this.imgWidth = this.imgWidth - (this.imgWidth % DCT.NJPEG);
         this.imgHeight = this.imgHeight - (this.imgHeight % DCT.NJPEG);
 
-        this.y = (int[][]) ImageUtil.getYuvFromImage(image).get(0);
+        this.y = ImageUtil.getYuvFromImage(image).get(0);
 
         this.dct = new DCT();
         this.dct.initDct8x8();
