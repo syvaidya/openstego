@@ -1,0 +1,7 @@
+net.sourceforge.openstego
+net.sourceforge.openstego.ui
+net.sourceforge.openstego.util
+net.sourceforge.openstego.util.cmd
+net.sourceforge.openstego.util.dct
+net.sourceforge.openstego.util.dwt
+net.sourceforge.openstego.util.ui

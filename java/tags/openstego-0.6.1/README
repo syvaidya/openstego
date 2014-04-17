@@ -1,0 +1,223 @@
+OpenStego v@package.ver@
+================
+
+OpenStego is a steganography application that provides two functionalities:
+  1. Data Hiding: It can hide any data within a cover file (e.g. images).
+  2. Watermarking: Watermarking files (e.g. images) with an invisible
+     signature. It can be used to detect unauthorized file copying.
+
+For GUI:
+  java -jar <path>\openstego.jar
+
+For command line interface:
+  java -jar <path>\openstego.jar <command> [options]
+
+The first argument must be a command. Valid commands are:
+
+  embed, --embed                Embed message into cover file
+  extract, --extract            Extract message from stego file
+  gensig, --gensig              Generate a signature for watermarking
+  embedmark, --embedmark        Watermark a cover file using signature
+  checkmark, --checkmark        Checks for watermark presence in the file
+  algorithms, --algorithms      List down supported steganography algorithms
+  readformats --readformats     List down supported formats for cover file
+  writeformats, --writeformats  List down supported formats for stego file
+  help, --help                  Display this help. To get help on options
+                                specific to an algorithm, provide the name of
+                                the algorithm using '-a' option
+
+Following option is common for all commands other than 'algorithms':
+
+    -a, --algorithm <algorithm_name>
+        Name of the steganography algorithm to use. List of the supported
+        algorithms can be retrieved using 'algorithms' command
+
+'embed' options:
+
+    -mf, --messagefile <filename>
+        Source message/data file. If this option is not provided or '-'
+        (without quotes) is provided as the value then the message data is
+        read from stdin
+
+    -cf, --coverfile <filename>
+        Cover file in which the message will be embedded. This option supports
+        '*' and '?' wildcards for filename. If wildcard filename is provided
+        then make sure that it is surrounded by double quotes.
+        Multiple filenames can also be provided by separating them with ';'
+        (semi-colon).
+        If the wildcard expression returns more than one file, then '-sf'
+        option is ignored, and each coverfile is overwritten with the
+        corresponding generated stegofile
+
+    -sf, --stegofile <filename>
+        Output stego file containing the embedded message. If this option is
+        not provided or '-' (without quotes) is provided as the value then the
+        stego file is written to stdout
+
+    -c, --compress
+        Compress the message file before embedding (default)
+
+    -C, --nocompress
+        Do not compress the message file before embedding
+
+    -e, --encrypt
+        Encrypt the message file before embedding
+
+    -E, --noencrypt
+        Do not encrypt the message file before embedding (default)
+
+    -p, --password <password>
+        Password to be used for encryption. If this is not provided then
+        prompt will be displayed for entry
+
+'extract' options:
+
+    -sf, --stegofile <filename>
+        Stego file containing the embedded message
+
+    -xf, --extractfile <filename>
+        Optional filename for the extracted data. Use this to override the
+        filename embedded in the stego file
+
+    -xd, --extractdir <dir>
+        Directory where the message file will be extracted. If this option is
+        not provided, then the file is extracted to current directory
+
+    -p, --password <password>
+        Password to be used for decryption. If this is not provided then
+        prompt will be displayed for entry (if the message is encrypted)
+
+'gensig' options:
+
+    -gf, --sigfile <filename>
+        Output signature file that can be used to watermark files. If this
+        option is not provided or '-' (without quotes) is provided as the
+        value then the signature file is written to stdout
+
+    -p, --password <password>
+        Password to be used for generation of signature. If this is not
+        provided then prompt will be displayed for entry
+
+'embedmark' options:
+
+    -gf, --sigfile <filename>
+        Watermarking signature file. If this option is not provided or '-'
+        (without quotes) is provided as the value then the signature data is
+        read from stdin
+
+    -cf, --coverfile <filename>
+        Cover file which needs to be digitally watermarked. This option supports
+        '*' and '?' wildcards for filename. If wildcard filename is provided
+        then make sure that it is surrounded by double quotes.
+        Multiple filenames can also be provided by separating them with ';'
+        (semi-colon).
+        If the wildcard expression returns more than one file, then '-sf'
+        option is ignored, and each coverfile is overwritten with the
+        corresponding generated stegofile
+
+    -sf, --stegofile <filename>
+        Output stego file containing the embedded watermark. If this option is
+        not provided or '-' (without quotes) is provided as the value then the
+        stego file is written to stdout
+
+'checkmark' options:
+
+    -sf, --stegofile <filename>
+        Stego file containing the embedded watermark
+
+    -gf, --sigfile <filename>
+        Signature file which was used to watermark the file
+
+Examples:
+
+  To embed secret.txt into wallpaper.png and generate the output into test.png:
+
+      java -jar <path>\openstego.jar embed -a lsb -mf secret.txt \
+        -cf wallpaper.png -sf test.png
+   OR
+      java -jar <path>\openstego.jar --embed --algorithm=lsb \
+        --messagefile=secret.txt --coverfile=wallpaper.png --stegofile=test.png
+
+  To extract embedded data from test.png to /data directory:
+
+      java -jar <path>\openstego.jar extract -a lsb -sf test.png -xd /data
+   OR
+      java -jar <path>\openstego.jar extract --algorithm=lsb \
+        --stegofile=test.png --extractdir=/data
+
+  To generate a signature file:
+
+      java -jar <path>\openstego.jar gensig -a dwtxie -gf my.sig
+   OR
+      java -jar <path>\openstego.jar --gensig --algorithm=dwtxie \
+        --sigfile=my.sig
+
+  To embed signature into owned.png and generate the output into out.png:
+
+      java -jar <path>\openstego.jar embedmark -a dwtxie -gf my.sig \
+        -cf owned.png -sf out.png
+   OR
+      java -jar <path>\openstego.jar --embedmark --algorithm=dwtxie \
+        --sigfile=my.sig --coverfile=owned.png --stegofile=out.png
+
+  To check for watermark in test.png using my.sig signature file:
+
+      java -jar <path>\openstego.jar checkmark -a dwtxie -gf my.sig \
+        -sf test.png
+   OR
+      java -jar <path>\openstego.jar checkmark --algorithm=dwtxie \
+        --sigfile=my.sig --stegofile=test.png
+
+  Piping example:
+
+      ls -R | java -jar <path>\openstego.jar embed -a lsb > test.png
+
+  Wildcard example (Please note that the double quotes are important):
+
+      java -jar <path>\openstego.jar embed -a lsb \
+        -cf "img???.png;wall*.png" -mf watermark.txt
+
+PLUGINS HELP:
+-------------
+Please use the following command to get plugin specific help:
+
+  java -jar <path>\openstego.jar -help -a <algorithm_name>
+
+
+ADDING NEW PLUGIN:
+------------------
+  To add a new plugin, the following abstract class must be implemented:
+
+    - net.sourceforge.openstego.OpenStegoPlugin
+
+  Read the API documentation for the details of the methods to be implemented.
+  In addition, the following utility class can be used to handle multilingual
+  string labels for the plugin:
+
+    - net.sourceforge.openstego.util.LabelUtil
+
+  A new namespace should be added to LabelUtil class for each new plugin. Same
+  namespace can also be used for exception messages while throwing
+  OpenStegoException.
+
+  After implementing the plugin classes, create new file named
+  "OpenStegoPlugins.external" and put the fully qualified name of the class
+  which implements OpenStegoPlugin in the file. Make sure that this file is
+  put directly under the CLASSPATH while invoking the application.
+
+  Please refer to the "net.sourceforge.openstego.plugin.lsb" package sources
+  for sample plugin implementation.
+
+AUTHOR:
+-------
+  @author.name@ (@author.mail@)
+  Copyright (c) 2007-@time.year@
+
+SEE ALSO:
+---------
+  Project homepage: @homepage.url@
+  Blog:             http://syvaidya.blogspot.com
+
+LICENSE:
+--------
+  GNU General Public License 2.0 (GPL) (see LICENSE file)

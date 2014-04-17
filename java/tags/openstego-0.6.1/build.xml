@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<!--
+  | Steganography utility to hide messages into cover files
+  | Author: Samir Vaidya (mailto:syvaidya@gmail.com)
+  | Copyright (c) 2007-2014 Samir Vaidya
+  -->
+<project name="OpenStego" default="compile" basedir=".">
+
+    <property name="author.name" value="Samir Vaidya"/>
+    <property name="author.mail" value="syvaidya@gmail.com"/>
+    <property name="homepage.url" value="http://www.openstego.info"/>
+    <property name="package.ver" value="0.6.1"/>
+    <property name="jre.minVer" value="1.5.0"/>
+    <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
+    <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
+
+    <property name="src" value="./src"/>
+    <property name="build" value="./build"/>
+    <property name="build.classesdir" value="${build}/classes"/>
+    <property name="build.classpath" value="${src}"/>
+    <property name="package" value="./package"/>
+    <property name="package.bin" value="openstego-${package.ver}"/>
+    <property name="package.src" value="openstego-src-${package.ver}"/>
+    <property name="package.deb" value="openstego-${package.ver}-1"/>
+    <property name="javadoc" value="./doc/api"/>
+
+    <tstamp>
+        <format property="time.changelog" pattern="EEE, dd MMM yyyy HH:mm:ss Z"/>
+    </tstamp>
+    <tstamp>
+        <format property="time.creation" pattern="yyyy-MM-dd"/>
+    </tstamp>
+    <tstamp>
+        <format property="time.year" pattern="yyyy"/>
+    </tstamp>
+
+    <path id="ant-deb-cp">
+        <fileset dir="./lib" includes="ant-deb-*.jar"/>
+    </path>
+    <taskdef resource="ant_deb_task.properties" classpathref="ant-deb-cp"/>
+    <path id="nsisant-cp">
+        <fileset dir="./lib" includes="nsisant-*.jar"/>
+    </path>
+    <taskdef name="nsis" classname="com.danielreese.nsisant.Task" classpathref="nsisant-cp"/>
+
+    <target name="init">
+        <mkdir dir="${build.classesdir}"/>
+    </target>
+
+    <target name="compile" depends="init" description="Compiles the source files">
+        <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
+            deprecation="on" debuglevel="lines,vars,source" source="5" target="5" includeantruntime="false">
+            <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
+            <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
+            <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>
+            <exclude name="net/sourceforge/openstego/plugin/template/dct/**"/>
+            <exclude name="net/sourceforge/openstego/util/dct/**"/>
+        </javac>
+        <native2ascii encoding="UTF-8" src="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"
+            dest="${build.classesdir}">
+            <exclude name="net/sourceforge/openstego/resource/DctLSB*"/>
+            <exclude name="net/sourceforge/openstego/resource/DCTPlugin*"/>
+            <exclude name="net/sourceforge/openstego/resource/DWTKim*"/>
+            <exclude name="net/sourceforge/openstego/resource/DWTXie*"/>
+            <exclude name="net/sourceforge/openstego/resource/*_ja.properties"/>
+        </native2ascii>
+        <replace dir="${build.classesdir}/net/sourceforge/openstego/resource">
+            <include name="**/*.properties"/>
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
+        <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
+            <fileset dir="${build.classesdir}"/>
+            <fileset dir="${src}" includes="image/*.png"/>
+            <fileset dir="${src}" includes="OpenStegoPlugins.internal"/>
+            <fileset dir="${src}" includes="**/*.xml"/>
+        </jar>
+    </target>
+
+    <target name="doc" description="Generates the JavaDoc API documentation">
+        <javadoc packagenames="net.sourceforge.openstego.*" sourcepath="${src}" destdir="${javadoc}"
+            excludepackagenames="net.sourceforge.openstego.plugin.*" windowtitle="${ant.project.name} API">
+            <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
+            <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
+        </javadoc>
+    </target>
+
+    <target name="clean" description="Removes the in-process files">
+        <delete dir="${build}"/>
+        <delete dir="${package}"/>
+    </target>
+
+    <target name="package" depends="package-bin,package-src,package-nsi,package-deb"
+        description="Generates the various binary and source packages for release">
+    </target>
+
+    <target name="package-bin" depends="compile" description="Generates the binary zipped package">
+        <mkdir dir="${package}/${package.bin}"/>
+        <copy todir="${package}/${package.bin}">
+            <fileset dir="." includes="lib/openstego**" excludes="**/.svn/**"/>
+            <fileset file="./src/image/openstego.ico"/>
+            <fileset file="openstego.bat"/>
+            <fileset file="openstego.sh"/>
+            <fileset file="LICENSE"/>
+            <fileset file="README"/>
+        </copy>
+        <replace file="${package}/${package.bin}/README">
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
+        <zip destfile="${package}/${package.bin}.zip" basedir="${package}" includes="${package.bin}/**"/>
+    </target>
+
+    <target name="package-src" depends="doc" description="Generates the sources zipped package">
+        <mkdir dir="${package}/${package.src}"/>
+        <copy todir="${package}/${package.src}">
+            <fileset dir="." includes="src/**" excludes="**/.svn/**"/>
+            <fileset dir="." includes="doc/**" excludes="**/.svn/**"/>
+            <fileset file="openstego.bat"/>
+            <fileset file="openstego.sh"/>
+            <fileset file="build.xml"/>
+            <fileset file="installer.nsi"/>
+            <fileset file="LICENSE"/>
+            <fileset file="README"/>
+        </copy>
+        <replace file="${package}/${package.src}/README">
+            <replacefilter token="@package.ver@" value="${package.ver}"/>
+            <replacefilter token="@author.name@" value="${author.name}"/>
+            <replacefilter token="@author.mail@" value="${author.mail}"/>
+            <replacefilter token="@homepage.url@" value="${homepage.url}"/>
+            <replacefilter token="@time.year@" value="${time.year}"/>
+        </replace>
+        <zip destfile="${package}/${package.src}.zip" basedir="${package}" includes="${package.src}/**"/>
+    </target>
+
+    <target name="package-nsi" depends="compile" description="Generates Windows installer">
+        <nsis script="installer.nsi" verbosity="2">
+            <define name="AppName" value="${ant.project.name}"/>
+            <define name="AppVersion" value="${package.ver}"/>
+            <define name="AppDir" value="${package}/${package.bin}"/>
+            <define name="RequiredJREVersion" value="${jre.minVer}"/>
+        </nsis>
+    </target>
+
+    <target name="package-deb" depends="compile" description="Generates Debian (Ubuntu) installer">
+        <mkdir dir="${package}/${package.deb}"/>
+        <copy file="./openstego.sh" tofile="${package}/${package.deb}/openstego"/>
+        <copy file="./src/image/OpenStegoIcon.png" tofile="${package}/${package.deb}/openstego.png"/>
+        <desktopentry
+            toFile="${package}/${package.deb}/openstego.desktop"
+            name="OpenStego"
+            comment="Hide secret data into innocuous files like images"
+            icon="/usr/share/openstego/openstego.png"
+            exec="/usr/share/openstego/openstego"
+            categories="Graphics;Java"/>
+        <echo file="${package}/${package.deb}/changelog.Debian"
+            append="false">OpenStego (${package.ver}-1) ; urgency=low
+
+  * Added support for Digital Watermarking of images
+
+ -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
+</echo>
+        <gzip src="${package}/${package.deb}/changelog.Debian"
+            destfile="${package}/${package.deb}/changelog.Debian.gz"/>
+        <delete file="${package}/${package.deb}/changelog.Debian"/>
+        <echo file="${package}/${package.deb}/copyright"
+            append="false">This package was debianized by ${author.name} &lt;${author.mail}&gt; on
+${time.creation}
+
+It was downloaded from &lt;http://openstego.sourceforge.net/&gt;.
+
+Upstream Author: ${author.name} &lt;${author.mail}&gt;
+
+License:
+
+        Copyright (C) 2007-${time.year} ${author.name}
+
+        This file is part of OpenStego as available from
+        http://openstego.sourceforge.net. This file is free software;
+        you can redistribute it and/or modify it under the terms of the GNU
+        General Public License as published by the Free Software Foundation,
+        in version 2 as it comes in the "LICENSE" file of the OpenStego
+        distribution. OpenStego is distributed in the hope that it will
+        be useful, but WITHOUT ANY WARRANTY of any kind.
+
+
+This applies to the complete sourcetree.
+</echo>
+        <deb todir="${package}" package="openstego" section="graphics" architecture="i386"
+            depends="default-jre" priority="optional">
+            <version upstream="${package.ver}"/>
+            <maintainer name="${author.name}" email="${author.mail}"/>
+            <description synopsis="OpenStego: Modular steganography solution">OpenStego is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. It supports plugins for various steganographic algorithms.
+
+Using OpenStego, you can hide secret data within innocuous looking files like images.</description>
+            <tarfileset file="${package}/${package.deb}/openstego.desktop" prefix="usr/share/applications"/>
+            <tarfileset file="${package}/${package.deb}/openstego" prefix="usr/share/openstego" filemode="755"/>
+            <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
+            <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
+            <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
+            <tarfileset file="${package}/${package.bin}/README" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
+        </deb>
+        <deb todir="${package}" package="openstego" section="graphics" architecture="amd64"
+            depends="default-jre" priority="optional">
+            <version upstream="${package.ver}"/>
+            <maintainer name="${author.name}" email="${author.mail}"/>
+            <description synopsis="OpenStego: Modular steganography solution">OpenStego is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. It supports plugins for various steganographic algorithms.
+
+Using OpenStego, you can hide secret data within innocuous looking files like images.</description>
+            <tarfileset file="${package}/${package.deb}/openstego.desktop" prefix="usr/share/applications"/>
+            <tarfileset file="${package}/${package.deb}/openstego" prefix="usr/share/openstego" filemode="755"/>
+            <tarfileset file="${package}/${package.deb}/openstego.png" prefix="usr/share/openstego"/>
+            <tarfileset file="./lib/openstego.jar" prefix="usr/share/openstego/lib"/>
+            <tarfileset file="./src/image/openstego.xpm" prefix="usr/share/pixmaps"/>
+            <tarfileset file="${package}/${package.bin}/README" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.deb}/changelog.Debian.gz" prefix="usr/share/doc/openstego"/>
+            <tarfileset file="${package}/${package.deb}/copyright" prefix="usr/share/doc/openstego"/>
+        </deb>
+    </target>
+
+</project>
