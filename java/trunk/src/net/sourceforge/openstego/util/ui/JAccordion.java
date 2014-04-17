@@ -2,7 +2,7 @@
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
  * Original source copied from http://greybeardedgeek.net/wordpress/wp-content/uploads/2008/04/jaccordion.java
- * Modifications - Copyright (c) 2011 Samir Vaidya
+ * Modifications - Copyright (c) 2011-2014 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.ui;

@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2008 Samir Vaidya
+ * Copyright (c) 2007-2014 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.dwt;
@@ -260,39 +260,33 @@ public class DWTUtil
             switch(method)
             {
                 case Filter.METHOD_CUTOFF:
-                    filterCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_INVCUTOFF:
-                    filterInvCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterInvCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_PERIODICAL:
-                    filterPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_INVPERIODICAL:
-                    filterInvPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterInvPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_MIRROR:
-                    filterMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_INVMIRROR:
-                    filterInvMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg
-                            .getWidth()
-                            * i, outputImg.getWidth(), 1, filter);
+                    filterInvMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg,
+                        outputImg.getWidth() * i, outputImg.getWidth(), 1, filter);
                     break;
             }
         }
@@ -313,33 +307,33 @@ public class DWTUtil
             switch(method)
             {
                 case Filter.METHOD_CUTOFF:
-                    filterCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_INVCUTOFF:
-                    filterInvCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterInvCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_PERIODICAL:
-                    filterPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_INVPERIODICAL:
-                    filterInvPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterInvPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_MIRROR:
-                    filterMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_INVMIRROR:
-                    filterInvMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg
-                            .getHeight(), outputImg.getWidth(), filter);
+                    filterInvMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i,
+                        outputImg.getHeight(), outputImg.getWidth(), filter);
                     break;
             }
         }
@@ -633,8 +627,8 @@ public class DWTUtil
 
             if(tree.getFlag() == 0) // If flag is set it is a doubletree tiling
             {
-                invDecomposition(retImg, coarseImg, horizontalImg, verticalImg, diagonalImg, filterGHList[tree
-                        .getLevel()], method);
+                invDecomposition(retImg, coarseImg, horizontalImg, verticalImg, diagonalImg,
+                    filterGHList[tree.getLevel()], method);
             }
             else
             {
