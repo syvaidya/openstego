@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="Keywords" content="openstego, steganography, security, digital watermarking">
+    <title>OpenStego - Command-line Usage</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="overall">
+      <div id="header">
+        <div id="logo" onclick="document.location.href='index.html';">
+          <div id="noCSS"><h1><a href="index.html">OpenStego</a></h1><h3><a href="index.html">The free steganography solution</a></h3></div>
+        </div>
+        <div id="bar"></div>
+      </div>
+      <div id="main">
+        <div id="menu">
+          <div id="menu_top"></div>
+          <div id="menu_center">
+            <a href="index.html">Home</a>
+            <hr/>
+            <a href="features.html">Features</a>
+            <a href="https://github.com/syvaidya/openstego/releases">Download</a>
+            <a href="https://github.com/syvaidya/openstego/issues">Issues</a>
+            <a href="https://github.com/syvaidya/openstego">Project page</a>
+            <a href="cmdline.html">Command-line</a>
+            <hr/>
+            <a href="contact.html">Contact</a>
+          </div>
+          <div id="menu_bottom"></div>
+        </div>
+        <div id="content">
+          <div>
+            <h1>Using OpenStego from Command-line</h1>
+            <p>The general syntax for OpenStego is:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar &lt;command&gt; [options]</pre>
+            <p>Here, the first argument must be a command. Valid commands are:</p>
+            <table>
+              <tr><th>Command</th><th>Action</th></tr>
+              <tr><td class="code" nowrap>embed, --embed</td><td>Embed message into cover file</td></tr>
+              <tr><td class="code" nowrap>extract, --extract</td><td>Extract message from stego file</td></tr>
+              <tr><td class="code" nowrap>gensig, --gensig</td><td>Generate a signature for watermarking</td></tr>
+              <tr><td class="code" nowrap>embedmark, --embedmark</td><td>Watermark a cover file using signature</td></tr>
+              <tr><td class="code" nowrap>checkmark, --checkmark</td><td>Checks for watermark presence in the file</td></tr>
+              <tr><td class="code" nowrap>algorithms, --algorithms</td><td>List down supported steganography algorithms</td></tr>
+              <tr><td class="code" nowrap>readformats --readformats</td><td>List down supported formats for cover file</td></tr>
+              <tr><td class="code" nowrap>writeformats, --writeformats</td><td>List down supported formats for stego file</td></tr>
+              <tr><td class="code" nowrap>help, --help</td><td>Display the help. To get help on options specific to an algorithm, provide the name of the algorithm using <span class="code">'-a'</span> option</td></tr>
+            </table>
+            <p>Following option is common for all commands other than 'algorithms':</p>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-a, --algorithm &lt;algorithm_name&gt;</td><td>Name of the steganography algorithm to use. List of the supported algorithms can be retrieved using <span class="code">'algorithms'</span> command</td></tr>
+            </table>
+            <h2>Possible options for 'embed' command:</h2>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-mf, --messagefile &lt;filename&gt;</td><td>Source message/data file. If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then the message data is read from <span class="code">stdin</span></td></tr>
+              <tr><td class="code" nowrap>-cf, --coverfile &lt;filename&gt;</td><td>Cover file in which the message will be embedded. This option supports <span class="code">'*'</span> and <span class="code">'?'</span> wildcards for filename. If wildcard filename is provided then make sure that it is surrounded by double quotes. Multiple filenames can also be provided by separating them with <span class="code">';'</span> (semi-colon).<p>If the wildcard expression returns more than one file, then <span class="code">'-sf'</span> option is ignored, and each coverfile is overwritten with the corresponding generated stegofile</td></tr>
+              <tr><td class="code" nowrap>-sf, --stegofile &lt;filename&gt;</td><td>Output stego file containing the embedded message. If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then the stego file is written to <span class="code">stdout</span></td></tr>
+              <tr><td class="code" nowrap>-c, --compress</td><td>Compress the message file before embedding (default)</td></tr>
+              <tr><td class="code" nowrap>-C, --nocompress</td><td>Do not compress the message file before embedding</td></tr>
+              <tr><td class="code" nowrap>-e, --encrypt</td><td>Encrypt the message file before embedding</td></tr>
+              <tr><td class="code" nowrap>-E, --noencrypt</td><td>Do not encrypt the message file before embedding (default)</td></tr>
+              <tr><td class="code" nowrap>-p, --password &lt;password&gt;</td><td>Password to be used for encryption. If this is not provided then prompt will be displayed for entry</td></tr>
+            </table>
+            <p>Additions and changes to 'embed' options while using LSB/RandomLSB Plugins:</p>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-b, --maxBitsUsedPerChannel &lt;n&gt;</td><td>Max number of bits to use per color channel in the image for embedding data. This value can be increased at the expense of image quality, in case size of image is not able to accommodate the data (Default = 3)</td></tr>
+              <tr><td class="code" nowrap>-cf, --coverfile &lt;filename&gt;</td><td>If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then a random image containing noise is generated and used as cover file. The size of image is minimum required to embed the given source file when <span class="code">'maxBitsUsedPerChannel'</span> bits are used per color channel</td></tr>
+              <tr><td class="code" nowrap>-sf, --stegofile &lt;filename&gt;</td><td>If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then stego file is written to <span class="code">stdout</span> in <b>PNG</b> format</td></tr>
+            </table>
+            <h2>Possible options for 'extract' command:</h2>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-sf, --stegofile &lt;filename&gt;</td><td>Stego file containing the embedded message</td></tr>
+              <tr><td class="code" nowrap>-xf, --extractfile &lt;filename&gt;</td><td>Optional filename for the extracted data. Use this to override the filename embedded in the stego file</td></tr>
+              <tr><td class="code" nowrap>-xd, --extractdir &lt;dir&gt;</td><td>Directory where the message file will be extracted. If this option is not provided, then the file is extracted to current directory</td></tr>
+              <tr><td class="code" nowrap>-p, --password &lt;password&gt;</td><td>Password to be used for decryption. If this is not provided then prompt will be displayed for entry (if the message is encrypted)</td></tr>
+            </table>
+            <h2>Possible options for 'gensig' command:</h2>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-gf, --sigfile &lt;filename&gt;</td><td>Output signature file that can be used to watermark files. If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then the signature file is written to <span class="code">stdout</span></td></tr>
+              <tr><td class="code" nowrap>-p, --password &lt;password&gt;</td><td>Password to be used for generation of signature. If this is not provided then prompt will be displayed for entry</td></tr>
+            </table>
+            <h2>Possible options for 'embedmark' command:</h2>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-gf, --sigfile &lt;filename&gt;</td><td>Watermarking signature file. If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then the signature data is read from <span class="code">stdin</span></td></tr>
+              <tr><td class="code" nowrap>-cf, --coverfile &lt;filename&gt;</td><td>Cover file which needs to be digitally watermarked. This option supports <span class="code">'*'</span> and <span class="code">'?'</span> wildcards for filename. If wildcard filename is provided then make sure that it is surrounded by double quotes. Multiple filenames can also be provided by separating them with <span class="code">';'</span> (semi-colon). If the wildcard expression returns more than one file, then <span class="code">'-sf'</span> option is ignored, and each coverfile is overwritten with the corresponding generated stegofile</td></tr>
+              <tr><td class="code" nowrap>-sf, --stegofile &lt;filename&gt;</td><td>Output stego file containing the embedded watermark. If this option is not provided or <span class="code">'-'</span> (without quotes) is provided as the value then the stego file is written to <span class="code">stdout</span></td></tr>
+            </table>
+            <h2>Possible options for 'checkmark' command:</h2>
+            <table>
+              <tr><th>Option</th><th>Description</th></tr>
+              <tr><td class="code" nowrap>-sf, --stegofile &lt;filename&gt;</td><td>Stego file containing the embedded watermark</td></tr>
+              <tr><td class="code" nowrap>-gf, --sigfile &lt;filename&gt;</td><td>Signature file which was used to watermark the file</td></tr>
+            </table>
+            <h2>Examples:</h2>
+            <p>To embed <span class="code">secret.txt</span> into <span class="code">wallpaper.png</span> and generate the output into <span class="code">test.png</span>:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar embed -a lsb -mf secret.txt -cf wallpaper.png -sf test.png</pre>
+            <p>OR</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar --embed --algorithm=lsb --messagefile=secret.txt --coverfile=wallpaper.png --stegofile=test.png</pre>
+            <p>To extract embedded data from <span class="code">test.png</span> to <span class="code">/data</span> directory:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar extract -a lsb -sf test.png -xd /data</pre>
+            <p>OR</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar extract --algorithm=lsb --stegofile=test.png --extractdir=/data</pre>
+            <p>To generate a signature file:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar gensig -a dwtdugad -gf my.sig</pre>
+            <p>OR</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar --gensig --algorithm=dwtdugad --sigfile=my.sig</pre>
+            <p>To embed signature into <span class="code">owned.png</span> and generate the output into <span class="code">out.png</span>:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar embedmark -a dwtdugad -gf my.sig -cf owned.png -sf out.png</pre>
+            <p>OR</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar --embedmark --algorithm=dwtdugad --sigfile=my.sig --coverfile=owned.png --stegofile=out.png</pre>
+            <p>To check for watermark in <span class="code">test.png</span> using <span class="code">my.sig</span> signature file:</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar checkmark -a dwtdugad -gf my.sig -sf test.png</pre>
+            <p>OR</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar checkmark --algorithm=dwtdugad --sigfile=my.sig --stegofile=test.png</pre>
+            <p>Piping example:</p>
+            <pre>ls -R | java -jar &lt;path&gt;\openstego.jar embed -a lsb &gt; test.png</pre>
+            <p>Wildcard example (Please note that the double quotes are important):</p>
+            <pre>java -jar &lt;path&gt;\openstego.jar embed -a lsb -cf &quot;img???.png;wall*.png&quot; -mf watermark.txt</pre>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div id="overallend" />
+    </div>
+    <div id="footer">
+      <div id="designer">Site based on design by <a href="http://bkcore.com/">BlacKnight</a></div>
+    </div>
+  </body>
+</html>
+

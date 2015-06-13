@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="Keywords" content="openstego, steganography, security, digital watermarking">
+    <title>OpenStego - Home</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="overall">
+      <div id="header">
+        <div id="logo" onclick="document.location.href='index.html';">
+          <div id="noCSS"><h1><a href="index.html">OpenStego</a></h1><h3><a href="index.html">The free steganography solution</a></h3></div>
+        </div>
+        <div id="bar"></div>
+      </div>
+      <div id="main">
+        <div id="menu">
+          <div id="menu_top"></div>
+          <div id="menu_center">
+            <a href="index.html">Home</a>
+            <hr/>
+            <a href="features.html">Features</a>
+            <a href="https://github.com/syvaidya/openstego/releases">Download</a>
+            <a href="https://github.com/syvaidya/openstego/issues">Issues</a>
+            <a href="https://github.com/syvaidya/openstego">Project page</a>
+            <a href="cmdline.html">Command-line</a>
+            <hr/>
+            <a href="contact.html">Contact</a>
+          </div>
+          <div id="menu_bottom"></div>
+        </div>
+        <div id="content">
+          <div>
+            <h1>Overview</h1>
+            <h2>Introduction</h2>
+            <p>Welcome to the homepage of OpenStego, the free steganography solution. This is an open-source software distributed under the terms of the GNU General Public License v2.0.</p>
+            <p>OpenStego provides two main functionalities:</p>
+            <ul>
+              <li><b>Data Hiding:</b> It can hide any data within a cover file (e.g. images).</li>
+              <li><b>Watermarking (beta):</b> Watermarking files (e.g. images) with an invisible signature. It can be used to detect unauthorized file copying.</li>
+            </ul>
+            <h2>What is Steganography?</h2>
+            <p><a href="http://en.wikipedia.org/wiki/Steganography">Steganography</a> is the science of hiding secret message inside another larger and harmless looking message. This is one notch above regular cryptography; which just obscures the original message. Steganography tries to conceal the fact that there is a message in the first place. Steganographic message often appears to be something else than the original (secret) message, like a picture, sound, larger text, etc.</p>
+            <p>Some terms related to Steganography:</p>
+            <ul>
+              <li><b>plaintext:</b> The original secret message that needs to be communicated.</li>
+              <li><b>ciphertext:</b> Secret message is often first encrypted using traditional methods. Encrypted message is known as ciphertext.</li>
+              <li><b>covertext:</b> A larger and harmless looking data which is used as container for the plaintext/ciphertext. This can be a picture, sound, text, etc.</li>
+              <li><b>stegotext:</b> The data generated after embedding the plaintext/ciphertext into the covertext.</li>
+            </ul>
+            <p>The normal procedure is to first encrypt the plaintext to generate the ciphertext, and then modify the covertext in some way to contain the ciphertext. The generated stegotext is sent over to the intended recepient. If a third party snoops the stegotext in between, then they will just see some harmless looking picture (or sound, etc). Once the recepient receives the stegotext, the ciphertext is extracted from it by reversing the logic that was used to embed it in the first place. The ciphertext is decrypted using the traditional cryptography to get back the original plaintext.</p>
+            <h2>What is Digital Watermarking?</h2>
+            <p><a href="http://en.wikipedia.org/wiki/Digital_watermarking">Digital Watermarking</a> is the process of embedding a covert marker in a noise-tolerant signal such as image data. It is typically used to identify ownership of the copyright of such signal. The hidden information should but does not necessarily need to contain a relation to the carrier signal. Digital watermarks may be used to verify the authenticity or integrity of the carrier signal or to show the identity of its owners. It is prominently used for tracing copyright infringements and for banknote authentication. Like traditional watermarks, digital watermarks are only perceptible under certain conditions, i.e. after using some algorithm, and imperceptible anytime else. If a digital watermark distorts the carrier signal in a way that it becomes perceivable, it is of no use.</p>
+            <p>OpenStego provides robust digital watermarking capabilities such that the watermark strength is not easily reduced when the watermarked image is resized, cropped or some other minor modifications are done.</p>
+            <h1>Using OpenStego</h1>
+            <p>Using OpenStego is pretty straightforward. There are two modes of operation - data hiding and watermarking.</p>
+            <ul>
+              <li>
+                <b>Data Hiding:</b> In this mode, you can either hide the data (file) inside an image or extract the data from the image. Check screenshots below to see how it can be done:
+                <ul>
+                  <li>Hide data:<p><img src="image/screenshot/01.png"/></p></li>
+                  <li>Extract data:<p><img src="image/screenshot/02.png"/></p></li>
+                </ul>
+              </li>
+              <li>
+                <b>Watermarking (beta)</b> In this mode, you can watermark / verify images with your signature. First you need to generate signature file, and then it can be used to watermark images or verify the same later. Check screenshots below to see how it can be done:
+                <ul>
+                  <li>Generate signature:<p><img src="image/screenshot/03.png"/></p></li>
+                  <li>Embed watermark:<p><img src="image/screenshot/04.png"/></p></li>
+                  <li>Verify watermark:<p><img src="image/screenshot/05.png"/></p></li>
+                </ul>
+              </li>
+            </ul>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div id="overallend" />
+    </div>
+    <div id="footer">
+      <div id="designer">Site based on design by <a href="http://bkcore.com/">BlacKnight</a></div>
+    </div>
+  </body>
+</html>

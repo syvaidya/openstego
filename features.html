@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="Keywords" content="openstego, steganography, security, digital watermarking">
+    <title>OpenStego - Features</title>
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body>
+    <div id="overall">
+      <div id="header">
+        <div id="logo" onclick="document.location.href='index.html';">
+          <div id="noCSS"><h1><a href="index.html">OpenStego</a></h1><h3><a href="index.html">The free steganography solution</a></h3></div>
+        </div>
+        <div id="bar"></div>
+      </div>
+      <div id="main">
+        <div id="menu">
+          <div id="menu_top"></div>
+          <div id="menu_center">
+            <a href="index.html">Home</a>
+            <hr/>
+            <a href="features.html">Features</a>
+            <a href="https://github.com/syvaidya/openstego/releases">Download</a>
+            <a href="https://github.com/syvaidya/openstego/issues">Issues</a>
+            <a href="https://github.com/syvaidya/openstego">Project page</a>
+            <a href="cmdline.html">Command-line</a>
+            <hr/>
+            <a href="contact.html">Contact</a>
+          </div>
+          <div id="menu_bottom"></div>
+        </div>
+        <div id="content">
+          <div>
+            <h2>Features</h2>
+            <ul>
+              <li>OpenStego is written in pure Java and should run on all platforms supported by java. It has been tested on MS Windows and Linux, but should not have any problem on other platforms too. Please report bugs if you find any.</li>
+              <li>It supports password-based encryption of data for additional layer of security. DES algorithm is used for data encryption, along with MD5 hashing to derive the DES key from the password provided.</li>
+              <li>It uses a plugin based architecture, where various plugins can be created for different kind of Steganographic / Watermarking algorithms. Currently, it supports two plugins - RandomLSB (Randomized LSB) for data hiding and Dugad's algorithm for watermarking, but new plugins can be easily created for other algorithms. Plugins can also be easily added for other type of cover files like Audio files.</li>
+            </ul>
+            <h2>To Do</h2>
+            <ul>
+              <li>Add support for other Steganographic algorithms like DCT, FFT, etc.</li>
+              <li>Add support for audio data to be used as cover file.</li>
+              <li>Implement OpenStego in C/C++, so that it can be compiled as native binary, and dependency on Java is removed.</li>
+            </ul>
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div id="overallend" />
+    </div>
+    <div id="footer">
+      <div id="designer">Site based on design by <a href="http://bkcore.com/">BlacKnight</a></div>
+    </div>
+  </body>
+</html>
