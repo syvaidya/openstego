@@ -40,7 +40,7 @@ public class ImageUtil
 
     /**
      * Method to generate a random image filled with noise.
-     * 
+     *
      * @param numOfPixels Number of pixels required in the image
      * @return Random image filled with noise
      * @throws OpenStegoException
@@ -82,7 +82,7 @@ public class ImageUtil
 
     /**
      * Method to convert BufferedImage to byte array
-     * 
+     *
      * @param image Image data
      * @param imageFileName Name of the image file
      * @param plugin Reference to the plugin
@@ -125,7 +125,7 @@ public class ImageUtil
 
     /**
      * Method to convert byte array to image
-     * 
+     *
      * @param imageData Image data as byte array
      * @param imgFileName Name of the image file
      * @return Buffered image
@@ -157,7 +157,7 @@ public class ImageUtil
 
     /**
      * Get RGB data array from given image
-     * 
+     *
      * @param image Image
      * @return List with three elements of two-dimensional int's - R, G and B
      */
@@ -196,7 +196,7 @@ public class ImageUtil
 
     /**
      * Get YUV data from given image's RGB data
-     * 
+     *
      * @param image Image
      * @return List with three elements of two-dimensional int's - Y, U and V
      */
@@ -249,7 +249,7 @@ public class ImageUtil
 
     /**
      * Get image from given RGB data
-     * 
+     *
      * @param rgb List with three elements of two-dimensional int's - R, G and B
      * @return Image
      */
@@ -283,7 +283,7 @@ public class ImageUtil
 
     /**
      * Get image (with RGB data) from given YUV data
-     * 
+     *
      * @param yuv List with three elements of two-dimensional int's - Y, U and V
      * @param imgType Type of image (e.g. BufferedImage.TYPE_INT_RGB)
      * @return Image
@@ -332,7 +332,7 @@ public class ImageUtil
 
     /**
      * Utility method to limit the value within [0,255] range
-     * 
+     *
      * @param p Input value
      * @return Limited value
      */
@@ -343,7 +343,7 @@ public class ImageUtil
 
     /**
      * Utility method to limit the value within [0,255] range
-     * 
+     *
      * @param p Input value
      * @return Limited value
      */
@@ -354,7 +354,7 @@ public class ImageUtil
 
     /**
      * Method to pad an image such that it becomes perfect square. The padding uses black color
-     * 
+     *
      * @param image Input image
      * @return Image with square dimensions
      */
@@ -369,7 +369,7 @@ public class ImageUtil
     /**
      * Method crop an image to the given dimensions. If dimensions are more than the input image size, then the image
      * gets padded with black color
-     * 
+     *
      * @param image Input image
      * @param cropWidth Width required for cropped image
      * @param cropHeight Height required for cropped image
@@ -406,7 +406,7 @@ public class ImageUtil
 
     /**
      * Method generate difference image between two given images
-     * 
+     *
      * @param leftImage Left input image
      * @param rightImage Right input image
      * @return Difference image
@@ -422,7 +422,7 @@ public class ImageUtil
         int min = 0;
         int max = 0;
         int diff = 0;
-        double error = 0.0;
+        // double error = 0.0;
         BufferedImage diffImage = null;
 
         leftW = leftImage.getWidth();
@@ -443,7 +443,7 @@ public class ImageUtil
             for(int j = 0; j < leftH; j++)
             {
                 diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
-                error += diff * diff;
+                // error += diff * diff;
                 if(diff < min)
                 {
                     min = diff;

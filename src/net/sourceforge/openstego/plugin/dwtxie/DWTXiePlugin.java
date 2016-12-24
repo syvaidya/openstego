@@ -57,7 +57,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Gives the name of the plugin
-     * 
+     *
      * @return Name of the plugin
      */
     public String getName()
@@ -67,7 +67,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
-     * 
+     *
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -77,7 +77,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
-     * 
+     *
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
      *        the cover data
@@ -185,7 +185,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -206,7 +206,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         int[][] luminance = null;
         int cols = 0;
         int rows = 0;
-        int n = 0;
+        // int n = 0;
 
         image = ImageUtil.makeImageSquare(ImageUtil.byteArrayToImage(stegoData, stegoFileName));
 
@@ -253,7 +253,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
                 // Apply inverse watermarking transformation to get the bit value
                 sigBitList.add(invWmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value));
-                n++;
+                // n++;
             }
         }
         sig.setWatermark(convertBitListToByteArray(sigBitList));
@@ -263,7 +263,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to generate the signature data
-     * 
+     *
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -280,7 +280,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to check the correlation between original signature and the extracted watermark
-     * 
+     *
      * @param origSigData Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
@@ -309,7 +309,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to get the usage details of the plugin
-     * 
+     *
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
@@ -361,7 +361,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to get a bit value from the watermark
-     * 
+     *
      * @param watermark Watermark data
      * @param n Bit number
      * @return Bit value
@@ -376,7 +376,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to set a bit value in the watermark
-     * 
+     *
      * @param watermark Watermark data
      * @param n Bit number
      * @param v Bit value
@@ -398,7 +398,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
     /**
      * Method to convert list of bits into byte array
-     * 
+     *
      * @param bitList List of bits
      * @return Byte array
      */
@@ -471,7 +471,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         /**
          * Constructor which generates the watermark data using the given randomizer
-         * 
+         *
          * @param rand Randomizer to use for generating watermark data
          */
         public Signature(Random rand)
@@ -482,7 +482,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         /**
          * Constructor that takes existing the signature data
-         * 
+         *
          * @param sigData Existing signature data
          * @throws OpenStegoException
          */
@@ -517,7 +517,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         /**
          * Get the signature data generated
-         * 
+         *
          * @return Signature data
          * @throws OpenStegoException
          */
@@ -550,7 +550,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         /**
          * Method to replace the watermark data
-         * 
+         *
          * @param watermark Watermark data
          */
         public void setWatermark(byte[] watermark)

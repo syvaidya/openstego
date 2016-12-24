@@ -39,6 +39,13 @@ public class OpenStegoConfig
     public static final String PASSWORD = "password";
 
     /**
+     * Key string for configuration item - encryptionAlgorithm
+     * <p>
+     * Algorithm to be used for encryption
+     */
+    public static final String ENCRYPTION_ALGORITHM = "encryptionAlgorithm";
+
+    /**
      * Flag to indicate whether compression should be used or not
      */
     private boolean useCompression = true;
@@ -54,6 +61,11 @@ public class OpenStegoConfig
     private String password = null;
 
     /**
+     * Algorithm to be used for encryption in case "useEncryption" is set to true
+     */
+    private String encryptionAlgorithm = OpenStegoCrypto.ALGO_AES128;
+
+    /**
      * Default Constructor (with default values for configuration items)
      */
     public OpenStegoConfig()
@@ -63,7 +75,7 @@ public class OpenStegoConfig
     /**
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
-     * 
+     *
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -74,7 +86,7 @@ public class OpenStegoConfig
 
     /**
      * Constructor which reads configuration data from the command line options.
-     * 
+     *
      * @param options Command-line options
      * @throws OpenStegoException
      */
@@ -107,12 +119,17 @@ public class OpenStegoConfig
             map.put(PASSWORD, options.getOptionValue("-p"));
         }
 
+        if(options.getOption("-A") != null) // cryptalgo
+        {
+            map.put(ENCRYPTION_ALGORITHM, options.getOptionValue("-A"));
+        }
+
         addProperties(map);
     }
 
     /**
      * Method to add properties from the map to this configuration data
-     * 
+     *
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
@@ -164,12 +181,16 @@ public class OpenStegoConfig
             {
                 this.password = propMap.get(key).toString();
             }
+            else if(key.equals(ENCRYPTION_ALGORITHM))
+            {
+                this.encryptionAlgorithm = propMap.get(key).toString();
+            }
         }
     }
 
     /**
      * Get method for configuration item - useCompression
-     * 
+     *
      * @return useCompression
      */
     public boolean isUseCompression()
@@ -179,7 +200,7 @@ public class OpenStegoConfig
 
     /**
      * Set method for configuration item - useCompression
-     * 
+     *
      * @param useCompression
      */
     public void setUseCompression(boolean useCompression)
@@ -189,7 +210,7 @@ public class OpenStegoConfig
 
     /**
      * Get Method for useEncryption
-     * 
+     *
      * @return useEncryption
      */
     public boolean isUseEncryption()
@@ -199,7 +220,7 @@ public class OpenStegoConfig
 
     /**
      * Set Method for useEncryption
-     * 
+     *
      * @param useEncryption
      */
     public void setUseEncryption(boolean useEncryption)
@@ -209,7 +230,7 @@ public class OpenStegoConfig
 
     /**
      * Get Method for password
-     * 
+     *
      * @return password
      */
     public String getPassword()
@@ -219,11 +240,31 @@ public class OpenStegoConfig
 
     /**
      * Set Method for password
-     * 
+     *
      * @param password
      */
     public void setPassword(String password)
     {
         this.password = password;
+    }
+
+    /**
+     * Get Method for encryptionAlgorithm
+     *
+     * @return encryptionAlgorithm
+     */
+    public String getEncryptionAlgorithm()
+    {
+        return this.encryptionAlgorithm;
+    }
+
+    /**
+     * Set Method for encryptionAlgorithm
+     *
+     * @param encryptionAlgorithm
+     */
+    public void setEncryptionAlgorithm(String encryptionAlgorithm)
+    {
+        this.encryptionAlgorithm = encryptionAlgorithm;
     }
 }

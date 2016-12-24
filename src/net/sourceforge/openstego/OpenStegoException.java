@@ -99,6 +99,11 @@ public class OpenStegoException extends Exception
     public static final int PWD_MANDATORY_FOR_GENSIG = 15;
 
     /**
+     * Error Code - Invalid key name
+     */
+    public static final int INVALID_CRYPT_ALGO = 16;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static Map<String, String> errMsgKeyMap = new HashMap<String, String>();
@@ -122,6 +127,7 @@ public class OpenStegoException extends Exception
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_COMPR_VALUE, "err.config.useCompression.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_ENCRYPT_VALUE, "err.config.useEncryption.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_KEY_NAME, "err.config.invalidKey");
+        addErrorCode(OpenStego.NAMESPACE, INVALID_CRYPT_ALGO, "err.config.invalidCryptAlgo");
         addErrorCode(OpenStego.NAMESPACE, CORRUPT_DATA, "err.corruptData");
         addErrorCode(OpenStego.NAMESPACE, NO_VALID_PLUGIN, "err.noValidPlugin");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
@@ -136,7 +142,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor using default namespace for unhandled exceptions
-     * 
+     *
      * @param cause Original exception which caused this exception to be raised
      */
     public OpenStegoException(Throwable cause)
@@ -146,7 +152,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Default constructor
-     * 
+     *
      * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
@@ -158,7 +164,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor with a single parameter for the message
-     * 
+     *
      * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
@@ -171,7 +177,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Constructor which takes object array for parameters for the message
-     * 
+     *
      * @param cause Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
@@ -179,8 +185,8 @@ public class OpenStegoException extends Exception
      */
     public OpenStegoException(Throwable cause, String namespace, int errorCode, Object... params)
     {
-        super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString() : LabelUtil
-                .getInstance(namespace).getString(errMsgKeyMap.get(namespace + errorCode), params), cause);
+        super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString()
+                : LabelUtil.getInstance(namespace).getString(errMsgKeyMap.get(namespace + errorCode), params), cause);
 
         this.namespace = namespace;
         this.errorCode = errorCode;
@@ -188,7 +194,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Get method for errorCode
-     * 
+     *
      * @return errorCode
      */
     public int getErrorCode()
@@ -198,7 +204,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Get method for namespace
-     * 
+     *
      * @return namespace
      */
     public String getNamespace()
@@ -208,7 +214,7 @@ public class OpenStegoException extends Exception
 
     /**
      * Method to add new error codes to the namespace
-     * 
+     *
      * @param namespace Namespace for the error
      * @param errorCode Error code of the error
      * @param labelKey Key of the label for the error

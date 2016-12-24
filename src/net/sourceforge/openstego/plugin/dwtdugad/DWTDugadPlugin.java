@@ -59,7 +59,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Gives the name of the plugin
-     * 
+     *
      * @return Name of the plugin
      */
     public String getName()
@@ -69,7 +69,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
-     * 
+     *
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -79,7 +79,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
-     * 
+     *
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
      *        the cover data
@@ -129,7 +129,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         // Embed watermark in all subbands of a decomposition level
         for(int i = 0; i < sig.decompositionLevel; i++)
         {
-            wmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
+            wmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha,
+                sig.castingThreshold);
             wmSubBand(s.getVertical().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             wmSubBand(s.getDiagonal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             s = s.getCoarse();
@@ -144,7 +145,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -221,7 +222,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Method to generate the signature data
-     * 
+     *
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -238,7 +239,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Method to check the correlation between original signature and the extracted watermark
-     * 
+     *
      * @param origSigData Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
@@ -254,7 +255,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         int m = 0;
         double z = 0.0;
         double v = 0.0;
-        double diff = 0.0;
+        // double diff = 0.0;
         double alpha;
 
         try
@@ -279,7 +280,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 if(m != 0)
                 {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
-                    diff += ((z - v * alpha) / (1.0 * m));
+                    // diff += ((z - v * alpha) / (1.0 * m));
                 }
                 else
                 {
@@ -293,7 +294,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 if(m != 0)
                 {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
-                    diff += ((z - v * alpha) / (1.0 * m));
+                    // diff += ((z - v * alpha) / (1.0 * m));
                 }
                 else
                 {
@@ -307,7 +308,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 if(m != 0)
                 {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
-                    diff += ((z - v * alpha) / (1.0 * m));
+                    // diff += ((z - v * alpha) / (1.0 * m));
                 }
                 else
                 {
@@ -325,7 +326,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
     /**
      * Method to get the usage details of the plugin
-     * 
+     *
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
@@ -423,7 +424,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
         /**
          * Constructor which generates the watermark data using the given randomizer
-         * 
+         *
          * @param rand Randomizer to use for generating watermark data
          */
         public Signature(Random rand)
@@ -450,7 +451,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
         /**
          * Constructor that takes existing the signature data
-         * 
+         *
          * @param sigData Existing signature data
          * @throws OpenStegoException
          */
@@ -490,7 +491,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
 
         /**
          * Get the signature data generated
-         * 
+         *
          * @return Signature data
          * @throws OpenStegoException
          */

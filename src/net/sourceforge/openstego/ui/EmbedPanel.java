@@ -12,6 +12,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -22,6 +23,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.sourceforge.openstego.OpenStego;
+import net.sourceforge.openstego.OpenStegoCrypto;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -41,6 +43,7 @@ public class EmbedPanel extends JPanel
     private JButton coverFileButton;
     private JTextField stegoFileTextField;
     private JButton stegoFileButton;
+    private JComboBox<String> encryptionAlgoComboBox;
     private JPasswordField passwordTextField;
     private JPasswordField confPasswordTextField;
     private JButton runEmbedButton;
@@ -56,7 +59,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Getter method for optionPanel
-     * 
+     *
      * @return optionPanel
      */
     public JPanel getOptionPanel()
@@ -65,13 +68,34 @@ public class EmbedPanel extends JPanel
         {
             JLabel label;
             this.optionPanel = new JPanel();
-            this.optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5,
-                    5)), new EtchedBorder()), " " + labelUtil.getString("gui.label.dhEmbed.option.title") + " "));
+            this.optionPanel.setBorder(new TitledBorder(
+                    new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()),
+                    " " + labelUtil.getString("gui.label.dhEmbed.option.title") + " "));
             this.optionPanel.setLayout(new GridBagLayout());
 
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
             gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 0;
+            gridBagConstraints.insets = new Insets(5, 5, 5, 5);
+            gridBagConstraints.weightx = 1.0;
+            gridBagConstraints.weighty = 0.0;
+            label = new JLabel(labelUtil.getString("gui.label.dhEmbed.option.cryptalgo"));
+            label.setLabelFor(getEncryptionAlgoComboBox());
+            this.optionPanel.add(label, gridBagConstraints);
+
+            gridBagConstraints = new GridBagConstraints();
+            gridBagConstraints.fill = GridBagConstraints.BOTH;
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 0;
+            gridBagConstraints.insets = new Insets(5, 5, 5, 30);
+            gridBagConstraints.weightx = 1.0;
+            gridBagConstraints.weighty = 0.0;
+            this.optionPanel.add(getEncryptionAlgoComboBox(), gridBagConstraints);
+
+            gridBagConstraints = new GridBagConstraints();
+            gridBagConstraints.fill = GridBagConstraints.BOTH;
+            gridBagConstraints.gridx = 2;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
@@ -82,7 +106,7 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridx = 3;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
@@ -91,7 +115,7 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 2;
+            gridBagConstraints.gridx = 4;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
@@ -102,7 +126,7 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 3;
+            gridBagConstraints.gridx = 5;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
@@ -114,7 +138,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Message File" text field
-     * 
+     *
      * @return msgFileTextField
      */
     public JTextField getMsgFileTextField()
@@ -129,7 +153,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Message File" browse file button
-     * 
+     *
      * @return msgFileButton
      */
     public JButton getMsgFileButton()
@@ -145,7 +169,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Cover File" text field
-     * 
+     *
      * @return coverFileTextField
      */
     public JTextField getCoverFileTextField()
@@ -160,7 +184,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Cover File" browse file button
-     * 
+     *
      * @return coverFileButton
      */
     public JButton getCoverFileButton()
@@ -176,7 +200,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Stego File" text field
-     * 
+     *
      * @return stegoFileTextField
      */
     public JTextField getStegoFileTextField()
@@ -191,7 +215,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Stego File" browse file button
-     * 
+     *
      * @return stegoFileButton
      */
     public JButton getStegoFileButton()
@@ -206,8 +230,23 @@ public class EmbedPanel extends JPanel
     }
 
     /**
+     * Get method for "Encryption Algorithm" combo box
+     *
+     * @return encryptionAlgoComboBox
+     */
+    public JComboBox<String> getEncryptionAlgoComboBox()
+    {
+        if(this.encryptionAlgoComboBox == null)
+        {
+            this.encryptionAlgoComboBox = new JComboBox<String>(new String[] { OpenStegoCrypto.ALGO_AES128,
+                    OpenStegoCrypto.ALGO_AES256, OpenStegoCrypto.ALGO_DES });
+        }
+        return this.encryptionAlgoComboBox;
+    }
+
+    /**
      * Get method for "Password" text field
-     * 
+     *
      * @return passwordTextField
      */
     public JPasswordField getPasswordTextField()
@@ -222,7 +261,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for "Confirm Password" text field
-     * 
+     *
      * @return confPasswordTextField
      */
     public JPasswordField getConfPasswordTextField()
@@ -237,7 +276,7 @@ public class EmbedPanel extends JPanel
 
     /**
      * Get method for Embed "OK" button
-     * 
+     *
      * @return runEmbedButton
      */
     public JButton getRunEmbedButton()
@@ -334,8 +373,8 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new Insets(0, 0, 5, 5);
+        gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
         add(getMsgFileButton(), gridBagConstraints);
 
@@ -344,8 +383,8 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
-        gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new Insets(0, 0, 5, 5);
+        gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
         add(getCoverFileButton(), gridBagConstraints);
 
@@ -354,8 +393,8 @@ public class EmbedPanel extends JPanel
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
-        gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new Insets(0, 0, 5, 5);
+        gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 0.0;
         add(getStegoFileButton(), gridBagConstraints);
 

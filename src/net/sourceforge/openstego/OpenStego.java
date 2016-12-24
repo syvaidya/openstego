@@ -54,7 +54,7 @@ public class OpenStego
 
     /**
      * Constructor using the default configuration
-     * 
+     *
      * @param plugin Stego plugin to use
      * @throws OpenStegoException
      */
@@ -65,7 +65,7 @@ public class OpenStego
 
     /**
      * Constructor using {@link OpenStegoConfig} object
-     * 
+     *
      * @param plugin Stego plugin to use
      * @param config OpenStegoConfig object with configuration data
      * @throws OpenStegoException
@@ -83,7 +83,7 @@ public class OpenStego
 
     /**
      * Constructor with configuration data in the form of {@link Map}
-     * 
+     *
      * @param plugin Plugin object
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
@@ -95,7 +95,7 @@ public class OpenStego
 
     /**
      * Method to embed the message data into the cover data
-     * 
+     *
      * @param msg Message data to be embedded
      * @param msgFileName Name of the message file
      * @param cover Cover data into which message data needs to be embedded
@@ -130,7 +130,8 @@ public class OpenStego
             // Encrypt data, if requested
             if(this.config.isUseEncryption())
             {
-                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword());
+                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword(),
+                        this.config.getEncryptionAlgorithm());
                 msg = crypto.encrypt(msg);
             }
 
@@ -148,7 +149,7 @@ public class OpenStego
 
     /**
      * Method to embed the message data into the cover data (alternate API)
-     * 
+     *
      * @param msgFile File containing the message data to be embedded
      * @param coverFile Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
@@ -190,7 +191,7 @@ public class OpenStego
 
     /**
      * Method to embed the watermark signature data into the cover data
-     * 
+     *
      * @param sig Signature data to be embedded
      * @param sigFileName Name of the signature file
      * @param cover Cover data into which signature data needs to be embedded
@@ -224,7 +225,7 @@ public class OpenStego
 
     /**
      * Method to embed the watermark signature data into the cover data (alternate API)
-     * 
+     *
      * @param sigFile File containing the signature data to be embedded
      * @param coverFile Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
@@ -266,7 +267,7 @@ public class OpenStego
 
     /**
      * Method to extract the message data from stego data
-     * 
+     *
      * @param stegoData Stego data from which the message needs to be extracted
      * @param stegoFileName Name of the stego file
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
@@ -291,7 +292,8 @@ public class OpenStego
             // Decrypt data, if required
             if(this.config.isUseEncryption())
             {
-                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword());
+                OpenStegoCrypto crypto = new OpenStegoCrypto(this.config.getPassword(),
+                        this.config.getEncryptionAlgorithm());
                 msg = crypto.decrypt(msg);
             }
 
@@ -329,7 +331,7 @@ public class OpenStego
 
     /**
      * Method to extract the message data from stego data (alternate API)
-     * 
+     *
      * @param stegoFile Stego file from which message needs to be extracted
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
      * @throws OpenStegoException
@@ -346,7 +348,7 @@ public class OpenStego
 
     /**
      * Method to extract the watermark data from stego data
-     * 
+     *
      * @param stegoData Stego data from which the watermark needs to be extracted
      * @param stegoFileName Name of the stego file
      * @param origSigData Original signature data
@@ -365,7 +367,7 @@ public class OpenStego
 
     /**
      * Method to extract the watermark data from stego data (alternate API)
-     * 
+     *
      * @param stegoFile Stego file from which watermark needs to be extracted
      * @param origSigFile Original signature file
      * @return Extracted watermark
@@ -384,7 +386,7 @@ public class OpenStego
 
     /**
      * Method to check the correlation for the given image and the original signature
-     * 
+     *
      * @param stegoData Stego data containing the watermark
      * @param stegoFileName Name of the stego file
      * @param origSigData Original signature data
@@ -403,7 +405,7 @@ public class OpenStego
 
     /**
      * Method to check the correlation for the given image and the original signature (alternate API)
-     * 
+     *
      * @param stegoFile Stego file from which watermark needs to be extracted
      * @param origSigFile Original signature file
      * @return Correlation
@@ -427,7 +429,7 @@ public class OpenStego
 
     /**
      * Method to generate the signature data using the given plugin
-     * 
+     *
      * @return Signature data
      * @throws OpenStegoException
      */
@@ -448,7 +450,7 @@ public class OpenStego
 
     /**
      * Method to get difference between original cover file and the stegged file
-     * 
+     *
      * @param stegoData Stego data containing the embedded data
      * @param stegoFileName Name of the stego file
      * @param coverData Original cover data
@@ -465,7 +467,7 @@ public class OpenStego
 
     /**
      * Method to get difference between original cover file and the stegged file
-     * 
+     *
      * @param stegoFile Stego file containing the embedded data
      * @param coverFile Original cover file
      * @param diffFileName Name of the output difference file
@@ -480,7 +482,7 @@ public class OpenStego
 
     /**
      * Get method for configuration data
-     * 
+     *
      * @return Configuration data
      */
     public OpenStegoConfig getConfig()
@@ -490,7 +492,7 @@ public class OpenStego
 
     /**
      * Main method for calling openstego from command line.
-     * 
+     *
      * @param args Command line arguments
      */
     public static void main(String[] args)

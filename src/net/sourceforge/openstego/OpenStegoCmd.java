@@ -29,7 +29,7 @@ public class OpenStegoCmd
 
     /**
      * Main method for processing command line
-     * 
+     *
      * @param args Command line arguments
      */
     public static void execute(String[] args)
@@ -178,9 +178,10 @@ public class OpenStegoCmd
                         return;
                     }
 
-                    CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
-                            : new File(msgFileName), coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                        (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                    CommonUtil.writeFile(
+                        stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
                         (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                 }
                 // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
@@ -196,8 +197,9 @@ public class OpenStegoCmd
                     for(int i = 0; i < coverFileList.size(); i++)
                     {
                         coverFileName = (coverFileList.get(i)).getName();
-                        CommonUtil.writeFile(stego.embedData((msgFileName == null || msgFileName.equals("-")) ? null
-                                : new File(msgFileName), coverFileList.get(i), coverFileName), coverFileName);
+                        CommonUtil.writeFile(stego.embedData(
+                            (msgFileName == null || msgFileName.equals("-")) ? null : new File(msgFileName),
+                            coverFileList.get(i), coverFileName), coverFileName);
 
                         System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
                     }
@@ -219,9 +221,10 @@ public class OpenStegoCmd
                         return;
                     }
 
-                    CommonUtil.writeFile(stego.embedMark((sigFileName == null || sigFileName.equals("-")) ? null
-                            : new File(sigFileName), coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
-                        (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
+                    CommonUtil.writeFile(
+                        stego.embedMark((sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
+                            coverFileList.size() == 0 ? null : (File) coverFileList.get(0),
+                            (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName),
                         (stegoFileName == null || stegoFileName.equals("-")) ? null : stegoFileName);
                 }
                 // Else loop through all coverfiles and overwrite the same coverfiles with generated stegofiles
@@ -237,8 +240,9 @@ public class OpenStegoCmd
                     for(int i = 0; i < coverFileList.size(); i++)
                     {
                         coverFileName = (coverFileList.get(i)).getName();
-                        CommonUtil.writeFile(stego.embedMark((sigFileName == null || sigFileName.equals("-")) ? null
-                                : new File(sigFileName), coverFileList.get(i), coverFileName), coverFileName);
+                        CommonUtil.writeFile(stego.embedMark(
+                            (sigFileName == null || sigFileName.equals("-")) ? null : new File(sigFileName),
+                            coverFileList.get(i), coverFileName), coverFileName);
 
                         System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
                     }
@@ -261,7 +265,8 @@ public class OpenStegoCmd
                 }
                 catch(OpenStegoException osEx)
                 {
-                    if(osEx.getErrorCode() == OpenStegoException.INVALID_PASSWORD)
+                    if(osEx.getErrorCode() == OpenStegoException.INVALID_PASSWORD
+                            || osEx.getErrorCode() == OpenStegoException.NO_VALID_PLUGIN)
                     {
                         if(stego.getConfig().getPassword() == null)
                         {
@@ -336,8 +341,8 @@ public class OpenStegoCmd
                     for(int i = 0; i < stegoFileList.size(); i++)
                     {
                         stegoFileName = (stegoFileList.get(i)).getName();
-                        System.out.println(stegoFileName + "\t"
-                                + stego.checkMark(stegoFileList.get(i), new File(sigFileName)));
+                        System.out.println(
+                            stegoFileName + "\t" + stego.checkMark(stegoFileList.get(i), new File(sigFileName)));
                     }
                 }
             }
@@ -391,8 +396,8 @@ public class OpenStegoCmd
                 for(int i = 0; i < plugins.size(); i++)
                 {
                     plugin = plugins.get(i);
-                    System.out.println(plugin.getName() + " " + plugin.getPurposesLabel() + " - "
-                            + plugin.getDescription());
+                    System.out.println(
+                        plugin.getName() + " " + plugin.getPurposesLabel() + " - " + plugin.getDescription());
                 }
             }
             else if(command.equals("help"))
@@ -433,7 +438,7 @@ public class OpenStegoCmd
 
     /**
      * Method to display usage for OpenStego
-     * 
+     *
      * @throws OpenStegoException
      */
     private static void displayUsage() throws OpenStegoException
@@ -447,7 +452,7 @@ public class OpenStegoCmd
 
     /**
      * Method to generate the standard list of command-line options
-     * 
+     *
      * @param plugin Stego plugin for plugin-specific command-line options
      * @return Standard list of command-line options
      * @throws OpenStegoException
@@ -485,6 +490,7 @@ public class OpenStegoCmd
         options.add("-e", "--encrypt", CmdLineOption.TYPE_OPTION, false);
         options.add("-E", "--noencrypt", CmdLineOption.TYPE_OPTION, false);
         options.add("-p", "--password", CmdLineOption.TYPE_OPTION, true);
+        options.add("-A", "--cryptalgo", CmdLineOption.TYPE_OPTION, true);
 
         // Plugin-specific options
         if(plugin != null)

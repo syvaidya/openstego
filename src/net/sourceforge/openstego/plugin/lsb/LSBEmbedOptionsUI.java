@@ -46,7 +46,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
     /**
      * Combobox for "Max Bits Per Color Channel"
      */
-    private JComboBox maxBitsComboBox = null;
+    private JComboBox<Integer> maxBitsComboBox = null;
 
     /**
      * Reference to the parent OpenStegoUI object
@@ -55,7 +55,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Default constructor
-     * 
+     *
      * @param stegoUI Reference to the parent UI object
      */
     public LSBEmbedOptionsUI(OpenStegoUI stegoUI)
@@ -64,7 +64,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
         GridBagConstraints gridBagConstraints = null;
         JLabel label = null;
-        Object[] maxBitsList = new Object[8];
+        Integer[] maxBitsList = new Integer[8];
 
         setLayout(new GridBagLayout());
 
@@ -94,7 +94,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
         {
             maxBitsList[i] = new Integer(i + 1);
         }
-        this.maxBitsComboBox = new JComboBox(maxBitsList);
+        this.maxBitsComboBox = new JComboBox<Integer>(maxBitsList);
         this.maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
         add(this.maxBitsComboBox, gridBagConstraints);
 
@@ -133,7 +133,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Method to validate plugin options for "Embed" action
-     * 
+     *
      * @return Boolean indicating whether validation was successful or not
      * @throws OpenStegoException
      */
@@ -144,7 +144,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Method to populate the plugin GUI options based on the config data
-     * 
+     *
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
@@ -155,7 +155,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
 
     /**
      * Method to populate the config object based on the GUI data
-     * 
+     *
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */

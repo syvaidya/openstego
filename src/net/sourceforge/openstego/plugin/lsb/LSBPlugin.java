@@ -51,7 +51,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Gives the name of the plugin
-     * 
+     *
      * @return Name of the plugin
      */
     public String getName()
@@ -61,7 +61,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Gives a short description of the plugin
-     * 
+     *
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -71,7 +71,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to embed the message into the cover data
-     * 
+     *
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be
      *        embedded in the cover data
@@ -115,7 +115,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to extract the message file name from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
@@ -125,13 +125,30 @@ public class LSBPlugin extends DHImagePluginTemplate
     {
         LSBInputStream lsbIS = null;
 
-        lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
-        return lsbIS.getDataHeader().getFileName();
+        try
+        {
+            lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+            return lsbIS.getDataHeader().getFileName();
+        }
+        finally
+        {
+            if(lsbIS != null)
+            {
+                try
+                {
+                    lsbIS.close();
+                }
+                catch(Exception e)
+                {
+                    // Ignore
+                }
+            }
+        }
     }
 
     /**
      * Method to extract the message from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -156,7 +173,6 @@ public class LSBPlugin extends DHImagePluginTemplate
             {
                 throw new OpenStegoException(null, NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ);
             }
-            lsbIS.close();
 
             return data;
         }
@@ -168,11 +184,25 @@ public class LSBPlugin extends DHImagePluginTemplate
         {
             throw new OpenStegoException(ex);
         }
+        finally
+        {
+            if(lsbIS != null)
+            {
+                try
+                {
+                    lsbIS.close();
+                }
+                catch(Exception e)
+                {
+                    // Ignore
+                }
+            }
+        }
     }
 
     /**
      * Method to get the list of supported file extensions for writing
-     * 
+     *
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
@@ -228,7 +258,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     * 
+     *
      * @param stegoUI Reference to the parent OpenStegoUI object
      * @return UI object specific to this plugin
      * @throws OpenStegoException
@@ -240,7 +270,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to populate the standard command-line options used by this plugin
-     * 
+     *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      * @throws OpenStegoException
      */
@@ -251,7 +281,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the configuration class specific to this plugin
-     * 
+     *
      * @return Configuration class specific to this plugin
      */
     public Class<? extends OpenStegoConfig> getConfigClass()
@@ -261,7 +291,7 @@ public class LSBPlugin extends DHImagePluginTemplate
 
     /**
      * Method to get the usage details of the plugin
-     * 
+     *
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */

@@ -42,7 +42,7 @@ public class RandomLSBPlugin extends LSBPlugin
 
     /**
      * Gives the name of the plugin
-     * 
+     *
      * @return Name of the plugin
      */
     public String getName()
@@ -52,7 +52,7 @@ public class RandomLSBPlugin extends LSBPlugin
 
     /**
      * Gives a short description of the plugin
-     * 
+     *
      * @return Short description of the plugin
      */
     public String getDescription()
@@ -62,7 +62,7 @@ public class RandomLSBPlugin extends LSBPlugin
 
     /**
      * Method to embed the message into the cover data
-     * 
+     *
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be
      *        embedded in the cover data
@@ -106,7 +106,7 @@ public class RandomLSBPlugin extends LSBPlugin
 
     /**
      * Method to extract the message file name from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
@@ -116,13 +116,30 @@ public class RandomLSBPlugin extends LSBPlugin
     {
         RandomLSBInputStream lsbIS = null;
 
-        lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
-        return lsbIS.getDataHeader().getFileName();
+        try
+        {
+            lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+            return lsbIS.getDataHeader().getFileName();
+        }
+        finally
+        {
+            if(lsbIS != null)
+            {
+                try
+                {
+                    lsbIS.close();
+                }
+                catch(Exception e)
+                {
+                    // Ignore
+                }
+            }
+        }
     }
 
     /**
      * Method to extract the message from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
@@ -147,7 +164,6 @@ public class RandomLSBPlugin extends LSBPlugin
             {
                 throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ);
             }
-            lsbIS.close();
 
             return data;
         }
@@ -159,11 +175,25 @@ public class RandomLSBPlugin extends LSBPlugin
         {
             throw new OpenStegoException(ex);
         }
+        finally
+        {
+            if(lsbIS != null)
+            {
+                try
+                {
+                    lsbIS.close();
+                }
+                catch(Exception e)
+                {
+                    // Ignore
+                }
+            }
+        }
     }
 
     /**
      * Method to get the usage details of the plugin
-     * 
+     *
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */

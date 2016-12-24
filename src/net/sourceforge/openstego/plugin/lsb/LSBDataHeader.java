@@ -28,12 +28,17 @@ public class LSBDataHeader
      * Header version to distinguish between various versions of data embedding. This should be changed to next
      * version, in case the logic of embedding data is changed.
      */
-    public static final byte[] HEADER_VERSION = new byte[] { (byte) 1 };
+    public static final byte[] HEADER_VERSION = new byte[] { (byte) 2 };
 
     /**
      * Length of the fixed portion of the header
      */
     private static final int FIXED_HEADER_LENGTH = 8;
+
+    /**
+     * Length of the encryption algorithm string
+     */
+    private static final int CRYPT_ALGO_LENGTH = 8;
 
     /**
      * Length of the data embedded in the image (excluding the header data)
@@ -57,7 +62,7 @@ public class LSBDataHeader
 
     /**
      * This constructor should normally be used when writing the data.
-     * 
+     *
      * @param dataLength Length of the data embedded in the image (excluding the header data)
      * @param channelBitsUsed Number of bits used per color channel for embedding the data
      * @param fileName Name of the file of data being embedded
@@ -88,7 +93,7 @@ public class LSBDataHeader
 
     /**
      * This constructor should be used when reading embedded data from an InputStream.
-     * 
+     *
      * @param dataInStream Data input stream containing the embedded data
      * @param config OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
@@ -100,12 +105,14 @@ public class LSBDataHeader
         int fileNameLen = 0;
         int channelBits = 0;
         byte[] header = null;
+        byte[] cryptAlgo = null;
         byte[] stamp = null;
         byte[] version = null;
 
         stampLen = DATA_STAMP.length;
         versionLen = HEADER_VERSION.length;
         header = new byte[FIXED_HEADER_LENGTH];
+        cryptAlgo = new byte[CRYPT_ALGO_LENGTH];
         stamp = new byte[stampLen];
         version = new byte[versionLen];
 
@@ -130,6 +137,9 @@ public class LSBDataHeader
             fileNameLen = header[5];
             config.setUseCompression(header[6] == 1);
             config.setUseEncryption(header[7] == 1);
+
+            dataInStream.read(cryptAlgo, 0, CRYPT_ALGO_LENGTH);
+            config.setEncryptionAlgorithm(new String(cryptAlgo).trim());
 
             if(fileNameLen == 0)
             {
@@ -156,7 +166,7 @@ public class LSBDataHeader
 
     /**
      * This method generates the header in the form of byte array based on the parameters provided in the constructor.
-     * 
+     *
      * @return Header data
      */
     public byte[] getHeaderData()
@@ -168,7 +178,7 @@ public class LSBDataHeader
 
         stampLen = DATA_STAMP.length;
         versionLen = HEADER_VERSION.length;
-        out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + this.fileName.length];
+        out = new byte[stampLen + versionLen + FIXED_HEADER_LENGTH + CRYPT_ALGO_LENGTH + this.fileName.length];
 
         System.arraycopy(DATA_STAMP, 0, out, currIndex, stampLen);
         currIndex += stampLen;
@@ -185,6 +195,13 @@ public class LSBDataHeader
         out[currIndex++] = (byte) (this.config.isUseCompression() ? 1 : 0);
         out[currIndex++] = (byte) (this.config.isUseEncryption() ? 1 : 0);
 
+        if(this.config.getEncryptionAlgorithm() != null)
+        {
+            System.arraycopy(this.config.getEncryptionAlgorithm().getBytes(), 0, out, currIndex,
+                this.config.getEncryptionAlgorithm().getBytes().length);
+        }
+        currIndex += CRYPT_ALGO_LENGTH;
+
         if(this.fileName.length > 0)
         {
             System.arraycopy(this.fileName, 0, out, currIndex, this.fileName.length);
@@ -196,7 +213,7 @@ public class LSBDataHeader
 
     /**
      * Get Method for channelBitsUsed
-     * 
+     *
      * @return channelBitsUsed
      */
     public int getChannelBitsUsed()
@@ -206,7 +223,7 @@ public class LSBDataHeader
 
     /**
      * Set Method for channelBitsUsed
-     * 
+     *
      * @param channelBitsUsed
      */
     public void setChannelBitsUsed(int channelBitsUsed)
@@ -216,7 +233,7 @@ public class LSBDataHeader
 
     /**
      * Get Method for dataLength
-     * 
+     *
      * @return dataLength
      */
     public int getDataLength()
@@ -226,7 +243,7 @@ public class LSBDataHeader
 
     /**
      * Get Method for fileName
-     * 
+     *
      * @return fileName
      */
     public String getFileName()
@@ -246,22 +263,23 @@ public class LSBDataHeader
 
     /**
      * Method to get size of the current header
-     * 
+     *
      * @return Header size
      */
     public int getHeaderSize()
     {
-        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + this.fileName.length;
+        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + CRYPT_ALGO_LENGTH
+                + this.fileName.length;
     }
 
     /**
      * Method to get the maximum possible size of the header
-     * 
+     *
      * @return Maximum possible header size
      */
     public static int getMaxHeaderSize()
     {
         // Max file name length assumed to be 256
-        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + 256;
+        return DATA_STAMP.length + HEADER_VERSION.length + FIXED_HEADER_LENGTH + CRYPT_ALGO_LENGTH + 256;
     }
 }

@@ -6,6 +6,7 @@
 
 package net.sourceforge.openstego;
 
+import java.security.AlgorithmParameters;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
 
@@ -22,6 +23,19 @@ import javax.crypto.spec.PBEParameterSpec;
 public class OpenStegoCrypto
 {
     /**
+     * Constant for algorithm - DES
+     */
+    public static final String ALGO_DES = "DES";
+    /**
+     * Constant for algorithm - AES128
+     */
+    public static final String ALGO_AES128 = "AES128";
+    /**
+     * Constant for algorithm - AES256
+     */
+    public static final String ALGO_AES256 = "AES256";
+
+    /**
      * 8-byte Salt for Password-based cryptography
      */
     private final byte[] SALT = { (byte) 0x28, (byte) 0x5F, (byte) 0x71, (byte) 0xC9, (byte) 0x1E, (byte) 0x35,
@@ -33,26 +47,20 @@ public class OpenStegoCrypto
     private final int ITER_COUNT = 7;
 
     /**
-     * Cipher to use for encryption
+     * Secret key for encryption
      */
-    private Cipher encryptCipher = null;
-
-    /**
-     * Cipher to use for decryption
-     */
-    private Cipher decryptCipher = null;
+    private SecretKey secretKey = null;
 
     /**
      * Default constructor
-     * 
+     *
      * @param password Password to use for encryption
+     * @param algorithm Cryptography algorithm to use. If null or blank value is provided, then it defaults to AES128
      * @throws OpenStegoException
      */
-    public OpenStegoCrypto(String password) throws OpenStegoException
+    public OpenStegoCrypto(String password, String algorithm) throws OpenStegoException
     {
         KeySpec keySpec = null;
-        SecretKey secretKey = null;
-        AlgorithmParameterSpec algoParamSpec = null;
 
         try
         {
@@ -61,35 +69,37 @@ public class OpenStegoCrypto
                 password = "";
             }
 
-            // Create the key
-            keySpec = new PBEKeySpec(password.toCharArray(), this.SALT, this.ITER_COUNT);
-            secretKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-            this.encryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
-            this.decryptCipher = Cipher.getInstance(secretKey.getAlgorithm());
-
-            // Prepare cipher parameters
-            algoParamSpec = new PBEParameterSpec(this.SALT, this.ITER_COUNT);
-
-            // Initialize the ciphers
-            this.encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, algoParamSpec);
-            this.decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, algoParamSpec);
-        }
-        catch(Exception ex)
-        {
-            if(ex instanceof OpenStegoException)
+            if(algorithm == null || algorithm.trim().equals("") || ALGO_AES128.equalsIgnoreCase(algorithm))
             {
-                throw (OpenStegoException) ex;
+                algorithm = "PBEWithHmacSHA256AndAES_128";
+            }
+            else if(ALGO_AES256.equalsIgnoreCase(algorithm))
+            {
+                algorithm = "PBEWithHmacSHA256AndAES_256";
+            }
+            else if(ALGO_DES.equalsIgnoreCase(algorithm))
+            {
+                algorithm = "PBEWithMD5AndDES";
             }
             else
             {
-                throw new OpenStegoException(ex);
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_CRYPT_ALGO,
+                        algorithm);
             }
+
+            // Create the key
+            keySpec = new PBEKeySpec(password.toCharArray(), this.SALT, this.ITER_COUNT);
+            this.secretKey = SecretKeyFactory.getInstance(algorithm).generateSecret(keySpec);
+        }
+        catch(Exception ex)
+        {
+            throw new OpenStegoException(ex);
         }
     }
 
     /**
      * Method to encrypt the data
-     * 
+     *
      * @param input Data to be encrypted
      * @return Encrypted data
      * @throws OpenStegoException
@@ -98,24 +108,33 @@ public class OpenStegoCrypto
     {
         try
         {
-            return this.encryptCipher.doFinal(input);
+            Cipher encryptCipher = Cipher.getInstance(this.secretKey.getAlgorithm());
+            AlgorithmParameterSpec algoParamSpec = new PBEParameterSpec(this.SALT, this.ITER_COUNT);
+            encryptCipher.init(Cipher.ENCRYPT_MODE, this.secretKey, algoParamSpec);
+
+            byte[] algoParams = encryptCipher.getParameters().getEncoded();
+            byte[] msg = encryptCipher.doFinal(input);
+            byte paramLen = Byte.parseByte(Integer.toString(algoParams.length));
+
+            byte[] out = new byte[1 + paramLen + msg.length];
+            // First byte = length of algo params
+            out[0] = paramLen;
+            // Next is algorithm params
+            System.arraycopy(algoParams, 0, out, 1, paramLen);
+            // Next is encrypted message
+            System.arraycopy(msg, 0, out, paramLen + 1, msg.length);
+
+            return out;
         }
         catch(Exception ex)
         {
-            if(ex instanceof OpenStegoException)
-            {
-                throw (OpenStegoException) ex;
-            }
-            else
-            {
-                throw new OpenStegoException(ex);
-            }
+            throw new OpenStegoException(ex);
         }
     }
 
     /**
      * Method to decrypt the data
-     * 
+     *
      * @param input Data to be decrypted
      * @return Decrypted data (returns <code>null</code> if password is invalid)
      * @throws OpenStegoException
@@ -124,7 +143,20 @@ public class OpenStegoCrypto
     {
         try
         {
-            return this.decryptCipher.doFinal(input);
+            // First byte is algo params length
+            byte paramLen = input[0];
+            // Copy algorithm params
+            byte[] algoParamData = new byte[paramLen];
+            System.arraycopy(input, 1, algoParamData, 0, paramLen);
+            // Copy encrypted message
+            byte[] msg = new byte[input.length - paramLen - 1];
+            System.arraycopy(input, paramLen + 1, msg, 0, msg.length);
+
+            AlgorithmParameters algoParams = AlgorithmParameters.getInstance(this.secretKey.getAlgorithm());
+            algoParams.init(algoParamData);
+            Cipher decryptCipher = Cipher.getInstance(this.secretKey.getAlgorithm());
+            decryptCipher.init(Cipher.DECRYPT_MODE, this.secretKey, algoParams);
+            return decryptCipher.doFinal(msg);
         }
         catch(BadPaddingException bpEx)
         {
@@ -132,14 +164,7 @@ public class OpenStegoCrypto
         }
         catch(Exception ex)
         {
-            if(ex instanceof OpenStegoException)
-            {
-                throw (OpenStegoException) ex;
-            }
-            else
-            {
-                throw new OpenStegoException(ex);
-            }
+            throw new OpenStegoException(ex);
         }
     }
 }
