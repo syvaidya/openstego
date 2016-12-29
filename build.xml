@@ -8,11 +8,11 @@
 
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
-    <property name="homepage.url" value="http://www.openstego.info"/>
-    <property name="package.ver" value="0.6.1"/>
-    <property name="jre.minVer" value="1.5.0"/>
+    <property name="homepage.url" value="http://www.openstego.com"/>
+    <property name="package.ver" value="0.7.0"/>
+    <property name="jre.minVer" value="1.6.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
-    <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
+    <property name="jdk.docs.dir" value="F:/jdk-1.7.0/api"/>
 
     <property name="src" value="./src"/>
     <property name="build" value="./build"/>
@@ -49,7 +49,7 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-            deprecation="on" debuglevel="lines,vars,source" source="5" target="5" includeantruntime="false">
+            deprecation="on" debuglevel="lines,vars,source" source="6" target="6" includeantruntime="false">
             <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>
@@ -163,7 +163,7 @@
         <echo file="${package}/${package.deb}/changelog.Debian"
             append="false">OpenStego (${package.ver}-1) ; urgency=low
 
-  * Added support for Digital Watermarking of images
+  * Added support for AES encryption
 
  -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>
@@ -174,7 +174,7 @@
             append="false">This package was debianized by ${author.name} &lt;${author.mail}&gt; on
 ${time.creation}
 
-It was downloaded from &lt;http://openstego.sourceforge.net/&gt;.
+It was downloaded from &lt;http://www.openstego.com/&gt;.
 
 Upstream Author: ${author.name} &lt;${author.mail}&gt;
 
@@ -183,7 +183,7 @@ License:
         Copyright (C) 2007-${time.year} ${author.name}
 
         This file is part of OpenStego as available from
-        http://openstego.sourceforge.net. This file is free software;
+        http://www.openstego.com. This file is free software;
         you can redistribute it and/or modify it under the terms of the GNU
         General Public License as published by the Free Software Foundation,
         in version 2 as it comes in the "LICENSE" file of the OpenStego

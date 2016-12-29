@@ -46,7 +46,7 @@ Please refer to the `net.sourceforge.openstego.plugin.lsb` package sources for s
 
 Samir Vaidya (syvaidya [at] gmail)
 
-Copyright (c) 2007-2015
+Copyright (c) 2007-2016
 
 ### See Also
 

@@ -70,6 +70,11 @@ Following option is common for all commands other than 'algorithms':
         Password to be used for encryption. If this is not provided then
         prompt will be displayed for entry
 
+    -A, --cryptalgo <crypto algorithm>
+        Algorithm to be used for encryption. Defaults to AES128. Possible
+        values are AES128, AES256 or DES. Please note that AES256 will only
+        be supported with JRE having unlimited strength jurisdiction policy
+
 'extract' options:
 
     -sf, --stegofile <filename>

@@ -941,6 +941,14 @@ public class OpenStegoUI extends OpenStegoFrame
                     fileName = fileName + "." + plugin.getWritableFileExtensions().get(0);
                 }
             }
+            // Check for valid extension for signature file
+            if(action.equals(OpenStegoFrame.ActionCommands.BROWSE_WM_GSG_SIGFILE))
+            {
+                if(!fileName.toLowerCase().endsWith(SIG_FILE_EXTENSION))
+                {
+                    fileName = fileName + SIG_FILE_EXTENSION;
+                }
+            }
             textField.setText(fileName);
         }
     }
