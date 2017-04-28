@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtxie;
@@ -34,8 +34,7 @@ import net.sourceforge.openstego.util.dwt.ImageTree;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
-public class DWTXiePlugin extends WMImagePluginTemplate
-{
+public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -49,8 +48,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
     /**
      * Default constructor
      */
-    public DWTXiePlugin()
-    {
+    public DWTXiePlugin() {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DWTXiePluginLabels");
         new DWTXieErrors(); // Initialize error codes
     }
@@ -60,8 +58,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      *
      * @return Name of the plugin
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return "DWTXie";
     }
 
@@ -70,8 +68,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      *
      * @return Short description of the plugin
      */
-    public String getDescription()
-    {
+    @Override
+    public String getDescription() {
         return labelUtil.getString("plugin.description");
     }
 
@@ -87,9 +85,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-            throws OpenStegoException
-    {
+    @Override
+    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         BufferedImage image = null;
         List<int[][]> yuv = null;
         DWT dwt = null;
@@ -109,12 +106,9 @@ public class DWTXiePlugin extends WMImagePluginTemplate
         double temp = 0.0;
 
         // Cover file is mandatory
-        if(cover == null)
-        {
+        if (cover == null) {
             throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_NO_COVER_FILE);
-        }
-        else
-        {
+        } else {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
@@ -135,33 +129,27 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         p = dwtTree;
         // Consider each resolution level
-        while(p.getLevel() < sig.embeddingLevel)
-        {
+        while (p.getLevel() < sig.embeddingLevel) {
             // Descend one level
             p = p.getCoarse();
         }
 
         // Repeat binary watermark by sliding a 3-pixel window of approximation image
-        for(int row = 0; row < p.getImage().getHeight(); row++)
-        {
-            for(int col = 0; col < p.getImage().getWidth() - 3; col += 3)
-            {
+        for (int row = 0; row < p.getImage().getHeight(); row++) {
+            for (int col = 0; col < p.getImage().getWidth() - 3; col += 3) {
                 // Get all three approximation pixels in window
                 pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col + 0, row));
                 pixel2 = new Pixel(1, DWTUtil.getPixel(p.getImage(), col + 1, row));
                 pixel3 = new Pixel(2, DWTUtil.getPixel(p.getImage(), col + 2, row));
 
                 // Bring selected pixels in ascending order
-                if(pixel1.value > pixel2.value)
-                {
+                if (pixel1.value > pixel2.value) {
                     swapPix(pixel1, pixel2);
                 }
-                if(pixel2.value > pixel3.value)
-                {
+                if (pixel2.value > pixel3.value) {
                     swapPix(pixel2, pixel3);
                 }
-                if(pixel1.value > pixel2.value)
-                {
+                if (pixel1.value > pixel2.value) {
                     swapPix(pixel1, pixel2);
                 }
 
@@ -192,8 +180,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
-    {
+    @Override
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         List<Integer> sigBitList = new ArrayList<Integer>();
         BufferedImage image = null;
         DWT dwt = null;
@@ -221,33 +209,27 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
         p = dwtTree;
         // Consider each resolution level
-        while(p.getLevel() < sig.embeddingLevel)
-        {
+        while (p.getLevel() < sig.embeddingLevel) {
             // Descend one level
             p = p.getCoarse();
         }
 
         // Repeat binary watermark by sliding a 3-pixel window of approximation image
-        for(int row = 0; row < p.getImage().getHeight(); row++)
-        {
-            for(int col = 0; col < p.getImage().getWidth() - 3; col += 3)
-            {
+        for (int row = 0; row < p.getImage().getHeight(); row++) {
+            for (int col = 0; col < p.getImage().getWidth() - 3; col += 3) {
                 // Get all three approximation pixels in window
                 pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col + 0, row));
                 pixel2 = new Pixel(1, DWTUtil.getPixel(p.getImage(), col + 1, row));
                 pixel3 = new Pixel(2, DWTUtil.getPixel(p.getImage(), col + 2, row));
 
                 // Bring selected pixels in ascending order
-                if(pixel1.value > pixel2.value)
-                {
+                if (pixel1.value > pixel2.value) {
                     swapPix(pixel1, pixel2);
                 }
-                if(pixel2.value > pixel3.value)
-                {
+                if (pixel2.value > pixel3.value) {
                     swapPix(pixel2, pixel3);
                 }
-                if(pixel1.value > pixel2.value)
-                {
+                if (pixel1.value > pixel2.value) {
                     swapPix(pixel1, pixel2);
                 }
 
@@ -267,8 +249,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @return Signature data
      * @throws OpenStegoException
      */
-    public byte[] generateSignature() throws OpenStegoException
-    {
+    @Override
+    public byte[] generateSignature() throws OpenStegoException {
         Random rand = null;
         Signature sig = null;
 
@@ -286,20 +268,16 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
-    {
+    @Override
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
         int corr = 0;
         Signature orig = new Signature(origSigData);
         Signature wm = new Signature(watermarkData);
 
-        for(int i = 0; i < (wm.watermarkLength * 8); i++)
-        {
-            if(getWatermarkBit(orig.watermark, i % (orig.watermarkLength * 8)) == getWatermarkBit(wm.watermark, i))
-            {
+        for (int i = 0; i < (wm.watermarkLength * 8); i++) {
+            if (getWatermarkBit(orig.watermark, i % (orig.watermarkLength * 8)) == getWatermarkBit(wm.watermark, i)) {
                 corr++;
-            }
-            else
-            {
+            } else {
                 corr--;
             }
         }
@@ -313,21 +291,19 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
-    public String getUsage() throws OpenStegoException
-    {
+    @Override
+    public String getUsage() throws OpenStegoException {
         return labelUtil.getString("plugin.usage");
     }
 
     /**
      * Watermarking transformation, set median pixel to quantization boundary
      */
-    private double wmTransform(double alpha, double f1, double f2, double f3, int x)
-    {
+    private double wmTransform(double alpha, double f1, double f2, double f3, int x) {
         double s = alpha * Math.abs(f3 - f1) / 2.0;
         double l = (x != 0) ? (f1 + s) : f1;
 
-        while((l + 2 * s) < f2)
-        {
+        while ((l + 2 * s) < f2) {
             l += 2 * s;
         }
 
@@ -337,24 +313,19 @@ public class DWTXiePlugin extends WMImagePluginTemplate
     /**
      * Inverse watermarking transformation, extract embedded bit, check quantization boundaries
      */
-    private int invWmTransform(double alpha, double f1, double f2, double f3)
-    {
+    private int invWmTransform(double alpha, double f1, double f2, double f3) {
         double s = alpha * Math.abs(f3 - f1) / 2.0;
         double l = f1;
         int x = 0;
 
-        while(l < f2)
-        {
+        while (l < f2) {
             l += s;
             x++;
         }
 
-        if(Math.abs(l - s - f2) < Math.abs(l - f2))
-        {
+        if (Math.abs(l - s - f2) < Math.abs(l - f2)) {
             return (x + 1) % 2;
-        }
-        else
-        {
+        } else {
             return x % 2;
         }
     }
@@ -366,8 +337,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @param n Bit number
      * @return Bit value
      */
-    private int getWatermarkBit(byte[] watermark, int n)
-    {
+    private int getWatermarkBit(byte[] watermark, int n) {
         int byteNum = n >> 3;
         int bit = n & 7;
 
@@ -381,17 +351,13 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @param n Bit number
      * @param v Bit value
      */
-    private void setWatermarkBit(byte[] watermark, int n, int v)
-    {
+    private void setWatermarkBit(byte[] watermark, int n, int v) {
         int byteNum = n >> 3;
         int bit = n & 7;
 
-        if(v == 1)
-        {
+        if (v == 1) {
             watermark[byteNum] |= (1 << bit);
-        }
-        else
-        {
+        } else {
             watermark[byteNum] &= ~(1 << bit);
         }
     }
@@ -402,21 +368,18 @@ public class DWTXiePlugin extends WMImagePluginTemplate
      * @param bitList List of bits
      * @return Byte array
      */
-    private byte[] convertBitListToByteArray(List<Integer> bitList)
-    {
+    private byte[] convertBitListToByteArray(List<Integer> bitList) {
         byte[] data = null;
 
         data = new byte[bitList.size() >> 3];
-        for(int i = 0; i < ((bitList.size() >> 3) << 3); i++)
-        {
+        for (int i = 0; i < ((bitList.size() >> 3) << 3); i++) {
             setWatermarkBit(data, i, (bitList.get(i)).intValue());
         }
 
         return data;
     }
 
-    private void swapPix(Pixel pixel1, Pixel pixel2)
-    {
+    private void swapPix(Pixel pixel1, Pixel pixel2) {
         int tmpPixPos;
         double tmpPixVal;
 
@@ -432,8 +395,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
     /**
      * Private class for the data structure required for the signature
      */
-    private class Signature
-    {
+    private class Signature {
         /**
          * Signature stamp
          */
@@ -474,8 +436,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
          *
          * @param rand Randomizer to use for generating watermark data
          */
-        public Signature(Random rand)
-        {
+        public Signature(Random rand) {
             this.watermark = new byte[this.watermarkLength];
             rand.nextBytes(this.watermark);
         }
@@ -486,17 +447,14 @@ public class DWTXiePlugin extends WMImagePluginTemplate
          * @param sigData Existing signature data
          * @throws OpenStegoException
          */
-        public Signature(byte[] sigData) throws OpenStegoException
-        {
+        public Signature(byte[] sigData) throws OpenStegoException {
             ObjectInputStream ois = null;
             byte[] inputSig = new byte[this.sig.length];
 
-            try
-            {
+            try {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
                 ois.read(inputSig, 0, this.sig.length);
-                if(!(new String(this.sig)).equals(new String(inputSig)))
-                {
+                if (!(new String(this.sig)).equals(new String(inputSig))) {
                     throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_SIG_NOT_VALID);
                 }
 
@@ -508,9 +466,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
 
                 this.watermark = new byte[this.watermarkLength];
                 ois.read(this.watermark);
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
@@ -521,13 +477,11 @@ public class DWTXiePlugin extends WMImagePluginTemplate
          * @return Signature data
          * @throws OpenStegoException
          */
-        public byte[] getSigData() throws OpenStegoException
-        {
+        public byte[] getSigData() throws OpenStegoException {
             ByteArrayOutputStream baos = null;
             ObjectOutputStream oos = null;
 
-            try
-            {
+            try {
                 baos = new ByteArrayOutputStream();
                 oos = new ObjectOutputStream(baos);
                 oos.write(this.sig);
@@ -541,9 +495,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate
                 oos.close();
 
                 return baos.toByteArray();
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
@@ -553,20 +505,17 @@ public class DWTXiePlugin extends WMImagePluginTemplate
          *
          * @param watermark Watermark data
          */
-        public void setWatermark(byte[] watermark)
-        {
+        public void setWatermark(byte[] watermark) {
             this.watermark = watermark;
             this.watermarkLength = watermark.length;
         }
     }
 
-    private class Pixel
-    {
+    private class Pixel {
         int pos = 0;
         double value = 0.0;
 
-        public Pixel(int pos, double value)
-        {
+        public Pixel(int pos, double value) {
             this.pos = pos;
             this.value = value;
         }

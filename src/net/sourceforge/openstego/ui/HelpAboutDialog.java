@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2011-2014 Samir Vaidya
+ * Copyright (c) 2011-2017 Samir Vaidya
  */
 package net.sourceforge.openstego.ui;
 
@@ -31,10 +31,11 @@ import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
- * Dialog to show Help->About information
+ * Dialog to show Help - About information
  */
-public class HelpAboutDialog extends JDialog
-{
+public class HelpAboutDialog extends JDialog {
+    private static final long serialVersionUID = 2707372931999569066L;
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -45,13 +46,11 @@ public class HelpAboutDialog extends JDialog
 
     /**
      * Getter method for content
-     * 
+     *
      * @return content
      */
-    public JEditorPane getContent()
-    {
-        if(this.content == null)
-        {
+    public JEditorPane getContent() {
+        if (this.content == null) {
             StringBuffer buf = new StringBuffer();
 
             buf.append("<html>");
@@ -60,15 +59,14 @@ public class HelpAboutDialog extends JDialog
             buf.append("      <td align=left style='padding-left:8px'>");
             buf.append("        <span style='font-size:24px; font-weight:bold'>");
             buf.append("          ").append(labelUtil.getString("appName")).append("</span>");
-            buf.append("        <p style='font-size:9px; margin-top:6px'>");
+            buf.append("        <p style='font-size:10px; margin-top:6px'>");
             buf.append("          ").append(labelUtil.getString("appVersion")).append("</p>");
             buf.append("      </td>");
             buf.append("      <td align=right>");
-            buf.append("        <img src='").append(getClass().getResource("/image/About.png").toString())
-                    .append("'/></td>");
+            buf.append("        <img src='").append(getClass().getResource("/image/About.png").toString()).append("'/></td>");
             buf.append("    </tr>");
             buf.append("    <tr>");
-            buf.append("      <td colspan=2 style='padding:5px;font-size:8px'>");
+            buf.append("      <td colspan=2 style='padding:5px;font-size:10px'>");
             buf.append("        <p>").append(labelUtil.getString("copyright")).append("</p><br/>");
             buf.append("        <p>").append(labelUtil.getString("gui.label.help.sitelink")).append("</p><br/>");
             buf.append("        <p><u>").append(labelUtil.getString("gui.label.help.ackHeader")).append("</u></p>");
@@ -84,21 +82,16 @@ public class HelpAboutDialog extends JDialog
             this.content.setEditable(false);
             this.content.setBorder(BorderFactory.createEmptyBorder());
             this.content.setBackground(getBackground());
-            this.content.setPreferredSize(new Dimension(400, 280));
+            this.content.setPreferredSize(new Dimension(450, 320));
 
-            this.content.addHyperlinkListener(new HyperlinkListener()
-            {
-                public void hyperlinkUpdate(HyperlinkEvent e)
-                {
-                    if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-                    {
+            this.content.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                         JEditorPane pane = (JEditorPane) e.getSource();
-                        if(e.getURL() == null)
-                        {
+                        if (e.getURL() == null) {
                             BareBonesBrowserLaunch.openURL(labelUtil.getString("homepage"), pane);
-                        }
-                        else
-                        {
+                        } else {
                             BareBonesBrowserLaunch.openURL(e.getURL().toString(), pane);
                         }
                     }
@@ -110,18 +103,15 @@ public class HelpAboutDialog extends JDialog
 
     /**
      * Getter method for okButton
-     * 
+     *
      * @return okButton
      */
-    public JButton getOkButton()
-    {
-        if(this.okButton == null)
-        {
+    public JButton getOkButton() {
+        if (this.okButton == null) {
             this.okButton = new JButton("OK");
-            this.okButton.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
+            this.okButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     setVisible(false);
                 }
             });
@@ -131,11 +121,10 @@ public class HelpAboutDialog extends JDialog
 
     /**
      * Default constructor
-     * 
+     *
      * @param parent Parent frame for the dialog box
      */
-    public HelpAboutDialog(Frame parent)
-    {
+    public HelpAboutDialog(Frame parent) {
         super(parent, "About OpenStego", true);
 
         getContentPane().setLayout(new GridBagLayout());
@@ -155,12 +144,11 @@ public class HelpAboutDialog extends JDialog
 
         // "Esc" key handling
         KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
-        Action escapeAction = new AbstractAction()
-        {
+        Action escapeAction = new AbstractAction() {
             private static final long serialVersionUID = -4890560722044735566L;
 
-            public void actionPerformed(ActionEvent ev)
-            {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
                 setVisible(false);
             }
         };
@@ -171,66 +159,48 @@ public class HelpAboutDialog extends JDialog
         pack();
         setResizable(false);
         Dimension parentSize = parent.getSize();
-        setLocation(parent.getLocation().x + parentSize.width / 2 - (getWidth() / 2), parent.getLocation().y
-                + parentSize.height / 2 - (getHeight() / 2));
+        setLocation(parent.getLocation().x + parentSize.width / 2 - (getWidth() / 2),
+            parent.getLocation().y + parentSize.height / 2 - (getHeight() / 2));
     }
 
     /**
      * Helper class to launch browser. This code is copied from: http://www.centerkey.com/java/browser/
      */
-    static class BareBonesBrowserLaunch
-    {
-        private static final String[] browsers = { "firefox", "google-chrome", "opera", "epiphany", "konqueror",
-                "conkeror", "midori", "kazehakase", "mozilla" };
+    static class BareBonesBrowserLaunch {
+        private static final String[] browsers = { "firefox", "google-chrome", "opera", "epiphany", "konqueror", "conkeror", "midori", "kazehakase",
+                "mozilla" };
 
-        public static void openURL(String url, JComponent parent)
-        {
-            try
-            {
+        public static void openURL(String url, JComponent parent) {
+            try {
                 // Attempt to use Desktop library from JDK 1.6+
                 Class<?> d = Class.forName("java.awt.Desktop");
-                d.getDeclaredMethod("browse", new Class[] { java.net.URI.class }).invoke(
-                    d.getDeclaredMethod("getDesktop").invoke(null), new Object[] { java.net.URI.create(url) });
+                d.getDeclaredMethod("browse", new Class[] { java.net.URI.class }).invoke(d.getDeclaredMethod("getDesktop").invoke(null),
+                    new Object[] { java.net.URI.create(url) });
                 // Above code mimics: java.awt.Desktop.getDesktop().browse()
-            }
-            catch(Exception ignore)
-            {
+            } catch (Exception ignore) {
                 // Library not available or failed
                 String osName = System.getProperty("os.name");
-                try
-                {
-                    if(osName.startsWith("Mac OS"))
-                    {
-                        Class.forName("com.apple.eio.FileManager")
-                                .getDeclaredMethod("openURL", new Class[] { String.class })
-                                .invoke(null, new Object[] { url });
-                    }
-                    else if(osName.startsWith("Windows"))
-                    {
+                try {
+                    if (osName.startsWith("Mac OS")) {
+                        Class.forName("com.apple.eio.FileManager").getDeclaredMethod("openURL", new Class[] { String.class }).invoke(null,
+                            new Object[] { url });
+                    } else if (osName.startsWith("Windows")) {
                         Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-                    }
-                    else
-                    {
+                    } else {
                         // Assume Unix or Linux
                         String browser = null;
-                        for(String b : browsers)
-                        {
-                            if(browser == null
-                                    && Runtime.getRuntime().exec(new String[] { "which", b }).getInputStream().read() != -1)
-                            {
+                        for (String b : browsers) {
+                            if (browser == null && Runtime.getRuntime().exec(new String[] { "which", b }).getInputStream().read() != -1) {
                                 Runtime.getRuntime().exec(new String[] { browser = b, url });
                             }
                         }
-                        if(browser == null)
-                        {
+                        if (browser == null) {
                             throw new Exception(Arrays.toString(browsers));
                         }
                     }
-                }
-                catch(Exception e)
-                {
-                    JOptionPane.showMessageDialog(parent, labelUtil.getString("gui.msg.err.browserLaunch"),
-                        labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(parent, labelUtil.getString("gui.msg.err.browserLaunch"), labelUtil.getString("gui.msg.title.err"),
+                        JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

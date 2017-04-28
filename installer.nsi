@@ -1,7 +1,7 @@
 ;----------------------------------------------------------------------------------------
 ; Steganography utility to hide messages into cover files
 ; Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-; Copyright (c) 2007-2014 Samir Vaidya
+; Copyright (c) 2007-2017 Samir Vaidya
 ;----------------------------------------------------------------------------------------
 
 !define JRE_DOWNLOAD_URL "http://www.java.com/getjava/"
@@ -18,6 +18,15 @@
   SetShellVarContext current
   Goto +2
   SetShellVarContext all
+!macroend
+
+!macro READ_REGISTRY ret ctx node key
+  SetRegView 32
+  ReadRegStr ${ret} "${ctx}" "${node}" "${key}"
+  StrCmp ${ret} "" 0 +2
+  return
+  SetRegView 64
+  ReadRegStr ${ret} "${ctx}" "${node}" "${key}"
 !macroend
 
 ;----------------------------------------------------------------------------------------
@@ -91,7 +100,7 @@ Section "Start Menu Shortcuts"
   !insertmacro DETERMINE_CONTEXT
 
   CreateDirectory "$SMPROGRAMS\${AppName}"
-  CreateShortCut "$SMPROGRAMS\${AppName}\Run OpenStego.lnk" "javaw.exe" "-Xmx512M -jar .\lib\openstego.jar" "$INSTDIR\openstego.ico" 0
+  CreateShortCut "$SMPROGRAMS\${AppName}\Run OpenStego.lnk" "javaw.exe" "-Xmx1024M -jar .\lib\openstego.jar" "$INSTDIR\openstego.ico" 0
   CreateShortCut "$SMPROGRAMS\${AppName}\Uninstall OpenStego.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 SectionEnd
@@ -99,7 +108,7 @@ SectionEnd
 ;----------------------------------------------------------------------------------------
 ;Language strings
 
-  LangString JRECheckFailed ${LANG_ENGLISH} "${AppName} needs Java Runtime Environment (JRE) version ${RequiredJREVersion} or above to run properly.$\n$\nWould you like to download it now? (Please restart this installer after installing Java)."
+  LangString JRECheckFailed ${LANG_ENGLISH} "${AppName} needs Java Runtime Environment (JRE) version ${RequiredJREVersion} or above to run properly.$\n$\nWould you like to download it now? (Please restart this installer after installing Java).$\n$\nYou can also skip this step by clicking No."
   LangString InstallWithoutJRE ${LANG_ENGLISH} "${AppName} will install even though you do not have required version of Java installed. Please don't complain later if it doesn't work."
 
 ;----------------------------------------------------------------------------------------
@@ -159,16 +168,16 @@ Function DetectJRE
   Push $2  ; $2 = Javahome
   Push $3  ; $3 and $4 are used for checking the major/minor version of java
   Push $4
-  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+  !insertmacro READ_REGISTRY $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
   StrCmp $1 "" DetectTry2
-  ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"
+  !insertmacro READ_REGISTRY $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"
   StrCmp $2 "" DetectTry2
   Goto GetJRE
 
   DetectTry2:
-    ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+    !insertmacro READ_REGISTRY $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
     StrCmp $1 "" NoFound
-    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
+    !insertmacro READ_REGISTRY $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
     StrCmp $2 "" NoFound
 
   GetJRE:

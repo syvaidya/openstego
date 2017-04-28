@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -21,8 +21,7 @@ import net.sourceforge.openstego.util.dct.DCT;
 /**
  * InputStream to read embedded data from image file using DCT LSB algorithm
  */
-public class DctLSBInputStream extends InputStream
-{
+public class DctLSBInputStream extends InputStream {
     /**
      * Data header
      */
@@ -75,15 +74,13 @@ public class DctLSBInputStream extends InputStream
 
     /**
      * Default constructor
-     * 
+     *
      * @param image Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public DctLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
-    {
-        if(image == null)
-        {
+    public DctLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null) {
             throw new IllegalArgumentException("No image file provided");
         }
 
@@ -109,50 +106,43 @@ public class DctLSBInputStream extends InputStream
 
     /**
      * Method to read header data from the input stream
-     * 
+     *
      * @throws OpenStegoException
      */
-    private void readHeader() throws OpenStegoException
-    {
+    private void readHeader() throws OpenStegoException {
         this.dataHeader = new DCTDataHeader(this, this.config);
     }
 
     /**
      * Implementation of <code>InputStream.read()</code> method
-     * 
+     *
      * @return Byte read from the stream
      * @throws IOException
      */
-    public int read() throws IOException
-    {
+    @Override
+    public int read() throws IOException {
         int out = 0;
         int xb = 0;
         int yb = 0;
         int coeffNum = 0;
 
-        for(int count = 0; count < 8; count++)
-        {
-            if(this.n >= (this.imgWidth * this.imgHeight * 8))
-            {
+        for (int count = 0; count < 8; count++) {
+            if (this.n >= (this.imgWidth * this.imgHeight * 8)) {
                 return -1;
             }
 
-            do
-            {
+            do {
                 xb = Math.abs(this.rand.nextInt()) % (this.imgWidth / DCT.NJPEG);
                 yb = Math.abs(this.rand.nextInt()) % (this.imgHeight / DCT.NJPEG);
-            }
-            while(!this.coord.add(xb, yb));
+            } while (!this.coord.add(xb, yb));
 
             // Do the forward 8x8 DCT of that block
             this.dct.fwdDctBlock8x8(this.y, xb * DCT.NJPEG, yb * DCT.NJPEG, this.dcts);
 
             // Randomly select a coefficient. Only accept coefficient in the middle frequency range
-            do
-            {
+            do {
                 coeffNum = (Math.abs(this.rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
-            }
-            while(this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
+            } while (this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
 
             // Quantize block according to quantization quality parameter
             this.dct.quantize8x8(this.dcts);
@@ -168,11 +158,10 @@ public class DctLSBInputStream extends InputStream
 
     /**
      * Get method for dataHeader
-     * 
+     *
      * @return Data header
      */
-    public DCTDataHeader getDataHeader()
-    {
+    public DCTDataHeader getDataHeader() {
         return this.dataHeader;
     }
 }

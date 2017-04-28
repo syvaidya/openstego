@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.lsb;
@@ -17,8 +17,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * OutputStream to embed data into image
  */
-public class LSBOutputStream extends OutputStream
-{
+public class LSBOutputStream extends OutputStream {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -81,18 +80,15 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Default constructor
-     * 
+     *
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
-            throws OpenStegoException
-    {
-        if(image == null)
-        {
+    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
@@ -101,10 +97,8 @@ public class LSBOutputStream extends OutputStream
         this.imgHeight = image.getHeight();
         this.config = config;
         this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
-        for(int x = 0; x < this.imgWidth; x++)
-        {
-            for(int y = 0; y < this.imgHeight; y++)
-            {
+        for (int x = 0; x < this.imgWidth; x++) {
+            for (int y = 0; y < this.imgHeight; y++) {
                 this.image.setRGB(x, y, image.getRGB(x, y));
             }
         }
@@ -117,34 +111,27 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Method to write header data to stream
-     * 
+     *
      * @throws OpenStegoException
      */
-    private void writeHeader() throws OpenStegoException
-    {
+    private void writeHeader() throws OpenStegoException {
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
         LSBDataHeader header = null;
 
-        try
-        {
+        try {
             noOfPixels = this.imgWidth * this.imgHeight;
             header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
             headerSize = header.getHeaderSize();
 
-            while(true)
-            {
-                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength))
-                {
+            while (true) {
+                if ((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength)) {
                     channelBits++;
-                    if(channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel())
-                    {
+                    if (channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel()) {
                         throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT);
                     }
-                }
-                else
-                {
+                } else {
                     break;
                 }
             }
@@ -153,8 +140,7 @@ public class LSBOutputStream extends OutputStream
             header.setChannelBitsUsed(channelBits);
             write(header.getHeaderData());
 
-            if(this.currBit != 0)
-            {
+            if (this.currBit != 0) {
                 this.currBit = 0;
                 writeCurrentBitSet();
                 nextPixel();
@@ -162,31 +148,25 @@ public class LSBOutputStream extends OutputStream
 
             this.channelBitsUsed = channelBits;
             this.bitSet = new byte[3 * channelBits];
-        }
-        catch(OpenStegoException osEx)
-        {
+        } catch (OpenStegoException osEx) {
             throw osEx;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
-     * 
+     *
      * @param data Byte to be written
      * @throws IOException
      */
-    public void write(int data) throws IOException
-    {
-        for(int bit = 0; bit < 8; bit++)
-        {
+    @Override
+    public void write(int data) throws IOException {
+        for (int bit = 0; bit < 8; bit++) {
             this.bitSet[this.currBit] = (byte) ((data >> (7 - bit)) & 1);
             this.currBit++;
-            if(this.currBit == this.bitSet.length)
-            {
+            if (this.currBit == this.bitSet.length) {
                 this.currBit = 0;
                 writeCurrentBitSet();
                 nextPixel();
@@ -196,25 +176,23 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Flushes the stream
-     * 
+     *
      * @throws IOException
      */
-    public void flush() throws IOException
-    {
+    @Override
+    public void flush() throws IOException {
         writeCurrentBitSet();
     }
 
     /**
      * Closes the stream
-     * 
+     *
      * @throws IOException
      */
-    public void close() throws IOException
-    {
-        if(this.currBit != 0)
-        {
-            for(int i = this.currBit; i < this.bitSet.length; i++)
-            {
+    @Override
+    public void close() throws IOException {
+        if (this.currBit != 0) {
+            for (int i = this.currBit; i < this.bitSet.length; i++) {
                 this.bitSet[i] = 0;
             }
             this.currBit = 0;
@@ -226,18 +204,14 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
-     * 
+     *
      * @return Image data
      * @throws OpenStegoException
      */
-    public BufferedImage getImage() throws OpenStegoException
-    {
-        try
-        {
+    public BufferedImage getImage() throws OpenStegoException {
+        try {
             flush();
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
         return this.image;
@@ -245,19 +219,17 @@ public class LSBOutputStream extends OutputStream
 
     /**
      * Method to write current bit set
-     * 
+     *
      * @throws IOException
      */
-    private void writeCurrentBitSet() throws IOException
-    {
+    private void writeCurrentBitSet() throws IOException {
         int pixel = 0;
         int offset = 0;
         int mask = 0;
         int maskPerByte = 0;
         int bitOffset = 0;
 
-        if(this.y == this.imgHeight)
-        {
+        if (this.y == this.imgHeight) {
             throw new IOException(labelUtil.getString("err.image.insufficientSize"));
         }
 
@@ -265,11 +237,9 @@ public class LSBOutputStream extends OutputStream
         mask = (maskPerByte << 16) + (maskPerByte << 8) + maskPerByte;
         pixel = this.image.getRGB(this.x, this.y) & (0xFFFFFFFF - mask);
 
-        for(int bit = 0; bit < 3; bit++)
-        {
+        for (int bit = 0; bit < 3; bit++) {
             bitOffset = 0;
-            for(int i = 0; i < this.channelBitsUsed; i++)
-            {
+            for (int i = 0; i < this.channelBitsUsed; i++) {
                 bitOffset = (bitOffset << 1) + this.bitSet[(bit * this.channelBitsUsed) + i];
             }
             offset = (offset << 8) + bitOffset;
@@ -280,11 +250,9 @@ public class LSBOutputStream extends OutputStream
     /**
      * Method to move on to next pixel
      */
-    private void nextPixel()
-    {
+    private void nextPixel() {
         this.x++;
-        if(this.x == this.imgWidth)
-        {
+        if (this.x == this.imgWidth) {
             this.x = 0;
             this.y++;
         }

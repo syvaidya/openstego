@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.lsb;
@@ -28,8 +28,7 @@ import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 /**
  * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography
  */
-public class LSBPlugin extends DHImagePluginTemplate
-{
+public class LSBPlugin extends DHImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -43,8 +42,7 @@ public class LSBPlugin extends DHImagePluginTemplate
     /**
      * Default constructor
      */
-    public LSBPlugin()
-    {
+    public LSBPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.LSBPluginLabels");
         new LSBErrors(); // Initialize error codes
     }
@@ -54,8 +52,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      *
      * @return Name of the plugin
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return "LSB";
     }
 
@@ -64,8 +62,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      *
      * @return Short description of the plugin
      */
-    public String getDescription()
-    {
+    @Override
+    public String getDescription() {
         return labelUtil.getString("plugin.description");
     }
 
@@ -81,24 +79,19 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-            throws OpenStegoException
-    {
+    @Override
+    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         int numOfPixels = 0;
         BufferedImage image = null;
         LSBOutputStream lsbOS = null;
 
-        try
-        {
+        try {
             // Generate random image, if input image is not provided
-            if(cover == null)
-            {
+            if (cover == null) {
                 numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
                 numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) this.config).getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
-            }
-            else
-            {
+            } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
             lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config);
@@ -106,9 +99,7 @@ public class LSBPlugin extends DHImagePluginTemplate
             lsbOS.close();
 
             return ImageUtil.imageToByteArray(lsbOS.getImage(), stegoFileName, this);
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
     }
@@ -121,25 +112,18 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return Message file name
      * @throws OpenStegoException
      */
-    public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException
-    {
+    @Override
+    public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException {
         LSBInputStream lsbIS = null;
 
-        try
-        {
+        try {
             lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
             return lsbIS.getDataHeader().getFileName();
-        }
-        finally
-        {
-            if(lsbIS != null)
-            {
-                try
-                {
+        } finally {
+            if (lsbIS != null) {
+                try {
                     lsbIS.close();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     // Ignore
                 }
             }
@@ -155,45 +139,33 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
-    {
+    @Override
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         int bytesRead = 0;
         byte[] data = null;
         LSBDataHeader header = null;
         LSBInputStream lsbIS = null;
 
-        try
-        {
+        try {
             lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
             header = lsbIS.getDataHeader();
             data = new byte[header.getDataLength()];
 
             bytesRead = lsbIS.read(data, 0, data.length);
-            if(bytesRead != data.length)
-            {
+            if (bytesRead != data.length) {
                 throw new OpenStegoException(null, NAMESPACE, LSBErrors.ERR_IMAGE_DATA_READ);
             }
 
             return data;
-        }
-        catch(OpenStegoException osEx)
-        {
+        } catch (OpenStegoException osEx) {
             throw osEx;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
-        }
-        finally
-        {
-            if(lsbIS != null)
-            {
-                try
-                {
+        } finally {
+            if (lsbIS != null) {
+                try {
                     lsbIS.close();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     // Ignore
                 }
             }
@@ -206,10 +178,9 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List<String> getWritableFileExtensions() throws OpenStegoException
-    {
-        if(writeFormats != null)
-        {
+    @Override
+    public List<String> getWritableFileExtensions() throws OpenStegoException {
+        if (writeFormats != null) {
             return writeFormats;
         }
 
@@ -219,31 +190,25 @@ public class LSBPlugin extends DHImagePluginTemplate
         Iterator<ImageWriter> iter = null;
         ImageWriteParam writeParam = null;
 
-        for(int i = writeFormats.size() - 1; i >= 0; i--)
-        {
+        for (int i = writeFormats.size() - 1; i >= 0; i--) {
             format = writeFormats.get(i);
             iter = ImageIO.getImageWritersBySuffix(format);
-            while(iter.hasNext())
-            {
+            while (iter.hasNext()) {
                 writeParam = (iter.next()).getDefaultWriteParam();
-                try
-                {
+                try {
                     writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                     compTypes = writeParam.getCompressionTypes();
-                    if(compTypes.length > 0)
-                    {
+                    if (compTypes.length > 0) {
                         writeParam.setCompressionType(compTypes[0]);
                     }
                     writeFormats.remove(i);
-                }
-                catch(UnsupportedOperationException uoEx) // Compression not supported
+                } catch (UnsupportedOperationException uoEx) // Compression not supported
                 {
                     break;
                 }
 
                 // Only lossless image compression is supported
-                if(writeParam.isCompressionLossless())
-                {
+                if (writeParam.isCompressionLossless()) {
                     break;
                 }
             }
@@ -263,8 +228,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return UI object specific to this plugin
      * @throws OpenStegoException
      */
-    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
-    {
+    @Override
+    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException {
         return new LSBEmbedOptionsUI(stegoUI);
     }
 
@@ -274,8 +239,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      * @throws OpenStegoException
      */
-    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException
-    {
+    @Override
+    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException {
         options.add("-b", "--maxBitsUsedPerChannel", CmdLineOption.TYPE_OPTION, true);
     }
 
@@ -284,8 +249,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      *
      * @return Configuration class specific to this plugin
      */
-    public Class<? extends OpenStegoConfig> getConfigClass()
-    {
+    @Override
+    public Class<? extends OpenStegoConfig> getConfigClass() {
         return LSBConfig.class;
     }
 
@@ -295,8 +260,8 @@ public class LSBPlugin extends DHImagePluginTemplate
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
-    public String getUsage() throws OpenStegoException
-    {
+    @Override
+    public String getUsage() throws OpenStegoException {
         LSBConfig defaultConfig = new LSBConfig();
         return labelUtil.getString("plugin.usage", new Integer(defaultConfig.getMaxBitsUsedPerChannel()));
     }

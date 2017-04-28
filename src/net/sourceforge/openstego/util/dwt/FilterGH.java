@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.dwt;
@@ -9,8 +9,7 @@ package net.sourceforge.openstego.util.dwt;
 /**
  * Object to store FilterGH data
  */
-public class FilterGH
-{
+public class FilterGH {
     /**
      * Constant for filterGH type = Orthogonal
      */
@@ -63,156 +62,135 @@ public class FilterGH
 
     /**
      * Get method for id
-     * 
+     *
      * @return id
      */
-    public Integer getId()
-    {
+    public Integer getId() {
         return this.id;
     }
 
     /**
      * Set method for id
-     * 
+     *
      * @param id
      */
-    public void setId(Integer id)
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
     /**
      * Get method for name
-     * 
+     *
      * @return name
      */
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
     /**
      * Set method for name
-     * 
+     *
      * @param name
      */
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * Get method for type
-     * 
+     *
      * @return type
      */
-    public int getType()
-    {
+    public int getType() {
         return this.type;
     }
 
     /**
      * Set method for type
-     * 
+     *
      * @param type
      */
-    public void setType(String type)
-    {
-        if(type.equalsIgnoreCase("orthogonal"))
-        {
+    public void setType(String type) {
+        if (type.equalsIgnoreCase("orthogonal")) {
             this.type = TYPE_ORTHOGONAL;
-        }
-        else if(type.equalsIgnoreCase("biorthogonal"))
-        {
+        } else if (type.equalsIgnoreCase("biorthogonal")) {
             this.type = TYPE_BIORTHOGONAL;
-        }
-        else if(type.equalsIgnoreCase("other"))
-        {
+        } else if (type.equalsIgnoreCase("other")) {
             this.type = TYPE_OTHER;
-        }
-        else
-        {
+        } else {
             this.type = -1;
         }
     }
 
     /**
      * Get method for filter g
-     * 
+     *
      * @return filter g
      */
-    public Filter getG()
-    {
+    public Filter getG() {
         return this.g;
     }
 
     /**
      * Set method for filter g
-     * 
+     *
      * @param g
      */
-    public void setG(Filter g)
-    {
+    public void setG(Filter g) {
         this.g = g;
     }
 
     /**
      * Get method for filter h
-     * 
+     *
      * @return filter h
      */
-    public Filter getH()
-    {
+    public Filter getH() {
         return this.h;
     }
 
     /**
      * Set method for filter h
-     * 
+     *
      * @param h
      */
-    public void setH(Filter h)
-    {
+    public void setH(Filter h) {
         this.h = h;
     }
 
     /**
      * Get method for filter gi
-     * 
+     *
      * @return filter gi
      */
-    public Filter getGi()
-    {
+    public Filter getGi() {
         return this.gi;
     }
 
     /**
      * Set method for filter gi
-     * 
+     *
      * @param gi
      */
-    public void setGi(Filter gi)
-    {
+    public void setGi(Filter gi) {
         this.gi = gi;
     }
 
     /**
      * Get method for filter hi
-     * 
+     *
      * @return filter hi
      */
-    public Filter getHi()
-    {
+    public Filter getHi() {
         return this.hi;
     }
 
     /**
      * Set method for filter hi
-     * 
+     *
      * @param hi
      */
-    public void setHi(Filter hi)
-    {
+    public void setHi(Filter hi) {
         this.hi = hi;
     }
 }

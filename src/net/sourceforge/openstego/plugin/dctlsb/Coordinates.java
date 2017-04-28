@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -12,8 +12,7 @@ import java.util.Map;
 /**
  * Class for storing co-ordinate hits
  */
-public class Coordinates
-{
+public class Coordinates {
     /**
      * Maximum size of the coordinate space
      */
@@ -26,35 +25,29 @@ public class Coordinates
 
     /**
      * Default constructor
-     * 
+     *
      * @param size Maximum size of the coordinate space
      */
-    public Coordinates(int size)
-    {
+    public Coordinates(int size) {
         this.size = size;
     }
 
     /**
      * Add coordinate to the space. If already hit, it returns false
-     * 
+     *
      * @param x X-axis coordinate
      * @param y Y-axis coordinate
      * @return False, if coordinate already hit
      */
-    public boolean add(int x, int y)
-    {
-        if(this.map.size() >= this.size)
-        {
+    public boolean add(int x, int y) {
+        if (this.map.size() >= this.size) {
             throw new IllegalArgumentException("Exhausted the coordinate space");
         }
 
         String key = x + "," + y;
-        if(this.map.containsKey(key))
-        {
+        if (this.map.containsKey(key)) {
             return false;
-        }
-        else
-        {
+        } else {
             this.map.put(key, key);
             return true;
         }

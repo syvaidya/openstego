@@ -2,7 +2,7 @@
 <!--
   | Steganography utility to hide messages into cover files
   | Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-  | Copyright (c) 2007-2014 Samir Vaidya
+  | Copyright (c) 2007-2017 Samir Vaidya
   -->
 <project name="OpenStego" default="compile" basedir=".">
 
@@ -10,14 +10,12 @@
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
     <property name="package.ver" value="0.7.0"/>
-    <property name="jre.minVer" value="1.6.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
-    <property name="jdk.docs.dir" value="F:/jdk-1.7.0/api"/>
+    <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
 
     <property name="src" value="./src"/>
-    <property name="build" value="./build"/>
-    <property name="build.classesdir" value="${build}/classes"/>
     <property name="build.classpath" value="${src}"/>
+    <property name="build.classesdir" value="./bin"/>
     <property name="package" value="./package"/>
     <property name="package.bin" value="openstego-${package.ver}"/>
     <property name="package.src" value="openstego-src-${package.ver}"/>
@@ -49,7 +47,7 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-            deprecation="on" debuglevel="lines,vars,source" source="6" target="6" includeantruntime="false">
+            deprecation="on" debuglevel="lines,vars,source" source="7" target="7" includeantruntime="false">
             <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
             <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>
@@ -82,7 +80,7 @@
 
     <target name="doc" description="Generates the JavaDoc API documentation">
         <javadoc packagenames="net.sourceforge.openstego.*" sourcepath="${src}" destdir="${javadoc}"
-            excludepackagenames="net.sourceforge.openstego.plugin.*" windowtitle="${ant.project.name} API">
+            excludepackagenames="net.sourceforge.openstego.plugin.*" windowtitle="${ant.project.name} API"
             <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
             <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
@@ -90,7 +88,7 @@
     </target>
 
     <target name="clean" description="Removes the in-process files">
-        <delete dir="${build}"/>
+        <delete dir="${build.classesdir}"/>
         <delete dir="${package}"/>
     </target>
 
@@ -115,7 +113,8 @@
             <replacefilter token="@homepage.url@" value="${homepage.url}"/>
             <replacefilter token="@time.year@" value="${time.year}"/>
         </replace>
-        <zip destfile="${package}/${package.bin}.zip" basedir="${package}" includes="${package.bin}/**"/>
+        <zip destfile="${package}/${package.bin}.zip">
+            <zipfileset dir="${package}" includes="${package.bin}/openstego.sh" filemode="755"/>
     </target>
 
     <target name="package-src" depends="doc" description="Generates the sources zipped package">
@@ -137,7 +136,10 @@
             <replacefilter token="@homepage.url@" value="${homepage.url}"/>
             <replacefilter token="@time.year@" value="${time.year}"/>
         </replace>
-        <zip destfile="${package}/${package.src}.zip" basedir="${package}" includes="${package.src}/**"/>
+        <zip destfile="${package}/${package.src}.zip">
+            <zipfileset dir="${package}" includes="${package.src}/openstego.sh" filemode="755"/>
+            <zipfileset dir="${package}" includes="${package.src}/**" excludes="${package.src}/openstego.sh"/>
+        </zip>
     </target>
 
     <target name="package-nsi" depends="compile" description="Generates Windows installer">

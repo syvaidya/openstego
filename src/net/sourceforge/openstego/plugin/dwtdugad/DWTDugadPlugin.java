@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtdugad;
@@ -33,8 +33,7 @@ import net.sourceforge.openstego.util.dwt.ImageTree;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
-public class DWTDugadPlugin extends WMImagePluginTemplate
-{
+public class DWTDugadPlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -51,8 +50,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
     /**
      * Default constructor
      */
-    public DWTDugadPlugin()
-    {
+    public DWTDugadPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DWTDugadPluginLabels");
         new DWTDugadErrors(); // Initialize error codes
     }
@@ -62,8 +60,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      *
      * @return Name of the plugin
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return "DWTDugad";
     }
 
@@ -72,8 +70,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      *
      * @return Short description of the plugin
      */
-    public String getDescription()
-    {
+    @Override
+    public String getDescription() {
         return labelUtil.getString("plugin.description");
     }
 
@@ -89,9 +87,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-            throws OpenStegoException
-    {
+    @Override
+    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         BufferedImage image = null;
         List<int[][]> yuv = null;
         DWT dwt = null;
@@ -104,12 +101,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         int rows = 0;
 
         // Cover file is mandatory
-        if(cover == null)
-        {
+        if (cover == null) {
             throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_NO_COVER_FILE);
-        }
-        else
-        {
+        } else {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
@@ -127,10 +121,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         s = dwtTree;
 
         // Embed watermark in all subbands of a decomposition level
-        for(int i = 0; i < sig.decompositionLevel; i++)
-        {
-            wmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha,
-                sig.castingThreshold);
+        for (int i = 0; i < sig.decompositionLevel; i++) {
+            wmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             wmSubBand(s.getVertical().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             wmSubBand(s.getDiagonal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             s = s.getCoarse();
@@ -152,8 +144,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
-    {
+    @Override
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         BufferedImage image = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
@@ -178,8 +170,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         dwtTree = dwt.forwardDWT(luminance);
         s = dwtTree;
 
-        try
-        {
+        try {
             baos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(baos);
 
@@ -187,22 +178,18 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
             oos.writeInt(sig.decompositionLevel);
             oos.writeDouble(sig.alpha);
 
-            for(int i = 0; i < sig.decompositionLevel; i++)
-            {
-                vals = invWmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength,
-                    sig.detectionThreshold);
+            for (int i = 0; i < sig.decompositionLevel; i++) {
+                vals = invWmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.detectionThreshold);
                 oos.writeInt((Integer) vals[0]);
                 oos.writeDouble((Double) vals[1]);
                 oos.writeDouble((Double) vals[2]);
 
-                vals = invWmSubBand(s.getVertical().getImage(), sig.watermark, sig.watermarkLength,
-                    sig.detectionThreshold);
+                vals = invWmSubBand(s.getVertical().getImage(), sig.watermark, sig.watermarkLength, sig.detectionThreshold);
                 oos.writeInt((Integer) vals[0]);
                 oos.writeDouble((Double) vals[1]);
                 oos.writeDouble((Double) vals[2]);
 
-                vals = invWmSubBand(s.getDiagonal().getImage(), sig.watermark, sig.watermarkLength,
-                    sig.detectionThreshold);
+                vals = invWmSubBand(s.getDiagonal().getImage(), sig.watermark, sig.watermarkLength, sig.detectionThreshold);
                 oos.writeInt((Integer) vals[0]);
                 oos.writeDouble((Double) vals[1]);
                 oos.writeDouble((Double) vals[2]);
@@ -213,9 +200,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
             oos.flush();
             oos.close();
             return baos.toByteArray();
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
     }
@@ -226,8 +211,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * @return Signature data
      * @throws OpenStegoException
      */
-    public byte[] generateSignature() throws OpenStegoException
-    {
+    @Override
+    public byte[] generateSignature() throws OpenStegoException {
         Random rand = null;
         Signature sig = null;
 
@@ -245,8 +230,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
-    {
+    @Override
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
         ObjectInputStream ois = null;
         byte[] markArr = new byte[WM_MARKER.length()];
         int level;
@@ -258,12 +243,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
         // double diff = 0.0;
         double alpha;
 
-        try
-        {
+        try {
             ois = new ObjectInputStream(new ByteArrayInputStream(watermarkData));
             ois.read(markArr, 0, WM_MARKER.length());
-            if(!WM_MARKER.equals(new String(markArr)))
-            {
+            if (!WM_MARKER.equals(new String(markArr))) {
                 throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_SIG_NOT_VALID);
             }
 
@@ -271,19 +254,15 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
             alpha = ois.readDouble();
             n = level * 3;
 
-            for(int i = 0; i < level; i++)
-            {
+            for (int i = 0; i < level; i++) {
                 // HL subband
                 m = ois.readInt();
                 z = ois.readDouble();
                 v = ois.readDouble();
-                if(m != 0)
-                {
+                if (m != 0) {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
-                }
-                else
-                {
+                } else {
                     n--;
                 }
 
@@ -291,13 +270,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 m = ois.readInt();
                 z = ois.readDouble();
                 v = ois.readDouble();
-                if(m != 0)
-                {
+                if (m != 0) {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
-                }
-                else
-                {
+                } else {
                     n--;
                 }
 
@@ -305,19 +281,14 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 m = ois.readInt();
                 z = ois.readDouble();
                 v = ois.readDouble();
-                if(m != 0)
-                {
+                if (m != 0) {
                     ok += (z > v * alpha / 1.0) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
-                }
-                else
-                {
+                } else {
                     n--;
                 }
             }
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
 
@@ -330,8 +301,8 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
-    public String getUsage() throws OpenStegoException
-    {
+    @Override
+    public String getUsage() throws OpenStegoException {
         return labelUtil.getString("plugin.usage");
     }
 
@@ -339,12 +310,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
      * Embeds a watermark of 'n' normally distributed values into 'a' coefficents greater than threshold value of a
      * subband
      */
-    private void wmSubBand(Image img, double[] wm, int n, double a, double threshold)
-    {
-        for(int i = 0; i < img.getWidth() * img.getHeight(); i++)
-        {
-            if(Math.abs(img.getData()[i]) > threshold)
-            {
+    private void wmSubBand(Image img, double[] wm, int n, double a, double threshold) {
+        for (int i = 0; i < img.getWidth() * img.getHeight(); i++) {
+            if (Math.abs(img.getData()[i]) > threshold) {
                 img.getData()[i] += (a * Math.abs(img.getData()[i]) * wm[i % n]);
             }
         }
@@ -353,16 +321,13 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
     /**
      * Extracts the watermark data from subband
      */
-    private Object[] invWmSubBand(Image img, double[] wm, int n, double threshold)
-    {
+    private Object[] invWmSubBand(Image img, double[] wm, int n, double threshold) {
         int m = 0;
         double z = 0.0;
         double v = 0.0;
 
-        for(int i = 0; i < img.getWidth() * img.getHeight(); i++)
-        {
-            if(img.getData()[i] > threshold)
-            {
+        for (int i = 0; i < img.getWidth() * img.getHeight(); i++) {
+            if (img.getData()[i] > threshold) {
                 z += (img.getData()[i] * wm[i % n]);
                 v += Math.abs(img.getData()[i]);
                 m++;
@@ -375,8 +340,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
     /**
      * Private class for the data structure required for the signature
      */
-    private class Signature
-    {
+    private class Signature {
         /**
          * Signature stamp
          */
@@ -427,20 +391,16 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
          *
          * @param rand Randomizer to use for generating watermark data
          */
-        public Signature(Random rand)
-        {
+        public Signature(Random rand) {
             double x, x1, x2;
             this.watermark = new double[this.watermarkLength];
 
-            for(int i = 0; i < this.watermarkLength; i += 2)
-            {
-                do
-                {
+            for (int i = 0; i < this.watermarkLength; i += 2) {
+                do {
                     x1 = 2.0 * rand.nextDouble() - 1.0;
                     x2 = 2.0 * rand.nextDouble() - 1.0;
                     x = x1 * x1 + x2 * x2;
-                }
-                while(x >= 1.0);
+                } while (x >= 1.0);
                 x1 *= Math.sqrt((-2.0) * Math.log(x) / x);
                 x2 *= Math.sqrt((-2.0) * Math.log(x) / x);
 
@@ -455,17 +415,14 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
          * @param sigData Existing signature data
          * @throws OpenStegoException
          */
-        public Signature(byte[] sigData) throws OpenStegoException
-        {
+        public Signature(byte[] sigData) throws OpenStegoException {
             ObjectInputStream ois = null;
             byte[] inputSig = new byte[this.sig.length];
 
-            try
-            {
+            try {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
                 ois.read(inputSig, 0, this.sig.length);
-                if(!(new String(this.sig)).equals(new String(inputSig)))
-                {
+                if (!(new String(this.sig)).equals(new String(inputSig))) {
                     throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_SIG_NOT_VALID);
                 }
 
@@ -478,13 +435,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 this.detectionThreshold = ois.readDouble();
 
                 this.watermark = new double[this.watermarkLength];
-                for(int i = 0; i < this.watermarkLength; i++)
-                {
+                for (int i = 0; i < this.watermarkLength; i++) {
                     this.watermark[i] = ois.readDouble();
                 }
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
@@ -495,13 +449,11 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
          * @return Signature data
          * @throws OpenStegoException
          */
-        public byte[] getSigData() throws OpenStegoException
-        {
+        public byte[] getSigData() throws OpenStegoException {
             ByteArrayOutputStream baos = null;
             ObjectOutputStream oos = null;
 
-            try
-            {
+            try {
                 baos = new ByteArrayOutputStream();
                 oos = new ObjectOutputStream(baos);
                 oos.write(this.sig);
@@ -513,8 +465,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 oos.writeDouble(this.castingThreshold);
                 oos.writeDouble(this.detectionThreshold);
 
-                for(int i = 0; i < this.watermarkLength; i++)
-                {
+                for (int i = 0; i < this.watermarkLength; i++) {
                     oos.writeDouble(this.watermark[i]);
                 }
 
@@ -522,9 +473,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate
                 oos.close();
 
                 return baos.toByteArray();
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }

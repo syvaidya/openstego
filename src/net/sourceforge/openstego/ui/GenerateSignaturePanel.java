@@ -1,11 +1,10 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2011-2014 Samir Vaidya
+ * Copyright (c) 2011-2017 Samir Vaidya
  */
 package net.sourceforge.openstego.ui;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -21,8 +20,9 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Panel for "Generate Signature"
  */
-public class GenerateSignaturePanel extends JPanel
-{
+public class GenerateSignaturePanel extends JPanel {
+    private static final long serialVersionUID = -2146138875457797980L;
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -36,21 +36,18 @@ public class GenerateSignaturePanel extends JPanel
     /**
      * Default constructor
      */
-    public GenerateSignaturePanel()
-    {
+    public GenerateSignaturePanel() {
         super();
         initialize();
     }
 
     /**
      * Get method for "Input Key" text field
-     * 
+     *
      * @return inputKeyTextField
      */
-    public JTextField getInputKeyTextField()
-    {
-        if(this.inputKeyTextField == null)
-        {
+    public JTextField getInputKeyTextField() {
+        if (this.inputKeyTextField == null) {
             this.inputKeyTextField = new JTextField();
         }
         return this.inputKeyTextField;
@@ -58,52 +55,44 @@ public class GenerateSignaturePanel extends JPanel
 
     /**
      * Getter method for signatureFileTextField
-     * 
+     *
      * @return signatureFileTextField
      */
-    public JTextField getSignatureFileTextField()
-    {
-        if(this.signatureFileTextField == null)
-        {
+    public JTextField getSignatureFileTextField() {
+        if (this.signatureFileTextField == null) {
             this.signatureFileTextField = new JTextField();
-            this.signatureFileTextField.setColumns(57);
+            this.signatureFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.signatureFileTextField;
     }
 
     /**
      * Getter method for signatureFileButton
-     * 
+     *
      * @return signatureFileButton
      */
-    public JButton getSignatureFileButton()
-    {
-        if(this.signatureFileButton == null)
-        {
+    public JButton getSignatureFileButton() {
+        if (this.signatureFileButton == null) {
             this.signatureFileButton = new JButton();
             this.signatureFileButton.setText("...");
-            this.signatureFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.signatureFileButton;
     }
 
     /**
      * Get method for GenSig "OK" button
-     * 
+     *
      * @return runGenSigButton
      */
-    public JButton getRunGenSigButton()
-    {
-        if(this.runGenSigButton == null)
-        {
+    public JButton getRunGenSigButton() {
+        if (this.runGenSigButton == null) {
             this.runGenSigButton = new JButton();
             this.runGenSigButton.setText(labelUtil.getString("gui.button.wmGenSig.run"));
         }
         return this.runGenSigButton;
     }
 
-    private void initialize()
-    {
+    private void initialize() {
         JLabel label;
         setLayout(new GridBagLayout());
 
@@ -152,7 +141,8 @@ public class GenerateSignaturePanel extends JPanel
         add(getSignatureFileTextField(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.anchor = GridBagConstraints.EAST;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);

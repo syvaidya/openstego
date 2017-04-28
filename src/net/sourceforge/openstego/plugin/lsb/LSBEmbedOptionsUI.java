@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.lsb;
@@ -29,8 +29,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * GUI class for the LSB Plugin
  */
-public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
-{
+public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
     private static final long serialVersionUID = 6168148599483165215L;
 
     /**
@@ -58,8 +57,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      *
      * @param stegoUI Reference to the parent UI object
      */
-    public LSBEmbedOptionsUI(OpenStegoUI stegoUI)
-    {
+    public LSBEmbedOptionsUI(OpenStegoUI stegoUI) {
         this.stegoUI = stegoUI;
 
         GridBagConstraints gridBagConstraints = null;
@@ -90,18 +88,16 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
         add(this.randomImgCheckBox, gridBagConstraints);
 
         gridBagConstraints.gridy = 1;
-        for(int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             maxBitsList[i] = new Integer(i + 1);
         }
         this.maxBitsComboBox = new JComboBox<Integer>(maxBitsList);
         this.maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
         add(this.maxBitsComboBox, gridBagConstraints);
 
-        ChangeListener changeListener = new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent changeEvent)
-            {
+        ChangeListener changeListener = new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
                 useRandomImgChanged();
             }
         };
@@ -112,19 +108,15 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
     /**
      * Method to handle change event for 'randomImage'
      */
-    private void useRandomImgChanged()
-    {
+    private void useRandomImgChanged() {
         JTextField coverFileTextField = this.stegoUI.getEmbedPanel().getCoverFileTextField();
         JButton coverFileButton = this.stegoUI.getEmbedPanel().getCoverFileButton();
 
-        if(this.randomImgCheckBox.isSelected())
-        {
+        if (this.randomImgCheckBox.isSelected()) {
             CommonUtil.setEnabled(coverFileTextField, false);
             coverFileTextField.setText("");
             coverFileButton.setEnabled(false);
-        }
-        else
-        {
+        } else {
             CommonUtil.setEnabled(coverFileTextField, true);
             coverFileButton.setEnabled(true);
             coverFileTextField.requestFocus();
@@ -137,8 +129,8 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      * @return Boolean indicating whether validation was successful or not
      * @throws OpenStegoException
      */
-    public boolean validateEmbedAction() throws OpenStegoException
-    {
+    @Override
+    public boolean validateEmbedAction() throws OpenStegoException {
         return true;
     }
 
@@ -148,8 +140,8 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
-    public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException
-    {
+    @Override
+    public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException {
         this.maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
     }
 
@@ -159,8 +151,8 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
-    public void setConfigFromGUI(OpenStegoConfig config) throws OpenStegoException
-    {
+    @Override
+    public void setConfigFromGUI(OpenStegoConfig config) throws OpenStegoException {
         ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) this.maxBitsComboBox.getSelectedItem()).intValue());
     }
 }

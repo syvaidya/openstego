@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -20,8 +20,7 @@ import javax.crypto.spec.PBEParameterSpec;
 /**
  * This is the class for providing cryptography support to OpenStego.
  */
-public class OpenStegoCrypto
-{
+public class OpenStegoCrypto {
     /**
      * Constant for algorithm - DES
      */
@@ -38,8 +37,7 @@ public class OpenStegoCrypto
     /**
      * 8-byte Salt for Password-based cryptography
      */
-    private final byte[] SALT = { (byte) 0x28, (byte) 0x5F, (byte) 0x71, (byte) 0xC9, (byte) 0x1E, (byte) 0x35,
-            (byte) 0x0A, (byte) 0x62 };
+    private final byte[] SALT = { (byte) 0x28, (byte) 0x5F, (byte) 0x71, (byte) 0xC9, (byte) 0x1E, (byte) 0x35, (byte) 0x0A, (byte) 0x62 };
 
     /**
      * Iteration count for Password-based cryptography
@@ -58,41 +56,28 @@ public class OpenStegoCrypto
      * @param algorithm Cryptography algorithm to use. If null or blank value is provided, then it defaults to AES128
      * @throws OpenStegoException
      */
-    public OpenStegoCrypto(String password, String algorithm) throws OpenStegoException
-    {
+    public OpenStegoCrypto(String password, String algorithm) throws OpenStegoException {
         KeySpec keySpec = null;
 
-        try
-        {
-            if(password == null)
-            {
+        try {
+            if (password == null) {
                 password = "";
             }
 
-            if(algorithm == null || algorithm.trim().equals("") || ALGO_AES128.equalsIgnoreCase(algorithm))
-            {
+            if (algorithm == null || algorithm.trim().equals("") || ALGO_AES128.equalsIgnoreCase(algorithm)) {
                 algorithm = "PBEWithHmacSHA256AndAES_128";
-            }
-            else if(ALGO_AES256.equalsIgnoreCase(algorithm))
-            {
+            } else if (ALGO_AES256.equalsIgnoreCase(algorithm)) {
                 algorithm = "PBEWithHmacSHA256AndAES_256";
-            }
-            else if(ALGO_DES.equalsIgnoreCase(algorithm))
-            {
+            } else if (ALGO_DES.equalsIgnoreCase(algorithm)) {
                 algorithm = "PBEWithMD5AndDES";
-            }
-            else
-            {
-                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_CRYPT_ALGO,
-                        algorithm);
+            } else {
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_CRYPT_ALGO, algorithm);
             }
 
             // Create the key
             keySpec = new PBEKeySpec(password.toCharArray(), this.SALT, this.ITER_COUNT);
             this.secretKey = SecretKeyFactory.getInstance(algorithm).generateSecret(keySpec);
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }
@@ -104,10 +89,8 @@ public class OpenStegoCrypto
      * @return Encrypted data
      * @throws OpenStegoException
      */
-    public byte[] encrypt(byte[] input) throws OpenStegoException
-    {
-        try
-        {
+    public byte[] encrypt(byte[] input) throws OpenStegoException {
+        try {
             Cipher encryptCipher = Cipher.getInstance(this.secretKey.getAlgorithm());
             AlgorithmParameterSpec algoParamSpec = new PBEParameterSpec(this.SALT, this.ITER_COUNT);
             encryptCipher.init(Cipher.ENCRYPT_MODE, this.secretKey, algoParamSpec);
@@ -125,9 +108,7 @@ public class OpenStegoCrypto
             System.arraycopy(msg, 0, out, paramLen + 1, msg.length);
 
             return out;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }
@@ -139,10 +120,8 @@ public class OpenStegoCrypto
      * @return Decrypted data (returns <code>null</code> if password is invalid)
      * @throws OpenStegoException
      */
-    public byte[] decrypt(byte[] input) throws OpenStegoException
-    {
-        try
-        {
+    public byte[] decrypt(byte[] input) throws OpenStegoException {
+        try {
             // First byte is algo params length
             byte paramLen = input[0];
             // Copy algorithm params
@@ -157,13 +136,9 @@ public class OpenStegoCrypto
             Cipher decryptCipher = Cipher.getInstance(this.secretKey.getAlgorithm());
             decryptCipher.init(Cipher.DECRYPT_MODE, this.secretKey, algoParams);
             return decryptCipher.doFinal(msg);
-        }
-        catch(BadPaddingException bpEx)
-        {
+        } catch (BadPaddingException bpEx) {
             throw new OpenStegoException(bpEx, OpenStego.NAMESPACE, OpenStegoException.INVALID_PASSWORD);
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }

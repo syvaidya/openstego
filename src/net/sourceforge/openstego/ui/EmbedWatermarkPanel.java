@@ -1,11 +1,10 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2011-2014 Samir Vaidya
+ * Copyright (c) 2011-2017 Samir Vaidya
  */
 package net.sourceforge.openstego.ui;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,8 +21,9 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Panel for "Embed Watermark"
  */
-public class EmbedWatermarkPanel extends JPanel
-{
+public class EmbedWatermarkPanel extends JPanel {
+    private static final long serialVersionUID = -6077376566714959827L;
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -40,122 +40,103 @@ public class EmbedWatermarkPanel extends JPanel
     /**
      * Default constructor
      */
-    public EmbedWatermarkPanel()
-    {
+    public EmbedWatermarkPanel() {
         super();
         initialize();
     }
 
     /**
      * Getter method for fileForWmTextField
-     * 
+     *
      * @return fileForWmTextField
      */
-    public JTextField getFileForWmTextField()
-    {
-        if(this.fileForWmTextField == null)
-        {
+    public JTextField getFileForWmTextField() {
+        if (this.fileForWmTextField == null) {
             this.fileForWmTextField = new JTextField();
-            this.fileForWmTextField.setColumns(57);
+            this.fileForWmTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.fileForWmTextField;
     }
 
     /**
      * Getter method for fileForWmButton
-     * 
+     *
      * @return fileForWmButton
      */
-    public JButton getFileForWmButton()
-    {
-        if(this.fileForWmButton == null)
-        {
+    public JButton getFileForWmButton() {
+        if (this.fileForWmButton == null) {
             this.fileForWmButton = new JButton();
             this.fileForWmButton.setText("...");
-            this.fileForWmButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.fileForWmButton;
     }
 
     /**
      * Getter method for signatureFileTextField
-     * 
+     *
      * @return signatureFileTextField
      */
-    public JTextField getSignatureFileTextField()
-    {
-        if(this.signatureFileTextField == null)
-        {
+    public JTextField getSignatureFileTextField() {
+        if (this.signatureFileTextField == null) {
             this.signatureFileTextField = new JTextField();
-            this.signatureFileTextField.setColumns(57);
+            this.signatureFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.signatureFileTextField;
     }
 
     /**
      * Getter method for signatureFileButton
-     * 
+     *
      * @return signatureFileButton
      */
-    public JButton getSignatureFileButton()
-    {
-        if(this.signatureFileButton == null)
-        {
+    public JButton getSignatureFileButton() {
+        if (this.signatureFileButton == null) {
             this.signatureFileButton = new JButton();
             this.signatureFileButton.setText("...");
-            this.signatureFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.signatureFileButton;
     }
 
     /**
      * Getter method for outputWmFileTextField
-     * 
+     *
      * @return outputWmFileTextField
      */
-    public JTextField getOutputWmFileTextField()
-    {
-        if(this.outputWmFileTextField == null)
-        {
+    public JTextField getOutputWmFileTextField() {
+        if (this.outputWmFileTextField == null) {
             this.outputWmFileTextField = new JTextField();
-            this.outputWmFileTextField.setColumns(57);
+            this.outputWmFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.outputWmFileTextField;
     }
 
     /**
      * Getter method for outputWmFileButton
-     * 
+     *
      * @return outputWmFileButton
      */
-    public JButton getOutputWmFileButton()
-    {
-        if(this.outputWmFileButton == null)
-        {
+    public JButton getOutputWmFileButton() {
+        if (this.outputWmFileButton == null) {
             this.outputWmFileButton = new JButton();
             this.outputWmFileButton.setText("...");
-            this.outputWmFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.outputWmFileButton;
     }
 
     /**
      * Getter method for runEmbedWmButton
-     * 
+     *
      * @return runEmbedWmButton
      */
-    public JButton getRunEmbedWmButton()
-    {
-        if(this.runEmbedWmButton == null)
-        {
+    public JButton getRunEmbedWmButton() {
+        if (this.runEmbedWmButton == null) {
             this.runEmbedWmButton = new JButton();
             this.runEmbedWmButton.setText(labelUtil.getString("gui.button.wmEmbed.run"));
         }
         return this.runEmbedWmButton;
     }
 
-    private void initialize()
-    {
+    private void initialize() {
         JLabel label;
         setLayout(new GridBagLayout());
 
@@ -235,31 +216,31 @@ public class EmbedWatermarkPanel extends JPanel
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getFileForWmButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getSignatureFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.insets = new Insets(0, 5, 5, 5);
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getOutputWmFileButton(), gridBagConstraints);
 

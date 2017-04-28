@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.randlsb;
@@ -22,8 +22,7 @@ import net.sourceforge.openstego.util.StringUtil;
 /**
  * OutputStream to embed data into image
  */
-public class RandomLSBOutputStream extends OutputStream
-{
+public class RandomLSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
@@ -71,18 +70,15 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Default constructor
-     * 
+     *
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
-            throws OpenStegoException
-    {
-        if(image == null)
-        {
+    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
@@ -91,18 +87,15 @@ public class RandomLSBOutputStream extends OutputStream
         this.imgHeight = image.getHeight();
         this.config = config;
 
-        switch(image.getType())
-        {
+        switch (image.getType()) {
             case BufferedImage.TYPE_INT_RGB:
                 this.image = image;
                 break;
 
             default:
                 this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
-                for(int x = 0; x < this.imgWidth; x++)
-                {
-                    for(int y = 0; y < this.imgHeight; y++)
-                    {
+                for (int x = 0; x < this.imgWidth; x++) {
+                    for (int y = 0; y < this.imgHeight; y++) {
                         this.image.setRGB(x, y, image.getRGB(x, y));
                     }
                 }
@@ -118,34 +111,27 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Method to write header data to stream
-     * 
+     *
      * @throws OpenStegoException
      */
-    private void writeHeader() throws OpenStegoException
-    {
+    private void writeHeader() throws OpenStegoException {
         int channelBits = 1;
         int noOfPixels = 0;
         int headerSize = 0;
         LSBDataHeader header = null;
 
-        try
-        {
+        try {
             noOfPixels = this.imgWidth * this.imgHeight;
             header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
             headerSize = header.getHeaderSize();
 
-            while(true)
-            {
-                if((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength))
-                {
+            while (true) {
+                if ((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength)) {
                     channelBits++;
-                    if(channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel())
-                    {
+                    if (channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel()) {
                         throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT);
                     }
-                }
-                else
-                {
+                } else {
                     break;
                 }
             }
@@ -155,12 +141,9 @@ public class RandomLSBOutputStream extends OutputStream
 
             // Initialize hit-check array
             this.bitWritten = new boolean[this.imgWidth][this.imgHeight][3][channelBits];
-            for(int i = 0; i < this.imgWidth; i++)
-            {
-                for(int j = 0; j < this.imgHeight; j++)
-                {
-                    for(int k = 0; k < channelBits; k++)
-                    {
+            for (int i = 0; i < this.imgWidth; i++) {
+                for (int j = 0; j < this.imgHeight; j++) {
+                    for (int k = 0; k < channelBits; k++) {
                         this.bitWritten[i][j][0][k] = false;
                         this.bitWritten[i][j][1][k] = false;
                         this.bitWritten[i][j][2][k] = false;
@@ -170,43 +153,36 @@ public class RandomLSBOutputStream extends OutputStream
 
             write(header.getHeaderData());
             this.channelBitsUsed = channelBits;
-        }
-        catch(OpenStegoException osEx)
-        {
+        } catch (OpenStegoException osEx) {
             throw osEx;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
-     * 
+     *
      * @param data Byte to be written
      * @throws IOException
      */
-    public void write(int data) throws IOException
-    {
+    @Override
+    public void write(int data) throws IOException {
         boolean bitValue = false;
         int x = 0;
         int y = 0;
         int channel = 0;
         int bit = 0;
 
-        for(int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
 
-            do
-            {
+            do {
                 x = this.rand.nextInt(this.imgWidth);
                 y = this.rand.nextInt(this.imgHeight);
                 channel = this.rand.nextInt(3);
                 bit = this.rand.nextInt(this.channelBitsUsed);
-            }
-            while(this.bitWritten[x][y][channel][bit]);
+            } while (this.bitWritten[x][y][channel][bit]);
             this.bitWritten[x][y][channel][bit] = true;
 
             setPixelBit(x, y, channel, bit, bitValue);
@@ -215,25 +191,23 @@ public class RandomLSBOutputStream extends OutputStream
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
-     * 
+     *
      * @return Image data
      */
-    public BufferedImage getImage()
-    {
+    public BufferedImage getImage() {
         return this.image;
     }
 
     /**
      * Sets the pixel bit at the given location to the new value.
-     * 
+     *
      * @param x The x position of the pixel
      * @param y The y position of the pixel
      * @param channel The color channel of the bit
      * @param bit The position of the bit
      * @param bitValue The new bit value for the pixel
      */
-    private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue)
-    {
+    private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue) {
         int pixel = 0;
         int newColor = 0;
         int newPixel = 0;
@@ -242,15 +216,11 @@ public class RandomLSBOutputStream extends OutputStream
         pixel = this.image.getRGB(x, y);
 
         // Set the bit value
-        if(bitValue)
-        {
+        if (bitValue) {
             newPixel = pixel | 1 << (bit + (channel * 8));
-        }
-        else
-        {
+        } else {
             newColor = 0xfffffffe;
-            for(int i = 0; i < (bit + (channel * 8)); i++)
-            {
+            for (int i = 0; i < (bit + (channel * 8)); i++) {
                 newColor = (newColor << 1) | 0x1;
             }
             newPixel = pixel & newColor;

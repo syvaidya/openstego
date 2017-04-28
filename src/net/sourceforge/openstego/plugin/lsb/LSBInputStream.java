@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.lsb;
@@ -16,8 +16,7 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * InputStream to read embedded data from image file using LSB algorithm
  */
-public class LSBInputStream extends InputStream
-{
+public class LSBInputStream extends InputStream {
     /**
      * Image data
      */
@@ -65,15 +64,13 @@ public class LSBInputStream extends InputStream
 
     /**
      * Default constructor
-     * 
+     *
      * @param image Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public LSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException
-    {
-        if(image == null)
-        {
+    public LSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
@@ -88,20 +85,17 @@ public class LSBInputStream extends InputStream
 
     /**
      * Method to read header data from the input stream
-     * 
+     *
      * @throws OpenStegoException
      */
-    private void readHeader() throws OpenStegoException
-    {
+    private void readHeader() throws OpenStegoException {
         this.dataHeader = new LSBDataHeader(this, this.config);
         this.channelBitsUsed = this.dataHeader.getChannelBitsUsed();
 
-        if(this.currBit != 0)
-        {
+        if (this.currBit != 0) {
             this.currBit = 0;
             this.x++;
-            if(this.x == this.imgWidth)
-            {
+            if (this.x == this.imgWidth) {
                 this.x = 0;
                 this.y++;
             }
@@ -110,63 +104,56 @@ public class LSBInputStream extends InputStream
 
     /**
      * Implementation of <code>InputStream.read()</code> method
-     * 
+     *
      * @return Byte read from the stream
      * @throws IOException
      */
-    public int read() throws IOException
-    {
+    @Override
+    public int read() throws IOException {
         int pixel = 0;
         byte[] bitSet = new byte[8];
 
-        if(this.y == this.imgHeight)
-        {
+        if (this.y == this.imgHeight) {
             return -1;
         }
 
-        for(int i = 0; i < bitSet.length; i++)
-        {
+        for (int i = 0; i < bitSet.length; i++) {
             pixel = this.image.getRGB(this.x, this.y);
             bitSet[i] = getCurrBitFromPixel(pixel);
 
             this.currBit++;
-            if(this.currBit == (3 * this.channelBitsUsed))
-            {
+            if (this.currBit == (3 * this.channelBitsUsed)) {
                 this.currBit = 0;
                 this.x++;
-                if(this.x == this.imgWidth)
-                {
+                if (this.x == this.imgWidth) {
                     this.x = 0;
                     this.y++;
-                    if(this.y == this.imgHeight)
-                    {
+                    if (this.y == this.imgHeight) {
                         return -1;
                     }
                 }
             }
         }
-        return ((bitSet[0] << 7) + (bitSet[1] << 6) + (bitSet[2] << 5) + (bitSet[3] << 4) + (bitSet[4] << 3)
-                + (bitSet[5] << 2) + (bitSet[6] << 1) + (bitSet[7] << 0));
+        return ((bitSet[0] << 7) + (bitSet[1] << 6) + (bitSet[2] << 5) + (bitSet[3] << 4) + (bitSet[4] << 3) + (bitSet[5] << 2) + (bitSet[6] << 1)
+                + (bitSet[7] << 0));
     }
 
     /**
      * Get method for dataHeader
-     * 
+     *
      * @return Data header
      */
-    public LSBDataHeader getDataHeader()
-    {
+    public LSBDataHeader getDataHeader() {
         return this.dataHeader;
     }
 
     /**
      * Gets the bit from pixel based on the current bit
-     * 
+     *
      * @param pixel
      * @return Bit
      */
-    private byte getCurrBitFromPixel(int pixel)
-    {
+    private byte getCurrBitFromPixel(int pixel) {
         int group = 0;
         int groupBit = 0;
 

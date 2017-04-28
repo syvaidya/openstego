@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtxie;
@@ -11,8 +11,7 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Class to store error codes for DWT Xie plugin
  */
-public class DWTXieErrors
-{
+public class DWTXieErrors {
     /**
      * Error Code - No cover file given
      */
@@ -26,8 +25,7 @@ public class DWTXieErrors
     /*
      * Initialize the error code - message key map
      */
-    static
-    {
+    static {
         OpenStegoException.addErrorCode(DWTXiePlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
         OpenStegoException.addErrorCode(DWTXiePlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");
     }

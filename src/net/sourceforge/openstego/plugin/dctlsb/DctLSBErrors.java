@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -11,8 +11,7 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Class to store error codes for DCT LSB plugin
  */
-public class DctLSBErrors
-{
+public class DctLSBErrors {
     /**
      * Error Code - Error while reading image data
      */
@@ -26,8 +25,7 @@ public class DctLSBErrors
     /*
      * Initialize the error code - message key map
      */
-    static
-    {
+    static {
         OpenStegoException.addErrorCode(DctLSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
         OpenStegoException.addErrorCode(DctLSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
     }

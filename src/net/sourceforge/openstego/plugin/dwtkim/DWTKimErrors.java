@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtkim;
@@ -11,8 +11,7 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Class to store error codes for DWT Kim plugin
  */
-public class DWTKimErrors
-{
+public class DWTKimErrors {
     /**
      * Error Code - No cover file given
      */
@@ -31,11 +30,9 @@ public class DWTKimErrors
     /*
      * Initialize the error code - message key map
      */
-    static
-    {
+    static {
         OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
-        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_DECOMP_LEVEL_NOT_ENOUGH,
-            "err.image.decompLevel.notEnough");
+        OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_DECOMP_LEVEL_NOT_ENOUGH, "err.image.decompLevel.notEnough");
         OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -23,8 +23,7 @@ import net.sourceforge.openstego.util.dct.DCT;
 /**
  * OutputStream to embed data into image
  */
-public class DctLSBOutputStream extends OutputStream
-{
+public class DctLSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
@@ -107,20 +106,17 @@ public class DctLSBOutputStream extends OutputStream
 
     /**
      * Default constructor
-     * 
+     *
      * @param image Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
      * @param fileName Name of the source data file
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public DctLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config)
-            throws OpenStegoException
-    {
+    public DctLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
         List<int[][]> yuv = null;
 
-        if(image == null)
-        {
+        if (image == null) {
             throw new IllegalArgumentException("No image provided");
         }
 
@@ -139,10 +135,8 @@ public class DctLSBOutputStream extends OutputStream
         this.y = yuv.get(0);
         this.u = yuv.get(1);
         this.v = yuv.get(2);
-        for(int i = 0; i < this.actualImgWidth; i++)
-        {
-            for(int j = 0; j < this.actualImgHeight; j++)
-            {
+        for (int i = 0; i < this.actualImgWidth; i++) {
+            for (int j = 0; j < this.actualImgHeight; j++) {
                 this.image.setRGB(i, j, image.getRGB(i, j));
             }
         }
@@ -158,79 +152,65 @@ public class DctLSBOutputStream extends OutputStream
 
     /**
      * Method to write header data to stream
-     * 
+     *
      * @throws OpenStegoException
      */
-    private void writeHeader() throws OpenStegoException
-    {
+    private void writeHeader() throws OpenStegoException {
         DCTDataHeader header = null;
 
-        try
-        {
+        try {
             header = new DCTDataHeader(this.dataLength, this.fileName, this.config);
 
-            if(((header.getHeaderSize() + this.dataLength) * 8) > (this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG)))
-            {
+            if (((header.getHeaderSize() + this.dataLength) * 8) > (this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG))) {
                 throw new OpenStegoException(null, DctLSBPlugin.NAMESPACE, DctLSBErrors.IMAGE_SIZE_INSUFFICIENT);
             }
             this.coord = new Coordinates((header.getHeaderSize() + this.dataLength) * 8);
             write(header.getHeaderData());
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
     }
 
     /**
      * Implementation of <code>OutputStream.write(int)</code> method
-     * 
+     *
      * @param data Byte to be written
      * @throws IOException
      */
-    public void write(int data) throws IOException
-    {
+    @Override
+    public void write(int data) throws IOException {
         int xb = 0;
         int yb = 0;
         int coeffNum = 0;
         int coeff = 0;
 
-        for(int count = 0; count < 8; count++)
-        {
-            if(this.n >= (this.imgWidth * this.imgHeight * 8))
-            {
+        for (int count = 0; count < 8; count++) {
+            if (this.n >= (this.imgWidth * this.imgHeight * 8)) {
                 throw new IOException("Image size insufficient");
             }
 
             // Randomly select a block, check to get distinct blocks (don't use a block twice)
-            do
-            {
+            do {
                 xb = Math.abs(this.rand.nextInt()) % (this.imgWidth / DCT.NJPEG);
                 yb = Math.abs(this.rand.nextInt()) % (this.imgHeight / DCT.NJPEG);
-            }
-            while(!this.coord.add(xb, yb));
+            } while (!this.coord.add(xb, yb));
 
             // Do the forward 8x8 DCT of that block
             this.dct.fwdDctBlock8x8(this.y, xb * DCT.NJPEG, yb * DCT.NJPEG, this.dcts);
 
             // Randomly select a coefficient. Only accept coefficient in the middle frequency range
-            do
-            {
+            do {
                 coeffNum = (Math.abs(this.rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
-            }
-            while(this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
+            } while (this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
 
             // Quantize block according to quantization quality parameter
             this.dct.quantize8x8(this.dcts);
 
             // Read the coefficient value and replace its LSB based on the message bit
             coeff = (int) this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG];
-            if(((data >> (7 - count)) & 1) == 1)
-            {
+            if (((data >> (7 - count)) & 1) == 1) {
                 coeff |= 1;
-            }
-            else
-            {
+            } else {
                 coeff &= ~(1);
             }
             this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = coeff;
@@ -247,12 +227,11 @@ public class DctLSBOutputStream extends OutputStream
 
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
-     * 
+     *
      * @param imgType Type of image
      * @return Image data
      */
-    public BufferedImage getImage(int imgType)
-    {
+    public BufferedImage getImage(int imgType) {
         List<int[][]> yuv = new ArrayList<int[][]>();
         yuv.add(this.y);
         yuv.add(this.u);

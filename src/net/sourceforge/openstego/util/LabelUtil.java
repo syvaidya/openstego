@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util;
@@ -15,8 +15,7 @@ import java.util.ResourceBundle;
 /**
  * Localized label handler for OpenStego
  */
-public class LabelUtil
-{
+public class LabelUtil {
     /**
      * Static variable to hold the map of labels loaded from resource files
      */
@@ -29,28 +28,25 @@ public class LabelUtil
 
     /**
      * Method to add new namespace using resource bundle
-     * 
+     *
      * @param namespace Namespace for the labels
      * @param bundle Resource bundle name
      */
-    public static void addNamespace(String namespace, String bundle)
-    {
+    public static void addNamespace(String namespace, String bundle) {
         map.put(namespace, ResourceBundle.getBundle(bundle, Locale.getDefault()));
     }
 
     /**
      * Method to get instance of LabelUtil based on the namespace
-     * 
+     *
      * @param namespace Namespace for the labels
      * @return Instance of LabelUtil
      */
-    public static LabelUtil getInstance(String namespace)
-    {
+    public static LabelUtil getInstance(String namespace) {
         LabelUtil util = null;
 
         util = namespaceMap.get(namespace);
-        if(util == null)
-        {
+        if (util == null) {
             util = new LabelUtil(namespace);
             namespaceMap.put(namespace, util);
         }
@@ -65,34 +61,31 @@ public class LabelUtil
 
     /**
      * Constructor is protected
-     * 
+     *
      * @param namespace Namespace for the label
      */
-    protected LabelUtil(String namespace)
-    {
+    protected LabelUtil(String namespace) {
         this.namespace = namespace;
     }
 
     /**
      * Method to get label value for the given label key
-     * 
+     *
      * @param key Key for the label
      * @return Display value for the label
      */
-    public String getString(String key)
-    {
+    public String getString(String key) {
         return (map.get(this.namespace)).getString(key);
     }
 
     /**
      * Method to get label value for the given label key (using optional parameters)
-     * 
+     *
      * @param key Key for the label
      * @param parameters Parameters to pass for a parameterized label
      * @return Display value for the label
      */
-    public String getString(String key, Object... parameters)
-    {
+    public String getString(String key, Object... parameters) {
         return MessageFormat.format(getString(key), parameters);
     }
 }

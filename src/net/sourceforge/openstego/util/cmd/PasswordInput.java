@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.cmd;
@@ -15,24 +15,21 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Utility class to handle console based password input
  */
-public class PasswordInput
-{
+public class PasswordInput {
     /**
      * Constructor is private so that this class is not instantiated
      */
-    private PasswordInput()
-    {
+    private PasswordInput() {
     }
 
     /**
      * Method to read password from the console
-     * 
+     *
      * @param prompt Prompt for the password input
      * @return The password as entered by the user
      * @throws OpenStegoException
      */
-    public static String readPassword(String prompt) throws OpenStegoException
-    {
+    public static String readPassword(String prompt) throws OpenStegoException {
         String password = "";
         EraserThread et = null;
         BufferedReader in = null;
@@ -43,12 +40,9 @@ public class PasswordInput
         mask.start();
 
         in = new BufferedReader(new InputStreamReader(System.in));
-        try
-        {
+        try {
             password = in.readLine();
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
 
@@ -62,8 +56,7 @@ public class PasswordInput
     /**
      * Thread to keep rewriting the input characters with blank space
      */
-    static class EraserThread implements Runnable
-    {
+    static class EraserThread implements Runnable {
         /**
          * Flag for stop condition
          */
@@ -71,21 +64,19 @@ public class PasswordInput
 
         /**
          * Constructor
-         * 
+         *
          * @param prompt Prompt for the password input
          */
-        public EraserThread(String prompt)
-        {
+        public EraserThread(String prompt) {
             System.out.print(prompt);
         }
 
         /**
          * Implementation of <code>run</code> method
          */
-        public void run()
-        {
-            while(this.stop)
-            {
+        @Override
+        public void run() {
+            while (this.stop) {
                 System.out.print("\b ");
             }
         }
@@ -93,8 +84,7 @@ public class PasswordInput
         /**
          * Instruct the thread to stop masking
          */
-        public void stopMasking()
-        {
+        public void stopMasking() {
             this.stop = false;
         }
     }

@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2011-2014 Samir Vaidya
+ * Copyright (c) 2011-2017 Samir Vaidya
  */
 package net.sourceforge.openstego.util.ui;
 
@@ -35,8 +35,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Helper class to execute tasks asynchronously
  */
-public abstract class WorkerTask extends SwingWorker<Object, Void>
-{
+public abstract class WorkerTask extends SwingWorker<Object, Void> {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -65,25 +64,21 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
 
     /**
      * Default constructor
-     * 
+     *
      * @param parent Parent component
      * @param data Any data to be passed to task
      * @param determinate Flag to indicate whether task progress is determinable or not
      */
-    public WorkerTask(JFrame parent, Object data, boolean determinate)
-    {
+    public WorkerTask(JFrame parent, Object data, boolean determinate) {
         this.parent = parent;
         this.data = data;
 
         this.progressBar = new JProgressBar(0, 100);
         this.progressBar.setPreferredSize(new Dimension(300, 20));
         this.progressBar.setValue(0);
-        if(determinate)
-        {
+        if (determinate) {
             this.progressBar.setStringPainted(true);
-        }
-        else
-        {
+        } else {
             this.progressBar.setIndeterminate(true);
             this.progressBar.setStringPainted(false);
         }
@@ -131,16 +126,15 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
      * (non-Javadoc)
      * @see javax.swing.SwingWorker#done()
      */
-    protected void done()
-    {
+    @Override
+    protected void done() {
         this.glass.setVisible(false);
     }
 
     /**
      * Method to execute task
      */
-    public void start()
-    {
+    public void start() {
         Listener listener = new Listener(this);
         this.glass.setVisible(true);
         this.cancelButton.addActionListener(listener);
@@ -148,12 +142,10 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
         execute();
     }
 
-    class Listener implements PropertyChangeListener, ActionListener
-    {
+    class Listener implements PropertyChangeListener, ActionListener {
         WorkerTask task;
 
-        public Listener(WorkerTask task)
-        {
+        public Listener(WorkerTask task) {
             this.task = task;
         }
 
@@ -161,10 +153,9 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
          * (non-Javadoc)
          * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
          */
-        public void propertyChange(PropertyChangeEvent evt)
-        {
-            if("progress".equals(evt.getPropertyName()))
-            {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if ("progress".equals(evt.getPropertyName())) {
                 int progress = (Integer) evt.getNewValue();
                 this.task.progressBar.setValue(progress);
             }
@@ -174,65 +165,66 @@ public abstract class WorkerTask extends SwingWorker<Object, Void>
          * (non-Javadoc)
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
-        public void actionPerformed(ActionEvent e)
-        {
+        @Override
+        public void actionPerformed(ActionEvent e) {
             this.task.cancel(true);
         }
     }
 
-    class GlassPane extends JPanel implements MouseListener, FocusListener
-    {
-        public GlassPane()
-        {
+    class GlassPane extends JPanel implements MouseListener, FocusListener {
+        /**
+         *
+         */
+        private static final long serialVersionUID = -9083908347142749524L;
+
+        public GlassPane() {
             addMouseListener(this);
             addFocusListener(this);
         }
 
-        public void paintComponent(Graphics g)
-        {
+        @Override
+        public void paintComponent(Graphics g) {
             g.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
         }
 
-        public void setVisible(boolean visible)
-        {
-            if(visible)
-            {
+        @Override
+        public void setVisible(boolean visible) {
+            if (visible) {
                 requestFocus();
             }
             super.setVisible(visible);
         }
 
-        public void focusLost(FocusEvent fe)
-        {
-            if(isVisible())
-            {
+        @Override
+        public void focusLost(FocusEvent fe) {
+            if (isVisible()) {
                 requestFocus();
             }
         }
 
-        public void focusGained(FocusEvent fe)
-        {
+        @Override
+        public void focusGained(FocusEvent fe) {
         }
 
-        public void mouseClicked(MouseEvent arg0)
-        {
+        @Override
+        public void mouseClicked(MouseEvent arg0) {
         }
 
-        public void mouseEntered(MouseEvent arg0)
-        {
+        @Override
+        public void mouseEntered(MouseEvent arg0) {
         }
 
-        public void mouseExited(MouseEvent arg0)
-        {
+        @Override
+        public void mouseExited(MouseEvent arg0) {
         }
 
-        public void mousePressed(MouseEvent arg0)
-        {
+        @Override
+        public void mousePressed(MouseEvent arg0) {
         }
 
-        public void mouseReleased(MouseEvent arg0)
-        {
+        @Override
+        public void mouseReleased(MouseEvent arg0) {
         }
     }
 }

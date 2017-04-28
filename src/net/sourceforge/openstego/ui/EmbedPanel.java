@@ -1,11 +1,10 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2011-2014 Samir Vaidya
+ * Copyright (c) 2011-2017 Samir Vaidya
  */
 package net.sourceforge.openstego.ui;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -29,8 +28,9 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Panel for "Embed"
  */
-public class EmbedPanel extends JPanel
-{
+public class EmbedPanel extends JPanel {
+    private static final long serialVersionUID = 5812035848879719995L;
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -51,8 +51,7 @@ public class EmbedPanel extends JPanel
     /**
      * Default constructor
      */
-    public EmbedPanel()
-    {
+    public EmbedPanel() {
         super();
         initialize();
     }
@@ -62,14 +61,11 @@ public class EmbedPanel extends JPanel
      *
      * @return optionPanel
      */
-    public JPanel getOptionPanel()
-    {
-        if(this.optionPanel == null)
-        {
+    public JPanel getOptionPanel() {
+        if (this.optionPanel == null) {
             JLabel label;
             this.optionPanel = new JPanel();
-            this.optionPanel.setBorder(new TitledBorder(
-                    new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()),
+            this.optionPanel.setBorder(new TitledBorder(new CompoundBorder(new EmptyBorder(new java.awt.Insets(5, 5, 5, 5)), new EtchedBorder()),
                     " " + labelUtil.getString("gui.label.dhEmbed.option.title") + " "));
             this.optionPanel.setLayout(new GridBagLayout());
 
@@ -95,8 +91,8 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 2;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 1;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
@@ -106,8 +102,8 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 3;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 1;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
@@ -115,8 +111,8 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 4;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 2;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
@@ -126,8 +122,8 @@ public class EmbedPanel extends JPanel
 
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.fill = GridBagConstraints.BOTH;
-            gridBagConstraints.gridx = 5;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 2;
             gridBagConstraints.insets = new Insets(5, 5, 5, 5);
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 0.0;
@@ -141,12 +137,10 @@ public class EmbedPanel extends JPanel
      *
      * @return msgFileTextField
      */
-    public JTextField getMsgFileTextField()
-    {
-        if(this.msgFileTextField == null)
-        {
+    public JTextField getMsgFileTextField() {
+        if (this.msgFileTextField == null) {
             this.msgFileTextField = new JTextField();
-            this.msgFileTextField.setColumns(57);
+            this.msgFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.msgFileTextField;
     }
@@ -156,13 +150,10 @@ public class EmbedPanel extends JPanel
      *
      * @return msgFileButton
      */
-    public JButton getMsgFileButton()
-    {
-        if(this.msgFileButton == null)
-        {
+    public JButton getMsgFileButton() {
+        if (this.msgFileButton == null) {
             this.msgFileButton = new JButton();
             this.msgFileButton.setText("...");
-            this.msgFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.msgFileButton;
     }
@@ -172,12 +163,10 @@ public class EmbedPanel extends JPanel
      *
      * @return coverFileTextField
      */
-    public JTextField getCoverFileTextField()
-    {
-        if(this.coverFileTextField == null)
-        {
+    public JTextField getCoverFileTextField() {
+        if (this.coverFileTextField == null) {
             this.coverFileTextField = new JTextField();
-            this.coverFileTextField.setColumns(57);
+            this.coverFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.coverFileTextField;
     }
@@ -187,13 +176,10 @@ public class EmbedPanel extends JPanel
      *
      * @return coverFileButton
      */
-    public JButton getCoverFileButton()
-    {
-        if(this.coverFileButton == null)
-        {
+    public JButton getCoverFileButton() {
+        if (this.coverFileButton == null) {
             this.coverFileButton = new JButton();
             this.coverFileButton.setText("...");
-            this.coverFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.coverFileButton;
     }
@@ -203,12 +189,10 @@ public class EmbedPanel extends JPanel
      *
      * @return stegoFileTextField
      */
-    public JTextField getStegoFileTextField()
-    {
-        if(this.stegoFileTextField == null)
-        {
+    public JTextField getStegoFileTextField() {
+        if (this.stegoFileTextField == null) {
             this.stegoFileTextField = new JTextField();
-            this.stegoFileTextField.setColumns(57);
+            this.stegoFileTextField.setColumns(OpenStegoFrame.TEXTFIELD_SIZE);
         }
         return this.stegoFileTextField;
     }
@@ -218,13 +202,10 @@ public class EmbedPanel extends JPanel
      *
      * @return stegoFileButton
      */
-    public JButton getStegoFileButton()
-    {
-        if(this.stegoFileButton == null)
-        {
+    public JButton getStegoFileButton() {
+        if (this.stegoFileButton == null) {
             this.stegoFileButton = new JButton();
             this.stegoFileButton.setText("...");
-            this.stegoFileButton.setPreferredSize(new Dimension(22, 22));
         }
         return this.stegoFileButton;
     }
@@ -234,12 +215,10 @@ public class EmbedPanel extends JPanel
      *
      * @return encryptionAlgoComboBox
      */
-    public JComboBox<String> getEncryptionAlgoComboBox()
-    {
-        if(this.encryptionAlgoComboBox == null)
-        {
-            this.encryptionAlgoComboBox = new JComboBox<String>(new String[] { OpenStegoCrypto.ALGO_AES128,
-                    OpenStegoCrypto.ALGO_AES256, OpenStegoCrypto.ALGO_DES });
+    public JComboBox<String> getEncryptionAlgoComboBox() {
+        if (this.encryptionAlgoComboBox == null) {
+            this.encryptionAlgoComboBox = new JComboBox<String>(
+                    new String[] { OpenStegoCrypto.ALGO_AES128, OpenStegoCrypto.ALGO_AES256, OpenStegoCrypto.ALGO_DES });
         }
         return this.encryptionAlgoComboBox;
     }
@@ -249,12 +228,10 @@ public class EmbedPanel extends JPanel
      *
      * @return passwordTextField
      */
-    public JPasswordField getPasswordTextField()
-    {
-        if(this.passwordTextField == null)
-        {
+    public JPasswordField getPasswordTextField() {
+        if (this.passwordTextField == null) {
             this.passwordTextField = new JPasswordField();
-            this.passwordTextField.setColumns(15);
+            this.passwordTextField.setColumns(OpenStegoFrame.PWD_FIELD_SIZE);
         }
         return this.passwordTextField;
     }
@@ -264,12 +241,10 @@ public class EmbedPanel extends JPanel
      *
      * @return confPasswordTextField
      */
-    public JPasswordField getConfPasswordTextField()
-    {
-        if(this.confPasswordTextField == null)
-        {
+    public JPasswordField getConfPasswordTextField() {
+        if (this.confPasswordTextField == null) {
             this.confPasswordTextField = new JPasswordField();
-            this.confPasswordTextField.setColumns(15);
+            this.confPasswordTextField.setColumns(OpenStegoFrame.PWD_FIELD_SIZE);
         }
         return this.confPasswordTextField;
     }
@@ -279,18 +254,15 @@ public class EmbedPanel extends JPanel
      *
      * @return runEmbedButton
      */
-    public JButton getRunEmbedButton()
-    {
-        if(this.runEmbedButton == null)
-        {
+    public JButton getRunEmbedButton() {
+        if (this.runEmbedButton == null) {
             this.runEmbedButton = new JButton();
             this.runEmbedButton.setText(labelUtil.getString("gui.button.dhEmbed.run"));
         }
         return this.runEmbedButton;
     }
 
-    private void initialize()
-    {
+    private void initialize() {
         JLabel label;
         setLayout(new GridBagLayout());
 
@@ -370,31 +342,31 @@ public class EmbedPanel extends JPanel
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
-        gridBagConstraints.weightx = 0.01;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getMsgFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
-        gridBagConstraints.weightx = 0.01;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getCoverFileButton(), gridBagConstraints);
 
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.WEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.NONE;
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.insets = new Insets(0, 0, 5, 5);
-        gridBagConstraints.weightx = 0.01;
+        gridBagConstraints.weightx = 0.0;
         gridBagConstraints.weighty = 0.0;
         add(getStegoFileButton(), gridBagConstraints);
 

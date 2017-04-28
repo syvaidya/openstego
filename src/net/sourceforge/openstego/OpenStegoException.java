@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -14,8 +14,7 @@ import net.sourceforge.openstego.util.LabelUtil;
 /**
  * Custom exception class for OpenStego
  */
-public class OpenStegoException extends Exception
-{
+public class OpenStegoException extends Exception {
     private static final long serialVersionUID = 668241029491685413L;
 
     /**
@@ -121,8 +120,7 @@ public class OpenStegoException extends Exception
     /*
      * Initialize the error code - message key map
      */
-    static
-    {
+    static {
         addErrorCode(OpenStego.NAMESPACE, INVALID_PASSWORD, "err.config.password.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_COMPR_VALUE, "err.config.useCompression.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_ENCRYPT_VALUE, "err.config.useEncryption.invalid");
@@ -145,8 +143,7 @@ public class OpenStegoException extends Exception
      *
      * @param cause Original exception which caused this exception to be raised
      */
-    public OpenStegoException(Throwable cause)
-    {
+    public OpenStegoException(Throwable cause) {
         this(cause, OpenStego.NAMESPACE, UNHANDLED_EXCEPTION, (Object[]) null);
     }
 
@@ -157,8 +154,7 @@ public class OpenStegoException extends Exception
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      */
-    public OpenStegoException(Throwable cause, String namespace, int errorCode)
-    {
+    public OpenStegoException(Throwable cause, String namespace, int errorCode) {
         this(cause, namespace, errorCode, (Object[]) null);
     }
 
@@ -170,8 +166,7 @@ public class OpenStegoException extends Exception
      * @param errorCode Error code for the exception
      * @param param Parameter for exception message
      */
-    public OpenStegoException(Throwable cause, String namespace, int errorCode, String param)
-    {
+    public OpenStegoException(Throwable cause, String namespace, int errorCode, String param) {
         this(cause, namespace, errorCode, new Object[] { param });
     }
 
@@ -183,8 +178,7 @@ public class OpenStegoException extends Exception
      * @param errorCode Error code for the exception
      * @param params Parameters for exception message
      */
-    public OpenStegoException(Throwable cause, String namespace, int errorCode, Object... params)
-    {
+    public OpenStegoException(Throwable cause, String namespace, int errorCode, Object... params) {
         super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString()
                 : LabelUtil.getInstance(namespace).getString(errMsgKeyMap.get(namespace + errorCode), params), cause);
 
@@ -197,8 +191,7 @@ public class OpenStegoException extends Exception
      *
      * @return errorCode
      */
-    public int getErrorCode()
-    {
+    public int getErrorCode() {
         return this.errorCode;
     }
 
@@ -207,8 +200,7 @@ public class OpenStegoException extends Exception
      *
      * @return namespace
      */
-    public String getNamespace()
-    {
+    public String getNamespace() {
         return this.namespace;
     }
 
@@ -219,8 +211,7 @@ public class OpenStegoException extends Exception
      * @param errorCode Error code of the error
      * @param labelKey Key of the label for the error
      */
-    public static void addErrorCode(String namespace, int errorCode, String labelKey)
-    {
+    public static void addErrorCode(String namespace, int errorCode, String labelKey) {
         errMsgKeyMap.put(namespace + errorCode, labelKey);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego;
@@ -15,8 +15,7 @@ import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 /**
  * Class to store configuration data for OpenStego
  */
-public class OpenStegoConfig
-{
+public class OpenStegoConfig {
     /**
      * Key string for configuration item - useCompression
      * <p>
@@ -68,8 +67,7 @@ public class OpenStegoConfig
     /**
      * Default Constructor (with default values for configuration items)
      */
-    public OpenStegoConfig()
-    {
+    public OpenStegoConfig() {
     }
 
     /**
@@ -79,8 +77,7 @@ public class OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public OpenStegoConfig(Map<String, String> propMap) throws OpenStegoException
-    {
+    public OpenStegoConfig(Map<String, String> propMap) throws OpenStegoException {
         addProperties(propMap);
     }
 
@@ -90,36 +87,35 @@ public class OpenStegoConfig
      * @param options Command-line options
      * @throws OpenStegoException
      */
-    public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException
-    {
+    public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException {
         Map<String, String> map = new HashMap<String, String>();
 
-        if(options.getOption("-c") != null) // compress
+        if (options.getOption("-c") != null) // compress
         {
             map.put(USE_COMPRESSION, "true");
         }
 
-        if(options.getOption("-C") != null) // nocompress
+        if (options.getOption("-C") != null) // nocompress
         {
             map.put(USE_COMPRESSION, "false");
         }
 
-        if(options.getOption("-e") != null) // encrypt
+        if (options.getOption("-e") != null) // encrypt
         {
             map.put(USE_ENCRYPTION, "true");
         }
 
-        if(options.getOption("-E") != null) // noencrypt
+        if (options.getOption("-E") != null) // noencrypt
         {
             map.put(USE_ENCRYPTION, "false");
         }
 
-        if(options.getOption("-p") != null) // password
+        if (options.getOption("-p") != null) // password
         {
             map.put(PASSWORD, options.getOptionValue("-p"));
         }
 
-        if(options.getOption("-A") != null) // cryptalgo
+        if (options.getOption("-A") != null) // cryptalgo
         {
             map.put(ENCRYPTION_ALGORITHM, options.getOptionValue("-A"));
         }
@@ -133,56 +129,35 @@ public class OpenStegoConfig
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    protected void addProperties(Map<String, String> propMap) throws OpenStegoException
-    {
+    protected void addProperties(Map<String, String> propMap) throws OpenStegoException {
         Iterator<String> keys = null;
         String key = null;
         String value = null;
 
         keys = propMap.keySet().iterator();
-        while(keys.hasNext())
-        {
+        while (keys.hasNext()) {
             key = keys.next();
-            if(key.equals(USE_COMPRESSION))
-            {
+            if (key.equals(USE_COMPRESSION)) {
                 value = propMap.get(key).toString().trim();
-                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
-                {
+                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1")) {
                     this.useCompression = true;
-                }
-                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
-                {
+                } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0")) {
                     this.useCompression = false;
+                } else {
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value);
                 }
-                else
-                {
-                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE,
-                            value);
-                }
-            }
-            else if(key.equals(USE_ENCRYPTION))
-            {
+            } else if (key.equals(USE_ENCRYPTION)) {
                 value = propMap.get(key).toString().trim();
-                if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1"))
-                {
+                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1")) {
                     this.useEncryption = true;
-                }
-                else if(value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0"))
-                {
+                } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0")) {
                     this.useEncryption = false;
+                } else {
+                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value);
                 }
-                else
-                {
-                    throw new OpenStegoException(null, OpenStego.NAMESPACE,
-                            OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value);
-                }
-            }
-            else if(key.equals(PASSWORD))
-            {
+            } else if (key.equals(PASSWORD)) {
                 this.password = propMap.get(key).toString();
-            }
-            else if(key.equals(ENCRYPTION_ALGORITHM))
-            {
+            } else if (key.equals(ENCRYPTION_ALGORITHM)) {
                 this.encryptionAlgorithm = propMap.get(key).toString();
             }
         }
@@ -193,8 +168,7 @@ public class OpenStegoConfig
      *
      * @return useCompression
      */
-    public boolean isUseCompression()
-    {
+    public boolean isUseCompression() {
         return this.useCompression;
     }
 
@@ -203,8 +177,7 @@ public class OpenStegoConfig
      *
      * @param useCompression
      */
-    public void setUseCompression(boolean useCompression)
-    {
+    public void setUseCompression(boolean useCompression) {
         this.useCompression = useCompression;
     }
 
@@ -213,8 +186,7 @@ public class OpenStegoConfig
      *
      * @return useEncryption
      */
-    public boolean isUseEncryption()
-    {
+    public boolean isUseEncryption() {
         return this.useEncryption;
     }
 
@@ -223,8 +195,7 @@ public class OpenStegoConfig
      *
      * @param useEncryption
      */
-    public void setUseEncryption(boolean useEncryption)
-    {
+    public void setUseEncryption(boolean useEncryption) {
         this.useEncryption = useEncryption;
     }
 
@@ -233,8 +204,7 @@ public class OpenStegoConfig
      *
      * @return password
      */
-    public String getPassword()
-    {
+    public String getPassword() {
         return this.password;
     }
 
@@ -243,8 +213,7 @@ public class OpenStegoConfig
      *
      * @param password
      */
-    public void setPassword(String password)
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -253,8 +222,7 @@ public class OpenStegoConfig
      *
      * @return encryptionAlgorithm
      */
-    public String getEncryptionAlgorithm()
-    {
+    public String getEncryptionAlgorithm() {
         return this.encryptionAlgorithm;
     }
 
@@ -263,8 +231,7 @@ public class OpenStegoConfig
      *
      * @param encryptionAlgorithm
      */
-    public void setEncryptionAlgorithm(String encryptionAlgorithm)
-    {
+    public void setEncryptionAlgorithm(String encryptionAlgorithm) {
         this.encryptionAlgorithm = encryptionAlgorithm;
     }
 }

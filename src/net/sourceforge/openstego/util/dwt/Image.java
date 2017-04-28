@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.dwt;
@@ -9,8 +9,7 @@ package net.sourceforge.openstego.util.dwt;
 /**
  * Object to store Image data
  */
-public class Image
-{
+public class Image {
     /**
      * Image data
      */
@@ -28,12 +27,11 @@ public class Image
 
     /**
      * Default constructor
-     * 
+     *
      * @param width Width of the image
      * @param height Height of the image
      */
-    public Image(int width, int height)
-    {
+    public Image(int width, int height) {
         this.data = new double[width * height];
         this.width = width;
         this.height = height;
@@ -41,61 +39,55 @@ public class Image
 
     /**
      * Get method for data
-     * 
+     *
      * @return data
      */
-    public double[] getData()
-    {
+    public double[] getData() {
         return this.data;
     }
 
     /**
      * Set method for data
-     * 
+     *
      * @param data
      */
-    public void setData(double[] data)
-    {
+    public void setData(double[] data) {
         this.data = data;
     }
 
     /**
      * Get method for width
-     * 
+     *
      * @return width
      */
-    public int getWidth()
-    {
+    public int getWidth() {
         return this.width;
     }
 
     /**
      * Set method for width
-     * 
+     *
      * @param width
      */
-    public void setWidth(int width)
-    {
+    public void setWidth(int width) {
         this.width = width;
     }
 
     /**
      * Get method for height
-     * 
+     *
      * @return height
      */
-    public int getHeight()
-    {
+    public int getHeight() {
         return this.height;
     }
 
     /**
      * Set method for height
-     * 
+     *
      * @param height
      */
-    public void setHeight(int height)
-    {
+    public void setHeight(int height) {
         this.height = height;
     }
 }

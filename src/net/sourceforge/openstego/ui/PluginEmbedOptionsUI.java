@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.ui;
@@ -14,13 +14,12 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Abstract class for GUI for OpenStego plugin for "Embed" action
  */
-public abstract class PluginEmbedOptionsUI extends JPanel
-{
+public abstract class PluginEmbedOptionsUI extends JPanel {
     private static final long serialVersionUID = 6932223460790839609L;
 
     /**
      * Method to validate plugin options for "Embed" action
-     * 
+     *
      * @return Boolean indicating whether validation was successful or not
      * @throws OpenStegoException
      */
@@ -28,7 +27,7 @@ public abstract class PluginEmbedOptionsUI extends JPanel
 
     /**
      * Method to populate the plugin GUI options based on the config data
-     * 
+     *
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */
@@ -36,7 +35,7 @@ public abstract class PluginEmbedOptionsUI extends JPanel
 
     /**
      * Method to populate the config object based on the GUI data
-     * 
+     *
      * @param config OpenStego configuration data
      * @throws OpenStegoException
      */

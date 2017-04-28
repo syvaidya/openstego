@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.dwt;
@@ -22,23 +22,20 @@ import org.xml.sax.SAXException;
 /**
  * Class to read the Filters XML and generate corresponding Java Objects
  */
-public class FilterXMLReader
-{
+public class FilterXMLReader {
     /**
      * Constructor is private so that this class is not instantiated
      */
-    private FilterXMLReader()
-    {
+    private FilterXMLReader() {
     }
 
     /**
      * This method parses the given XML file into the list of objects
-     * 
+     *
      * @param fileURI URI for the XML file
      * @return Map of filters with key being Integer object for filter ID
      */
-    public static Map<Integer, FilterGH> parse(String fileURI)
-    {
+    public static Map<Integer, FilterGH> parse(String fileURI) {
         Map<Integer, FilterGH> filterGHMap = new HashMap<Integer, FilterGH>();
         DocumentBuilder db = null;
         Document dom = null;
@@ -46,8 +43,7 @@ public class FilterXMLReader
         NodeList nl = null;
         FilterGH filterGH = null;
 
-        try
-        {
+        try {
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
             // Parse to get DOM representation of the XML file
@@ -55,10 +51,8 @@ public class FilterXMLReader
 
             // Get a node list of filterGH elements
             nl = dom.getDocumentElement().getElementsByTagName("filterGH");
-            if(nl != null && nl.getLength() > 0)
-            {
-                for(int i = 0; i < nl.getLength(); i++)
-                {
+            if (nl != null && nl.getLength() > 0) {
+                for (int i = 0; i < nl.getLength(); i++) {
                     // Get the 'filterGH' element
                     el = (Element) nl.item(i);
 
@@ -71,19 +65,13 @@ public class FilterXMLReader
             }
 
             return filterGHMap;
-        }
-        catch(ParserConfigurationException pcEx)
-        {
+        } catch (ParserConfigurationException pcEx) {
             pcEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
-        }
-        catch(SAXException saxEx)
-        {
+        } catch (SAXException saxEx) {
             saxEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             ioEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
         }
@@ -91,12 +79,11 @@ public class FilterXMLReader
 
     /**
      * This method reads XML node and creates corresponding FilterGH object
-     * 
+     *
      * @param el XML node element
      * @return FilterGH object
      */
-    private static FilterGH getFilterGH(Element el)
-    {
+    private static FilterGH getFilterGH(Element el) {
         FilterGH filterGH = new FilterGH();
         Element innerEl = null;
         NodeList nl = null;
@@ -108,10 +95,8 @@ public class FilterXMLReader
 
         // Get a nodelist of filter elements
         nl = el.getElementsByTagName("filter");
-        if(nl != null && nl.getLength() > 0)
-        {
-            for(int i = 0; i < nl.getLength(); i++)
-            {
+        if (nl != null && nl.getLength() > 0) {
+            for (int i = 0; i < nl.getLength(); i++) {
                 // Get the 'filter' element
                 innerEl = (Element) nl.item(i);
 
@@ -120,20 +105,13 @@ public class FilterXMLReader
                 filter.setHiPass(!((i & 1) == 1));
 
                 // Set the object in filterGH
-                if(i == 0)
-                {
+                if (i == 0) {
                     filterGH.setG(filter);
-                }
-                else if(i == 1)
-                {
+                } else if (i == 1) {
                     filterGH.setH(filter);
-                }
-                else if(i == 2)
-                {
+                } else if (i == 2) {
                     filterGH.setGi(filter);
-                }
-                else if(i == 3)
-                {
+                } else if (i == 3) {
                     filterGH.setHi(filter);
                 }
             }
@@ -144,12 +122,11 @@ public class FilterXMLReader
 
     /**
      * This method reads XML node and creates corresponding Filter object
-     * 
+     *
      * @param el XML node element
      * @return Filter object
      */
-    private static Filter getFilter(Element el)
-    {
+    private static Filter getFilter(Element el) {
         Filter filter = new Filter();
         Element innerEl = null;
         NodeList nl = null;
@@ -161,11 +138,9 @@ public class FilterXMLReader
 
         // Get a nodelist of data elements
         nl = el.getElementsByTagName("data");
-        if(nl != null && nl.getLength() > 0)
-        {
+        if (nl != null && nl.getLength() > 0) {
             data = new double[nl.getLength()];
-            for(int i = 0; i < nl.getLength(); i++)
-            {
+            for (int i = 0; i < nl.getLength(); i++) {
                 // Get the 'data' element
                 innerEl = (Element) nl.item(i);
 

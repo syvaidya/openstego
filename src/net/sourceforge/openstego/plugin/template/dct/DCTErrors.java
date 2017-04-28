@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.template.dct;
@@ -11,8 +11,7 @@ import net.sourceforge.openstego.OpenStegoException;
 /**
  * Class to store error codes for DCT plugin template
  */
-public class DCTErrors
-{
+public class DCTErrors {
     /**
      * Error Code - Invalid stego header data
      */
@@ -26,10 +25,8 @@ public class DCTErrors
     /*
      * Initialize the error code - message key map
      */
-    static
-    {
+    static {
         OpenStegoException.addErrorCode(DCTPluginTemplate.NAMESPACE, INVALID_STEGO_HEADER, "err.invalidHeaderStamp");
-        OpenStegoException
-                .addErrorCode(DCTPluginTemplate.NAMESPACE, INVALID_HEADER_VERSION, "err.invalidHeaderVersion");
+        OpenStegoException.addErrorCode(DCTPluginTemplate.NAMESPACE, INVALID_HEADER_VERSION, "err.invalidHeaderVersion");
     }
 }

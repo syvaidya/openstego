@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dctlsb;
@@ -22,8 +22,7 @@ import net.sourceforge.openstego.util.dct.DCT;
 /**
  * Plugin for OpenStego which implements the DCT based Least-significant bit algorithm
  */
-public class DctLSBPlugin extends WMImagePluginTemplate
-{
+public class DctLSBPlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -37,8 +36,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
     /**
      * Default constructor
      */
-    public DctLSBPlugin()
-    {
+    public DctLSBPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DctLSBPluginLabels");
         new DctLSBErrors(); // Initialize error codes
     }
@@ -48,8 +46,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      *
      * @return Name of the plugin
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return "DctLSB";
     }
 
@@ -58,8 +56,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      *
      * @return Short description of the plugin
      */
-    public String getDescription()
-    {
+    @Override
+    public String getDescription() {
         return labelUtil.getString("plugin.description");
     }
 
@@ -75,23 +73,17 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-            throws OpenStegoException
-    {
+    @Override
+    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         BufferedImage image = null;
         DctLSBOutputStream os = null;
         int imgType = 0;
 
-        try
-        {
+        try {
             // Generate random image, if input image is not provided
-            if(cover == null)
-            {
-                image = ImageUtil.generateRandomImage(
-                    (DCTDataHeader.getMaxHeaderSize() + msg.length) * 8 * DCT.NJPEG * DCT.NJPEG);
-            }
-            else
-            {
+            if (cover == null) {
+                image = ImageUtil.generateRandomImage((DCTDataHeader.getMaxHeaderSize() + msg.length) * 8 * DCT.NJPEG * DCT.NJPEG);
+            } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
             imgType = image.getType();
@@ -100,9 +92,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate
             os.close();
 
             return ImageUtil.imageToByteArray(os.getImage(imgType), stegoFileName, this);
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
     }
@@ -116,39 +106,29 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
-    {
+    @Override
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         byte[] msg = null;
         DCTDataHeader header = null;
         DctLSBInputStream is = null;
         int bytesRead = 0;
 
-        try
-        {
+        try {
             is = new DctLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
             header = is.getDataHeader();
             msg = new byte[header.getDataLength()];
 
             bytesRead = is.read(msg, 0, msg.length);
-            if(bytesRead != msg.length)
-            {
+            if (bytesRead != msg.length) {
                 throw new OpenStegoException(null, NAMESPACE, DctLSBErrors.ERR_IMAGE_DATA_READ);
             }
-        }
-        catch(IOException ioEx)
-        {
+        } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
-        }
-        finally
-        {
-            if(is != null)
-            {
-                try
-                {
+        } finally {
+            if (is != null) {
+                try {
                     is.close();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     // Ignore
                 }
             }
@@ -163,8 +143,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return Signature data
      * @throws OpenStegoException
      */
-    public byte[] generateSignature() throws OpenStegoException
-    {
+    @Override
+    public byte[] generateSignature() throws OpenStegoException {
         return null; // TODO
     }
 
@@ -174,8 +154,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List<String> getWritableFileExtensions() throws OpenStegoException
-    {
+    @Override
+    public List<String> getWritableFileExtensions() throws OpenStegoException {
         List<String> formatList = super.getWritableFileExtensions();
 
         // Expicilty removing unsupported formats
@@ -191,8 +171,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
-    public String getUsage() throws OpenStegoException
-    {
+    @Override
+    public String getUsage() throws OpenStegoException {
         return labelUtil.getString("plugin.usage");
     }
 
@@ -204,8 +184,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
-    {
+    @Override
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
         // TODO
         return 0.0;
     }
@@ -215,8 +195,8 @@ public class DctLSBPlugin extends WMImagePluginTemplate
      *
      * @return Configuration class specific to this plugin
      */
-    public Class<? extends OpenStegoConfig> getConfigClass()
-    {
+    @Override
+    public Class<? extends OpenStegoConfig> getConfigClass() {
         return DCTConfig.class;
     }
 }

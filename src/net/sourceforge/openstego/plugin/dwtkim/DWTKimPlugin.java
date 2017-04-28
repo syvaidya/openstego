@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.dwtkim;
@@ -34,8 +34,7 @@ import net.sourceforge.openstego.util.dwt.ImageTree;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
-public class DWTKimPlugin extends WMImagePluginTemplate
-{
+public class DWTKimPlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -49,35 +48,34 @@ public class DWTKimPlugin extends WMImagePluginTemplate
     /**
      * Default constructor
      */
-    public DWTKimPlugin()
-    {
+    public DWTKimPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "net.sourceforge.openstego.resource.DWTKimPluginLabels");
         new DWTKimErrors(); // Initialize error codes
     }
 
     /**
      * Gives the name of the plugin
-     * 
+     *
      * @return Name of the plugin
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return "DWTKim";
     }
 
     /**
      * Gives a short description of the plugin
-     * 
+     *
      * @return Short description of the plugin
      */
-    public String getDescription()
-    {
+    @Override
+    public String getDescription() {
         return labelUtil.getString("plugin.description");
     }
 
     /**
      * Method to embed the message into the cover data
-     * 
+     *
      * @param msg Message to be embedded
      * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
      *        the cover data
@@ -87,9 +85,8 @@ public class DWTKimPlugin extends WMImagePluginTemplate
      * @return Stego data containing the message
      * @throws OpenStegoException
      */
-    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
-            throws OpenStegoException
-    {
+    @Override
+    public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         BufferedImage image = null;
         List<int[][]> yuv = null;
         DWT dwt = null;
@@ -107,12 +104,9 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         double alpha = 0.0;
 
         // Cover file is mandatory
-        if(cover == null)
-        {
+        if (cover == null) {
             throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_NO_COVER_FILE);
-        }
-        else
-        {
+        } else {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
@@ -125,8 +119,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
         // Check that level is okay
         levels = DWTUtil.findDeepestLevel(cols, rows) - 1;
-        if(sig.decompositionLevel > levels)
-        {
+        if (sig.decompositionLevel > levels) {
             throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_DECOMP_LEVEL_NOT_ENOUGH);
         }
 
@@ -138,8 +131,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         w = 0;
 
         // process each decomposition level
-        while(p.getCoarse() != null)
-        {
+        while (p.getCoarse() != null) {
             double threshold;
 
             // Get current decomposition level number
@@ -163,8 +155,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate
         }
 
         // Mark approximation image using calculated significance threshold and embedding strength
-        w = markSubBand(p, sig.alphaForApproxSubBand, sig.watermark, calcLevelThreshold(findSubBandMaxCoeff(p, 1)), w,
-            sig.watermarkLength);
+        w = markSubBand(p, sig.alphaForApproxSubBand, sig.watermark, calcLevelThreshold(findSubBandMaxCoeff(p, 1)), w, sig.watermarkLength);
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
@@ -174,26 +165,26 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
     /**
      * Method to extract the message from the stego data
-     * 
+     *
      * @param stegoData Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @param origSigData Optional signature data file for watermark
      * @return Extracted message
      * @throws OpenStegoException
      */
-    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException
-    {
+    @Override
+    public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         return null;
     }
 
     /**
      * Method to generate the signature data
-     * 
+     *
      * @return Signature data
      * @throws OpenStegoException
      */
-    public byte[] generateSignature() throws OpenStegoException
-    {
+    @Override
+    public byte[] generateSignature() throws OpenStegoException {
         Random rand = null;
         Signature sig = null;
 
@@ -205,32 +196,32 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
     /**
      * Method to check the correlation between original signature and the extracted watermark
-     * 
+     *
      * @param origSigData Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
      * @throws OpenStegoException
      */
-    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException
-    {
+    @Override
+    public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
         // TODO
         return 0.0;
     }
 
     /**
      * Method to get the usage details of the plugin
-     * 
+     *
      * @return Usage details of the plugin
      * @throws OpenStegoException
      */
-    public String getUsage() throws OpenStegoException
-    {
+    @Override
+    public String getUsage() throws OpenStegoException {
         return labelUtil.getString("plugin.usage");
     }
 
     /**
      * Utility method to mark a wavelet sub-band using the watermark data
-     * 
+     *
      * @param imgTree Image data
      * @param alpha Alpha value
      * @param watermark Watermark data
@@ -239,18 +230,14 @@ public class DWTKimPlugin extends WMImagePluginTemplate
      * @param n
      * @return
      */
-    private int markSubBand(ImageTree imgTree, double alpha, double watermark[], double threshold, int w, int n)
-    {
+    private int markSubBand(ImageTree imgTree, double alpha, double watermark[], double threshold, int w, int n) {
         double coeff = 0.0;
         double newCoeff = 0.0;
 
-        for(int i = 5; i < imgTree.getImage().getHeight() - 5; i++)
-        {
-            for(int j = 5; j < imgTree.getImage().getWidth() - 5; j++)
-            {
+        for (int i = 5; i < imgTree.getImage().getHeight() - 5; i++) {
+            for (int j = 5; j < imgTree.getImage().getWidth() - 5; j++) {
                 coeff = DWTUtil.getPixel(imgTree.getImage(), i, j);
-                if(Math.abs(coeff) > threshold)
-                {
+                if (Math.abs(coeff) > threshold) {
                     newCoeff = coeff + alpha * coeff * watermark[w % n];
                     DWTUtil.setPixel(imgTree.getImage(), i, j, newCoeff);
                     w++;
@@ -263,23 +250,19 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
     /**
      * Utility method to find max coefficient for the sub-band
-     * 
+     *
      * @param imgTree Image data
      * @param subBand Sub-band number
      * @return Max coefficient
      */
-    private double findSubBandMaxCoeff(ImageTree imgTree, int subBand)
-    {
+    private double findSubBandMaxCoeff(ImageTree imgTree, int subBand) {
         double max = 0.0;
         double coeff = 0.0;
 
-        for(int i = 5; i < imgTree.getImage().getHeight() - 5; i++)
-        {
-            for(int j = 5; j < imgTree.getImage().getWidth() - 5; j++)
-            {
+        for (int i = 5; i < imgTree.getImage().getHeight() - 5; i++) {
+            for (int j = 5; j < imgTree.getImage().getWidth() - 5; j++) {
                 coeff = Math.abs(DWTUtil.getPixel(imgTree.getImage(), i, j));
-                if(coeff > max)
-                {
+                if (coeff > max) {
                     max = coeff;
                 }
             }
@@ -290,12 +273,11 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
     /**
      * Utility method to find the level adaptive max coefficient
-     * 
+     *
      * @param imgTree Image data
      * @return Level adaptive max coefficient
      */
-    private double findLevelMaxCoeff(ImageTree imgTree)
-    {
+    private double findLevelMaxCoeff(ImageTree imgTree) {
         double h = 0.0;
         double v = 0.0;
         double d = 0.0;
@@ -309,32 +291,29 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
     /**
      * Utility method to calculate level threshold
-     * 
+     *
      * @param maxCoeff Max coefficient
      * @return Level threshold
      */
-    private double calcLevelThreshold(double maxCoeff)
-    {
+    private double calcLevelThreshold(double maxCoeff) {
         return Math.pow(2.0, Math.floor(Math.log(maxCoeff) / Math.log(2.0)) - 1.0);
     }
 
     /**
      * Utility method to calculate level alpha detail
-     * 
+     *
      * @param alpha Alpha value
      * @param level Level number
      * @return Level alpha detail
      */
-    private double calcLevelAlphaDetail(double alpha, int level)
-    {
+    private double calcLevelAlphaDetail(double alpha, int level) {
         return alpha / Math.pow(2.0, level - 1);
     }
 
     /**
      * Private class for the data structure required for the signature
      */
-    private class Signature
-    {
+    private class Signature {
         /**
          * Signature stamp
          */
@@ -377,11 +356,10 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
         /**
          * Constructor which generates the watermark data using the given randomizer
-         * 
+         *
          * @param rand Randomizer to use for generating watermark data
          */
-        public Signature(Random rand)
-        {
+        public Signature(Random rand) {
             double m = 0.0;
             double d = 1.0;
             double x = 0.0;
@@ -389,15 +367,12 @@ public class DWTKimPlugin extends WMImagePluginTemplate
             double x2 = 0.0;
 
             this.watermark = new double[this.watermarkLength];
-            for(int cnt = 0; cnt < (this.watermarkLength >> 1); cnt = cnt + 2)
-            {
-                do
-                {
+            for (int cnt = 0; cnt < (this.watermarkLength >> 1); cnt = cnt + 2) {
+                do {
                     x1 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
                     x2 = 2.0 * ((rand.nextInt() & Integer.MAX_VALUE) / (Integer.MAX_VALUE + 1.0)) - 1.0;
                     x = x1 * x1 + x2 * x2;
-                }
-                while(x >= 1.0);
+                } while (x >= 1.0);
 
                 x1 *= Math.sqrt((-2.0) * Math.log(x) / x);
                 x2 *= Math.sqrt((-2.0) * Math.log(x) / x);
@@ -409,21 +384,18 @@ public class DWTKimPlugin extends WMImagePluginTemplate
 
         /**
          * Constructor that takes existing the signature data
-         * 
+         *
          * @param sigData Existing signature data
          * @throws OpenStegoException
          */
-        public Signature(byte[] sigData) throws OpenStegoException
-        {
+        public Signature(byte[] sigData) throws OpenStegoException {
             ObjectInputStream ois = null;
             byte[] inputSig = new byte[this.sig.length];
 
-            try
-            {
+            try {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
                 ois.read(inputSig, 0, this.sig.length);
-                if(!(new String(this.sig)).equals(new String(inputSig)))
-                {
+                if (!(new String(this.sig)).equals(new String(inputSig))) {
                     throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_SIG_NOT_VALID);
                 }
 
@@ -435,30 +407,25 @@ public class DWTKimPlugin extends WMImagePluginTemplate
                 this.filterNumber = ois.readInt();
 
                 this.watermark = new double[this.watermarkLength];
-                for(int i = 0; i < this.watermark.length; i++)
-                {
+                for (int i = 0; i < this.watermark.length; i++) {
                     this.watermark[i] = ois.readDouble();
                 }
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
 
         /**
          * Get the signature data generated
-         * 
+         *
          * @return Signature data
          * @throws OpenStegoException
          */
-        public byte[] getSigData() throws OpenStegoException
-        {
+        public byte[] getSigData() throws OpenStegoException {
             ByteArrayOutputStream baos = null;
             ObjectOutputStream oos = null;
 
-            try
-            {
+            try {
                 baos = new ByteArrayOutputStream();
                 oos = new ObjectOutputStream(baos);
                 oos.write(this.sig);
@@ -469,17 +436,14 @@ public class DWTKimPlugin extends WMImagePluginTemplate
                 oos.writeInt(this.waveletFilterMethod);
                 oos.writeInt(this.filterNumber);
 
-                for(int i = 0; i < this.watermark.length; i++)
-                {
+                for (int i = 0; i < this.watermark.length; i++) {
                     oos.writeDouble(this.watermark[i]);
                 }
                 oos.flush();
                 oos.close();
 
                 return baos.toByteArray();
-            }
-            catch(IOException ioEx)
-            {
+            } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }

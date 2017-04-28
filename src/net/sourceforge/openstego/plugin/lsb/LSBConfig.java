@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.lsb;
@@ -17,8 +17,7 @@ import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 /**
  * Class to store configuration data for LSB plugin
  */
-public class LSBConfig extends OpenStegoConfig
-{
+public class LSBConfig extends OpenStegoConfig {
     /**
      * Key string for configuration item - maxBitsUsedPerChannel.
      * <p>
@@ -41,34 +40,31 @@ public class LSBConfig extends OpenStegoConfig
     /**
      * Default Constructor (with default values for configuration items)
      */
-    public LSBConfig()
-    {
+    public LSBConfig() {
     }
 
     /**
      * Constructor with map of configuration data. Please make sure that only valid keys for configuration
      * items are provided, and the values for those items are also valid.
-     * 
+     *
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    public LSBConfig(Map<String, String> propMap) throws OpenStegoException
-    {
+    public LSBConfig(Map<String, String> propMap) throws OpenStegoException {
         addProperties(propMap);
     }
 
     /**
      * Constructor which reads configuration data from the command line options.
-     * 
+     *
      * @param options Command-line options
      * @throws OpenStegoException
      */
-    public LSBConfig(CmdLineOptions options) throws OpenStegoException
-    {
+    public LSBConfig(CmdLineOptions options) throws OpenStegoException {
         super(options);
 
         Map<String, String> map = new HashMap<String, String>();
-        if(options.getOption("-b") != null) // maxBitsUsedPerChannel
+        if (options.getOption("-b") != null) // maxBitsUsedPerChannel
         {
             map.put(MAX_BITS_USED_PER_CHANNEL, options.getOptionValue("-b"));
         }
@@ -78,12 +74,12 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Method to add properties from the map to this configuration data
-     * 
+     *
      * @param propMap Map containing the configuration data
      * @throws OpenStegoException
      */
-    protected void addProperties(Map<String, String> propMap) throws OpenStegoException
-    {
+    @Override
+    protected void addProperties(Map<String, String> propMap) throws OpenStegoException {
         super.addProperties(propMap);
 
         Iterator<String> keys = null;
@@ -91,23 +87,17 @@ public class LSBConfig extends OpenStegoConfig
         String value = null;
 
         keys = propMap.keySet().iterator();
-        while(keys.hasNext())
-        {
+        while (keys.hasNext()) {
             key = keys.next();
-            if(key.equals(MAX_BITS_USED_PER_CHANNEL))
-            {
+            if (key.equals(MAX_BITS_USED_PER_CHANNEL)) {
                 value = propMap.get(key).toString().trim();
-                try
-                {
+                try {
                     this.maxBitsUsedPerChannel = Integer.parseInt(value);
-                }
-                catch(NumberFormatException nfEx)
-                {
+                } catch (NumberFormatException nfEx) {
                     throw new OpenStegoException(nfEx, LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_NUMBER, value);
                 }
 
-                if(this.maxBitsUsedPerChannel < 1 || this.maxBitsUsedPerChannel > 8)
-                {
+                if (this.maxBitsUsedPerChannel < 1 || this.maxBitsUsedPerChannel > 8) {
                     throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.MAX_BITS_NOT_IN_RANGE, value);
                 }
             }
@@ -116,41 +106,37 @@ public class LSBConfig extends OpenStegoConfig
 
     /**
      * Get method for configuration item - maxBitsUsedPerChannel
-     * 
+     *
      * @return maxBitsUsedPerChannel
      */
-    public int getMaxBitsUsedPerChannel()
-    {
+    public int getMaxBitsUsedPerChannel() {
         return this.maxBitsUsedPerChannel;
     }
 
     /**
      * Set method for configuration item - maxBitsUsedPerChannel
-     * 
+     *
      * @param maxBitsUsedPerChannel
      */
-    public void setMaxBitsUsedPerChannel(int maxBitsUsedPerChannel)
-    {
+    public void setMaxBitsUsedPerChannel(int maxBitsUsedPerChannel) {
         this.maxBitsUsedPerChannel = maxBitsUsedPerChannel;
     }
 
     /**
      * Get method for configuration item - imageFileExtension
-     * 
+     *
      * @return imageFileExtension
      */
-    public String getImageFileExtension()
-    {
+    public String getImageFileExtension() {
         return this.imageFileExtension;
     }
 
     /**
      * Set method for configuration item - imageFileExtension
-     * 
+     *
      * @param imageFileExtension
      */
-    public void setImageFileExtension(String imageFileExtension)
-    {
+    public void setImageFileExtension(String imageFileExtension) {
         this.imageFileExtension = imageFileExtension;
     }
 }

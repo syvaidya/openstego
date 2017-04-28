@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.plugin.template.image;
@@ -24,8 +24,7 @@ import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 /**
  * Template plugin for OpenStego which implements image based steganography for data hiding
  */
-public abstract class DHImagePluginTemplate extends DataHidingPlugin
-{
+public abstract class DHImagePluginTemplate extends DataHidingPlugin {
     /**
      * Static list of supported read formats
      */
@@ -38,7 +37,7 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
 
     /**
      * Method to get difference between original cover file and the stegged file
-     * 
+     *
      * @param stegoData Stego data containing the embedded data
      * @param stegoFileName Name of the stego file
      * @param coverData Original cover data
@@ -47,9 +46,9 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
      * @return Difference data
      * @throws OpenStegoException
      */
-    public final byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName,
-            String diffFileName) throws OpenStegoException
-    {
+    @Override
+    public final byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName, String diffFileName)
+            throws OpenStegoException {
         BufferedImage stegoImage = null;
         BufferedImage coverImage = null;
         BufferedImage diffImage = null;
@@ -63,14 +62,13 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
 
     /**
      * Method to get the list of supported file extensions for reading
-     * 
+     *
      * @return List of supported file extensions for reading
      * @throws OpenStegoException
      */
-    public List<String> getReadableFileExtensions() throws OpenStegoException
-    {
-        if(readFormats != null)
-        {
+    @Override
+    public List<String> getReadableFileExtensions() throws OpenStegoException {
+        if (readFormats != null) {
             return readFormats;
         }
 
@@ -79,15 +77,12 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
         readFormats = new ArrayList<String>();
 
         formats = ImageIO.getReaderFormatNames();
-        for(int i = 0; i < formats.length; i++)
-        {
+        for (int i = 0; i < formats.length; i++) {
             format = formats[i].toLowerCase();
-            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
-            {
+            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
                 format = "jp2";
             }
-            if(!readFormats.contains(format))
-            {
+            if (!readFormats.contains(format)) {
                 readFormats.add(format);
             }
         }
@@ -98,14 +93,13 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
 
     /**
      * Method to get the list of supported file extensions for writing
-     * 
+     *
      * @return List of supported file extensions for writing
      * @throws OpenStegoException
      */
-    public List<String> getWritableFileExtensions() throws OpenStegoException
-    {
-        if(writeFormats != null)
-        {
+    @Override
+    public List<String> getWritableFileExtensions() throws OpenStegoException {
+        if (writeFormats != null) {
             return writeFormats;
         }
 
@@ -114,15 +108,12 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
         writeFormats = new ArrayList<String>();
 
         formats = ImageIO.getWriterFormatNames();
-        for(int i = 0; i < formats.length; i++)
-        {
+        for (int i = 0; i < formats.length; i++) {
             format = formats[i].toLowerCase();
-            if(format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0)
-            {
+            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
                 format = "jp2";
             }
-            if(!writeFormats.contains(format))
-            {
+            if (!writeFormats.contains(format)) {
                 writeFormats.add(format);
             }
         }
@@ -133,33 +124,33 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin
 
     /**
      * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     * 
+     *
      * @param stegoUI Reference to the parent OpenStegoUI object
      * @return UI object specific to this plugin
      * @throws OpenStegoException
      */
-    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException
-    {
+    @Override
+    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException {
         return null;
     }
 
     /**
      * Method to populate the standard command-line options used by this plugin
-     * 
+     *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
      * @throws OpenStegoException
      */
-    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException
-    {
+    @Override
+    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException {
     }
 
     /**
      * Method to get the configuration class specific to this plugin
-     * 
+     *
      * @return Configuration class specific to this plugin
      */
-    public Class<? extends OpenStegoConfig> getConfigClass()
-    {
+    @Override
+    public Class<? extends OpenStegoConfig> getConfigClass() {
         return OpenStegoConfig.class;
     }
 }

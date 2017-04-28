@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2014 Samir Vaidya
+ * Copyright (c) 2007-2017 Samir Vaidya
  */
 
 package net.sourceforge.openstego.util.dwt;
@@ -9,8 +9,7 @@ package net.sourceforge.openstego.util.dwt;
 /**
  * Object to store Filter data
  */
-public class Filter
-{
+public class Filter {
     /**
      * Constant for filter type = NoSymm
      */
@@ -83,116 +82,99 @@ public class Filter
 
     /**
      * Get method for type
-     * 
+     *
      * @return type
      */
-    public int getType()
-    {
+    public int getType() {
         return this.type;
     }
 
     /**
      * Set method for type
-     * 
+     *
      * @param type
      */
-    public void setType(String type)
-    {
-        if(type.equalsIgnoreCase("nosymm"))
-        {
+    public void setType(String type) {
+        if (type.equalsIgnoreCase("nosymm")) {
             this.type = TYPE_NOSYMM;
-        }
-        else if(type.equalsIgnoreCase("symm"))
-        {
+        } else if (type.equalsIgnoreCase("symm")) {
             this.type = TYPE_SYMM;
-        }
-        else if(type.equalsIgnoreCase("antisymm"))
-        {
+        } else if (type.equalsIgnoreCase("antisymm")) {
             this.type = TYPE_ANTISYMM;
-        }
-        else
-        {
+        } else {
             this.type = -1;
         }
     }
 
     /**
      * Get method for start
-     * 
+     *
      * @return start
      */
-    public int getStart()
-    {
+    public int getStart() {
         return this.start;
     }
 
     /**
      * Set method for start
-     * 
+     *
      * @param start
      */
-    public void setStart(int start)
-    {
+    public void setStart(int start) {
         this.start = start;
     }
 
     /**
      * Get method for end
-     * 
+     *
      * @return end
      */
-    public int getEnd()
-    {
+    public int getEnd() {
         return this.end;
     }
 
     /**
      * Set method for end
-     * 
+     *
      * @param end
      */
-    public void setEnd(int end)
-    {
+    public void setEnd(int end) {
         this.end = end;
     }
 
     /**
      * Get method for hiPass
-     * 
+     *
      * @return hiPass
      */
-    public boolean isHiPass()
-    {
+    public boolean isHiPass() {
         return this.hiPass;
     }
 
     /**
      * Set method for hiPass
-     * 
+     *
      * @param hiPass
      */
-    public void setHiPass(boolean hiPass)
-    {
+    public void setHiPass(boolean hiPass) {
         this.hiPass = hiPass;
     }
 
     /**
      * Get method for data
-     * 
+     *
      * @return data
      */
-    public double[] getData()
-    {
+    public double[] getData() {
         return this.data;
     }
 
     /**
      * Set method for data
-     * 
+     *
      * @param data
      */
-    public void setData(double[] data)
-    {
+    public void setData(double[] data) {
         this.data = data;
     }
 }
