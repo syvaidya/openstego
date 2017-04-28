@@ -10,6 +10,7 @@
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
     <property name="package.ver" value="0.7.0"/>
+    <property name="jre.minVer" value="1.7.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
     <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
 
@@ -81,6 +82,7 @@
     <target name="doc" description="Generates the JavaDoc API documentation">
         <javadoc packagenames="net.sourceforge.openstego.*" sourcepath="${src}" destdir="${javadoc}"
             excludepackagenames="net.sourceforge.openstego.plugin.*" windowtitle="${ant.project.name} API"
+            additionalparam="-Xdoclint:none">
             <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
             <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
@@ -115,6 +117,8 @@
         </replace>
         <zip destfile="${package}/${package.bin}.zip">
             <zipfileset dir="${package}" includes="${package.bin}/openstego.sh" filemode="755"/>
+            <zipfileset dir="${package}" includes="${package.bin}/**" excludes="${package.bin}/openstego.sh"/>
+        </zip>
     </target>
 
     <target name="package-src" depends="doc" description="Generates the sources zipped package">
