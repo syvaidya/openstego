@@ -170,9 +170,9 @@
             append="false">OpenStego (${package.ver}-1) ; urgency=low
 
   * GUI changes to support window resizing
-  * File permissions fixed for Linux
-  * Added support for changing JPEG compression level (via openstego.ini)
-  * Maintain metadata while writing images (e.g EXIF for JPEG)
+  * File permissions fix for Linux
+  * Added support for changing JPEG compression level (via openstego.ini file)
+  * Maintain metadata while writing images (e.g. EXIF for JPEG)
 
  -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>
