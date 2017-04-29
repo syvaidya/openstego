@@ -6,12 +6,12 @@
 
 package net.sourceforge.openstego.plugin.lsb;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.util.ImageHolder;
 
 /**
  * InputStream to read embedded data from image file using LSB algorithm
@@ -20,7 +20,7 @@ public class LSBInputStream extends InputStream {
     /**
      * Image data
      */
-    private BufferedImage image = null;
+    private ImageHolder image = null;
 
     /**
      * Data header
@@ -69,8 +69,8 @@ public class LSBInputStream extends InputStream {
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public LSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException {
-        if (image == null) {
+    public LSBInputStream(ImageHolder image, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
@@ -78,8 +78,8 @@ public class LSBInputStream extends InputStream {
         this.channelBitsUsed = 1;
         this.config = config;
 
-        this.imgWidth = image.getWidth();
-        this.imgHeight = image.getHeight();
+        this.imgWidth = image.getImage().getWidth();
+        this.imgHeight = image.getImage().getHeight();
         readHeader();
     }
 
@@ -118,7 +118,7 @@ public class LSBInputStream extends InputStream {
         }
 
         for (int i = 0; i < bitSet.length; i++) {
-            pixel = this.image.getRGB(this.x, this.y);
+            pixel = this.image.getImage().getRGB(this.x, this.y);
             bitSet[i] = getCurrBitFromPixel(pixel);
 
             this.currBit++;

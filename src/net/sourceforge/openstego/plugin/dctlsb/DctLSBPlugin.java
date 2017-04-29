@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.dctlsb;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTConfig;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
 import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.dct.DCT;
@@ -75,7 +75,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate {
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        BufferedImage image = null;
+        ImageHolder image = null;
         DctLSBOutputStream os = null;
         int imgType = 0;
 
@@ -86,7 +86,7 @@ public class DctLSBPlugin extends WMImagePluginTemplate {
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            imgType = image.getType();
+            imgType = image.getImage().getType();
             os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config);
             os.write(msg);
             os.close();

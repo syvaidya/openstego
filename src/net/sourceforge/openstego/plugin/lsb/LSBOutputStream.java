@@ -12,6 +12,7 @@ import java.io.OutputStream;
 
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.LabelUtil;
 
 /**
@@ -26,7 +27,7 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
-    private BufferedImage image = null;
+    private ImageHolder image = null;
 
     /**
      * Number of bits used per color channel
@@ -87,19 +88,20 @@ public class LSBOutputStream extends OutputStream {
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public LSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
-        if (image == null) {
+    public LSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
         this.dataLength = dataLength;
-        this.imgWidth = image.getWidth();
-        this.imgHeight = image.getHeight();
+        this.imgWidth = image.getImage().getWidth();
+        this.imgHeight = image.getImage().getHeight();
         this.config = config;
-        this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+        this.image = new ImageHolder(newImg, image.getMetadata());
         for (int x = 0; x < this.imgWidth; x++) {
             for (int y = 0; y < this.imgHeight; y++) {
-                this.image.setRGB(x, y, image.getRGB(x, y));
+                newImg.setRGB(x, y, image.getImage().getRGB(x, y));
             }
         }
 
@@ -208,7 +210,7 @@ public class LSBOutputStream extends OutputStream {
      * @return Image data
      * @throws OpenStegoException
      */
-    public BufferedImage getImage() throws OpenStegoException {
+    public ImageHolder getImage() throws OpenStegoException {
         try {
             flush();
         } catch (IOException ioEx) {
@@ -235,7 +237,7 @@ public class LSBOutputStream extends OutputStream {
 
         maskPerByte = (int) (Math.pow(2, this.channelBitsUsed) - 1);
         mask = (maskPerByte << 16) + (maskPerByte << 8) + maskPerByte;
-        pixel = this.image.getRGB(this.x, this.y) & (0xFFFFFFFF - mask);
+        pixel = this.image.getImage().getRGB(this.x, this.y) & (0xFFFFFFFF - mask);
 
         for (int bit = 0; bit < 3; bit++) {
             bitOffset = 0;
@@ -244,7 +246,7 @@ public class LSBOutputStream extends OutputStream {
             }
             offset = (offset << 8) + bitOffset;
         }
-        this.image.setRGB(this.x, this.y, pixel + offset);
+        this.image.getImage().setRGB(this.x, this.y, pixel + offset);
     }
 
     /**

@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.template.image;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +17,7 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.WatermarkingPlugin;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.cmd.CmdLineOptions;
 
@@ -49,9 +49,9 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin {
     @Override
     public final byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName, String diffFileName)
             throws OpenStegoException {
-        BufferedImage stegoImage = null;
-        BufferedImage coverImage = null;
-        BufferedImage diffImage = null;
+        ImageHolder stegoImage = null;
+        ImageHolder coverImage = null;
+        ImageHolder diffImage = null;
 
         stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
         coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);

@@ -14,6 +14,7 @@ import java.util.Random;
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.StringUtil;
 import net.sourceforge.openstego.util.dct.DCT;
@@ -79,20 +80,21 @@ public class DctLSBInputStream extends InputStream {
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public DctLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException {
-        if (image == null) {
+    public DctLSBInputStream(ImageHolder image, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
             throw new IllegalArgumentException("No image file provided");
         }
 
+        BufferedImage imgData = image.getImage();
         this.config = config;
-        this.imgWidth = image.getWidth();
-        this.imgHeight = image.getHeight();
+        this.imgWidth = imgData.getWidth();
+        this.imgHeight = imgData.getHeight();
 
         // Calculate widht and height rounded to 8
         this.imgWidth = this.imgWidth - (this.imgWidth % DCT.NJPEG);
         this.imgHeight = this.imgHeight - (this.imgHeight % DCT.NJPEG);
 
-        this.y = ImageUtil.getYuvFromImage(image).get(0);
+        this.y = ImageUtil.getYuvFromImage(imgData).get(0);
 
         this.dct = new DCT();
         this.dct.initDct8x8();

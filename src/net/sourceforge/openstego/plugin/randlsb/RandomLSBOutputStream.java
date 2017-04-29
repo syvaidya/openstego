@@ -17,6 +17,7 @@ import net.sourceforge.openstego.plugin.lsb.LSBConfig;
 import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
 import net.sourceforge.openstego.plugin.lsb.LSBErrors;
 import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.StringUtil;
 
 /**
@@ -26,7 +27,7 @@ public class RandomLSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
-    private BufferedImage image = null;
+    private ImageHolder image = null;
 
     /**
      * Number of bits used per color channel
@@ -77,26 +78,27 @@ public class RandomLSBOutputStream extends OutputStream {
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public RandomLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
-        if (image == null) {
+    public RandomLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
         this.dataLength = dataLength;
-        this.imgWidth = image.getWidth();
-        this.imgHeight = image.getHeight();
+        this.imgWidth = image.getImage().getWidth();
+        this.imgHeight = image.getImage().getHeight();
         this.config = config;
 
-        switch (image.getType()) {
+        switch (image.getImage().getType()) {
             case BufferedImage.TYPE_INT_RGB:
                 this.image = image;
                 break;
 
             default:
-                this.image = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+                BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+                this.image = new ImageHolder(newImg, image.getMetadata());
                 for (int x = 0; x < this.imgWidth; x++) {
                     for (int y = 0; y < this.imgHeight; y++) {
-                        this.image.setRGB(x, y, image.getRGB(x, y));
+                        newImg.setRGB(x, y, image.getImage().getRGB(x, y));
                     }
                 }
         }
@@ -194,7 +196,7 @@ public class RandomLSBOutputStream extends OutputStream {
      *
      * @return Image data
      */
-    public BufferedImage getImage() {
+    public ImageHolder getImage() {
         return this.image;
     }
 
@@ -213,7 +215,7 @@ public class RandomLSBOutputStream extends OutputStream {
         int newPixel = 0;
 
         // Get the pixel value
-        pixel = this.image.getRGB(x, y);
+        pixel = this.image.getImage().getRGB(x, y);
 
         // Set the bit value
         if (bitValue) {
@@ -227,6 +229,6 @@ public class RandomLSBOutputStream extends OutputStream {
         }
 
         // Set the pixel value back in image
-        this.image.setRGB(x, y, newPixel);
+        this.image.getImage().setRGB(x, y, newPixel);
     }
 }

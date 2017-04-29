@@ -9,7 +9,7 @@
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
-    <property name="package.ver" value="0.7.0"/>
+    <property name="package.ver" value="0.7.1"/>
     <property name="jre.minVer" value="1.7.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
     <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>

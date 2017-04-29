@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.randlsb;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
@@ -16,6 +15,7 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
 import net.sourceforge.openstego.plugin.lsb.LSBErrors;
 import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.StringUtil;
 
 /**
@@ -25,7 +25,7 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Image data
      */
-    private BufferedImage image = null;
+    private ImageHolder image = null;
 
     /**
      * Data header
@@ -69,8 +69,8 @@ public class RandomLSBInputStream extends InputStream {
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
-    public RandomLSBInputStream(BufferedImage image, OpenStegoConfig config) throws OpenStegoException {
-        if (image == null) {
+    public RandomLSBInputStream(ImageHolder image, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
             throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
@@ -78,8 +78,8 @@ public class RandomLSBInputStream extends InputStream {
         this.channelBitsUsed = 1;
         this.config = config;
 
-        this.imgWidth = image.getWidth();
-        this.imgHeight = image.getHeight();
+        this.imgWidth = image.getImage().getWidth();
+        this.imgHeight = image.getImage().getHeight();
         this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][1];
         for (int i = 0; i < this.imgWidth; i++) {
             for (int j = 0; j < this.imgHeight; j++) {
@@ -175,6 +175,6 @@ public class RandomLSBInputStream extends InputStream {
      * @return The bit at the given position, as the LSB of an integer
      */
     public int getPixelBit(int x, int y, int channel, int bit) {
-        return ((this.image.getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
+        return ((this.image.getImage().getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
     }
 }

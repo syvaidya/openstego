@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.dwtkim;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import java.util.Random;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
 import net.sourceforge.openstego.util.CommonUtil;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.StringUtil;
@@ -87,7 +87,7 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        BufferedImage image = null;
+        ImageHolder image = null;
         List<int[][]> yuv = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
@@ -110,10 +110,10 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
-        imgType = image.getType();
-        cols = image.getWidth();
-        rows = image.getHeight();
-        yuv = ImageUtil.getYuvFromImage(image);
+        imgType = image.getImage().getType();
+        cols = image.getImage().getWidth();
+        rows = image.getImage().getHeight();
+        yuv = ImageUtil.getYuvFromImage(image.getImage());
         luminance = yuv.get(0);
         sig = new Signature(msg);
 
@@ -160,7 +160,8 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
 
-        return ImageUtil.imageToByteArray(ImageUtil.getImageFromYuv(yuv, imgType), stegoFileName, this);
+        image.setImage(ImageUtil.getImageFromYuv(yuv, imgType));
+        return ImageUtil.imageToByteArray(image, stegoFileName, this);
     }
 
     /**

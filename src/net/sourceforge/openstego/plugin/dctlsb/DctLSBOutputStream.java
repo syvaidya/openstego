@@ -16,6 +16,7 @@ import java.util.Random;
 import net.sourceforge.openstego.OpenStegoConfig;
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.dct.DCTDataHeader;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.StringUtil;
 import net.sourceforge.openstego.util.dct.DCT;
@@ -27,7 +28,7 @@ public class DctLSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
-    private BufferedImage image = null;
+    private ImageHolder image = null;
 
     /**
      * Length of the data
@@ -113,7 +114,7 @@ public class DctLSBOutputStream extends OutputStream {
      * @param config Configuration data to use while writing
      * @throws OpenStegoException
      */
-    public DctLSBOutputStream(BufferedImage image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+    public DctLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
         List<int[][]> yuv = null;
 
         if (image == null) {
@@ -121,23 +122,24 @@ public class DctLSBOutputStream extends OutputStream {
         }
 
         this.dataLength = dataLength;
-        this.actualImgWidth = image.getWidth();
-        this.actualImgHeight = image.getHeight();
+        this.actualImgWidth = image.getImage().getWidth();
+        this.actualImgHeight = image.getImage().getHeight();
         this.config = config;
         this.fileName = fileName;
-        this.image = new BufferedImage(this.actualImgWidth, this.actualImgHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImg = new BufferedImage(this.actualImgWidth, this.actualImgHeight, BufferedImage.TYPE_INT_RGB);
+        this.image = new ImageHolder(newImg, image.getMetadata());
 
         // Calculate width and height rounded to 8
         this.imgWidth = this.actualImgWidth - (this.actualImgWidth % DCT.NJPEG);
         this.imgHeight = this.actualImgHeight - (this.actualImgHeight % DCT.NJPEG);
 
-        yuv = ImageUtil.getYuvFromImage(image);
+        yuv = ImageUtil.getYuvFromImage(image.getImage());
         this.y = yuv.get(0);
         this.u = yuv.get(1);
         this.v = yuv.get(2);
         for (int i = 0; i < this.actualImgWidth; i++) {
             for (int j = 0; j < this.actualImgHeight; j++) {
-                this.image.setRGB(i, j, image.getRGB(i, j));
+                this.image.getImage().setRGB(i, j, image.getImage().getRGB(i, j));
             }
         }
 
@@ -231,13 +233,13 @@ public class DctLSBOutputStream extends OutputStream {
      * @param imgType Type of image
      * @return Image data
      */
-    public BufferedImage getImage(int imgType) {
+    public ImageHolder getImage(int imgType) {
         List<int[][]> yuv = new ArrayList<int[][]>();
         yuv.add(this.y);
         yuv.add(this.u);
         yuv.add(this.v);
 
-        this.image = ImageUtil.getImageFromYuv(yuv, imgType);
+        this.image.setImage(ImageUtil.getImageFromYuv(yuv, imgType));
         return this.image;
     }
 }

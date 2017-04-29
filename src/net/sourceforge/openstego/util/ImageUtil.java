@@ -10,18 +10,22 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
-import javax.imageio.stream.MemoryCacheImageOutputStream;
+import javax.imageio.stream.ImageInputStream;
 
 import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.OpenStegoException;
@@ -49,7 +53,7 @@ public class ImageUtil {
      * @return Random image filled with noise
      * @throws OpenStegoException
      */
-    public static BufferedImage generateRandomImage(int numOfPixels) throws OpenStegoException {
+    public static ImageHolder generateRandomImage(int numOfPixels) throws OpenStegoException {
         final double ASPECT_RATIO = 4.0 / 3.0;
         int width = 0;
         int height = 0;
@@ -72,7 +76,7 @@ public class ImageUtil {
                 }
             }
 
-            return image;
+            return new ImageHolder(image, null);
         } catch (NoSuchAlgorithmException nsaEx) {
             throw new OpenStegoException(nsaEx);
         }
@@ -87,7 +91,7 @@ public class ImageUtil {
      * @return Image data as byte array
      * @throws OpenStegoException
      */
-    public static byte[] imageToByteArray(BufferedImage image, String imageFileName, OpenStegoPlugin plugin) throws OpenStegoException {
+    public static byte[] imageToByteArray(ImageHolder image, String imageFileName, OpenStegoPlugin plugin) throws OpenStegoException {
         ByteArrayOutputStream barrOS = new ByteArrayOutputStream();
         String imageType = null;
 
@@ -114,21 +118,16 @@ public class ImageUtil {
      * @return Buffered image
      * @throws OpenStegoException
      */
-    public static BufferedImage byteArrayToImage(byte[] imageData, String imgFileName) throws OpenStegoException {
-        BufferedImage image = null;
-        try {
-            if (imageData == null) {
-                return null;
-            }
-
-            image = ImageIO.read(new ByteArrayInputStream(imageData));
-            if (image == null) {
-                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, imgFileName);
-            }
-            return image;
-        } catch (IOException ioEx) {
-            throw new OpenStegoException(ioEx);
+    public static ImageHolder byteArrayToImage(byte[] imageData, String imgFileName) throws OpenStegoException {
+        if (imageData == null) {
+            return null;
         }
+
+        ImageHolder image = readImage(new ByteArrayInputStream(imageData));
+        if (image == null) {
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, imgFileName);
+        }
+        return image;
     }
 
     /**
@@ -318,13 +317,12 @@ public class ImageUtil {
      * Method to pad an image such that it becomes perfect square. The padding uses black color
      *
      * @param image Input image
-     * @return Image with square dimensions
      */
-    public static BufferedImage makeImageSquare(BufferedImage image) {
+    public static void makeImageSquare(ImageHolder image) {
         int max = 0;
 
-        max = CommonUtil.max(image.getWidth(), image.getHeight());
-        return cropImage(image, max, max);
+        max = CommonUtil.max(image.getImage().getWidth(), image.getImage().getHeight());
+        cropImage(image, max, max);
     }
 
     /**
@@ -334,29 +332,28 @@ public class ImageUtil {
      * @param image Input image
      * @param cropWidth Width required for cropped image
      * @param cropHeight Height required for cropped image
-     * @return Cropped image
      */
-    public static BufferedImage cropImage(BufferedImage image, int cropWidth, int cropHeight) {
+    public static void cropImage(ImageHolder image, int cropWidth, int cropHeight) {
         BufferedImage retImg = null;
         int width = 0;
         int height = 0;
 
-        width = image.getWidth();
-        height = image.getHeight();
+        width = image.getImage().getWidth();
+        height = image.getImage().getHeight();
 
         retImg = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
 
         for (int i = 0; i < cropWidth; i++) {
             for (int j = 0; j < cropHeight; j++) {
                 if (i < width && j < height) {
-                    retImg.setRGB(i, j, image.getRGB(i, j));
+                    retImg.setRGB(i, j, image.getImage().getRGB(i, j));
                 } else {
                     retImg.setRGB(i, j, 0);
                 }
             }
         }
 
-        return retImg;
+        image.setImage(retImg);
     }
 
     /**
@@ -367,7 +364,7 @@ public class ImageUtil {
      * @return Difference image
      * @throws OpenStegoException
      */
-    public static BufferedImage getDiffImage(BufferedImage leftImage, BufferedImage rightImage) throws OpenStegoException {
+    public static ImageHolder getDiffImage(ImageHolder leftImage, ImageHolder rightImage) throws OpenStegoException {
         int leftW = 0;
         int leftH = 0;
         int rightW = 0;
@@ -378,21 +375,21 @@ public class ImageUtil {
         // double error = 0.0;
         BufferedImage diffImage = null;
 
-        leftW = leftImage.getWidth();
-        leftH = leftImage.getHeight();
-        rightW = rightImage.getWidth();
-        rightH = rightImage.getHeight();
+        leftW = leftImage.getImage().getWidth();
+        leftH = leftImage.getImage().getHeight();
+        rightW = rightImage.getImage().getWidth();
+        rightH = rightImage.getImage().getHeight();
         if (leftW != rightW || leftH != rightH) {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID);
         }
         diffImage = new BufferedImage(leftW, leftH, BufferedImage.TYPE_INT_RGB);
 
-        min = Math.abs(leftImage.getRGB(0, 0) - rightImage.getRGB(0, 0));
+        min = Math.abs(leftImage.getImage().getRGB(0, 0) - rightImage.getImage().getRGB(0, 0));
         max = min;
 
         for (int i = 0; i < leftW; i++) {
             for (int j = 0; j < leftH; j++) {
-                diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
+                diff = Math.abs(leftImage.getImage().getRGB(i, j) - rightImage.getImage().getRGB(i, j));
                 // error += diff * diff;
                 if (diff < min) {
                     min = diff;
@@ -405,32 +402,60 @@ public class ImageUtil {
 
         for (int i = 0; i < leftW; i++) {
             for (int j = 0; j < leftH; j++) {
-                diff = Math.abs(leftImage.getRGB(i, j) - rightImage.getRGB(i, j));
+                diff = Math.abs(leftImage.getImage().getRGB(i, j) - rightImage.getImage().getRGB(i, j));
                 diffImage.setRGB(i, j, pixelRange((double) (diff - min) / (double) (max - min) * Math.pow(2, 32)));
                 // TODO
             }
         }
 
-        return diffImage;
+        return new ImageHolder(diffImage, null);
     }
 
-    private static void writeImage(BufferedImage image, String imageType, OutputStream os) throws OpenStegoException {
-        try {
-            if ("jpeg".equals(imageType) || "jpg".equals(imageType)) {
-                JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
-                jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                Float qual = UserPreferences.getFloat("image.writer.jpeg.quality");
-                if (qual == null) {
-                    qual = 0.75f;
-                }
-                jpegParams.setCompressionQuality(qual);
-
+    private static void writeImage(ImageHolder image, String imageType, OutputStream os) throws OpenStegoException {
+        if ("jpeg".equals(imageType) || "jpg".equals(imageType)) {
+            writeJpegImage(image, os);
+        } else {
+            try {
                 ImageWriter writer = ImageIO.getImageWritersByFormatName(imageType).next();
-                writer.setOutput(new MemoryCacheImageOutputStream(os));
-                writer.write(null, new IIOImage(image, null, null), jpegParams);
-            } else {
-                ImageIO.write(image, imageType, os);
+                writer.setOutput(ImageIO.createImageOutputStream(os));
+                writer.write(null, new IIOImage(image.getImage(), null, image.getMetadata()), null);
+            } catch (IOException e) {
+                throw new OpenStegoException(e);
             }
+        }
+    }
+
+    private static void writeJpegImage(ImageHolder image, OutputStream os) throws OpenStegoException {
+        try {
+            JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
+            jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            Float qual = UserPreferences.getFloat("image.writer.jpeg.quality");
+            if (qual == null) {
+                qual = 0.75f;
+            }
+            jpegParams.setCompressionQuality(qual);
+
+            ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+            writer.setOutput(ImageIO.createImageOutputStream(os));
+            writer.write(null, new IIOImage(image.getImage(), null, image.getMetadata()), jpegParams);
+        } catch (IOException e) {
+            throw new OpenStegoException(e);
+        }
+    }
+
+    private static ImageHolder readImage(InputStream is) throws OpenStegoException {
+        try {
+            ImageInputStream imageIS = ImageIO.createImageInputStream(is);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(imageIS);
+            if (!readers.hasNext()) {
+                return null;
+            }
+
+            ImageReader reader = readers.next();
+            reader.setInput(imageIS);
+            BufferedImage image = reader.read(0);
+            IIOMetadata metadata = reader.getImageMetadata(0);
+            return new ImageHolder(image, metadata);
         } catch (IOException e) {
             throw new OpenStegoException(e);
         }

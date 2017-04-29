@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.randlsb;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import net.sourceforge.openstego.OpenStegoException;
@@ -14,6 +13,7 @@ import net.sourceforge.openstego.plugin.lsb.LSBConfig;
 import net.sourceforge.openstego.plugin.lsb.LSBDataHeader;
 import net.sourceforge.openstego.plugin.lsb.LSBErrors;
 import net.sourceforge.openstego.plugin.lsb.LSBPlugin;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 
@@ -73,7 +73,7 @@ public class RandomLSBPlugin extends LSBPlugin {
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         int numOfPixels = 0;
-        BufferedImage image = null;
+        ImageHolder image = null;
         RandomLSBOutputStream lsbOS = null;
 
         try {

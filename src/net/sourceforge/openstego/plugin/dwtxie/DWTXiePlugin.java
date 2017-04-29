@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.dwtxie;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import java.util.Random;
 
 import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.WMImagePluginTemplate;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.StringUtil;
@@ -87,7 +87,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        BufferedImage image = null;
+        ImageHolder image = null;
         List<int[][]> yuv = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
@@ -112,14 +112,14 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
             image = ImageUtil.byteArrayToImage(cover, coverFileName);
         }
 
-        imgType = image.getType();
-        origWidth = image.getWidth();
-        origHeight = image.getHeight();
-        image = ImageUtil.makeImageSquare(image);
+        imgType = image.getImage().getType();
+        origWidth = image.getImage().getWidth();
+        origHeight = image.getImage().getHeight();
+        ImageUtil.makeImageSquare(image);
 
-        cols = image.getWidth();
-        rows = image.getHeight();
-        yuv = ImageUtil.getYuvFromImage(image);
+        cols = image.getImage().getWidth();
+        rows = image.getImage().getHeight();
+        yuv = ImageUtil.getYuvFromImage(image.getImage());
         luminance = yuv.get(0);
         sig = new Signature(msg);
 
@@ -166,7 +166,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
 
         dwt.inverseDWT(dwtTree, luminance);
         yuv.set(0, luminance);
-        image = ImageUtil.cropImage(ImageUtil.getImageFromYuv(yuv, imgType), origWidth, origHeight);
+        image.setImage(ImageUtil.getImageFromYuv(yuv, imgType));
+        ImageUtil.cropImage(image, origWidth, origHeight);
 
         return ImageUtil.imageToByteArray(image, stegoFileName, this);
     }
@@ -183,7 +184,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     @Override
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         List<Integer> sigBitList = new ArrayList<Integer>();
-        BufferedImage image = null;
+        ImageHolder image = null;
         DWT dwt = null;
         ImageTree dwtTree = null;
         ImageTree p = null;
@@ -196,11 +197,12 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
         int rows = 0;
         // int n = 0;
 
-        image = ImageUtil.makeImageSquare(ImageUtil.byteArrayToImage(stegoData, stegoFileName));
+        image = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
+        ImageUtil.makeImageSquare(image);
 
-        cols = image.getWidth();
-        rows = image.getHeight();
-        luminance = ImageUtil.getYuvFromImage(image).get(0);
+        cols = image.getImage().getWidth();
+        rows = image.getImage().getHeight();
+        luminance = ImageUtil.getYuvFromImage(image.getImage()).get(0);
         sig = new Signature(origSigData);
 
         // Wavelet transform

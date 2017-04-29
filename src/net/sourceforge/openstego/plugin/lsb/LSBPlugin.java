@@ -6,7 +6,6 @@
 
 package net.sourceforge.openstego.plugin.lsb;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +19,7 @@ import net.sourceforge.openstego.OpenStegoException;
 import net.sourceforge.openstego.plugin.template.image.DHImagePluginTemplate;
 import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.ui.PluginEmbedOptionsUI;
+import net.sourceforge.openstego.util.ImageHolder;
 import net.sourceforge.openstego.util.ImageUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.cmd.CmdLineOption;
@@ -82,7 +82,7 @@ public class LSBPlugin extends DHImagePluginTemplate {
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         int numOfPixels = 0;
-        BufferedImage image = null;
+        ImageHolder image = null;
         LSBOutputStream lsbOS = null;
 
         try {
