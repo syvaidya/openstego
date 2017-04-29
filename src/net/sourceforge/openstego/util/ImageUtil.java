@@ -10,12 +10,18 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import net.sourceforge.openstego.OpenStego;
 import net.sourceforge.openstego.OpenStegoException;
@@ -85,23 +91,19 @@ public class ImageUtil {
         ByteArrayOutputStream barrOS = new ByteArrayOutputStream();
         String imageType = null;
 
-        try {
-            if (imageFileName != null) {
-                imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
-                if (!plugin.getWritableFileExtensions().contains(imageType)) {
-                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_TYPE_INVALID, imageType);
-                }
-                if (imageType.equals("jp2")) {
-                    imageType = "jpeg 2000";
-                }
-                ImageIO.write(image, imageType, barrOS);
-            } else {
-                ImageIO.write(image, DEFAULT_IMAGE_TYPE, barrOS);
+        if (imageFileName != null) {
+            imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
+            if (!plugin.getWritableFileExtensions().contains(imageType)) {
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_TYPE_INVALID, imageType);
             }
-            return barrOS.toByteArray();
-        } catch (IOException ioEx) {
-            throw new OpenStegoException(ioEx);
+            if (imageType.equals("jp2")) {
+                imageType = "jpeg 2000";
+            }
+            writeImage(image, imageType, barrOS);
+        } else {
+            writeImage(image, DEFAULT_IMAGE_TYPE, barrOS);
         }
+        return barrOS.toByteArray();
     }
 
     /**
@@ -410,5 +412,27 @@ public class ImageUtil {
         }
 
         return diffImage;
+    }
+
+    private static void writeImage(BufferedImage image, String imageType, OutputStream os) throws OpenStegoException {
+        try {
+            if ("jpeg".equals(imageType) || "jpg".equals(imageType)) {
+                JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
+                jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                Float qual = UserPreferences.getFloat("image.writer.jpeg.quality");
+                if (qual == null) {
+                    qual = 0.75f;
+                }
+                jpegParams.setCompressionQuality(qual);
+
+                ImageWriter writer = ImageIO.getImageWritersByFormatName(imageType).next();
+                writer.setOutput(new MemoryCacheImageOutputStream(os));
+                writer.write(null, new IIOImage(image, null, null), jpegParams);
+            } else {
+                ImageIO.write(image, imageType, os);
+            }
+        } catch (IOException e) {
+            throw new OpenStegoException(e);
+        }
     }
 }

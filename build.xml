@@ -55,7 +55,7 @@
             <exclude name="net/sourceforge/openstego/plugin/template/dct/**"/>
             <exclude name="net/sourceforge/openstego/util/dct/**"/>
         </javac>
-        <native2ascii encoding="UTF-8" src="${src}" includes="net/sourceforge/openstego/resource/**/*.properties"
+        <native2ascii encoding="UTF-8" src="${src}" includes="net/sourceforge/openstego/resource/**/*.*"
             dest="${build.classesdir}">
             <exclude name="net/sourceforge/openstego/resource/DctLSB*"/>
             <exclude name="net/sourceforge/openstego/resource/DCTPlugin*"/>

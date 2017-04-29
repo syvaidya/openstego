@@ -202,8 +202,8 @@ public class LSBPlugin extends DHImagePluginTemplate {
                         writeParam.setCompressionType(compTypes[0]);
                     }
                     writeFormats.remove(i);
-                } catch (UnsupportedOperationException uoEx) // Compression not supported
-                {
+                } catch (UnsupportedOperationException uoEx) {
+                    // Compression not supported
                     break;
                 }
 

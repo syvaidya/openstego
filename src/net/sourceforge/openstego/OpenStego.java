@@ -24,6 +24,7 @@ import net.sourceforge.openstego.ui.OpenStegoUI;
 import net.sourceforge.openstego.util.CommonUtil;
 import net.sourceforge.openstego.util.LabelUtil;
 import net.sourceforge.openstego.util.PluginManager;
+import net.sourceforge.openstego.util.UserPreferences;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(String[])} method which provides the
@@ -424,12 +425,14 @@ public class OpenStego {
         try {
             // Load the stego plugins
             PluginManager.loadPlugins();
+            // Initialize preferences
+            UserPreferences.init();
 
-            if (args.length == 0) // Start GUI
-            {
+            if (args.length == 0) { // Start GUI
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (Exception e) {
+                    // Ignore
                 }
                 new OpenStegoUI().setVisible(true);
             } else {
@@ -437,12 +440,12 @@ public class OpenStego {
             }
         } catch (OpenStegoException osEx) {
             if (osEx.getErrorCode() == OpenStegoException.UNHANDLED_EXCEPTION) {
-                osEx.printStackTrace();
+                osEx.printStackTrace(System.err);
             } else {
                 System.err.println(osEx.getMessage());
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 }

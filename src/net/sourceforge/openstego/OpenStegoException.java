@@ -103,6 +103,21 @@ public class OpenStegoException extends Exception {
     public static final int INVALID_CRYPT_ALGO = 16;
 
     /**
+     * Error Code - Invalid integer in user preference file
+     */
+    public static final int USERPREF_INVALID_INT = 17;
+
+    /**
+     * Error Code - Invalid float in user preference file
+     */
+    public static final int USERPREF_INVALID_FLOAT = 18;
+
+    /**
+     * Error Code - Invalid boolean in user preference file
+     */
+    public static final int USERPREF_INVALID_BOOL = 19;
+
+    /**
      * Map to store error code to message key mapping
      */
     private static Map<String, String> errMsgKeyMap = new HashMap<String, String>();
@@ -126,6 +141,9 @@ public class OpenStegoException extends Exception {
         addErrorCode(OpenStego.NAMESPACE, INVALID_USE_ENCRYPT_VALUE, "err.config.useEncryption.invalid");
         addErrorCode(OpenStego.NAMESPACE, INVALID_KEY_NAME, "err.config.invalidKey");
         addErrorCode(OpenStego.NAMESPACE, INVALID_CRYPT_ALGO, "err.config.invalidCryptAlgo");
+        addErrorCode(OpenStego.NAMESPACE, USERPREF_INVALID_INT, "err.userpref.valueNotInteger");
+        addErrorCode(OpenStego.NAMESPACE, USERPREF_INVALID_FLOAT, "err.userpref.valueNotFloat");
+        addErrorCode(OpenStego.NAMESPACE, USERPREF_INVALID_BOOL, "err.userpref.valueNotBoolean");
         addErrorCode(OpenStego.NAMESPACE, CORRUPT_DATA, "err.corruptData");
         addErrorCode(OpenStego.NAMESPACE, NO_VALID_PLUGIN, "err.noValidPlugin");
         addErrorCode(OpenStego.NAMESPACE, IMAGE_TYPE_INVALID, "err.image.type.invalid");
