@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OpenStego</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="style/style.css"/>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index-es.html"><img src="image/logo.png" border="0"/></a>
+          <a class="navbar-brand" href="index-es.html">OpenStego</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index-es.html">Home</a></li>
+            <li class="active"><a href="#">Concepts</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="https://github.com/syvaidya/openstego/releases">Download</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <p class="text-right"><a href="concepts.html">English</a> | Español</p>
+      <h2>Descripción</h2>
+      <p>OpenStego proporciona dos funciones principales:</p>
+      <ul>
+        <li><strong>Ocultación de datos:</strong> puede ocultar cualquier dato dentro de un archivo portador (por ejemplo, imágenes).</li>
+        <li><strong>Marcas de agua (beta):</strong> permite añadir marcas de agua a archivos (por ejemplo, imágenes) con una firma invisible. Puede ser utilizado para detectar la copia de archivos no autorizada.</li>
+      </ul>
+      <h2>¿Qué es la esteganografía?</h2>
+      <p><a href="https://es.wikipedia.org/wiki/Esteganograf%C3%ADa">La esteganografía</a> es la ciencia de ocultar mensajes secretos dentro de otro mensaje más grande e &quot;inofensivo&quot;. Está en una categoría por encima de la criptografía regular; la cual acaba de esconder el mensaje original. La esteganografía intenta ocultar el hecho de que hay un mensaje escondido. Los mensajes tratados con esta técnica a menudo parecen ser algo más que el mensaje original, como una imagen, sonido, texto más grande, etc.</p>
+      <p>Algunos de los términos relacionados con la esteganografía:</p>
+      <ul>
+        <li><strong>Texto plano (plaintext):</strong> el mensaje secreto original que necesita ser comunicado.</li>
+        <li><strong>Texto cifrado (ciphertex):</strong> el mensaje secreto es a menudo cifrado utilizando métodos tradicionales en primer lugar. Al mensaje cifrado se le conoce como texto cifrado.</li>
+        <li><strong>Portador (covertext):</strong> conjunto de datos o archivo grande e inofensivo que se utiliza como contenedor para el texto plano/texto cifrado. Puede ser una imagen, sonido, texto, etc.</li>
+        <li><strong>Estego-mensaje (stegotext):</strong> conjunto de datos generados después de la incorporación del texto plano/texto cifrado en el portador.</li>
+      </ul>
+      <p>El procedimiento normal es primero encriptar el texto plano para generar el texto cifrado, y luego modificar el portador de alguna manera para contener el texto cifrado. El estego-mensaje generado se envía al destinatario previsto. Si un tercero consigue el estego-mensaje en el medio de la comunicación, entonces solo verá alguna imagen de aspecto inofensivo (o sonido, etc). Una vez que el destinatario recibe estego-mensaje, el texto cifrado se extrae de él mediante la inversión de la lógica que se utilizó para incrustarlo en primer lugar. El texto cifrado se descifra utilizando la criptografía tradicional para recuperar el texto claro original.</p>
+      <h2>¿Qué es la marca de agua digital?</h2>
+      <p>Es el proceso de incorporación de una <a href="https://es.wikipedia.org/wiki/Marca_de_agua_digital">marca</a> en archivos que lo permiten, tales como imágenes. Por lo general se utiliza para identificar la propiedad de los derechos de autor. La información oculta debe, aunque no necesariamente, tener relación con el archivo marcado. Las marcas de agua digitales pueden ser utilizadas para verificar la autenticidad o la integridad del archivo, o para mostrar la identidad de sus propietarios. Se utiliza principalmente para el seguimiento de las infracciones de derechos de autor y para la autenticación de billetes. Al igual que las marcas de agua tradicionales, las marcas de agua digitales son solamente perceptibles bajo ciertas condiciones, es decir, después de usar algún algoritmo, y son imperceptibles en cualquier otro momento. Si una marca de agua digital distorsiona el archivo marcado de una manera que se hace perceptible, no es de ninguna utilidad.</p>
+      <p>OpenStego ofrece sólidas capacidades de marcas de agua digitales de tal manera que la marca de agua no se distorsiona facilmente cuando se redimensiona la imagen, se recorta o se realizan algunas pequeñas modificaciones.</p>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2017 Samir Vaidya</p>
+      </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </body>
+</html>

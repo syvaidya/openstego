@@ -1,87 +1,81 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="Keywords" content="openstego, steganography, security, digital watermarking">
-    <title>OpenStego - Home</title>
-    <link rel="stylesheet" href="style/style.css" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OpenStego</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="style/style.css"/>
   </head>
   <body>
-    <div id="overall">
-      <div id="header">
-        <div id="logo" onclick="document.location.href='index.html';">
-          <div id="noCSS"><h1><a href="index.html">OpenStego</a></h1><h3><a href="index.html">The free steganography solution</a></h3></div>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html"><img src="image/logo.png" border="0"/></a>
+          <a class="navbar-brand" href="index.html">OpenStego</a>
         </div>
-        <div id="bar"></div>
-      </div>
-      <div id="main">
-        <div id="menu">
-          <div id="menu_top"></div>
-          <div id="menu_center">
-            <a href="index.html">Home</a>
-            <hr/>
-            <a href="features.html">Features</a>
-            <a href="https://github.com/syvaidya/openstego/releases">Download</a>
-            <a href="https://github.com/syvaidya/openstego/issues">Issues</a>
-            <a href="https://github.com/syvaidya/openstego">Project page</a>
-            <a href="cmdline.html">Command-line</a>
-            <hr/>
-            <a href="contact.html">Contact</a>
-          </div>
-          <div id="menu_bottom"></div>
-        </div>
-        <div id="content">
-          <div>
-            <div style="text-align:right"><a href="index.html">English</a> | Español</div>
-            <h1>Descripción</h1>
-            <h2>Introducción</h2>
-            <p>OpenStego es un software de código abierto distribuido bajo los términos de la Licencia Pública General de GNU versión 2.0.</p>
-            <p>OpenStego proporciona dos funciones principales:</p>
-            <ul>
-              <li><b>Ocultación de datos:</b> puede ocultar cualquier dato dentro de un archivo portador (por ejemplo, imágenes).</li>
-              <li><b>Marcas de agua (beta):</b> permite añadir marcas de agua a archivos (por ejemplo, imágenes) con una firma invisible. Puede ser utilizado para detectar la copia de archivos no autorizada.</li>
-            </ul>
-            <h2>¿Qué es la esteganografía?</h2>
-            <p><a href="https://es.wikipedia.org/wiki/Esteganograf%C3%ADa">La esteganografía</a> es la ciencia de ocultar mensajes secretos dentro de otro mensaje más grande e &quot;inofensivo&quot;. Está en una categoría por encima de la criptografía regular; la cual acaba de esconder el mensaje original. La esteganografía intenta ocultar el hecho de que hay un mensaje escondido. Los mensajes tratados con esta técnica a menudo parecen ser algo más que el mensaje original, como una imagen, sonido, texto más grande, etc.</p>
-            <p>Algunos de los términos relacionados con la esteganografía:</p>
-            <ul>
-              <li><b>Texto plano (plaintext):</b> el mensaje secreto original que necesita ser comunicado.</li>
-              <li><b>Texto cifrado (ciphertex):</b> el mensaje secreto es a menudo cifrado utilizando métodos tradicionales en primer lugar. Al mensaje cifrado se le conoce como texto cifrado.</li>
-              <li><b>Portador (covertext):</b> conjunto de datos o archivo grande e inofensivo que se utiliza como contenedor para el texto plano/texto cifrado. Puede ser una imagen, sonido, texto, etc.</li>
-              <li><b>Estego-mensaje (stegotext):</b> conjunto de datos generados después de la incorporación del texto plano/texto cifrado en el portador.</li>
-            </ul>
-            <p>El procedimiento normal es primero encriptar el texto plano para generar el texto cifrado, y luego modificar el portador de alguna manera para contener el texto cifrado. El estego-mensaje generado se envía al destinatario previsto. Si un tercero consigue el estego-mensaje en el medio de la comunicación, entonces solo verá alguna imagen de aspecto inofensivo (o sonido, etc). Una vez que el destinatario recibe estego-mensaje, el texto cifrado se extrae de él mediante la inversión de la lógica que se utilizó para incrustarlo en primer lugar. El texto cifrado se descifra utilizando la criptografía tradicional para recuperar el texto claro original.</p>
-            <h2>¿Qué es la marca de agua digital?</h2>
-            <p>Es el proceso de incorporación de una <a href="https://es.wikipedia.org/wiki/Marca_de_agua_digital">marca</a> en archivos que lo permiten, tales como imágenes. Por lo general se utiliza para identificar la propiedad de los derechos de autor. La información oculta debe, aunque no necesariamente, tener relación con el archivo marcado. Las marcas de agua digitales pueden ser utilizadas para verificar la autenticidad o la integridad del archivo, o para mostrar la identidad de sus propietarios. Se utiliza principalmente para el seguimiento de las infracciones de derechos de autor y para la autenticación de billetes. Al igual que las marcas de agua tradicionales, las marcas de agua digitales son solamente perceptibles bajo ciertas condiciones, es decir, después de usar algún algoritmo, y son imperceptibles en cualquier otro momento. Si una marca de agua digital distorsiona el archivo marcado de una manera que se hace perceptible, no es de ninguna utilidad.</p>
-            <p>OpenStego ofrece sólidas capacidades de marcas de agua digitales de tal manera que la marca de agua no se distorsiona facilmente cuando se redimensiona la imagen, se recorta o se realizan algunas pequeñas modificaciones.</p>
-            <h1>Usar OpenStego</h1>
-            <p>Usar OpenStego es bastante sencillo. Hay dos modos de funcionamiento (ocultación de datos y marcas de agua).</p>
-            <ul>
-              <li>
-                <b>Ocultación de datos:</b> este modo permite ocultar datos (archivo) dentro de una imagen, o extraer los datos de la imagen. A continuación se muestran capturas de pantalla para ver cómo se realiza correctamente:
-                <ul>
-                  <li>Ocultación de datos:<p><img src="image/screenshot/01.png"/></p></li>
-                  <li>Extracción de datos:<p><img src="image/screenshot/02.png"/></p></li>
-                </ul>
-              </li>
-              <li>
-                <b>Marcas de agua (beta):</b> este modo permite realizar una marca de agua o verificar las imágenes con su firma. Lo primero que necesitas es generar un archivo de firma, y posteriormente este se utiliza para marcar imágenes o verificar las mismas . Compruebe las capturas de pantalla a continuación para ver cómo se realiza correctamente:
-                <ul>
-                  <li>Generar firma:<p><img src="image/screenshot/03.png"/></p></li>
-                  <li>Incorporar la marca de agua:<p><img src="image/screenshot/04.png"/></p></li>
-                  <li>Verificar la marca de agua:<p><img src="image/screenshot/05.png"/></p></li>
-                </ul>
-              </li>
-            </ul>
-            <br/>
-          </div>
-          <div style="text-align:right">Translated by HATI</div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="concepts-es.html">Concepts</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="https://github.com/syvaidya/openstego/releases">Download</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
         </div>
       </div>
-      <div id="overallend" />
+    </nav>
+    <div class="container">
+      <p class="text-right"><a href="index.html">English</a> | Español</p>
+      <h2>Introducción</h2>
+      <p>OpenStego es un software de código abierto distribuido bajo los términos de la Licencia Pública General de GNU versión 2.0.</p>
+      <p>OpenStego proporciona dos funciones principales:</p>
+      <ul>
+        <li><strong>Ocultación de datos:</strong> puede ocultar cualquier dato dentro de un archivo portador (por ejemplo, imágenes).</li>
+        <li><strong>Marcas de agua (beta):</strong> permite añadir marcas de agua a archivos (por ejemplo, imágenes) con una firma invisible. Puede ser utilizado para detectar la copia de archivos no autorizada.</li>
+      </ul>
+      <p>Please see <a href="concepts-es.html">Concepts</a> page to learn more.</p>
+      <h2>Usar OpenStego</h2>
+      <p>Usar OpenStego es bastante sencillo. Hay dos modos de funcionamiento (ocultación de datos y marcas de agua).</p>
+      <h3>Ocultación de datos</h3>
+      <p>Este modo permite ocultar datos (archivo) dentro de una imagen, o extraer los datos de la imagen. A continuación se muestran capturas de pantalla para ver cómo se realiza correctamente:</p>
+      <h4>Ocultación de datos</h4>
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <a title="Ocultación de datos" href="image/screenshot/01.png"><img class="thumbnail img-responsive" id="img-hide-data" src="image/screenshot/01.png"/></a>
+      </div>
+      <h4>Extracción de datos</h4>
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <a title="Extracción de datos" href="image/screenshot/02.png"><img class="thumbnail img-responsive" id="img-extract-data" src="image/screenshot/02.png"/></a>
+      </div>
+      <h3>Marcas de agua (beta)</h3>
+      <p>Este modo permite realizar una marca de agua o verificar las imágenes con su firma. Lo primero que necesitas es generar un archivo de firma, y posteriormente este se utiliza para marcar imágenes o verificar las mismas . Compruebe las capturas de pantalla a continuación para ver cómo se realiza correctamente:</p>
+      <h4>Generar firma</h4>
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <a title="Generar firma" href="image/screenshot/03.png"><img class="thumbnail img-responsive" id="img-gen-sig" src="image/screenshot/03.png"/></a>
+      </div>
+      <h4>Incorporar la marca de agua</h4>
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <a title="Incorporar la marca de agua" href="image/screenshot/04.png"><img class="thumbnail img-responsive" id="img-embed-wm" src="image/screenshot/04.png"/></a>
+      </div>
+      <h4>Verificar la marca de agua</h4>
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <a title="Verificar la marca de agua" href="image/screenshot/05.png"><img class="thumbnail img-responsive" id="img-verify-wm" src="image/screenshot/05.png"/></a>
+      </div>
     </div>
-    <div id="footer">
-      <div id="designer">Site based on design by <a href="http://bkcore.com/">BlacKnight</a></div>
-    </div>
+    <p class="text-right">Translated by HATI</p>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2017 Samir Vaidya</p>
+      </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>

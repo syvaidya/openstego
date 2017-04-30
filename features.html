@@ -1,57 +1,58 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="Keywords" content="openstego, steganography, security, digital watermarking">
-    <title>OpenStego - Features</title>
-    <link rel="stylesheet" href="style/style.css" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OpenStego</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="style/style.css"/>
   </head>
   <body>
-    <div id="overall">
-      <div id="header">
-        <div id="logo" onclick="document.location.href='index.html';">
-          <div id="noCSS"><h1><a href="index.html">OpenStego</a></h1><h3><a href="index.html">The free steganography solution</a></h3></div>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html"><img src="image/logo.png" border="0"/></a>
+          <a class="navbar-brand" href="index.html">OpenStego</a>
         </div>
-        <div id="bar"></div>
-      </div>
-      <div id="main">
-        <div id="menu">
-          <div id="menu_top"></div>
-          <div id="menu_center">
-            <a href="index.html">Home</a>
-            <hr/>
-            <a href="features.html">Features</a>
-            <a href="https://github.com/syvaidya/openstego/releases">Download</a>
-            <a href="https://github.com/syvaidya/openstego/issues">Issues</a>
-            <a href="https://github.com/syvaidya/openstego">Project page</a>
-            <a href="cmdline.html">Command-line</a>
-            <hr/>
-            <a href="contact.html">Contact</a>
-          </div>
-          <div id="menu_bottom"></div>
-        </div>
-        <div id="content">
-          <div>
-            <h2>Features</h2>
-            <ul>
-              <li>OpenStego is written in pure Java and should run on all platforms supported by java. It has been tested on MS Windows and Linux, but should not have any problem on other platforms too. Please report bugs if you find any.</li>
-              <li>It supports password-based encryption of data for additional layer of security. DES algorithm is used for data encryption, along with MD5 hashing to derive the DES key from the password provided.</li>
-              <li>It uses a plugin based architecture, where various plugins can be created for different kind of Steganographic / Watermarking algorithms. Currently, it supports two plugins - RandomLSB (Randomized LSB) for data hiding and Dugad's algorithm for watermarking, but new plugins can be easily created for other algorithms. Plugins can also be easily added for other type of cover files like Audio files.</li>
-            </ul>
-            <h2>To Do</h2>
-            <ul>
-              <li>Add support for other Steganographic algorithms like DCT, FFT, etc.</li>
-              <li>Add support for audio data to be used as cover file.</li>
-              <li>Implement OpenStego in C/C++, so that it can be compiled as native binary, and dependency on Java is removed.</li>
-            </ul>
-            <br/>
-          </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="concepts.html">Concepts</a></li>
+            <li class="active"><a href="#">Features</a></li>
+            <li><a href="https://github.com/syvaidya/openstego/releases">Download</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
         </div>
       </div>
-      <div id="overallend" />
+    </nav>
+    <div class="container">
+      <h2>Features</h2>
+      <ul>
+        <li>OpenStego is written in pure Java and should run on all platforms supported by java. It has been tested on MS Windows and Linux, but should not have any problem on other platforms too. Please report bugs if you find any.</li>
+        <li>It supports password-based encryption of data for additional layer of security. AES 128, AES 256 and DES algorithms are supported.</li>
+        <li>It uses a plugin based architecture, where various plugins can be created for different kind of Steganographic / Watermarking algorithms. Currently, it supports two plugins - RandomLSB (Randomized LSB) for data hiding and Dugad's algorithm for watermarking, but new plugins can be easily created for other algorithms. Plugins can also be easily added for other type of cover files like Audio files.</li>
+        <li>All functionality is accessible using command line also. Please check <a href="cmdline.html">this page</a> for more details.</li>
+        <li>Clean Java API available if someone needs to embed OpenStego in some another project. Please check <a href="api/index.html" target="api">API docs</a> for more details.</li>
+      </ul>
+      <h2>To Do</h2>
+      <ul>
+        <li>Add support for other Steganographic algorithms like DCT, FFT, etc.</li>
+        <li>Add support for audio data to be used as cover file.</li>
+      </ul>
     </div>
-    <div id="footer">
-      <div id="designer">Site based on design by <a href="http://bkcore.com/">BlacKnight</a></div>
-    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2017 Samir Vaidya</p>
+      </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>

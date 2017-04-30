@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OpenStego</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="style/style.css"/>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html"><img src="image/logo.png" border="0"/></a>
+          <a class="navbar-brand" href="index.html">OpenStego</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li class="active"><a href="#">Concepts</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="https://github.com/syvaidya/openstego/releases">Download</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <p class="text-right">English | <a href="concepts-es.html">Español</a></p>
+      <h2>Overview</h2>
+      <p>OpenStego provides two main functionalities:</p>
+      <ul>
+        <li><strong>Data Hiding:</strong> It can hide any data within a cover file (e.g. images).</li>
+        <li><strong>Watermarking (beta):</strong> Watermarking files (e.g. images) with an invisible signature. It can be used to detect unauthorized file copying.</li>
+      </ul>
+      <h2>What is Steganography?</h2>
+      <p><a href="http://en.wikipedia.org/wiki/Steganography">Steganography</a> is the science of hiding secret message inside another larger and harmless looking message. This is one notch above regular cryptography; which just obscures the original message. Steganography tries to conceal the fact that there is a message in the first place. Steganographic message often appears to be something else than the original (secret) message, like a picture, sound, larger text, etc.</p>
+      <p>Some terms related to Steganography:</p>
+      <ul>
+        <li><strong>plaintext:</strong> The original secret message that needs to be communicated.</li>
+        <li><strong>ciphertext:</strong> Secret message is often first encrypted using traditional methods. Encrypted message is known as ciphertext.</li>
+        <li><strong>covertext:</strong> A larger and harmless looking data which is used as container for the plaintext/ciphertext. This can be a picture, sound, text, etc.</li>
+        <li><strong>stegotext:</strong> The data generated after embedding the plaintext/ciphertext into the covertext.</li>
+      </ul>
+      <p>The normal procedure is to first encrypt the plaintext to generate the ciphertext, and then modify the covertext in some way to contain the ciphertext. The generated stegotext is sent over to the intended recepient. If a third party snoops the stegotext in between, then they will just see some harmless looking picture (or sound, etc). Once the recepient receives the stegotext, the ciphertext is extracted from it by reversing the logic that was used to embed it in the first place. The ciphertext is decrypted using the traditional cryptography to get back the original plaintext.</p>
+      <h2>What is Digital Watermarking?</h2>
+      <p><a href="http://en.wikipedia.org/wiki/Digital_watermarking">Digital Watermarking</a> is the process of embedding a covert marker in a noise-tolerant signal such as image data. It is typically used to identify ownership of the copyright of such signal. The hidden information should but does not necessarily need to contain a relation to the carrier signal. Digital watermarks may be used to verify the authenticity or integrity of the carrier signal or to show the identity of its owners. It is prominently used for tracing copyright infringements and for banknote authentication. Like traditional watermarks, digital watermarks are only perceptible under certain conditions, i.e. after using some algorithm, and imperceptible anytime else. If a digital watermark distorts the carrier signal in a way that it becomes perceivable, it is of no use.</p>
+      <p>OpenStego provides robust digital watermarking capabilities such that the watermark strength is not easily reduced when the watermarked image is resized, cropped or some other minor modifications are done.</p>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2017 Samir Vaidya</p>
+      </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </body>
+</html>
