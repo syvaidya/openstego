@@ -92,6 +92,8 @@
     <target name="clean" description="Removes the in-process files">
         <delete dir="${build.classesdir}"/>
         <delete dir="${package}"/>
+        <delete dir="./doc"/>
+        <delete file="./lib/openstego.jar"/>
     </target>
 
     <target name="package" depends="package-bin,package-src,package-nsi,package-deb"
