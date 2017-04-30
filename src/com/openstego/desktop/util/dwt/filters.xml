@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<filterGHList>
+
+    <filterGH id="1" name="biortho nr. 1" type="biorthogonal">
+        <filter type="symm" start="0" end="2">
+            <data>0.353553</data>
+            <data>-0.707107</data>
+            <data>0.353553</data>
+        </filter>
+        <filter type="symm" start="-2" end="2">
+            <data>-0.176777</data>
+            <data>0.353553</data>
+            <data>1.060660</data>
+            <data>0.353553</data>
+            <data>-0.176777</data>
+        </filter>
+        <filter type="symm" start="-1" end="3">
+            <data>0.176777</data>
+            <data>0.353553</data>
+            <data>-1.060660</data>
+            <data>0.353553</data>
+            <data>0.176777</data>
+        </filter>
+        <filter type="symm" start="-1" end="1">
+            <data>0.353553</data>
+            <data>0.707107</data>
+            <data>0.353553</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="2" name="biortho nr. 2" type="biorthogonal">
+        <filter type="symm" start="-4" end="2">
+            <data>-0.064539</data>
+            <data>0.040689</data>
+            <data>0.418092</data>
+            <data>-0.788486</data>
+            <data>0.418092</data>
+            <data>0.040689</data>
+            <data>-0.064539</data>
+        </filter>
+        <filter type="symm" start="-4" end="4">
+            <data>0.037828</data>
+            <data>-0.023849</data>
+            <data>-0.110624</data>
+            <data>0.377402</data>
+            <data>0.852699</data>
+            <data>0.377402</data>
+            <data>-0.110624</data>
+            <data>-0.023849</data>
+            <data>0.037828</data>
+        </filter>
+        <filter type="symm" start="-5" end="3">
+            <data>-0.037828</data>
+            <data>-0.023849</data>
+            <data>0.110624</data>
+            <data>0.377402</data>
+            <data>-0.852699</data>
+            <data>0.377402</data>
+            <data>0.110624</data>
+            <data>-0.023849</data>
+            <data>-0.037828</data>
+        </filter>
+        <filter type="symm" start="-3" end="3">
+            <data>-0.064539</data>
+            <data>-0.040689</data>
+            <data>0.418092</data>
+            <data>0.788486</data>
+            <data>0.418092</data>
+            <data>-0.040689</data>
+            <data>-0.064539</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="3" name="Daubechies 4" type="orthogonal">
+        <filter type="symm" start="-1" end="2">
+            <data>-0.129409522551</data>
+            <data>-0.224143868042</data>
+            <data>0.836516303737</data>
+            <data>-0.482962913144</data>
+        </filter>
+        <filter type="symm" start="-1" end="2">
+            <data>0.482962913144</data>
+            <data>0.836516303737</data>
+            <data>0.224143868042</data>
+            <data>-0.129409522551</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="4" name="Daubechies 6" type="orthogonal">
+        <filter type="symm" start="-3" end="2">
+            <data>0.035226291882</data>
+            <data>0.085441273882</data>
+            <data>-0.135011020010</data>
+            <data>-0.459877502118</data>
+            <data>0.806891509311</data>
+            <data>-0.332670552950</data>
+        </filter>
+        <filter type="symm" start="-1" end="4">
+            <data>0.332670552950</data>
+            <data>0.806891509311</data>
+            <data>0.459877502118</data>
+            <data>-0.135011020010</data>
+            <data>-0.085441273882</data>
+            <data>0.035226291882</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="5" name="Daubechies 8" type="orthogonal">
+        <filter type="symm" start="-1" end="6">
+            <data>-0.010597401785</data>
+            <data>-0.032883011667</data>
+            <data>0.030841381836</data>
+            <data>0.187034811719</data>
+            <data>-0.027983769417</data>
+            <data>-0.630880766793</data>
+            <data>0.714846570553</data>
+            <data>-0.230377813309</data>
+        </filter>
+        <filter type="symm" start="-1" end="6">
+            <data>0.230377813309</data>
+            <data>0.714846570553</data>
+            <data>0.630880766793</data>
+            <data>-0.027983769417</data>
+            <data>-0.187034811719</data>
+            <data>0.030841381836</data>
+            <data>0.032883011667</data>
+            <data>-0.010597401785</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="6" name="Daubechies 10" type="orthogonal">
+        <filter type="symm" start="-2" end="7">
+            <data>0.0033357252854738</data>
+            <data>0.0125807519990820</data>
+            <data>-0.0062414902127983</data>
+            <data>-0.0775714938400459</data>
+            <data>-0.0322448695846381</data>
+            <data>0.2422948870663823</data>
+            <data>0.1384281459013203</data>
+            <data>-0.7243085284377726</data>
+            <data>0.6038292697971895</data>
+            <data>-0.1601023979741929</data>
+        </filter>
+        <filter type="symm" start="-2" end="7">
+            <data>0.1601023979741929</data>
+            <data>0.6038292697971895</data>
+            <data>0.7243085284377726</data>
+            <data>0.1384281459013203</data>
+            <data>-0.2422948870663823</data>
+            <data>-0.0322448695846381</data>
+            <data>0.0775714938400459</data>
+            <data>-0.0062414902127983</data>
+            <data>-0.0125807519990820</data>
+            <data>0.0033357252854738</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="7" name="Daubechies 12" type="orthogonal">
+        <filter type="symm" start="-1" end="10">
+            <data>-0.0010773010853085</data>
+            <data>-0.0047772575119455</data>
+            <data>0.0005538422011614</data>
+            <data>0.0315820393184862</data>
+            <data>0.0275228655303053</data>
+            <data>-0.0975016055873225</data>
+            <data>-0.1297668675672625</data>
+            <data>0.2262646939654400</data>
+            <data>0.3152503517091982</data>
+            <data>-0.7511339080210959</data>
+            <data>0.4946238903984533</data>
+            <data>-0.1115407433501095</data>
+        </filter>
+        <filter type="symm" start="-1" end="10">
+            <data>0.1115407433501095</data>
+            <data>0.4946238903984533</data>
+            <data>0.7511339080210959</data>
+            <data>0.3152503517091982</data>
+            <data>-0.2262646939654400</data>
+            <data>-0.1297668675672625</data>
+            <data>0.0975016055873225</data>
+            <data>0.0275228655303053</data>
+            <data>-0.0315820393184862</data>
+            <data>0.0005538422011614</data>
+            <data>0.0047772575119455</data>
+            <data>-0.0010773010853085</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="8" name="Daubechies 14" type="orthogonal">
+        <filter type="symm" start="-1" end="12">
+            <data>0.0003537138</data>
+            <data>0.001801640704</data>
+            <data>0.000429577973</data>
+            <data>-0.012550998556</data>
+            <data>-0.016574541631</data>
+            <data>0.038029936935</data>
+            <data>0.0806112609151</data>
+            <data>-0.071309219267</data>
+            <data>-0.224036184994</data>
+            <data>0.143906003929</data>
+            <data>0.469782287405</data>
+            <data>-0.729132090846</data>
+            <data>0.396539319482</data>
+            <data>-0.077852054085</data>
+        </filter>
+        <filter type="symm" start="-1" end="12">
+            <data>0.077852054085</data>
+            <data>0.396539319482</data>
+            <data>0.729132090846</data>
+            <data>0.469782287405</data>
+            <data>-0.143906003929</data>
+            <data>-0.224036184994</data>
+            <data>0.071309219267</data>
+            <data>0.0806112609151</data>
+            <data>-0.038029936935</data>
+            <data>-0.016574541631</data>
+            <data>0.012550998556</data>
+            <data>0.000429577973</data>
+            <data>-0.001801640704</data>
+            <data>0.0003537138</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="9" name="Daubechies 20" type="orthogonal">
+        <filter type="symm" start="-1" end="18">
+            <data>-0.000013264203</data>
+            <data>-0.000093588670</data>
+            <data>-0.000116466855</data>
+            <data>0.000685856695</data>
+            <data>0.001992405295</data>
+            <data>0.001395351747</data>
+            <data>-0.010733175483</data>
+            <data>-0.003606553567</data>
+            <data>0.033212674059</data>
+            <data>0.029457536822</data>
+            <data>-0.071394147166</data>
+            <data>-0.093057364604</data>
+            <data>0.127369340336</data>
+            <data>0.195946274377</data>
+            <data>-0.249846424327</data>
+            <data>-0.281172343661</data>
+            <data>0.688459039454</data>
+            <data>-0.527201188932</data>
+            <data>0.188176800078</data>
+            <data>-0.026670057901</data>
+        </filter>
+        <filter type="symm" start="-1" end="18">
+            <data>0.026670057901</data>
+            <data>0.188176800078</data>
+            <data>0.527201188932</data>
+            <data>0.688459039454</data>
+            <data>0.281172343661</data>
+            <data>-0.249846424327</data>
+            <data>-0.195946274377</data>
+            <data>0.127369340336</data>
+            <data>0.093057364604</data>
+            <data>-0.071394147166</data>
+            <data>-0.029457536822</data>
+            <data>0.033212674059</data>
+            <data>0.003606553567</data>
+            <data>-0.010733175483</data>
+            <data>0.001395351747</data>
+            <data>0.001992405295</data>
+            <data>-0.000685856695</data>
+            <data>-0.000116466855</data>
+            <data>0.000093588670</data>
+            <data>-0.000013264203</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="10" name="Beylkin 18" type="orthogonal">
+        <filter type="symm" start="-1" end="16">
+            <data>0.00064048532852124535</data>
+            <data>0.0027360316262586061</data>
+            <data>0.0014842347824723461</data>
+            <data>-0.01004041184463199</data>
+            <data>-0.014365807968852611</data>
+            <data>0.017460408696028829</data>
+            <data>0.042916387274192273</data>
+            <data>-0.01967986604432212</data>
+            <data>-0.088543630622924835</data>
+            <data>0.017520746266529649</data>
+            <data>0.1555387318770938</data>
+            <data>-0.02690030880369032</data>
+            <data>-0.26449723144638482</data>
+            <data>0.1109275983482343</data>
+            <data>0.44971825114946867</data>
+            <data>-0.69982521405660059</data>
+            <data>0.42421536081296141</data>
+            <data>-0.099305765374353927</data>
+        </filter>
+        <filter type="symm" start="-1" end="16">
+            <data>0.099305765374353927</data>
+            <data>0.42421536081296141</data>
+            <data>0.69982521405660059</data>
+            <data>0.44971825114946867</data>
+            <data>-0.1109275983482343</data>
+            <data>-0.26449723144638482</data>
+            <data>0.02690030880369032</data>
+            <data>0.1555387318770938</data>
+            <data>-0.017520746266529649</data>
+            <data>-0.088543630622924835</data>
+            <data>0.01967986604432212</data>
+            <data>0.042916387274192273</data>
+            <data>-0.017460408696028829</data>
+            <data>-0.014365807968852611</data>
+            <data>0.01004041184463199</data>
+            <data>0.0014842347824723461</data>
+            <data>-0.0027360316262586061</data>
+            <data>0.00064048532852124535</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="11" name="Vaidyanathan 24" type="orthogonal">
+        <filter type="symm" start="-1" end="22">
+            <data>0.045799334110976718</data>
+            <data>-0.25018412950466218</data>
+            <data>0.57279779321073432</data>
+            <data>-0.63560105987221494</data>
+            <data>0.20161216177530866</data>
+            <data>0.26349480248845991</data>
+            <data>-0.19445047176647817</data>
+            <data>-0.13508422712948126</data>
+            <data>0.13197166141697772</data>
+            <data>0.08392888436611283</data>
+            <data>-0.07770975090196941</data>
+            <data>-0.055892523691373548</data>
+            <data>0.03874261929341144</data>
+            <data>0.035470398607283453</data>
+            <data>-0.014853448005230099</data>
+            <data>-0.019687215010072714</data>
+            <data>0.003153847055897004</data>
+            <data>0.008839103408613878</data>
+            <data>0.00070813750405244471</data>
+            <data>-0.0028438345468355646</data>
+            <data>-0.00094489713632194927</data>
+            <data>0.00045395661963721929</data>
+            <data>0.00034363190482102919</data>
+            <data>0.000062906118190737523</data>
+        </filter>
+        <filter type="symm" start="-1" end="22">
+            <data>-0.000062906118190737523</data>
+            <data>0.00034363190482102919</data>
+            <data>-0.00045395661963721929</data>
+            <data>-0.00094489713632194927</data>
+            <data>0.0028438345468355646</data>
+            <data>0.00070813750405244471</data>
+            <data>-0.008839103408613878</data>
+            <data>0.003153847055897004</data>
+            <data>0.019687215010072714</data>
+            <data>-0.014853448005230099</data>
+            <data>-0.035470398607283453</data>
+            <data>0.03874261929341144</data>
+            <data>0.055892523691373548</data>
+            <data>-0.07770975090196941</data>
+            <data>-0.08392888436611283</data>
+            <data>0.13197166141697772</data>
+            <data>0.13508422712948126</data>
+            <data>-0.19445047176647817</data>
+            <data>-0.26349480248845991</data>
+            <data>0.20161216177530866</data>
+            <data>0.63560105987221494</data>
+            <data>0.57279779321073432</data>
+            <data>0.25018412950466218</data>
+            <data>0.045799334110976718</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="12" name="Coifman 6" type="orthogonal">
+        <filter type="symm" start="-1" end="4">
+            <data>0.226584276197068560</data>
+            <data>-0.745687558934434280</data>
+            <data>0.607391641385684120</data>
+            <data>0.077161555495773498</data>
+            <data>-0.12696912539620520</data>
+            <data>0.038580777747886749</data>
+        </filter>
+        <filter type="symm" start="-1" end="4">
+            <data>0.038580777747886749</data>
+            <data>-0.12696912539620520</data>
+            <data>-0.077161555495773498</data>
+            <data>0.607391641385684120</data>
+            <data>0.745687558934434280</data>
+            <data>0.226584276197068560</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="13" name="Coifman 12" type="orthogonal">
+        <filter type="symm" start="-1" end="10">
+            <data>-0.000720549445369115120</data>
+            <data>0.00182320887091009920</data>
+            <data>0.00561143481936598850</data>
+            <data>-0.0236801719468767500</data>
+            <data>-0.0594344186464712400</data>
+            <data>0.0764885990782645940</data>
+            <data>0.417005184423777600</data>
+            <data>-0.812723635449606130</data>
+            <data>0.386110066823092900</data>
+            <data>0.0673725547222998740</data>
+            <data>-0.0414649367819664850</data>
+            <data>-0.0163873364631797850</data>
+        </filter>
+        <filter type="symm" start="-1" end="10">
+            <data>0.0163873364631797850</data>
+            <data>-0.0414649367819664850</data>
+            <data>-0.0673725547222998740</data>
+            <data>0.386110066823092900</data>
+            <data>0.812723635449606130</data>
+            <data>0.417005184423777600</data>
+            <data>-0.0764885990782645940</data>
+            <data>-0.0594344186464712400</data>
+            <data>0.0236801719468767500</data>
+            <data>0.00561143481936598850</data>
+            <data>-0.00182320887091009920</data>
+            <data>-0.000720549445369115120</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="14" name="Coifman 18" type="orthogonal">
+        <filter type="symm" start="-1" end="16">
+            <data>-0.000034599773197402695</data>
+            <data>0.000070983302505704928</data>
+            <data>0.00046621695982014403</data>
+            <data>-0.00111751877082696180</data>
+            <data>-0.0025745176881279692</data>
+            <data>0.0090079761367322896</data>
+            <data>0.0158805448636159010</data>
+            <data>-0.0345550275733444640</data>
+            <data>-0.082301927106320283</data>
+            <data>0.071799821619170590</data>
+            <data>0.428483476377618690</data>
+            <data>-0.793777222625620340</data>
+            <data>0.405176902409616790</data>
+            <data>0.0611233900029556980</data>
+            <data>-0.0657719112814312280</data>
+            <data>-0.0234526961421191030</data>
+            <data>0.00778259642567178690</data>
+            <data>0.00379351286437787590</data>
+        </filter>
+        <filter type="symm" start="-1" end="16">
+            <data>-0.00379351286437787590</data>
+            <data>0.00778259642567178690</data>
+            <data>0.0234526961421191030</data>
+            <data>-0.0657719112814312280</data>
+            <data>-0.0611233900029556980</data>
+            <data>0.405176902409616790</data>
+            <data>0.793777222625620340</data>
+            <data>0.428483476377618690</data>
+            <data>-0.071799821619170590</data>
+            <data>-0.082301927106320283</data>
+            <data>0.0345550275733444640</data>
+            <data>0.0158805448636159010</data>
+            <data>-0.0090079761367322896</data>
+            <data>-0.0025745176881279692</data>
+            <data>0.00111751877082696180</data>
+            <data>0.00046621695982014403</data>
+            <data>-0.000070983302505704928</data>
+            <data>-0.000034599773197402695</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="15" name="Biorthogonal 1,3" type="biorthogonal">
+        <filter type="symm" start="-1" end="4">
+            <data>-0.08838834764832</data>
+            <data>-0.08838834764832</data>
+            <data>0.707106781</data>
+            <data>-0.707106781</data>
+            <data>0.08838834764832</data>
+            <data>0.08838834764832</data>
+        </filter>
+        <filter type="symm" start="1" end="2">
+            <data>0.707106781</data>
+            <data>0.707106781</data>
+        </filter>
+        <filter type="symm" start="1" end="2">
+            <data>0.707106781</data>
+            <data>-0.707106781</data>
+        </filter>
+        <filter type="symm" start="-1" end="4">
+            <data>-0.08838834764832</data>
+            <data>0.08838834764832</data>
+            <data>0.707106781</data>
+            <data>0.707106781</data>
+            <data>0.08838834764832</data>
+            <data>-0.08838834764832</data>
+        </filter>
+    </filterGH>
+
+    <filterGH id="16" name="Biorthogonal 1,5" type="biorthogonal">
+        <filter type="symm" start="-1" end="8">
+            <data>0.01657281518406</data>
+            <data>0.01657281518406</data>
+            <data>-0.1215339780164</data>
+            <data>-0.1215339780164</data>
+            <data>0.707106781</data>
+            <data>-0.707106781</data>
+            <data>0.1215339780164</data>
+            <data>0.1215339780164</data>
+            <data>-0.01657281518406</data>
+            <data>-0.01657281518406</data>
+        </filter>
+        <filter type="symm" start="3" end="4">
+            <data>0.707106781</data>
+            <data>0.707106781</data>
+        </filter>
+        <filter type="symm" start="3" end="4">
+            <data>0.707106781</data>
+            <data>-0.707106781</data>
+        </filter>
+        <filter type="symm" start="-1" end="8">
+            <data>0.01657281518406</data>
+            <data>-0.01657281518406</data>
+            <data>-0.1215339780164</data>
+            <data>0.1215339780164</data>
+            <data>0.707106781</data>
+            <data>0.707106781</data>
+            <data>0.1215339780164</data>
+            <data>-0.1215339780164</data>
+            <data>-0.01657281518406</data>
+            <data>0.01657281518406</data>
+        </filter>
+    </filterGH>
+
+</filterGHList>

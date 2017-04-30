@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: net.sourceforge.openstego.OpenStego
+Main-Class: com.openstego.desktop.OpenStego

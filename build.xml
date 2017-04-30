@@ -49,21 +49,21 @@
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
             deprecation="on" debuglevel="lines,vars,source" source="7" target="7" includeantruntime="false">
-            <exclude name="net/sourceforge/openstego/plugin/dctlsb/**"/>
-            <exclude name="net/sourceforge/openstego/plugin/dwtkim/**"/>
-            <exclude name="net/sourceforge/openstego/plugin/dwtxie/**"/>
-            <exclude name="net/sourceforge/openstego/plugin/template/dct/**"/>
-            <exclude name="net/sourceforge/openstego/util/dct/**"/>
+            <exclude name="com/openstego/desktop/plugin/dctlsb/**"/>
+            <exclude name="com/openstego/desktop/plugin/dwtkim/**"/>
+            <exclude name="com/openstego/desktop/plugin/dwtxie/**"/>
+            <exclude name="com/openstego/desktop/plugin/template/dct/**"/>
+            <exclude name="com/openstego/desktop/util/dct/**"/>
         </javac>
-        <native2ascii encoding="UTF-8" src="${src}" includes="net/sourceforge/openstego/resource/**/*.*"
+        <native2ascii encoding="UTF-8" src="${src}" includes="com/openstego/desktop/resource/**/*.*"
             dest="${build.classesdir}">
-            <exclude name="net/sourceforge/openstego/resource/DctLSB*"/>
-            <exclude name="net/sourceforge/openstego/resource/DCTPlugin*"/>
-            <exclude name="net/sourceforge/openstego/resource/DWTKim*"/>
-            <exclude name="net/sourceforge/openstego/resource/DWTXie*"/>
-            <exclude name="net/sourceforge/openstego/resource/*_ja.properties"/>
+            <exclude name="com/openstego/desktop/resource/DctLSB*"/>
+            <exclude name="com/openstego/desktop/resource/DCTPlugin*"/>
+            <exclude name="com/openstego/desktop/resource/DWTKim*"/>
+            <exclude name="com/openstego/desktop/resource/DWTXie*"/>
+            <exclude name="com/openstego/desktop/resource/*_ja.properties"/>
         </native2ascii>
-        <replace dir="${build.classesdir}/net/sourceforge/openstego/resource">
+        <replace dir="${build.classesdir}/com/openstego/desktop/resource">
             <include name="**/*.properties"/>
             <replacefilter token="@package.ver@" value="${package.ver}"/>
             <replacefilter token="@author.name@" value="${author.name}"/>
@@ -80,8 +80,8 @@
     </target>
 
     <target name="doc" description="Generates the JavaDoc API documentation">
-        <javadoc packagenames="net.sourceforge.openstego.*" sourcepath="${src}" destdir="${javadoc}"
-            excludepackagenames="net.sourceforge.openstego.plugin.*" windowtitle="${ant.project.name} API"
+        <javadoc packagenames="com.openstego.desktop.*" sourcepath="${src}" destdir="${javadoc}"
+            excludepackagenames="com.openstego.desktop.plugin.*" windowtitle="${ant.project.name} API"
             additionalparam="-Xdoclint:none">
             <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>

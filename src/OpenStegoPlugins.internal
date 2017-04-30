@@ -1,2 +1,2 @@
-net.sourceforge.openstego.plugin.randlsb.RandomLSBPlugin
-net.sourceforge.openstego.plugin.dwtdugad.DWTDugadPlugin
+com.openstego.desktop.plugin.randlsb.RandomLSBPlugin
+com.openstego.desktop.plugin.dwtdugad.DWTDugadPlugin
