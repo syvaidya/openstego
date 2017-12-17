@@ -47,7 +47,7 @@ public class FilterXMLReader {
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
             // Parse to get DOM representation of the XML file
-            dom = db.parse(db.getClass().getResourceAsStream(fileURI));
+            dom = db.parse(FilterXMLReader.class.getResourceAsStream(fileURI));
 
             // Get a node list of filterGH elements
             nl = dom.getDocumentElement().getElementsByTagName("filterGH");

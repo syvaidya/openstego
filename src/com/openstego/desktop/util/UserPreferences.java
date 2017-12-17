@@ -47,7 +47,7 @@ public class UserPreferences {
         String userHome = System.getProperty("user.home");
         File prefFile = new File(userHome, PREF_FILENAME);
         if (!prefFile.exists()) {
-            InputStream tmplIS = UserPreferences.class.getClassLoader().getResourceAsStream(TMPL_PREFIX + PREF_FILENAME);
+            InputStream tmplIS = UserPreferences.class.getResourceAsStream(TMPL_PREFIX + PREF_FILENAME);
             OutputStream prefFileOS = null;
             try {
                 prefFile.createNewFile();
