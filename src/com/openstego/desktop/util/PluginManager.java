@@ -57,7 +57,7 @@ public class PluginManager {
             }
 
             for (int i = 0; i < pluginList.size(); i++) {
-                plugin = (OpenStegoPlugin) Class.forName(pluginList.get(i)).newInstance();
+                plugin = (OpenStegoPlugin) Class.forName(pluginList.get(i)).getDeclaredConstructor().newInstance();
                 plugins.add(plugin);
                 pluginsMap.put(plugin.getName().toUpperCase(), plugin);
             }

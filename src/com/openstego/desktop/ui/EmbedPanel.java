@@ -217,8 +217,7 @@ public class EmbedPanel extends JPanel {
      */
     public JComboBox<String> getEncryptionAlgoComboBox() {
         if (this.encryptionAlgoComboBox == null) {
-            this.encryptionAlgoComboBox = new JComboBox<String>(
-                    new String[] { OpenStegoCrypto.ALGO_AES128, OpenStegoCrypto.ALGO_AES256, OpenStegoCrypto.ALGO_DES });
+            this.encryptionAlgoComboBox = new JComboBox<String>(new String[] { OpenStegoCrypto.ALGO_AES128, OpenStegoCrypto.ALGO_AES256 });
         }
         return this.encryptionAlgoComboBox;
     }

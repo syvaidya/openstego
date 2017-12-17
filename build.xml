@@ -9,7 +9,7 @@
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
-    <property name="package.ver" value="0.7.1"/>
+    <property name="package.ver" value="0.7.2"/>
     <property name="jre.minVer" value="1.7.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
     <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
@@ -171,10 +171,8 @@
         <echo file="${package}/${package.deb}/changelog.Debian"
             append="false">OpenStego (${package.ver}-1) ; urgency=low
 
-  * GUI changes to support window resizing
-  * File permissions fix for Linux
-  * Added support for changing JPEG compression level (via openstego.ini file)
-  * Maintain metadata while writing images (e.g. EXIF for JPEG)
+  * Added support for Java 9
+  * Removed DES algorithm as it is not secure
 
  -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>

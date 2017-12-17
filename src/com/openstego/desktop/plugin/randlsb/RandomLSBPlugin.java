@@ -172,6 +172,6 @@ public class RandomLSBPlugin extends LSBPlugin {
     @Override
     public String getUsage() throws OpenStegoException {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage", new Integer(defaultConfig.getMaxBitsUsedPerChannel()));
+        return labelUtil.getString("plugin.usage", Integer.valueOf(defaultConfig.getMaxBitsUsedPerChannel()));
     }
 }

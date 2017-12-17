@@ -89,7 +89,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
 
         gridBagConstraints.gridy = 1;
         for (int i = 0; i < 8; i++) {
-            maxBitsList[i] = new Integer(i + 1);
+            maxBitsList[i] = Integer.valueOf(i + 1);
         }
         this.maxBitsComboBox = new JComboBox<Integer>(maxBitsList);
         this.maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
@@ -142,7 +142,7 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
      */
     @Override
     public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException {
-        this.maxBitsComboBox.setSelectedItem(new Integer(((LSBConfig) config).getMaxBitsUsedPerChannel()));
+        this.maxBitsComboBox.setSelectedItem(Integer.valueOf(((LSBConfig) config).getMaxBitsUsedPerChannel()));
     }
 
     /**

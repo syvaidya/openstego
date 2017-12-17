@@ -72,7 +72,7 @@ public class DWT {
 
         this.filters = new FilterGH[level + 1];
         for (int i = 0; i <= level; i++) {
-            this.filters[i] = filterGHMap.get(new Integer(filterID));
+            this.filters[i] = filterGHMap.get(Integer.valueOf(filterID));
         }
 
         this.level = level;

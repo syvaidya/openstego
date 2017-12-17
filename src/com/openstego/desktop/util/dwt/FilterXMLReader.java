@@ -89,7 +89,7 @@ public class FilterXMLReader {
         NodeList nl = null;
         Filter filter = null;
 
-        filterGH.setId(new Integer(el.getAttribute("id")));
+        filterGH.setId(Integer.parseInt(el.getAttribute("id")));
         filterGH.setName(el.getAttribute("name"));
         filterGH.setType(el.getAttribute("type"));
 

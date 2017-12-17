@@ -201,7 +201,6 @@ public class LSBPlugin extends DHImagePluginTemplate {
                     if (compTypes.length > 0) {
                         writeParam.setCompressionType(compTypes[0]);
                     }
-                    writeFormats.remove(i);
                 } catch (UnsupportedOperationException uoEx) {
                     // Compression not supported
                     break;
@@ -211,12 +210,16 @@ public class LSBPlugin extends DHImagePluginTemplate {
                 if (writeParam.isCompressionLossless()) {
                     break;
                 }
+                writeFormats.remove(i);
             }
         }
 
         // Expicilty removing GIF and WBMP formats, as they use unsupported color models
         writeFormats.remove("gif");
         writeFormats.remove("wbmp");
+        // Expicilty removing TIF(F) formats, as they are not working correctly - TODO check why
+        writeFormats.remove("tif");
+        writeFormats.remove("tiff");
 
         return writeFormats;
     }
@@ -263,6 +266,6 @@ public class LSBPlugin extends DHImagePluginTemplate {
     @Override
     public String getUsage() throws OpenStegoException {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage", new Integer(defaultConfig.getMaxBitsUsedPerChannel()));
+        return labelUtil.getString("plugin.usage", Integer.valueOf(defaultConfig.getMaxBitsUsedPerChannel()));
     }
 }

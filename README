@@ -72,8 +72,8 @@ Following option is common for all commands other than 'algorithms':
 
     -A, --cryptalgo <crypto algorithm>
         Algorithm to be used for encryption. Defaults to AES128. Possible
-        values are AES128, AES256 or DES. Please note that AES256 will only
-        be supported with JRE having unlimited strength jurisdiction policy
+        values are AES128 or AES256. Please note that AES256 will only be
+        supported with JRE having unlimited strength jurisdiction policy
 
 'extract' options:
 
