@@ -429,6 +429,7 @@ public class ImageUtil {
         try {
             JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
             jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            jpegParams.setOptimizeHuffmanTables(true);
             Float qual = UserPreferences.getFloat("image.writer.jpeg.quality");
             if (qual == null) {
                 qual = 0.75f;
