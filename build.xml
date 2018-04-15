@@ -9,7 +9,7 @@
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
-    <property name="package.ver" value="0.7.2"/>
+    <property name="package.ver" value="0.7.3"/>
     <property name="jre.minVer" value="1.7.0"/>
     <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
     <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
@@ -48,15 +48,14 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-            deprecation="on" debuglevel="lines,vars,source" source="7" target="7" includeantruntime="false">
+               deprecation="on" debuglevel="lines,vars,source" source="7" target="7" includeantruntime="false">
             <exclude name="com/openstego/desktop/plugin/dctlsb/**"/>
             <exclude name="com/openstego/desktop/plugin/dwtkim/**"/>
             <exclude name="com/openstego/desktop/plugin/dwtxie/**"/>
             <exclude name="com/openstego/desktop/plugin/template/dct/**"/>
             <exclude name="com/openstego/desktop/util/dct/**"/>
         </javac>
-        <native2ascii encoding="UTF-8" src="${src}" includes="com/openstego/desktop/resource/**/*.*"
-            dest="${build.classesdir}">
+        <native2ascii encoding="UTF-8" src="${src}" includes="com/openstego/desktop/resource/**/*.*" dest="${build.classesdir}">
             <exclude name="com/openstego/desktop/resource/DctLSB*"/>
             <exclude name="com/openstego/desktop/resource/DCTPlugin*"/>
             <exclude name="com/openstego/desktop/resource/DWTKim*"/>
@@ -73,16 +72,17 @@
         </replace>
         <jar destfile="./lib/openstego.jar" manifest="./src/META-INF/MANIFEST.MF">
             <fileset dir="${build.classesdir}"/>
-            <fileset dir="${src}" includes="image/*.png"/>
-            <fileset dir="${src}" includes="OpenStegoPlugins.internal"/>
-            <fileset dir="${src}" includes="**/*.xml"/>
+            <fileset dir="${src}">
+                <include name="image/*.png"/>
+                <include name="OpenStegoPlugins.internal"/>
+                <include name="**/*.xml"/>
+            </fileset>
         </jar>
     </target>
 
     <target name="doc" description="Generates the JavaDoc API documentation">
-        <javadoc packagenames="com.openstego.desktop.*" sourcepath="${src}" destdir="${javadoc}"
-            excludepackagenames="com.openstego.desktop.plugin.*" windowtitle="${ant.project.name} API"
-            additionalparam="-Xdoclint:none">
+        <javadoc packagenames="com.openstego.desktop.*" sourcepath="${src}" destdir="${javadoc}" additionalparam="-Xdoclint:none"
+                 excludepackagenames="com.openstego.desktop.plugin.*" windowtitle="${ant.project.name} API">
             <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
             <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
@@ -103,12 +103,15 @@
     <target name="package-bin" depends="compile" description="Generates the binary zipped package">
         <mkdir dir="${package}/${package.bin}"/>
         <copy todir="${package}/${package.bin}">
-            <fileset dir="." includes="lib/openstego**" excludes="**/.svn/**"/>
+            <fileset dir=".">
+                <include name="lib/openstego**"/>
+                <include name="openstego.bat"/>
+                <include name="openstego.sh"/>
+                <include name="LICENSE"/>
+                <include name="README"/>
+            	<exclude name="**/.svn/**"/>
+            </fileset>
             <fileset file="./src/image/openstego.ico"/>
-            <fileset file="openstego.bat"/>
-            <fileset file="openstego.sh"/>
-            <fileset file="LICENSE"/>
-            <fileset file="README"/>
         </copy>
         <replace file="${package}/${package.bin}/README">
             <replacefilter token="@package.ver@" value="${package.ver}"/>
@@ -126,14 +129,27 @@
     <target name="package-src" depends="doc" description="Generates the sources zipped package">
         <mkdir dir="${package}/${package.src}"/>
         <copy todir="${package}/${package.src}">
-            <fileset dir="." includes="src/**" excludes="**/.svn/**"/>
-            <fileset dir="." includes="doc/**" excludes="**/.svn/**"/>
-            <fileset file="openstego.bat"/>
-            <fileset file="openstego.sh"/>
-            <fileset file="build.xml"/>
-            <fileset file="installer.nsi"/>
-            <fileset file="LICENSE"/>
-            <fileset file="README"/>
+            <fileset dir=".">
+                <include name="src/**"/>
+                <include name="doc/**"/>
+                <include name="openstego.bat"/>
+                <include name="openstego.sh"/>
+                <include name="build.xml"/>
+                <include name="installer.nsi"/>
+                <include name="LICENSE"/>
+                <include name="README"/>
+                <exclude name="**/.svn/**"/>
+                <exclude name="src/com/openstego/desktop/plugin/dctlsb/**"/>
+                <exclude name="src/com/openstego/desktop/plugin/dwtkim/**"/>
+                <exclude name="src/com/openstego/desktop/plugin/dwtxie/**"/>
+                <exclude name="src/com/openstego/desktop/plugin/template/dct/**"/>
+                <exclude name="src/com/openstego/desktop/util/dct/**"/>
+                <exclude name="src/com/openstego/desktop/resource/DctLSB*"/>
+                <exclude name="src/com/openstego/desktop/resource/DCTPlugin*"/>
+                <exclude name="src/com/openstego/desktop/resource/DWTKim*"/>
+                <exclude name="src/com/openstego/desktop/resource/DWTXie*"/>
+                <exclude name="src/com/openstego/desktop/resource/*_ja.properties"/>
+            </fileset>
         </copy>
         <replace file="${package}/${package.src}/README">
             <replacefilter token="@package.ver@" value="${package.ver}"/>
@@ -171,8 +187,8 @@
         <echo file="${package}/${package.deb}/changelog.Debian"
             append="false">OpenStego (${package.ver}-1) ; urgency=low
 
-  * Added support for Java 9
-  * Removed DES algorithm as it is not secure
+  * Fixed EOL for shell scripts
+  * Fixed error where in some cases JPEG writing was failing 
 
  -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>
