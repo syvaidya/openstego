@@ -21,7 +21,7 @@ import com.openstego.desktop.OpenStegoException;
  */
 public class UserPreferences {
     private static final String PREF_FILENAME = "openstego.ini";
-    private static final String TMPL_PREFIX = "com/openstego/desktop/resource/";
+    private static final String TMPL_PREFIX = "/com/openstego/desktop/resource/";
     private static Properties prefs = null;
 
     /**
