@@ -177,6 +177,8 @@ public class ImageUtil {
         int[][] y = null;
         int[][] u = null;
         int[][] v = null;
+        int [][] aa = null;
+        int a = 0;
         int r = 0;
         int g = 0;
         int b = 0;
@@ -189,9 +191,11 @@ public class ImageUtil {
         y = new int[height][width];
         u = new int[height][width];
         v = new int[height][width];
+        aa = new int[height][width];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
+                a = (image.getRGB(j, i) >> 24) & 0xFF;
                 r = (image.getRGB(j, i) >> 16) & 0xFF;
                 g = (image.getRGB(j, i) >> 8) & 0xFF;
                 b = (image.getRGB(j, i) >> 0) & 0xFF;
@@ -206,12 +210,14 @@ public class ImageUtil {
                 y[i][j] = (int) ((0.299 * r) + (0.587 * g) + (0.114 * b));
                 u[i][j] = (int) ((-0.147 * r) - (0.289 * g) + (0.436 * b));
                 v[i][j] = (int) ((0.615 * r) - (0.515 * g) - (0.100 * b));
+                aa[i][j] = a;
             }
         }
 
         yuv.add(y);
         yuv.add(u);
         yuv.add(v);
+        yuv.add(aa);
 
         return yuv;
     }
@@ -258,16 +264,19 @@ public class ImageUtil {
         BufferedImage image = null;
         int width = 0;
         int height = 0;
+        int a = 0;
         int r = 0;
         int g = 0;
         int b = 0;
         int[][] y = null;
         int[][] u = null;
         int[][] v = null;
+        int[][] aa = null;
 
         y = yuv.get(0);
         u = yuv.get(1);
         v = yuv.get(2);
+        aa = yuv.get(3);
 
         height = y.length;
         width = y[0].length;
@@ -285,8 +294,9 @@ public class ImageUtil {
                 r = pixelRange(y[i][j] + 1.140 * v[i][j]);
                 g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
                 b = pixelRange(y[i][j] + 2.032 * u[i][j]);
+                a = aa[i][j];
 
-                image.setRGB(j, i, (r << 16) + (g << 8) + b);
+                image.setRGB(j, i, (a << 24) + (r << 16) + (g << 8) + b);
             }
         }
 
