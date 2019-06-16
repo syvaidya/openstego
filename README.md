@@ -12,7 +12,7 @@ OpenStego is a steganography application that provides two functionalities:
 
 > `java -jar <path>\openstego.jar`
 
-> OR
+OR
 
 > Use the bundled batch file or shell script to launch the GUI.
 
@@ -46,7 +46,6 @@ Please refer to the `com.openstego.desktop.plugin.lsb` package sources for sampl
 
 Samir Vaidya (syvaidya [at] gmail)
 
-Copyright (c) 2007-2017
 
 ### See Also
 
