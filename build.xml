@@ -2,17 +2,16 @@
 <!--
   | Steganography utility to hide messages into cover files
   | Author: Samir Vaidya (mailto:syvaidya@gmail.com)
-  | Copyright (c) 2007-2017 Samir Vaidya
+  | Copyright (c) Samir Vaidya
   -->
 <project name="OpenStego" default="compile" basedir=".">
 
     <property name="author.name" value="Samir Vaidya"/>
     <property name="author.mail" value="syvaidya@gmail.com"/>
     <property name="homepage.url" value="http://www.openstego.com"/>
-    <property name="package.ver" value="0.7.3"/>
-    <property name="jre.minVer" value="1.7.0"/>
-    <property name="jdk.docs.href" value="http://docs.oracle.com/javase/7/docs/api/"/>
-    <property name="jdk.docs.dir" value="E:/jdk-1.7.0/api"/>
+    <property name="package.ver" value="0.7.4"/>
+    <property name="jre.minVer" value="1.8.0"/>
+    <property name="jdk.docs.href" value="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
 
     <property name="src" value="./src"/>
     <property name="build.classpath" value="${src}"/>
@@ -48,7 +47,7 @@
 
     <target name="compile" depends="init" description="Compiles the source files">
         <javac srcdir="${src}" destdir="${build.classesdir}" classpath="${build.classpath}" debug="true"
-               deprecation="on" debuglevel="lines,vars,source" source="7" target="7" includeantruntime="false">
+               deprecation="on" debuglevel="lines,vars,source" source="8" target="8" includeantruntime="false">
             <exclude name="com/openstego/desktop/plugin/dctlsb/**"/>
             <exclude name="com/openstego/desktop/plugin/dwtkim/**"/>
             <exclude name="com/openstego/desktop/plugin/dwtxie/**"/>
@@ -85,7 +84,7 @@
                  excludepackagenames="com.openstego.desktop.plugin.*" windowtitle="${ant.project.name} API">
             <doctitle><![CDATA[<h1>${ant.project.name} API Specification</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &copy; 2007-${time.year} ${author.name}. All Rights Reserved.</i>]]></bottom>
-            <link offline="true" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.dir}"/>
+            <link offline="false" href="${jdk.docs.href}" packagelistLoc="${jdk.docs.href}"/>
         </javadoc>
     </target>
 
@@ -187,8 +186,8 @@
         <echo file="${package}/${package.deb}/changelog.Debian"
             append="false">OpenStego (${package.ver}-1) ; urgency=low
 
-  * Fixed EOL for shell scripts
-  * Fixed error where in some cases JPEG writing was failing 
+  * Fixed alpha channel handling for PNG files with transparency 
+  * Fixed NullPointerException happening on first time launch
 
  -- ${author.name} &lt;${author.mail}&gt;  ${time.changelog}
 </echo>
@@ -205,7 +204,7 @@ Upstream Author: ${author.name} &lt;${author.mail}&gt;
 
 License:
 
-        Copyright (C) 2007-${time.year} ${author.name}
+        Copyright (c) 2007-${time.year} ${author.name}
 
         This file is part of OpenStego as available from
         http://www.openstego.com. This file is free software;

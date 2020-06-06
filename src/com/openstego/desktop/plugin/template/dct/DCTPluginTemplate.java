@@ -1,7 +1,7 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) 2007-2017 Samir Vaidya
+ * Copyright (c) Samir Vaidya
  */
 
 package com.openstego.desktop.plugin.template.dct;
