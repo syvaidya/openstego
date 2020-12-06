@@ -1,4 +1,8 @@
-/bin/
-/doc/
-/package/
-lib/openstego.jar
+/.classpath
+/.gradle/
+/.idea/
+/.project
+/.settings/
+/.vscode/
+/bin
+/build

@@ -1,0 +1,116 @@
+/*
+ * Steganography utility to hide messages into cover files
+ * Copyright (c) Samir Vaidya (mailto:syvaidya@gmail.com)
+ */ 
+
+import java.text.SimpleDateFormat 
+import java.util.Date
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'com.github.langmo.gradlensis' version '0.1.0'
+}
+
+version = project.version
+def projectName = 'OpenStego'
+def distBaseDir = file(project.buildDir.path + '/distributions/package')
+def currYear = new SimpleDateFormat('yyyy').format(new Date())
+def filterTokens = [
+    'package.ver': project.version,
+    'author.name': project.author,
+    'author.mail': project.authorMail,
+    'homepage.url': project.homepageUrl,
+    'time.year': currYear
+]
+
+repositories {
+    jcenter()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            exclude 'com/openstego/desktop/plugin/dctlsb/**'
+            exclude 'com/openstego/desktop/plugin/dwtkim/**'
+            exclude 'com/openstego/desktop/plugin/dwtxie/**'
+            exclude 'com/openstego/desktop/plugin/template/dct/**'
+            exclude 'com/openstego/desktop/util/dct/**'
+       }
+       resources {
+           exclude 'com/openstego/desktop/resource/i18n/DctLSB*'
+           exclude 'com/openstego/desktop/resource/i18n/DCTPlugin*'
+           exclude 'com/openstego/desktop/resource/i18n/DWTKim*'
+           exclude 'com/openstego/desktop/resource/i18n/DWTXie*'
+           exclude 'com/openstego/desktop/resource/i18n/*_ja.properties'
+       }
+   }
+}
+
+compileJava {
+    options.release = 8
+}
+
+processResources {
+    filesMatching('**/*.properties') {
+        filter(ReplaceTokens, tokens: filterTokens)
+    }
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'com.openstego.desktop.OpenStego')
+    }
+}
+
+javadoc {
+    title projectName + ' v' + project.version
+    exclude 'com/openstego/desktop/plugin/**'
+    options.bottom 'Copyright &copy; 2007-' + currYear + '  ' + project.author + '. All Rights Reserved.'
+    options.links project.jdkDocsUrl
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task distBase(type: Copy, dependsOn: jar) {
+    destinationDir = distBaseDir
+    from('.') {
+        include 'LICENSE'
+    }
+    from('src/main/dist') {
+        exclude '**/*.sh'
+        filesNotMatching('**/*.ico') {
+            filter(ReplaceTokens, tokens: filterTokens)
+        }
+    }
+    from('src/main/dist') {
+        include '**/*.sh'
+        filter(ReplaceTokens, tokens: filterTokens)
+        fileMode 0755
+    }
+    from(project.buildDir.path + '/' + project.libsDirName) {
+        into 'lib'
+    }
+}
+
+task distBin(type: Zip, dependsOn: distBase) {
+    from distBaseDir
+    into project.name + '-' + project.version
+}
+
+nsis {
+    configuration = file('artifacts/installer.nsi')
+    runIn =  file('.')
+    variables = [
+        'AppName': projectName,
+        'AppVersion': project.version,
+        'AppDir': distBaseDir.path,
+        'DistDir': project.buildDir.path + '\\distributions',
+        'ProjectUrl': project.homepageUrl,
+        'ProjectAuthor': project.author
+    ]
+}
+
+createInstaller.dependsOn distBase
+
+task dist(dependsOn: [distBin, createInstaller])

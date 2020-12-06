@@ -18,29 +18,7 @@ OR
 
 * For command line interface:
 
-> Refer to [online documentation](http://www.openstego.com/cmdline.html).
-
-## Plugins help
-Please use the following command to get plugin specific help:
-
-`java -jar <path>\openstego.jar -help -a <algorithm_name>`
-
-
-## Developing new plugin
-
-To add a new plugin, the following abstract class must be implemented:
-
-`com.openstego.desktop.OpenStegoPlugin`
-
-Read the API documentation for the details of the methods to be implemented. In addition, the following utility class can be used to handle multilingual string labels for the plugin:
-
-`com.openstego.desktop.util.LabelUtil`
-
-A new namespace should be added to `LabelUtil` class for each new plugin. Same namespace can also be used for exception messages while throwing `OpenStegoException`.
-
-After implementing the plugin classes, create new file named `OpenStegoPlugins.external` and put the fully qualified name of the class which implements `OpenStegoPlugin` in the file. Make sure that this file is put directly under the CLASSPATH while invoking the application.
-
-Please refer to the `com.openstego.desktop.plugin.lsb` package sources for sample plugin implementation.
+> Refer to [online documentation](https://www.openstego.com/cmdline.html).
 
 ### Author
 
@@ -49,9 +27,9 @@ Samir Vaidya (syvaidya [at] gmail)
 
 ### See Also
 
-Project homepage: http://www.openstego.com
+Project homepage: https://www.openstego.com
 
-Blog: http://syvaidya.blogspot.com
+Blog: https://syvaidya.blogspot.com
 
 ### License
 
