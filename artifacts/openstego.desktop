@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=@app.name@
+Version=@app.version@
+Type=Application
+Comment=Hide secret data into innocuous files like images
+Keywords=Steganography;Utility
+Exec=openstego
+Icon=openstego
+Categories=Graphics
+Terminal=false

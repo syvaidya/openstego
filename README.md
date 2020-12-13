@@ -20,17 +20,18 @@ OR
 
 > Refer to [online documentation](https://www.openstego.com/cmdline.html).
 
-### Author
+## Author
 
 Samir Vaidya (syvaidya [at] gmail)
 
-
-### See Also
+## See Also
 
 Project homepage: https://www.openstego.com
 
-Blog: https://syvaidya.blogspot.com
-
-### License
+## License
 
 GNU General Public License 2.0 (GPL) (see ```LICENSE``` file)
+
+## Acknowledgement
+
+The digital watermarking code in this product is based on the code provided by Peter Meerwald. Refer to his excellent thesis on [watermarking](http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/): Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain, Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.

@@ -1,7 +1,7 @@
-OpenStego v@package.ver@
+@app.name@ v@app.version@
 ================
 
-OpenStego is a steganography application that provides two functionalities:
+@app.name@ is a steganography application that provides two functionalities:
   1. Data Hiding: It can hide any data within a cover file (e.g. images).
   2. Watermarking: Watermarking files (e.g. images) with an invisible
      signature. It can be used to detect unauthorized file copying.
@@ -188,7 +188,6 @@ Please use the following command to get plugin specific help:
 
   java -jar <path>\openstego.jar -help -a <algorithm_name>
 
-
 AUTHOR:
 -------
   @author.name@ (@author.mail@)
@@ -197,8 +196,16 @@ AUTHOR:
 SEE ALSO:
 ---------
   Project homepage: @homepage.url@
-  Blog:             http://syvaidya.blogspot.com
 
 LICENSE:
 --------
   GNU General Public License 2.0 (GPL) (see LICENSE file)
+
+ACKNOWLEDGEMENT:
+----------------
+  The digital watermarking code in this product is based on the code provided by
+  Peter Meerwald. Refer to his excellent thesis on watermarking
+  (http://www.cosy.sbg.ac.at/~pmeerw/Watermarking/).
+  Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
+  Master's Thesis, Department of Scientific Computing, University of Salzburg,
+  Austria, January 2001.
