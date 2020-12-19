@@ -3,7 +3,7 @@ Upstream-Name: @app.name@
 Source: @homepage.url@
 
 Files: *
-Copyright: 2007-@time.yar@ @author.name@ <@author.mail@>
+Copyright: 2007-@time.year@ @author.name@ <@author.mail@>
 License: GPL-2
  This file is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License

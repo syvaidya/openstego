@@ -12,14 +12,17 @@ plugins {
     id 'java'
     id 'com.github.langmo.gradlensis' version '0.1.0'
     id 'nebula.deb' version '8.4.1'
+    id 'nebula.rpm' version '8.4.1'
 }
-
-version = project.version
-description = 'OpenStego is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. Using OpenStego, you can hide secret data within innocuous looking files like images.'
 
 def projectName = 'OpenStego'
 def distBaseDir = file(project.buildDir.path + '/distributions/package')
 def currYear = new SimpleDateFormat('yyyy').format(new Date())
+
+version = project.version
+description = projectName + ' is a tool implemented in Java for generic steganography, with support for password-based encryption of the data. Using ' \
+                          + projectName + ', you can hide secret data within innocuous looking files like images.'
+
 def filterTokens = [
     'app.name': projectName,
     'app.version': project.version,
@@ -134,12 +137,7 @@ task distDeb(type: Deb, dependsOn: distBase) {
     into '/usr/share'
     from (distBaseDir) {
         into project.name
-        exclude 'openstego.sh'
-        exclude 'openstego.bat'
-        exclude 'openstego.ico'
-        filesNotMatching('lib/**') {
-            filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
-        }
+        include 'lib/**'
     }
     from (distBaseDir) {
         into project.name
@@ -158,6 +156,10 @@ task distDeb(type: Deb, dependsOn: distBase) {
         into 'icons/hicolor/scalable/apps'
         include 'openstego.svg'
     }
+    from (distBaseDir) {
+        into 'doc/' + project.name
+        include 'README'
+    }
     from ('artifacts') {
         into 'doc/' + project.name
         include 'copyright'
@@ -168,5 +170,53 @@ task distDeb(type: Deb, dependsOn: distBase) {
     link('/usr/bin/openstego', '/usr/share/openstego/openstego')
 }
 
-task dist(dependsOn: [distBin, createInstaller, distDeb]) {
+task distRpm(type: Rpm, dependsOn: distBase) {
+    packageName = project.name
+    summary = projectName
+    release = 1
+    packageGroup = 'utils'
+    packager = project.author + ' (' + project.authorMail + ')'
+    url = project.homepageUrl
+    user = 'root'
+    license = 'GPLv2'
+    buildHost = ''
+    os = LINUX
+    requires('java', '1.8', GREATER | EQUAL)
+
+    into '/usr/share'
+    from (distBaseDir) {
+        into project.name
+        include 'lib/**'
+    }
+    from (distBaseDir) {
+        into project.name
+        include 'openstego.sh'
+        rename('openstego.sh', 'openstego')
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        fileMode 0755
+    }
+    from ('artifacts') {
+        into 'applications'
+        addParentDirs false 
+        include 'openstego.desktop'
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(ReplaceTokens, tokens: filterTokens)
+    }
+    from ('artifacts') {
+        into 'icons/hicolor/scalable/apps'
+        addParentDirs false 
+        include 'openstego.svg'
+    }
+    from (distBaseDir) {
+        into 'doc/' + project.name
+        addParentDirs false 
+        include 'LICENSE'
+        include 'README'
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+    }
+
+    link('/usr/bin/openstego', '/usr/share/openstego/openstego')
+}
+
+task dist(dependsOn: [distBin, createInstaller, distDeb, distRpm]) {
 }
