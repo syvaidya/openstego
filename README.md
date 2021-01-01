@@ -3,7 +3,7 @@ OpenStego is a steganography application that provides two functionalities:
 
 1. Data Hiding: It can hide any data within an image file.
 
-2. Watermarking: Watermarking files (e.g. images) with an invisible signature. It can be used to detect unauthorized file copying.
+2. Watermarking: Watermarking image files with an invisible signature. It can be used to detect unauthorized file copying.
 
 ## Usage
 
