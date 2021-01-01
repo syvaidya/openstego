@@ -2,7 +2,7 @@
 ================
 
 @app.name@ is a steganography application that provides two functionalities:
-  1. Data Hiding: It can hide any data within a cover file (e.g. images).
+  1. Data Hiding: It can hide any data within an image file.
   2. Watermarking: Watermarking files (e.g. images) with an invisible
      signature. It can be used to detect unauthorized file copying.
 
