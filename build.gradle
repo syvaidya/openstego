@@ -83,6 +83,10 @@ jar {
     }
 }
 
+task run(type: JavaExec, dependsOn: jar) {
+    classpath = files(tasks.jar)
+}
+
 test {
     useJUnit()
     finalizedBy jacocoTestReport
