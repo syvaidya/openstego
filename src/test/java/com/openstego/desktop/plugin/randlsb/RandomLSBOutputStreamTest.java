@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
@@ -18,7 +17,6 @@ import com.openstego.desktop.plugin.lsb.LSBDataHeader;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
-import com.openstego.desktop.util.StringUtil;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -110,10 +108,6 @@ public class RandomLSBOutputStreamTest {
             return;
         }
         Assert.fail("Exception not thrown");
-    }
-
-    private int getPixelBit(BufferedImage image, int x, int y, int channel, int bit) {
-        return ((image.getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
     }
 
 }
