@@ -10,6 +10,7 @@ import org.apache.tools.ant.filters.FixCrLfFilter
 
 plugins {
     id 'java'
+    id 'jacoco'
     id 'com.github.langmo.gradlensis' version '0.1.0'
     id 'nebula.deb' version '8.4.1'
     id 'nebula.rpm' version '8.4.1'
@@ -53,7 +54,11 @@ sourceSets {
            exclude 'com/openstego/desktop/resource/i18n/DWTXie*'
            exclude 'com/openstego/desktop/resource/i18n/*_ja.properties'
        }
-   }
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.1'
 }
 
 compileJava {
@@ -75,6 +80,19 @@ jar {
             'Implementation-Version': project.version,
             'Built-By': project.author
         ])
+    }
+}
+
+test {
+    useJUnit()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled false
+        csv.enabled false
     }
 }
 
@@ -143,13 +161,13 @@ task distDeb(type: Deb, dependsOn: distBase) {
         into project.name
         include 'openstego.sh'
         rename('openstego.sh', 'openstego')
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
         fileMode 0755
     }
     from ('artifacts') {
         into 'applications'
         include 'openstego.desktop'
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
         filter(ReplaceTokens, tokens: filterTokens)
     }
     from ('artifacts') {
@@ -163,7 +181,7 @@ task distDeb(type: Deb, dependsOn: distBase) {
     from ('artifacts') {
         into 'doc/' + project.name
         include 'copyright'
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
         filter(ReplaceTokens, tokens: filterTokens)
     }
 
@@ -192,14 +210,14 @@ task distRpm(type: Rpm, dependsOn: distBase) {
         into project.name
         include 'openstego.sh'
         rename('openstego.sh', 'openstego')
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
         fileMode 0755
     }
     from ('artifacts') {
         into 'applications'
         addParentDirs false 
         include 'openstego.desktop'
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
         filter(ReplaceTokens, tokens: filterTokens)
     }
     from ('artifacts') {
@@ -212,7 +230,7 @@ task distRpm(type: Rpm, dependsOn: distBase) {
         addParentDirs false 
         include 'LICENSE'
         include 'README'
-        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
+        filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance('lf'))
     }
 
     link('/usr/bin/openstego', '/usr/share/openstego/openstego')

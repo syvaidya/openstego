@@ -9,7 +9,9 @@ package com.openstego.desktop.plugin.randlsb;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
@@ -62,7 +64,7 @@ public class RandomLSBOutputStream extends OutputStream {
     /**
      * Array for bits in the image
      */
-    private boolean bitWritten[][][][] = null;
+    private Set<String> bitWritten = new HashSet<>();
 
     /**
      * Random number generator
@@ -141,18 +143,6 @@ public class RandomLSBOutputStream extends OutputStream {
             // Update channelBitsUsed in the header, and write to image
             header.setChannelBitsUsed(channelBits);
 
-            // Initialize hit-check array
-            this.bitWritten = new boolean[this.imgWidth][this.imgHeight][3][channelBits];
-            for (int i = 0; i < this.imgWidth; i++) {
-                for (int j = 0; j < this.imgHeight; j++) {
-                    for (int k = 0; k < channelBits; k++) {
-                        this.bitWritten[i][j][0][k] = false;
-                        this.bitWritten[i][j][1][k] = false;
-                        this.bitWritten[i][j][2][k] = false;
-                    }
-                }
-            }
-
             write(header.getHeaderData());
             this.channelBitsUsed = channelBits;
         } catch (OpenStegoException osEx) {
@@ -175,6 +165,7 @@ public class RandomLSBOutputStream extends OutputStream {
         int y = 0;
         int channel = 0;
         int bit = 0;
+        String key;
 
         for (int i = 0; i < 8; i++) {
             bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
@@ -184,8 +175,9 @@ public class RandomLSBOutputStream extends OutputStream {
                 y = this.rand.nextInt(this.imgHeight);
                 channel = this.rand.nextInt(3);
                 bit = this.rand.nextInt(this.channelBitsUsed);
-            } while (this.bitWritten[x][y][channel][bit]);
-            this.bitWritten[x][y][channel][bit] = true;
+                key = x + "_" + y + "_" + channel + "_" + bit;
+            } while (this.bitWritten.contains(key));
+            this.bitWritten.add(key);
 
             setPixelBit(x, y, channel, bit, bitValue);
         }

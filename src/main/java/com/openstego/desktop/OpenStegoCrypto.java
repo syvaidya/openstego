@@ -60,10 +60,6 @@ public class OpenStegoCrypto {
         KeySpec keySpec = null;
 
         try {
-            if (password == null) {
-                password = "";
-            }
-
             if (algorithm == null || algorithm.trim().equals("") || ALGO_AES128.equalsIgnoreCase(algorithm)) {
                 algorithm = "PBEWithHmacSHA256AndAES_128";
             } else if (ALGO_AES256.equalsIgnoreCase(algorithm)) {

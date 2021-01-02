@@ -8,7 +8,9 @@ package com.openstego.desktop.plugin.randlsb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
@@ -55,7 +57,7 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Array for bits in the image
      */
-    private boolean bitRead[][][][] = null;
+    private Set<String> bitRead = new HashSet<>();
 
     /**
      * Random number generator
@@ -80,14 +82,6 @@ public class RandomLSBInputStream extends InputStream {
 
         this.imgWidth = image.getImage().getWidth();
         this.imgHeight = image.getImage().getHeight();
-        this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][1];
-        for (int i = 0; i < this.imgWidth; i++) {
-            for (int j = 0; j < this.imgHeight; j++) {
-                this.bitRead[i][j][0][0] = false;
-                this.bitRead[i][j][1][0] = false;
-                this.bitRead[i][j][2][0] = false;
-            }
-        }
 
         // Initialize random number generator with seed generated using password
         this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
@@ -100,30 +94,8 @@ public class RandomLSBInputStream extends InputStream {
      * @throws OpenStegoException
      */
     private void readHeader() throws OpenStegoException {
-        boolean[][][][] oldBitRead = null;
         this.dataHeader = new LSBDataHeader(this, this.config);
         this.channelBitsUsed = this.dataHeader.getChannelBitsUsed();
-
-        // Re-initialize hit-check array based on read channelBitsUsed
-        if (this.channelBitsUsed > 1) {
-            oldBitRead = this.bitRead;
-            this.bitRead = new boolean[this.imgWidth][this.imgHeight][3][this.channelBitsUsed];
-
-            for (int i = 0; i < this.imgWidth; i++) {
-                for (int j = 0; j < this.imgHeight; j++) {
-                    // Maintain the current bit hits
-                    this.bitRead[i][j][0][0] = oldBitRead[i][j][0][0];
-                    this.bitRead[i][j][1][0] = oldBitRead[i][j][1][0];
-                    this.bitRead[i][j][2][0] = oldBitRead[i][j][2][0];
-
-                    for (int k = 1; k < this.channelBitsUsed; k++) {
-                        this.bitRead[i][j][0][k] = false;
-                        this.bitRead[i][j][1][k] = false;
-                        this.bitRead[i][j][2][k] = false;
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -139,6 +111,7 @@ public class RandomLSBInputStream extends InputStream {
         int y = 0;
         int channel = 0;
         int bit = 0;
+        String key;
 
         for (int i = 0; i < 8; i++) {
             do {
@@ -146,8 +119,9 @@ public class RandomLSBInputStream extends InputStream {
                 y = this.rand.nextInt(this.imgHeight);
                 channel = this.rand.nextInt(3);
                 bit = this.rand.nextInt(this.channelBitsUsed);
-            } while (this.bitRead[x][y][channel][bit]);
-            this.bitRead[x][y][channel][bit] = true;
+                key = x + "_" + y + "_" + channel + "_" + bit;
+            } while (this.bitRead.contains(key));
+            this.bitRead.add(key);
 
             bitSet[i] = (byte) getPixelBit(x, y, channel, bit);
         }

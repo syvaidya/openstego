@@ -57,7 +57,7 @@ public class StringUtil {
      * @param password Password to hash
      * @return Long hash of the password
      */
-    public static long passwordHash(String password) {
+    public static long passwordHash(String password) throws OpenStegoException {
         final long DEFAULT_HASH = 98234782; // Default to a random (but constant) seed
         byte[] byteHash = null;
         String hexString = null;
@@ -74,7 +74,7 @@ public class StringUtil {
             hexString = hexString.substring(0, 15);
             return Long.parseLong(hexString, 16);
         } catch (NoSuchAlgorithmException nsaEx) {
-            return DEFAULT_HASH;
+            throw new OpenStegoException(nsaEx);
         }
     }
 
