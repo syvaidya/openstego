@@ -18,12 +18,12 @@ import java.util.Map;
  */
 public class CmdLineOptions {
     /**
-     * Map to store the standard command-line options as map
+     * Map to store the standard command-line options
      */
     private Map<String, CmdLineOption> map = new HashMap<String, CmdLineOption>();
 
     /**
-     * Map to store the standard command-line options as list
+     * List to store the standard command-line options
      */
     private List<CmdLineOption> list = new ArrayList<CmdLineOption>();
 
@@ -51,9 +51,9 @@ public class CmdLineOptions {
     /**
      * Overloaded method to add the command-line option
      *
-     * @param name Name of the option
-     * @param altName Alternate name of the option
-     * @param type Type of the option
+     * @param name     Name of the option
+     * @param altName  Alternate name of the option
+     * @param type     Type of the option
      * @param takesArg Flag to indicate whether the option takes argument or not
      */
     public void add(String name, String altName, int type, boolean takesArg) {

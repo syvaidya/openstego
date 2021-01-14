@@ -58,11 +58,11 @@ public class DWT {
     /**
      * Default constructor
      *
-     * @param cols Image width
-     * @param rows Image height
+     * @param cols     Image width
+     * @param rows     Image height
      * @param filterID Filter ID to use
-     * @param level Decomposition level
-     * @param method Wavelet filtering method
+     * @param level    Decomposition level
+     * @param method   Wavelet filtering method
      */
     public DWT(int cols, int rows, int filterID, int level, int method) {
         // Read the master filter file if it is not already loaded
@@ -128,7 +128,7 @@ public class DWT {
     /**
      * Method to perform inverse DWT to get back the pixel data
      *
-     * @param dwts DWT data as image tree
+     * @param dwts   DWT data as image tree
      * @param pixels Image pixel data
      */
     public void inverseDWT(ImageTree dwts, int[][] pixels) {

@@ -90,33 +90,27 @@ public class OpenStegoConfig {
     public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException {
         Map<String, String> map = new HashMap<String, String>();
 
-        if (options.getOption("-c") != null) // compress
-        {
+        if (options.getOption("-c") != null) { // compress
             map.put(USE_COMPRESSION, "true");
         }
 
-        if (options.getOption("-C") != null) // nocompress
-        {
+        if (options.getOption("-C") != null) { // nocompress
             map.put(USE_COMPRESSION, "false");
         }
 
-        if (options.getOption("-e") != null) // encrypt
-        {
+        if (options.getOption("-e") != null) { // encrypt
             map.put(USE_ENCRYPTION, "true");
         }
 
-        if (options.getOption("-E") != null) // noencrypt
-        {
+        if (options.getOption("-E") != null) { // noencrypt
             map.put(USE_ENCRYPTION, "false");
         }
 
-        if (options.getOption("-p") != null) // password
-        {
+        if (options.getOption("-p") != null) { // password
             map.put(PASSWORD, options.getOptionValue("-p"));
         }
 
-        if (options.getOption("-A") != null) // cryptalgo
-        {
+        if (options.getOption("-A") != null) { // cryptalgo
             map.put(ENCRYPTION_ALGORITHM, options.getOptionValue("-A"));
         }
 

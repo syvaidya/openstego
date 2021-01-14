@@ -872,8 +872,8 @@ public class OpenStegoUI extends OpenStegoFrame {
      * Method to get the list of extensions as a single string
      *
      * @param plugin Plugin
-     * @param flag Flag to indicate whether readable (READ_EXTENSIONS) or writeable (WRITE_EXTENSIONS) extensions are
-     *        required
+     * @param flag   Flag to indicate whether readable (READ_EXTENSIONS) or writeable (WRITE_EXTENSIONS) extensions are
+     *               required
      * @return List of extensions (as string)
      * @throws OpenStegoException
      */
@@ -895,8 +895,8 @@ public class OpenStegoUI extends OpenStegoFrame {
      * Method to get the list of extensions as a list
      *
      * @param plugin Plugin
-     * @param flag Flag to indicate whether readable (READ_EXTENSIONS) or writeable (WRITE_EXTENSIONS) extensions are
-     *        required
+     * @param flag   Flag to indicate whether readable (READ_EXTENSIONS) or writeable (WRITE_EXTENSIONS) extensions are
+     *               required
      * @return List of extensions (as list)
      * @throws OpenStegoException
      */
@@ -1026,12 +1026,12 @@ public class OpenStegoUI extends OpenStegoFrame {
         /**
          * Method to get the display file chooser and return the selected file name
          *
-         * @param dialogTitle Title for the file chooser dialog box
-         * @param filterDesc Description to be displayed for the filter in file chooser
-         * @param allowedExts Allowed file extensions for the filter
+         * @param dialogTitle  Title for the file chooser dialog box
+         * @param filterDesc   Description to be displayed for the filter in file chooser
+         * @param allowedExts  Allowed file extensions for the filter
          * @param allowFileDir Type of objects allowed to be selected (FileBrowser.ALLOW_FILE,
-         *        FileBrowser.ALLOW_DIRECTORY or FileBrowser.ALLOW_FILE_AND_DIR)
-         * @param multiSelect Flag to indicate whether multiple file selection is allowed or not
+         *                     FileBrowser.ALLOW_DIRECTORY or FileBrowser.ALLOW_FILE_AND_DIR)
+         * @param multiSelect  Flag to indicate whether multiple file selection is allowed or not
          * @return Name of the selected file (null if no file was selected)
          */
         public String getFileName(String dialogTitle, String filterDesc, List<String> allowedExts, int allowFileDir, boolean multiSelect) {
@@ -1096,7 +1096,7 @@ public class OpenStegoUI extends OpenStegoFrame {
             /**
              * Default constructor
              *
-             * @param filterDesc Description of the filter
+             * @param filterDesc  Description of the filter
              * @param allowedExts List of allowed file extensions
              */
             public FileBrowserFilter(String filterDesc, List<String> allowedExts) {

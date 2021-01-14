@@ -49,7 +49,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      * Method to check the correlation between original signature and the extracted watermark. This implementation
      * returns <code>0.0</code> as this class is for data hiding plugins only
      *
-     * @param origSigData Original signature data
+     * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
      * @throws OpenStegoException

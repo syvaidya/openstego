@@ -67,7 +67,7 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Default constructor
      *
-     * @param image Image data to be read
+     * @param image  Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */
@@ -142,10 +142,10 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Gets a particular bit in the image, and puts it into the LSB of an integer.
      *
-     * @param x The x position of the pixel on the image
-     * @param y The y position of the pixel on the image
+     * @param x       The x position of the pixel on the image
+     * @param y       The y position of the pixel on the image
      * @param channel The color channel containing the bit
-     * @param bit The bit position
+     * @param bit     The bit position
      * @return The bit at the given position, as the LSB of an integer
      */
     public int getPixelBit(int x, int y, int channel, int bit) {

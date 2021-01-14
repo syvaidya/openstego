@@ -65,8 +65,8 @@ public abstract class WorkerTask extends SwingWorker<Object, Void> {
     /**
      * Default constructor
      *
-     * @param parent Parent component
-     * @param data Any data to be passed to task
+     * @param parent      Parent component
+     * @param data        Any data to be passed to task
      * @param determinate Flag to indicate whether task progress is determinable or not
      */
     public WorkerTask(JFrame parent, Object data, boolean determinate) {

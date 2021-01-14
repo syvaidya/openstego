@@ -82,10 +82,10 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Default constructor
      *
-     * @param image Source image into which data will be embedded
+     * @param image      Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
-     * @param fileName Name of the source data file
-     * @param config Configuration data to use while writing
+     * @param fileName   Name of the source data file
+     * @param config     Configuration data to use while writing
      * @throws OpenStegoException
      */
     public LSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {

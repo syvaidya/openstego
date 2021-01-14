@@ -30,7 +30,7 @@ public class LabelUtil {
      * Method to add new namespace using resource bundle
      *
      * @param namespace Namespace for the labels
-     * @param bundle Resource bundle name
+     * @param bundle    Resource bundle name
      */
     public static void addNamespace(String namespace, String bundle) {
         map.put(namespace, ResourceBundle.getBundle(bundle, Locale.getDefault()));
@@ -81,7 +81,7 @@ public class LabelUtil {
     /**
      * Method to get label value for the given label key (using optional parameters)
      *
-     * @param key Key for the label
+     * @param key        Key for the label
      * @param parameters Parameters to pass for a parameterized label
      * @return Display value for the label
      */

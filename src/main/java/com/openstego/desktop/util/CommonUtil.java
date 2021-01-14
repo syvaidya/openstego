@@ -99,7 +99,7 @@ public class CommonUtil {
      * Method to write file data to disk
      *
      * @param fileData File data
-     * @param file File object (If this is <code>null</code>, then data is written to stdout)
+     * @param file     File object (If this is <code>null</code>, then data is written to stdout)
      * @throws OpenStegoException
      */
     public static void writeFile(byte[] fileData, File file) throws OpenStegoException {
@@ -123,7 +123,7 @@ public class CommonUtil {
      * Method to enable/disable a Swing JTextField object
      *
      * @param textField Swing JTextField object
-     * @param enabled Flag to indicate whether to enable or disable the object
+     * @param enabled   Flag to indicate whether to enable or disable the object
      */
     public static void setEnabled(JTextField textField, boolean enabled) {
         if (enabled) {
@@ -139,7 +139,7 @@ public class CommonUtil {
      * Method to parse a delimiter separated list of files into arraylist of filenames. It supports wildcard characters
      * "*" and "?" within the filenames.
      *
-     * @param fileList Delimiter separated list of filenames
+     * @param fileList  Delimiter separated list of filenames
      * @param delimiter Delimiter for tokenization
      * @return List of filenames after tokenizing and wildcard expansion
      */
@@ -241,7 +241,7 @@ public class CommonUtil {
         /**
          * Implementation of <code>accept</code> method
          *
-         * @param dir Directory to traverse
+         * @param dir  Directory to traverse
          * @param name Name of the file
          * @return Whether file is accepted by the filter or not
          */

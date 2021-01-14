@@ -50,9 +50,9 @@ public class CmdLineOption {
     /**
      * Default constructor
      *
-     * @param name Name of the option
-     * @param altName Altername name of the option
-     * @param type Type of the option
+     * @param name        Name of the option
+     * @param altName     Alternate name of the option
+     * @param type        Type of the option
      * @param takesArgVal Flag to indicate whether the option takes argument or not
      * @throws IllegalArgumentException If option type is TYPE_COMMAND and takesArgVal is specified as true
      */

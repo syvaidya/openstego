@@ -37,7 +37,7 @@ public abstract class WatermarkingPlugin extends OpenStegoPlugin {
      * Method to extract the message file name from the stego data. This implementation returns <code>null</code> as
      * this class is for watermarking plugins only
      *
-     * @param stegoData Stego data containing the message
+     * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
      * @throws OpenStegoException

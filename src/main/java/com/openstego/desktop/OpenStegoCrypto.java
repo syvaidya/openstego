@@ -52,7 +52,7 @@ public class OpenStegoCrypto {
     /**
      * Default constructor
      *
-     * @param password Password to use for encryption
+     * @param password  Password to use for encryption
      * @param algorithm Cryptography algorithm to use. If null or blank value is provided, then it defaults to AES128
      * @throws OpenStegoException
      */

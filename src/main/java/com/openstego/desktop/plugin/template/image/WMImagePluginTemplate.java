@@ -38,11 +38,11 @@ public abstract class WMImagePluginTemplate extends WatermarkingPlugin {
     /**
      * Method to get difference between original cover file and the stegged file
      *
-     * @param stegoData Stego data containing the embedded data
+     * @param stegoData     Stego data containing the embedded data
      * @param stegoFileName Name of the stego file
-     * @param coverData Original cover data
+     * @param coverData     Original cover data
      * @param coverFileName Name of the cover file
-     * @param diffFileName Name of the output difference file
+     * @param diffFileName  Name of the output difference file
      * @return Difference data
      * @throws OpenStegoException
      */

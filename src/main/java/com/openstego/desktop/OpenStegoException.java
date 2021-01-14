@@ -168,7 +168,7 @@ public class OpenStegoException extends Exception {
     /**
      * Default constructor
      *
-     * @param cause Original exception which caused this exception to be raised
+     * @param cause     Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
      */
@@ -179,10 +179,10 @@ public class OpenStegoException extends Exception {
     /**
      * Constructor with a single parameter for the message
      *
-     * @param cause Original exception which caused this exception to be raised
+     * @param cause     Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
-     * @param param Parameter for exception message
+     * @param param     Parameter for exception message
      */
     public OpenStegoException(Throwable cause, String namespace, int errorCode, String param) {
         this(cause, namespace, errorCode, new Object[] { param });
@@ -191,10 +191,10 @@ public class OpenStegoException extends Exception {
     /**
      * Constructor which takes object array for parameters for the message
      *
-     * @param cause Original exception which caused this exception to be raised
+     * @param cause     Original exception which caused this exception to be raised
      * @param namespace Namespace of the error
      * @param errorCode Error code for the exception
-     * @param params Parameters for exception message
+     * @param params    Parameters for exception message
      */
     public OpenStegoException(Throwable cause, String namespace, int errorCode, Object... params) {
         super((namespace == OpenStego.NAMESPACE && errorCode == UNHANDLED_EXCEPTION) ? cause.toString()
@@ -227,7 +227,7 @@ public class OpenStegoException extends Exception {
      *
      * @param namespace Namespace for the error
      * @param errorCode Error code of the error
-     * @param labelKey Key of the label for the error
+     * @param labelKey  Key of the label for the error
      */
     public static void addErrorCode(String namespace, int errorCode, String labelKey) {
         errMsgKeyMap.put(namespace + errorCode, labelKey);

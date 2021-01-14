@@ -74,10 +74,10 @@ public class RandomLSBOutputStream extends OutputStream {
     /**
      * Default constructor
      *
-     * @param image Source image into which data will be embedded
+     * @param image      Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
-     * @param fileName Name of the source data file
-     * @param config Configuration data to use while writing
+     * @param fileName   Name of the source data file
+     * @param config     Configuration data to use while writing
      * @throws OpenStegoException
      */
     public RandomLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
@@ -195,10 +195,10 @@ public class RandomLSBOutputStream extends OutputStream {
     /**
      * Sets the pixel bit at the given location to the new value.
      *
-     * @param x The x position of the pixel
-     * @param y The y position of the pixel
-     * @param channel The color channel of the bit
-     * @param bit The position of the bit
+     * @param x        The x position of the pixel
+     * @param y        The y position of the pixel
+     * @param channel  The color channel of the bit
+     * @param bit      The position of the bit
      * @param bitValue The new bit value for the pixel
      */
     private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue) {

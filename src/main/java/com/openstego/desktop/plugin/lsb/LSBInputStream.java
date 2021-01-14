@@ -65,7 +65,7 @@ public class LSBInputStream extends InputStream {
     /**
      * Default constructor
      *
-     * @param image Image data to be read
+     * @param image  Image data to be read
      * @param config Configuration data to use while reading
      * @throws OpenStegoException
      */

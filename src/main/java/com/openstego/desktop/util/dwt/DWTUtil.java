@@ -27,10 +27,10 @@ public class DWTUtil {
     /**
      * Method to perform the wavelet transform
      *
-     * @param origImg Original image
-     * @param level Decomposition level
+     * @param origImg      Original image
+     * @param level        Decomposition level
      * @param filterGHList List of filters
-     * @param method Wavelet filtering method
+     * @param method       Wavelet filtering method
      * @return Data after performing wavelet transform
      */
     public static ImageTree waveletTransform(Image origImg, int level, FilterGH[] filterGHList, int method) {
@@ -115,11 +115,11 @@ public class DWTUtil {
     /**
      * Method to perform the wavelet transform (WP)
      *
-     * @param origImg Original image
-     * @param currLevel Current decomposition level
-     * @param level Decomposition level
+     * @param origImg      Original image
+     * @param currLevel    Current decomposition level
+     * @param level        Decomposition level
      * @param filterGHList List of filters
-     * @param method Wavelet filtering method
+     * @param method       Wavelet filtering method
      * @return Data after performing wavelet transform
      */
     public static ImageTree waveletTransformWp(Image origImg, int currLevel, int level, FilterGH[] filterGHList, int method) {
@@ -198,14 +198,14 @@ public class DWTUtil {
     /**
      * Method to decompose the image
      *
-     * @param inputImg Input image
-     * @param coarseImg Coarse image
+     * @param inputImg      Input image
+     * @param coarseImg     Coarse image
      * @param horizontalImg Horizontal image
-     * @param verticalImg Vertical image
-     * @param diagonalImg Diagonal image
-     * @param filterG G filter
-     * @param filterH H filter
-     * @param method Wavelet filtering method
+     * @param verticalImg   Vertical image
+     * @param diagonalImg   Diagonal image
+     * @param filterG       G filter
+     * @param filterH       H filter
+     * @param method        Wavelet filtering method
      */
     public static void decomposition(Image inputImg, Image coarseImg, Image horizontalImg, Image verticalImg, Image diagonalImg, Filter filterG,
             Filter filterH, int method) {
@@ -232,9 +232,9 @@ public class DWTUtil {
      * Method to convolute lines
      *
      * @param outputImg Output image
-     * @param inputImg Input image
-     * @param filter Filter to use
-     * @param method Wavelet filtering method
+     * @param inputImg  Input image
+     * @param filter    Filter to use
+     * @param method    Wavelet filtering method
      */
     public static void convoluteLines(Image outputImg, Image inputImg, Filter filter, int method) {
         for (int i = 0; i < inputImg.getHeight(); i++) {
@@ -276,9 +276,9 @@ public class DWTUtil {
      * Method to convolute rows
      *
      * @param outputImg Output image
-     * @param inputImg Input image
-     * @param filter Filter to use
-     * @param method Wavelet filtering method
+     * @param inputImg  Input image
+     * @param filter    Filter to use
+     * @param method    Wavelet filtering method
      */
     public static void convoluteRows(Image outputImg, Image inputImg, Filter filter, int method) {
         for (int i = 0; i < inputImg.getWidth(); i++) {
@@ -319,15 +319,15 @@ public class DWTUtil {
     /**
      * Method to apply cut-off filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterCutOff(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -348,15 +348,15 @@ public class DWTUtil {
     /**
      * Method to apply inverse cut-off filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterInvCutOff(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -377,15 +377,15 @@ public class DWTUtil {
     /**
      * Method to apply periodical filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterPeriodical(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -411,15 +411,15 @@ public class DWTUtil {
     /**
      * Method to apply inverse periodical filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterInvPeriodical(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -446,15 +446,15 @@ public class DWTUtil {
     /**
      * Method to apply mirror filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterMirror(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -488,15 +488,15 @@ public class DWTUtil {
     /**
      * Method to apply inverse mirror filter
      *
-     * @param inputImg Input image
-     * @param inStart Start point for input image
-     * @param inLen Length of data for input image
-     * @param inStep Step for loop for input image
+     * @param inputImg  Input image
+     * @param inStart   Start point for input image
+     * @param inLen     Length of data for input image
+     * @param inStep    Step for loop for input image
      * @param outputImg Output image
-     * @param outStart Start point for output image
-     * @param outLen Length of data for output image
-     * @param outStep Step for loop for output image
-     * @param filter Filter
+     * @param outStart  Start point for output image
+     * @param outLen    Length of data for output image
+     * @param outStep   Step for loop for output image
+     * @param filter    Filter
      */
     public static void filterInvMirror(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
             Filter filter) {
@@ -539,9 +539,9 @@ public class DWTUtil {
     /**
      * Method to perform inverse wavelet transform
      *
-     * @param tree Forward transformed DWT data
+     * @param tree         Forward transformed DWT data
      * @param filterGHList List of filters
-     * @param method Wavelet filter method
+     * @param method       Wavelet filter method
      * @return Inverse transformed image data
      */
     public static Image inverseTransform(ImageTree tree, FilterGH[] filterGHList, int method) {
@@ -582,13 +582,13 @@ public class DWTUtil {
     /**
      * Method to perform inverse decomposition
      *
-     * @param sumImg Sum image
-     * @param coarseImg Coarse image
+     * @param sumImg        Sum image
+     * @param coarseImg     Coarse image
      * @param horizontalImg Horizontal image
-     * @param verticalImg Vertical image
-     * @param diagonalImg Diagonal image
-     * @param filterGH Filter
-     * @param method Wavelet filter method
+     * @param verticalImg   Vertical image
+     * @param diagonalImg   Diagonal image
+     * @param filterGH      Filter
+     * @param method        Wavelet filter method
      */
     public static void invDecomposition(Image sumImg, Image coarseImg, Image horizontalImg, Image verticalImg, Image diagonalImg, FilterGH filterGH,
             int method) {
@@ -624,7 +624,7 @@ public class DWTUtil {
     /**
      * Method to get the deepest level possible for given image width and height
      *
-     * @param width Image width
+     * @param width  Image width
      * @param height Image height
      * @return Deepest possible level
      */
@@ -646,9 +646,9 @@ public class DWTUtil {
      * Set pixel value in the image
      *
      * @param image Image
-     * @param x X position of pixel
-     * @param y Y position of pixel
-     * @param val Pixel value
+     * @param x     X position of pixel
+     * @param y     Y position of pixel
+     * @param val   Pixel value
      */
     public static void setPixel(Image image, int x, int y, double val) {
         if (!(image == null || x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight())) {
@@ -660,8 +660,8 @@ public class DWTUtil {
      * Get pixel value from the image
      *
      * @param image Image
-     * @param x X position of pixel
-     * @param y Y position of pixel
+     * @param x     X position of pixel
+     * @param y     Y position of pixel
      * @return Pixel value
      */
     public static double getPixel(Image image, int x, int y) {
@@ -677,8 +677,8 @@ public class DWTUtil {
      *
      * @param img1 Output image
      * @param img2 Input image
-     * @param x X position in output image
-     * @param y Y position in output image
+     * @param x    X position in output image
+     * @param y    Y position in output image
      */
     private static void copyIntoImage(Image img1, Image img2, int x, int y) {
         int count = 0;

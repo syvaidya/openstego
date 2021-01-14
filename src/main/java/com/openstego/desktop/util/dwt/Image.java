@@ -28,7 +28,7 @@ public class Image {
     /**
      * Default constructor
      *
-     * @param width Width of the image
+     * @param width  Width of the image
      * @param height Height of the image
      */
     public Image(int width, int height) {

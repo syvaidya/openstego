@@ -85,9 +85,9 @@ public class ImageUtil {
     /**
      * Method to convert BufferedImage to byte array
      *
-     * @param image Image data
+     * @param image         Image data
      * @param imageFileName Name of the image file
-     * @param plugin Reference to the plugin
+     * @param plugin        Reference to the plugin
      * @return Image data as byte array
      * @throws OpenStegoException
      */
@@ -113,7 +113,7 @@ public class ImageUtil {
     /**
      * Method to convert byte array to image
      *
-     * @param imageData Image data as byte array
+     * @param imageData   Image data as byte array
      * @param imgFileName Name of the image file
      * @return Buffered image
      * @throws OpenStegoException
@@ -177,7 +177,7 @@ public class ImageUtil {
         int[][] y = null;
         int[][] u = null;
         int[][] v = null;
-        int [][] aa = null;
+        int[][] aa = null;
         int a = 0;
         int r = 0;
         int g = 0;
@@ -256,7 +256,7 @@ public class ImageUtil {
     /**
      * Get image (with RGB data) from given YUV data
      *
-     * @param yuv List with three elements of two-dimensional int's - Y, U and V
+     * @param yuv     List with three elements of two-dimensional int's - Y, U and V
      * @param imgType Type of image (e.g. BufferedImage.TYPE_INT_RGB)
      * @return Image
      */
@@ -339,8 +339,8 @@ public class ImageUtil {
      * Method crop an image to the given dimensions. If dimensions are more than the input image size, then the image
      * gets padded with black color
      *
-     * @param image Input image
-     * @param cropWidth Width required for cropped image
+     * @param image      Input image
+     * @param cropWidth  Width required for cropped image
      * @param cropHeight Height required for cropped image
      */
     public static void cropImage(ImageHolder image, int cropWidth, int cropHeight) {
@@ -369,7 +369,7 @@ public class ImageUtil {
     /**
      * Method generate difference image between two given images
      *
-     * @param leftImage Left input image
+     * @param leftImage  Left input image
      * @param rightImage Right input image
      * @return Difference image
      * @throws OpenStegoException

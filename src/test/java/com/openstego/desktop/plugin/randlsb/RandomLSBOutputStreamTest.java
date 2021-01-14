@@ -6,10 +6,12 @@
 
 package com.openstego.desktop.plugin.randlsb;
 
-import org.junit.Test;
-
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
@@ -17,9 +19,6 @@ import com.openstego.desktop.plugin.lsb.LSBDataHeader;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
-
-import org.junit.Assert;
-import org.junit.Before;
 
 /**
  * Unit test class for {@link com.openstego.desktop.plugin.randlsb.RandomLSBOutputStream}

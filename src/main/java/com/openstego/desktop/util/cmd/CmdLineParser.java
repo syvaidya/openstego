@@ -32,7 +32,7 @@ public class CmdLineParser {
      * Default constructor
      *
      * @param stdOptions List of standard options
-     * @param args Command line arguments
+     * @param args       Command line arguments
      */
     public CmdLineParser(CmdLineOptions stdOptions, String[] args) {
         int i = 0;

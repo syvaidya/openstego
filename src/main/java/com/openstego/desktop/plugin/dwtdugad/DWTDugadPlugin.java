@@ -78,10 +78,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
     /**
      * Method to embed the message into the cover data
      *
-     * @param msg Message to be embedded
-     * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
-     *        the cover data
-     * @param cover Cover data into which message needs to be embedded
+     * @param msg           Message to be embedded
+     * @param msgFileName   Name of the message file. If this value is provided, then the filename should be embedded in
+     *                      the cover data
+     * @param cover         Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
@@ -138,9 +138,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
     /**
      * Method to extract the message from the stego data
      *
-     * @param stegoData Stego data containing the message
+     * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
-     * @param origSigData Optional signature data file for watermark
+     * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
      * @throws OpenStegoException
      */
@@ -225,7 +225,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
     /**
      * Method to check the correlation between original signature and the extracted watermark
      *
-     * @param origSigData Original signature data
+     * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
      * @throws OpenStegoException

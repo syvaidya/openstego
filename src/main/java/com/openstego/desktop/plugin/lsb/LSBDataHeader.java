@@ -62,10 +62,10 @@ public class LSBDataHeader {
     /**
      * This constructor should normally be used when writing the data.
      *
-     * @param dataLength Length of the data embedded in the image (excluding the header data)
+     * @param dataLength      Length of the data embedded in the image (excluding the header data)
      * @param channelBitsUsed Number of bits used per color channel for embedding the data
-     * @param fileName Name of the file of data being embedded
-     * @param config OpenStegoConfig instance to hold the configuration data
+     * @param fileName        Name of the file of data being embedded
+     * @param config          OpenStegoConfig instance to hold the configuration data
      */
     public LSBDataHeader(int dataLength, int channelBitsUsed, String fileName, OpenStegoConfig config) {
         this.dataLength = dataLength;
@@ -87,7 +87,7 @@ public class LSBDataHeader {
      * This constructor should be used when reading embedded data from an InputStream.
      *
      * @param dataInStream Data input stream containing the embedded data
-     * @param config OpenStegoConfig instance to hold the configuration data
+     * @param config       OpenStegoConfig instance to hold the configuration data
      * @throws OpenStegoException
      */
     public LSBDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException {
