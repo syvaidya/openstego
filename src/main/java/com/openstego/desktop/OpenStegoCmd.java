@@ -32,18 +32,8 @@ public class OpenStegoCmd {
      * @param args Command line arguments
      */
     public static void execute(String[] args) {
-        String msgFileName = null;
-        String sigFileName = null;
-        String coverFileName = null;
-        String stegoFileName = null;
-        String extractDir = null;
-        String extractFileName = null;
-        String signatureFileName = null;
         String command = null;
         String pluginName = null;
-        List<?> msgData = null;
-        List<File> coverFileList = null;
-        List<File> stegoFileList = null;
         OpenStego stego = null;
         CmdLineParser parser = null;
         CmdLineOptions options = null;
@@ -139,16 +129,7 @@ public class OpenStegoCmd {
             } else if (command.equals("gensig")) {
                 executeGenSig(options, stego);
             } else if (command.equals("diff")) {
-                coverFileName = options.getOptionValue("-cf");
-                stegoFileName = options.getOptionValue("-sf");
-                extractDir = options.getOptionValue("-xd");
-                extractFileName = options.getOptionValue("-xf");
-
-                if (extractDir != null) {
-                    extractFileName = extractDir + File.separator + extractFileName;
-                }
-
-                CommonUtil.writeFile(stego.getDiff(new File(stegoFileName), new File(coverFileName), extractFileName), extractFileName);
+                executeDiff(options, stego);
             } else if (command.equals("readformats")) {
                 List<String> formats = plugin.getReadableFileExtensions();
                 for (int i = 0; i < formats.size(); i++) {
@@ -169,9 +150,7 @@ public class OpenStegoCmd {
                 if (plugin == null) {
                     displayUsage();
                     return;
-                } else
-                // Show plugin-specific help
-                {
+                } else { // Show plugin-specific help
                     System.err.println(plugin.getUsage());
                 }
             } else {
@@ -389,6 +368,26 @@ public class OpenStegoCmd {
 
         String signatureFileName = options.getOptionValue("-gf");
         CommonUtil.writeFile(stego.generateSignature(), (signatureFileName == null || signatureFileName.equals("-")) ? null : signatureFileName);
+    }
+
+    /**
+     * Method to execute "diff" command
+     * 
+     * @param options Command-line options
+     * @param stego   {@link OpenStego} object
+     * @throws OpenStegoException
+     */
+    private static void executeDiff(CmdLineOptions options, OpenStego stego) throws OpenStegoException {
+        String coverFileName = options.getOptionValue("-cf");
+        String stegoFileName = options.getOptionValue("-sf");
+        String extractDir = options.getOptionValue("-xd");
+        String extractFileName = options.getOptionValue("-xf");
+
+        if (extractDir != null) {
+            extractFileName = extractDir + File.separator + extractFileName;
+        }
+
+        CommonUtil.writeFile(stego.getDiff(new File(stegoFileName), new File(coverFileName), extractFileName), extractFileName);
     }
 
     /**

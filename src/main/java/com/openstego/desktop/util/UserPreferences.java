@@ -47,11 +47,14 @@ public class UserPreferences {
         String userHome = System.getProperty("user.home");
         File prefFile = new File(userHome, PREF_FILENAME);
         if (!prefFile.exists()) {
-            InputStream tmplIS = UserPreferences.class.getResourceAsStream("/" + DEFAULT_PREF_FILENAME);
-            OutputStream prefFileOS = null;
             try {
                 prefFile.createNewFile();
-                prefFileOS = new FileOutputStream(prefFile);
+            } catch (IOException e) {
+                throw new OpenStegoException(e);
+            }
+
+            try (InputStream tmplIS = UserPreferences.class.getResourceAsStream("/" + DEFAULT_PREF_FILENAME);
+                    OutputStream prefFileOS = new FileOutputStream(prefFile)) {
                 int len;
                 byte[] buff = new byte[1024];
                 while ((len = tmplIS.read(buff)) >= 0) {
@@ -59,20 +62,13 @@ public class UserPreferences {
                 }
             } catch (IOException e) {
                 throw new OpenStegoException(e);
-            } finally {
-                closeStream(tmplIS);
-                closeStream(prefFileOS);
             }
         }
 
-        InputStream prefFileIS = null;
-        try {
-            prefFileIS = new FileInputStream(prefFile);
+        try (InputStream prefFileIS = new FileInputStream(prefFile)) {
             prefs.load(prefFileIS);
         } catch (IOException e) {
             throw new OpenStegoException(e);
-        } finally {
-            closeStream(prefFileIS);
         }
     }
 
@@ -147,22 +143,6 @@ public class UserPreferences {
             return false;
         } else {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.USERPREF_INVALID_BOOL, key);
-        }
-    }
-
-    private static void closeStream(InputStream is) {
-        try {
-            is.close();
-        } catch (Exception e) {
-            // Ignore
-        }
-    }
-
-    private static void closeStream(OutputStream os) {
-        try {
-            os.close();
-        } catch (Exception e) {
-            // Ignore
         }
     }
 }

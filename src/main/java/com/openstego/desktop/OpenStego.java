@@ -145,19 +145,15 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
-        InputStream is = null;
         String filename = null;
 
-        try {
-            // If no message file is provided, then read the data from stdin
-            if (msgFile == null) {
-                is = System.in;
-            } else {
-                is = new FileInputStream(msgFile);
+        // If no message file is provided, then read the data from stdin
+        try (InputStream is = (msgFile == null ? System.in : new FileInputStream(msgFile))) {
+            if (msgFile != null) {
                 filename = msgFile.getName();
             }
 
-            return embedData(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil.getFileBytes(coverFile),
+            return embedData(CommonUtil.streamToBytes(is), filename, coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
                 coverFile == null ? null : coverFile.getName(), stegoFileName);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
@@ -204,19 +200,15 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
-        InputStream is = null;
         String filename = null;
 
-        try {
-            // If no signature file is provided, then read the data from stdin
-            if (sigFile == null) {
-                is = System.in;
-            } else {
-                is = new FileInputStream(sigFile);
+        // If no signature file is provided, then read the data from stdin
+        try (InputStream is = (sigFile == null ? System.in : new FileInputStream(sigFile))) {
+            if (sigFile != null) {
                 filename = sigFile.getName();
             }
 
-            return embedMark(CommonUtil.getStreamBytes(is), filename, coverFile == null ? null : CommonUtil.getFileBytes(coverFile),
+            return embedMark(CommonUtil.streamToBytes(is), filename, coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
                 coverFile == null ? null : coverFile.getName(), stegoFileName);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
@@ -252,12 +244,8 @@ public class OpenStego {
 
             // Decompress data, if required
             if (this.config.isUseCompression()) {
-                try {
-                    ByteArrayInputStream bis = new ByteArrayInputStream(msg);
-                    GZIPInputStream zis = new GZIPInputStream(bis);
-                    msg = CommonUtil.getStreamBytes(zis);
-                    zis.close();
-                    bis.close();
+                try (ByteArrayInputStream bis = new ByteArrayInputStream(msg); GZIPInputStream zis = new GZIPInputStream(bis);) {
+                    msg = CommonUtil.streamToBytes(zis);
                 } catch (IOException ioEx) {
                     throw new OpenStegoException(ioEx, OpenStego.NAMESPACE, OpenStegoException.CORRUPT_DATA);
                 }
@@ -286,7 +274,7 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
-        return extractData(CommonUtil.getFileBytes(stegoFile), stegoFile.getName());
+        return extractData(CommonUtil.fileToBytes(stegoFile), stegoFile.getName());
     }
 
     /**
@@ -319,7 +307,7 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
-        return extractMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
+        return extractMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
     }
 
     /**
@@ -352,7 +340,7 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
-        double correl = checkMark(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(origSigFile));
+        double correl = checkMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
         if (Double.isNaN(correl)) {
             correl = 0.0;
         }
@@ -403,8 +391,7 @@ public class OpenStego {
      * @throws OpenStegoException
      */
     public byte[] getDiff(File stegoFile, File coverFile, String diffFileName) throws OpenStegoException {
-        return getDiff(CommonUtil.getFileBytes(stegoFile), stegoFile.getName(), CommonUtil.getFileBytes(coverFile), coverFile.getName(),
-            diffFileName);
+        return getDiff(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(coverFile), coverFile.getName(), diffFileName);
     }
 
     /**

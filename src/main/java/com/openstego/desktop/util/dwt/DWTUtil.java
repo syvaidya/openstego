@@ -335,8 +335,8 @@ public class DWTUtil {
         int fEnd = 0;
 
         for (int i = 0; i < outLen; i++) {
-            fStart = CommonUtil.max((2 * i) - (inLen - 1), filter.getStart());
-            fEnd = CommonUtil.min((2 * i), filter.getEnd());
+            fStart = Math.max((2 * i) - (inLen - 1), filter.getStart());
+            fEnd = Math.min((2 * i), filter.getEnd());
 
             for (int j = fStart; j <= fEnd; j++) {
                 outputImg.getData()[outStart + i * outStep] += filter.getData()[j - filter.getStart()]
@@ -364,8 +364,8 @@ public class DWTUtil {
         int fEnd = 0;
 
         for (int i = 0; i < outLen; i++) {
-            fStart = CommonUtil.max(CommonUtil.ceilingHalf(filter.getStart() + i), 0);
-            fEnd = CommonUtil.min(CommonUtil.floorHalf(filter.getEnd() + i), inLen - 1);
+            fStart = Math.max(CommonUtil.ceilingHalf(filter.getStart() + i), 0);
+            fEnd = Math.min(CommonUtil.floorHalf(filter.getEnd() + i), inLen - 1);
 
             for (int j = fStart; j <= fEnd; j++) {
                 outputImg.getData()[outStart + i * outStep] += filter.getData()[(2 * j) - i - filter.getStart()]

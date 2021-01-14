@@ -9,6 +9,7 @@ package com.openstego.desktop.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -20,12 +21,6 @@ import com.openstego.desktop.OpenStegoException;
  * Utility class to manipulate strings
  */
 public class StringUtil {
-    /**
-     * Hexadecimal characters
-     */
-    private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7',
-            (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f' };
-
     /**
      * Constructor is private so that this class is not instantiated
      */
@@ -39,16 +34,8 @@ public class StringUtil {
      * @return Hex string
      */
     public static String getHexString(byte[] raw) {
-        byte[] hex = new byte[2 * raw.length];
-        int index = 0;
-        int byteVal;
-
-        for (int i = 0; i < raw.length; i++) {
-            byteVal = raw[i] & 0xFF;
-            hex[index++] = HEX_CHAR_TABLE[byteVal >>> 4];
-            hex[index++] = HEX_CHAR_TABLE[byteVal & 0xF];
-        }
-        return new String(hex);
+        BigInteger bigInteger = new BigInteger(1, raw);
+        return String.format("%0" + (raw.length << 1) + "x", bigInteger);
     }
 
     /**

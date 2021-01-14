@@ -331,7 +331,7 @@ public class ImageUtil {
     public static void makeImageSquare(ImageHolder image) {
         int max = 0;
 
-        max = CommonUtil.max(image.getImage().getWidth(), image.getImage().getHeight());
+        max = Math.max(image.getImage().getWidth(), image.getImage().getHeight());
         cropImage(image, max, max);
     }
 

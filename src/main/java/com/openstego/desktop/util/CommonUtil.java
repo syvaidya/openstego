@@ -41,22 +41,17 @@ public class CommonUtil {
      * @return Stream data as byte array
      * @throws OpenStegoException
      */
-    public static byte[] getStreamBytes(InputStream is) throws OpenStegoException {
+    public static byte[] streamToBytes(InputStream is) throws OpenStegoException {
         final int BUF_SIZE = 512;
-        ByteArrayOutputStream bos = null;
         int bytesRead = 0;
         byte[] data = null;
 
-        try {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             data = new byte[BUF_SIZE];
-            bos = new ByteArrayOutputStream();
 
             while ((bytesRead = is.read(data, 0, BUF_SIZE)) >= 0) {
                 bos.write(data, 0, bytesRead);
             }
-
-            is.close();
-            bos.close();
 
             return bos.toByteArray();
         } catch (IOException ioEx) {
@@ -71,9 +66,9 @@ public class CommonUtil {
      * @return File data as byte array
      * @throws OpenStegoException
      */
-    public static byte[] getFileBytes(File file) throws OpenStegoException {
-        try {
-            return getStreamBytes(new FileInputStream(file));
+    public static byte[] fileToBytes(File file) throws OpenStegoException {
+        try (InputStream is = new FileInputStream(file)) {
+            return streamToBytes(is);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
@@ -103,17 +98,9 @@ public class CommonUtil {
      * @throws OpenStegoException
      */
     public static void writeFile(byte[] fileData, File file) throws OpenStegoException {
-        OutputStream os = null;
-
-        try {
-            // If file is not provided, then write the data to stdout
-            if (file == null) {
-                os = System.out;
-            } else {
-                os = new FileOutputStream(file);
-            }
+        // If file is not provided, then write the data to stdout
+        try (OutputStream os = (file == null ? System.out : new FileOutputStream(file))) {
             os.write(fileData);
-            os.close();
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
@@ -209,8 +196,7 @@ public class CommonUtil {
                 buffer.append(".*");
             } else if (chars[i] == '?') {
                 buffer.append(".{1}");
-            } else if ("+()^$.{}[]|\\".indexOf(chars[i]) != -1) // Escape rest of the java regexp wildcards
-            {
+            } else if ("+()^$.{}[]|\\".indexOf(chars[i]) != -1) { // Escape rest of the java regexp wildcards
                 buffer.append('\\').append(chars[i]);
             } else {
                 buffer.append(chars[i]);
@@ -292,49 +278,5 @@ public class CommonUtil {
         } else {
             return num % div;
         }
-    }
-
-    /**
-     * Get maximum of two given values
-     *
-     * @param x Value 1
-     * @param y value 2
-     * @return Max of the two values
-     */
-    public static int max(int x, int y) {
-        return (x > y) ? x : y;
-    }
-
-    /**
-     * Get maximum of two given values
-     *
-     * @param x Value 1
-     * @param y value 2
-     * @return Max of the two values
-     */
-    public static double max(double x, double y) {
-        return (x > y) ? x : y;
-    }
-
-    /**
-     * Get minimum of two given values
-     *
-     * @param x Value 1
-     * @param y value 2
-     * @return Min of the two values
-     */
-    public static int min(int x, int y) {
-        return (x < y) ? x : y;
-    }
-
-    /**
-     * Get minimum of two given values
-     *
-     * @param x Value 1
-     * @param y value 2
-     * @return Min of the two values
-     */
-    public static double min(double x, double y) {
-        return (x < y) ? x : y;
     }
 }
