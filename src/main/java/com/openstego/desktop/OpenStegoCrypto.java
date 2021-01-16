@@ -65,6 +65,7 @@ public class OpenStegoCrypto {
             } else if (ALGO_AES256.equalsIgnoreCase(algorithm)) {
                 algorithm = "PBEWithHmacSHA256AndAES_256";
             } else if (ALGO_DES.equalsIgnoreCase(algorithm)) {
+                System.out.println("Warning: Using insecure algorithm: " + algorithm);
                 algorithm = "PBEWithMD5AndDES";
             } else {
                 throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_CRYPT_ALGO, algorithm);
