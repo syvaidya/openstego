@@ -2,6 +2,5 @@ com.openstego.desktop
 com.openstego.desktop.ui
 com.openstego.desktop.util
 com.openstego.desktop.util.cmd
-com.openstego.desktop.util.dct
 com.openstego.desktop.util.dwt
 com.openstego.desktop.util.ui
