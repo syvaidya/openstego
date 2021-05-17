@@ -7,11 +7,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.apache.tools.ant.filters.FixCrLfFilter
+import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java'
     id 'jacoco'
-    id 'com.github.langmo.gradlensis' version '0.1.0'
     id 'nebula.deb' version '8.4.1'
     id 'nebula.rpm' version '8.4.1'
 }
@@ -134,18 +134,27 @@ task distBin(type: Zip, dependsOn: distBase) {
     into project.name + '-' + project.version
 }
 
-nsis {
-    configuration = file('artifacts/installer.nsi')
-    runIn =  file('.')
-    variables = [
-        'AppName': projectName,
-        'AppVersion': project.version,
-        'AppDir': distBaseDir.path,
-        'DistDir': project.buildDir.path + '\\distributions'
-    ]
-}
+task distWin(type: Exec, dependsOn: distBase) {
+    onlyIf {
+        Os.isFamily(Os.FAMILY_WINDOWS)
+    }
 
-createInstaller.dependsOn distBase
+    doFirst {
+        copy {
+            from 'artifacts/installer.iss'
+            into project.buildDir.path + '/generated'
+            filter(ReplaceTokens, tokens: [
+                'AppName': projectName,
+                'AppVersion': project.version,
+                'AppDir': distBaseDir.path,
+                'DistDir': project.buildDir.path + '\\distributions'
+            ])
+        }
+    }
+
+    workingDir project.buildDir.path
+    commandLine 'cmd', '/c', 'iscc', 'generated\\installer.iss', '/Q'
+}
 
 task distDeb(type: Deb, dependsOn: distBase) {
     packageName = project.name
@@ -240,5 +249,5 @@ task distRpm(type: Rpm, dependsOn: distBase) {
     link('/usr/bin/openstego', '/usr/share/openstego/openstego')
 }
 
-task dist(dependsOn: [distBin, createInstaller, distDeb, distRpm]) {
+task dist(dependsOn: [distBin, distWin, distDeb, distRpm]) {
 }
