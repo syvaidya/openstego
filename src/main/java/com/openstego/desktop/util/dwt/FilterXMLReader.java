@@ -6,18 +6,17 @@
 
 package com.openstego.desktop.util.dwt;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to read the Filters XML and generate corresponding Java Objects
@@ -36,12 +35,12 @@ public class FilterXMLReader {
      * @return Map of filters with key being Integer object for filter ID
      */
     public static Map<Integer, FilterGH> parse(String fileURI) {
-        Map<Integer, FilterGH> filterGHMap = new HashMap<Integer, FilterGH>();
-        DocumentBuilder db = null;
-        Document dom = null;
-        Element el = null;
-        NodeList nl = null;
-        FilterGH filterGH = null;
+        Map<Integer, FilterGH> filterGHMap = new HashMap<>();
+        DocumentBuilder db;
+        Document dom;
+        Element el;
+        NodeList nl;
+        FilterGH filterGH;
 
         try {
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -65,14 +64,8 @@ public class FilterXMLReader {
             }
 
             return filterGHMap;
-        } catch (ParserConfigurationException pcEx) {
+        } catch (ParserConfigurationException | SAXException | IOException pcEx) {
             pcEx.printStackTrace();
-            throw new IllegalArgumentException("Invalid Filter XML file");
-        } catch (SAXException saxEx) {
-            saxEx.printStackTrace();
-            throw new IllegalArgumentException("Invalid Filter XML file");
-        } catch (IOException ioEx) {
-            ioEx.printStackTrace();
             throw new IllegalArgumentException("Invalid Filter XML file");
         }
     }
@@ -85,9 +78,9 @@ public class FilterXMLReader {
      */
     private static FilterGH getFilterGH(Element el) {
         FilterGH filterGH = new FilterGH();
-        Element innerEl = null;
-        NodeList nl = null;
-        Filter filter = null;
+        Element innerEl;
+        NodeList nl;
+        Filter filter;
 
         filterGH.setId(Integer.parseInt(el.getAttribute("id")));
         filterGH.setName(el.getAttribute("name"));
@@ -128,8 +121,8 @@ public class FilterXMLReader {
      */
     private static Filter getFilter(Element el) {
         Filter filter = new Filter();
-        Element innerEl = null;
-        NodeList nl = null;
+        Element innerEl;
+        NodeList nl;
         double[] data = null;
 
         filter.setType(el.getAttribute("type"));

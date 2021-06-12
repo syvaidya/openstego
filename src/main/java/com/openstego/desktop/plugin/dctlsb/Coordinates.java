@@ -16,12 +16,12 @@ public class Coordinates {
     /**
      * Maximum size of the coordinate space
      */
-    private int size = 0;
+    private final int size;
 
     /**
      * Map to store the hits
      */
-    private Map<String, String> map = new HashMap<String, String>();
+    private final Map<String, String> map = new HashMap<>();
 
     /**
      * Default constructor
@@ -39,6 +39,7 @@ public class Coordinates {
      * @param y Y-axis coordinate
      * @return False, if coordinate already hit
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean add(int x, int y) {
         if (this.map.size() >= this.size) {
             throw new IllegalArgumentException("Exhausted the coordinate space");

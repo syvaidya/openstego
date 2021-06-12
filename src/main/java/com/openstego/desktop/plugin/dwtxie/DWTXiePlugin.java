@@ -6,15 +6,6 @@
 
 package com.openstego.desktop.plugin.dwtxie;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.template.image.WMImagePluginTemplate;
 import com.openstego.desktop.util.ImageHolder;
@@ -24,6 +15,11 @@ import com.openstego.desktop.util.StringUtil;
 import com.openstego.desktop.util.dwt.DWT;
 import com.openstego.desktop.util.dwt.DWTUtil;
 import com.openstego.desktop.util.dwt.ImageTree;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Plugin for OpenStego which implements the DWT based algorithm by Xie.
@@ -38,7 +34,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(DWTXiePlugin.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(DWTXiePlugin.NAMESPACE);
 
     /**
      * Constant for Namespace to use for this plugin
@@ -50,7 +46,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      */
     public DWTXiePlugin() {
         LabelUtil.addNamespace(NAMESPACE, "i18n.DWTXiePluginLabels");
-        new DWTXieErrors(); // Initialize error codes
+        DWTXieErrors.init(); // Initialize error codes
     }
 
     /**
@@ -76,34 +72,34 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * Method to embed the message into the cover data
      *
-     * @param msg Message to be embedded
-     * @param msgFileName Name of the message file. If this value is provided, then the filename should be embedded in
-     *        the cover data
-     * @param cover Cover data into which message needs to be embedded
+     * @param msg           Message to be embedded
+     * @param msgFileName   Name of the message file. If this value is provided, then the filename should be embedded in
+     *                      the cover data
+     * @param cover         Cover data into which message needs to be embedded
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        ImageHolder image = null;
-        List<int[][]> yuv = null;
-        DWT dwt = null;
-        ImageTree dwtTree = null;
-        ImageTree p = null;
-        Signature sig = null;
-        Pixel pixel1 = null;
-        Pixel pixel2 = null;
-        Pixel pixel3 = null;
-        int[][] luminance = null;
-        int imgType = 0;
-        int origWidth = 0;
-        int origHeight = 0;
-        int cols = 0;
-        int rows = 0;
+        ImageHolder image;
+        List<int[][]> yuv;
+        DWT dwt;
+        ImageTree dwtTree;
+        ImageTree p;
+        Signature sig;
+        Pixel pixel1;
+        Pixel pixel2;
+        Pixel pixel3;
+        int[][] luminance;
+        int imgType;
+        int origWidth;
+        int origHeight;
+        int cols;
+        int rows;
         int n = 0;
-        double temp = 0.0;
+        double temp;
 
         // Cover file is mandatory
         if (cover == null) {
@@ -138,7 +134,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
         for (int row = 0; row < p.getImage().getHeight(); row++) {
             for (int col = 0; col < p.getImage().getWidth() - 3; col += 3) {
                 // Get all three approximation pixels in window
-                pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col + 0, row));
+                pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col, row));
                 pixel2 = new Pixel(1, DWTUtil.getPixel(p.getImage(), col + 1, row));
                 pixel3 = new Pixel(2, DWTUtil.getPixel(p.getImage(), col + 2, row));
 
@@ -155,7 +151,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
 
                 // Apply watermarking transformation (modify median pixel)
                 temp = wmTransform(sig.embeddingStrength, pixel1.value, pixel2.value, pixel3.value,
-                    getWatermarkBit(sig.watermark, n % (sig.watermarkLength * 8)));
+                        getWatermarkBit(sig.watermark, n % (sig.watermarkLength * 8)));
 
                 // Write modified pixel
                 DWTUtil.setPixel(p.getImage(), col + pixel2.pos, row, temp);
@@ -175,27 +171,26 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * Method to extract the message from the stego data
      *
-     * @param stegoData Stego data containing the message
+     * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
-     * @param origSigData Optional signature data file for watermark
+     * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
-        List<Integer> sigBitList = new ArrayList<Integer>();
-        ImageHolder image = null;
-        DWT dwt = null;
-        ImageTree dwtTree = null;
-        ImageTree p = null;
-        Signature sig = null;
-        Pixel pixel1 = null;
-        Pixel pixel2 = null;
-        Pixel pixel3 = null;
-        int[][] luminance = null;
-        int cols = 0;
-        int rows = 0;
-        // int n = 0;
+        List<Integer> sigBitList = new ArrayList<>();
+        ImageHolder image;
+        DWT dwt;
+        ImageTree dwtTree;
+        ImageTree p;
+        Signature sig;
+        Pixel pixel1;
+        Pixel pixel2;
+        Pixel pixel3;
+        int[][] luminance;
+        int cols;
+        int rows;
 
         image = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
         ImageUtil.makeImageSquare(image);
@@ -220,7 +215,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
         for (int row = 0; row < p.getImage().getHeight(); row++) {
             for (int col = 0; col < p.getImage().getWidth() - 3; col += 3) {
                 // Get all three approximation pixels in window
-                pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col + 0, row));
+                pixel1 = new Pixel(0, DWTUtil.getPixel(p.getImage(), col, row));
                 pixel2 = new Pixel(1, DWTUtil.getPixel(p.getImage(), col + 1, row));
                 pixel3 = new Pixel(2, DWTUtil.getPixel(p.getImage(), col + 2, row));
 
@@ -249,12 +244,12 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      * Method to generate the signature data
      *
      * @return Signature data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] generateSignature() throws OpenStegoException {
-        Random rand = null;
-        Signature sig = null;
+        Random rand;
+        Signature sig;
 
         rand = new Random(StringUtil.passwordHash(this.config.getPassword()));
         sig = new Signature(rand);
@@ -265,10 +260,10 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * Method to check the correlation between original signature and the extracted watermark
      *
-     * @param origSigData Original signature data
+     * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
@@ -291,10 +286,9 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      * Method to get the usage details of the plugin
      *
      * @return Usage details of the plugin
-     * @throws OpenStegoException
      */
     @Override
-    public String getUsage() throws OpenStegoException {
+    public String getUsage() {
         return labelUtil.getString("plugin.usage");
     }
 
@@ -336,7 +330,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      * Method to get a bit value from the watermark
      *
      * @param watermark Watermark data
-     * @param n Bit number
+     * @param n         Bit number
      * @return Bit value
      */
     private int getWatermarkBit(byte[] watermark, int n) {
@@ -350,8 +344,8 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      * Method to set a bit value in the watermark
      *
      * @param watermark Watermark data
-     * @param n Bit number
-     * @param v Bit value
+     * @param n         Bit number
+     * @param v         Bit value
      */
     private void setWatermarkBit(byte[] watermark, int n, int v) {
         int byteNum = n >> 3;
@@ -371,11 +365,11 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
      * @return Byte array
      */
     private byte[] convertBitListToByteArray(List<Integer> bitList) {
-        byte[] data = null;
+        byte[] data;
 
         data = new byte[bitList.size() >> 3];
         for (int i = 0; i < ((bitList.size() >> 3) << 3); i++) {
-            setWatermarkBit(data, i, (bitList.get(i)).intValue());
+            setWatermarkBit(data, i, bitList.get(i));
         }
 
         return data;
@@ -397,41 +391,41 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
     /**
      * Private class for the data structure required for the signature
      */
-    private class Signature {
+    private static class Signature {
         /**
          * Signature stamp
          */
-        byte[] sig = "XESG".getBytes();
+        private final byte[] sig = "XESG".getBytes();
 
         /**
          * Length of the watermark (in bytes)
          */
-        int watermarkLength = 64;
+        private int watermarkLength = 64;
 
         /**
          * Embedding strength
          */
-        double embeddingStrength = 0.5;
+        private double embeddingStrength = 0.5;
 
         /**
          * Wavelet filter method
          */
-        int waveletFilterMethod = 2;
+        private int waveletFilterMethod = 2;
 
         /**
          * Filter number
          */
-        int filterID = 1;
+        private int filterID = 1;
 
         /**
          * Embedding level
          */
-        int embeddingLevel = 5;
+        private int embeddingLevel = 5;
 
         /**
          * Watermark data
          */
-        byte[] watermark = null;
+        private byte[] watermark;
 
         /**
          * Constructor which generates the watermark data using the given randomizer
@@ -447,16 +441,17 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
          * Constructor that takes existing the signature data
          *
          * @param sigData Existing signature data
-         * @throws OpenStegoException
+         * @throws OpenStegoException Processing issues
          */
         public Signature(byte[] sigData) throws OpenStegoException {
-            ObjectInputStream ois = null;
+            ObjectInputStream ois;
+            int n;
             byte[] inputSig = new byte[this.sig.length];
 
             try {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
-                ois.read(inputSig, 0, this.sig.length);
-                if (!(new String(this.sig)).equals(new String(inputSig))) {
+                n = ois.read(inputSig, 0, this.sig.length);
+                if (n == -1 || !(new String(this.sig)).equals(new String(inputSig))) {
                     throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_SIG_NOT_VALID);
                 }
 
@@ -467,7 +462,10 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
                 this.embeddingLevel = ois.readInt();
 
                 this.watermark = new byte[this.watermarkLength];
-                ois.read(this.watermark);
+                n = ois.read(this.watermark);
+                if (n < this.watermarkLength) {
+                    throw new OpenStegoException(null, NAMESPACE, DWTXieErrors.ERR_SIG_NOT_VALID);
+                }
             } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
@@ -477,11 +475,11 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
          * Get the signature data generated
          *
          * @return Signature data
-         * @throws OpenStegoException
+         * @throws OpenStegoException Processing issues
          */
         public byte[] getSigData() throws OpenStegoException {
-            ByteArrayOutputStream baos = null;
-            ObjectOutputStream oos = null;
+            ByteArrayOutputStream baos;
+            ObjectOutputStream oos;
 
             try {
                 baos = new ByteArrayOutputStream();
@@ -513,9 +511,9 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
         }
     }
 
-    private class Pixel {
-        int pos = 0;
-        double value = 0.0;
+    private static class Pixel {
+        int pos;
+        double value;
 
         public Pixel(int pos, double value) {
             this.pos = pos;

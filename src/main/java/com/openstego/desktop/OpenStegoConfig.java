@@ -6,11 +6,10 @@
 
 package com.openstego.desktop;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.openstego.desktop.util.cmd.CmdLineOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to store configuration data for OpenStego
@@ -65,95 +64,104 @@ public class OpenStegoConfig {
     private String encryptionAlgorithm = OpenStegoCrypto.ALGO_AES128;
 
     /**
-     * Default Constructor (with default values for configuration items)
-     */
-    public OpenStegoConfig() {
-    }
-
-    /**
-     * Constructor with map of configuration data. Please make sure that only valid keys for configuration
-     * items are provided, and the values for those items are also valid.
+     * Initialize the configuration with map data. Please make sure that only valid keys for configuration items are
+     * provided, and the values for those items are also valid.
      *
      * @param propMap Map containing the configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public OpenStegoConfig(Map<String, String> propMap) throws OpenStegoException {
+    public final void initialize(Map<String, Object> propMap) throws OpenStegoException {
         addProperties(propMap);
     }
 
     /**
-     * Constructor which reads configuration data from the command line options.
+     * Initialize the configuration from command-line options.
      *
      * @param options Command-line options
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public OpenStegoConfig(CmdLineOptions options) throws OpenStegoException {
-        Map<String, String> map = new HashMap<String, String>();
+    public final void initialize(CmdLineOptions options) throws OpenStegoException {
+        addProperties(convertCmdLineOptionsToMap(options));
+    }
+
+    /**
+     * Converts command line options to Map form
+     *
+     * @param options Command-line options
+     * @return Options in Map form
+     * @throws OpenStegoException Processing issues
+     */
+    protected Map<String, Object> convertCmdLineOptionsToMap(CmdLineOptions options) throws OpenStegoException {
+        Map<String, Object> map = new HashMap<>();
 
         if (options.getOption("-c") != null) { // compress
-            map.put(USE_COMPRESSION, "true");
+            map.put(USE_COMPRESSION, true);
         }
 
         if (options.getOption("-C") != null) { // nocompress
-            map.put(USE_COMPRESSION, "false");
+            map.put(USE_COMPRESSION, false);
         }
 
         if (options.getOption("-e") != null) { // encrypt
-            map.put(USE_ENCRYPTION, "true");
+            map.put(USE_ENCRYPTION, true);
         }
 
         if (options.getOption("-E") != null) { // noencrypt
-            map.put(USE_ENCRYPTION, "false");
+            map.put(USE_ENCRYPTION, false);
         }
 
         if (options.getOption("-p") != null) { // password
-            map.put(PASSWORD, options.getOptionValue("-p"));
+            map.put(PASSWORD, options.getStringValue("-p"));
         }
 
         if (options.getOption("-A") != null) { // cryptalgo
-            map.put(ENCRYPTION_ALGORITHM, options.getOptionValue("-A"));
+            map.put(ENCRYPTION_ALGORITHM, options.getStringValue("-A"));
         }
 
-        addProperties(map);
+        return map;
+    }
+
+    /**
+     * Processes a configuration item.
+     *
+     * @param key   Configuration item key
+     * @param value Configuration item value
+     * @throws OpenStegoException Processing issues
+     */
+    protected void processConfigItem(String key, Object value) throws OpenStegoException {
+        switch (key) {
+            case USE_COMPRESSION:
+                if (value != null) {
+                    assert value instanceof Boolean;
+                    this.useCompression = (boolean) value;
+                }
+                break;
+            case USE_ENCRYPTION:
+                if (value != null) {
+                    assert value instanceof Boolean;
+                    this.useEncryption = (boolean) value;
+                }
+                break;
+            case PASSWORD:
+                assert value instanceof String;
+                this.password = (String) value;
+                break;
+            case ENCRYPTION_ALGORITHM:
+                assert value instanceof String;
+                this.encryptionAlgorithm = (String) value;
+                break;
+        }
     }
 
     /**
      * Method to add properties from the map to this configuration data
      *
      * @param propMap Map containing the configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    protected void addProperties(Map<String, String> propMap) throws OpenStegoException {
-        Iterator<String> keys = null;
-        String key = null;
-        String value = null;
-
-        keys = propMap.keySet().iterator();
-        while (keys.hasNext()) {
-            key = keys.next();
-            if (key.equals(USE_COMPRESSION)) {
-                value = propMap.get(key).toString().trim();
-                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1")) {
-                    this.useCompression = true;
-                } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0")) {
-                    this.useCompression = false;
-                } else {
-                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_COMPR_VALUE, value);
-                }
-            } else if (key.equals(USE_ENCRYPTION)) {
-                value = propMap.get(key).toString().trim();
-                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("y") || value.equals("1")) {
-                    this.useEncryption = true;
-                } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("n") || value.equals("0")) {
-                    this.useEncryption = false;
-                } else {
-                    throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_USE_ENCRYPT_VALUE, value);
-                }
-            } else if (key.equals(PASSWORD)) {
-                this.password = propMap.get(key).toString();
-            } else if (key.equals(ENCRYPTION_ALGORITHM)) {
-                this.encryptionAlgorithm = propMap.get(key).toString();
-            }
+    private void addProperties(Map<String, Object> propMap) throws OpenStegoException {
+        for (Map.Entry<String, Object> entry : propMap.entrySet()) {
+            processConfigItem(entry.getKey(), entry.getValue());
         }
     }
 
@@ -169,7 +177,7 @@ public class OpenStegoConfig {
     /**
      * Set method for configuration item - useCompression
      *
-     * @param useCompression
+     * @param useCompression Value to be set
      */
     public void setUseCompression(boolean useCompression) {
         this.useCompression = useCompression;
@@ -187,7 +195,7 @@ public class OpenStegoConfig {
     /**
      * Set Method for useEncryption
      *
-     * @param useEncryption
+     * @param useEncryption Value to be set
      */
     public void setUseEncryption(boolean useEncryption) {
         this.useEncryption = useEncryption;
@@ -205,7 +213,7 @@ public class OpenStegoConfig {
     /**
      * Set Method for password
      *
-     * @param password
+     * @param password Value to be set
      */
     public void setPassword(String password) {
         this.password = password;
@@ -223,7 +231,7 @@ public class OpenStegoConfig {
     /**
      * Set Method for encryptionAlgorithm
      *
-     * @param encryptionAlgorithm
+     * @param encryptionAlgorithm Value to be set
      */
     public void setEncryptionAlgorithm(String encryptionAlgorithm) {
         this.encryptionAlgorithm = encryptionAlgorithm;

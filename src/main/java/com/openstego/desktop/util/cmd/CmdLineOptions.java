@@ -6,6 +6,8 @@
 
 package com.openstego.desktop.util.cmd;
 
+import com.openstego.desktop.OpenStegoException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,12 +22,12 @@ public class CmdLineOptions {
     /**
      * Map to store the standard command-line options
      */
-    private Map<String, CmdLineOption> map = new HashMap<String, CmdLineOption>();
+    private final Map<String, CmdLineOption> map = new HashMap<>();
 
     /**
      * List to store the standard command-line options
      */
-    private List<CmdLineOption> list = new ArrayList<CmdLineOption>();
+    private final List<CmdLineOption> list = new ArrayList<>();
 
     /**
      * Default constructor
@@ -81,17 +83,62 @@ public class CmdLineOptions {
     }
 
     /**
-     * Method to get the value of the given option
+     * Method to get the value of the given option as String
      *
      * @param name Name of the option
      * @return Value of the command-line option
      */
-    public String getOptionValue(String name) {
+    public String getStringValue(String name) {
         CmdLineOption option = getOption(name);
-        if (option != null) {
-            return option.getValue();
-        } else {
+        return (option == null) ? null : option.getValue().trim();
+    }
+
+    /**
+     * Method to get the value of the given option as integer
+     *
+     * @param name         Name of the option
+     * @param errNamespace Namespace to be used for exception in case of parsing error
+     * @param errCode      Error code to be used for exception in case of parsing error
+     * @return null if options is not present on command line, else integer value
+     * @throws OpenStegoException If value is provided but not an integer
+     */
+    public Integer getIntegerValue(String name, String errNamespace, int errCode) throws OpenStegoException {
+        String val = getStringValue(name);
+        if (val == null) {
             return null;
+        }
+
+        try {
+            return Integer.parseInt(val);
+        } catch (NumberFormatException nfEx) {
+            throw new OpenStegoException(nfEx, errNamespace, errCode, val);
+        }
+    }
+
+    /**
+     * Method to get the value of the given option as boolean. All boolean-y values like true, false, t, f, yes, no,
+     * y, n, 1, 0 are allowed (case insensitive)
+     *
+     * @param name         Name of the option
+     * @param errNamespace Namespace to be used for exception in case of parsing error
+     * @param errCode      Error code to be used for exception in case of parsing error
+     * @return null if options is not present on command line, else boolean value
+     * @throws OpenStegoException If value is provided but not boolean-y
+     */
+    @SuppressWarnings("unused")
+    public Boolean getBooleanValue(String name, String errNamespace, int errCode) throws OpenStegoException {
+        String val = getStringValue(name);
+        if (val == null) {
+            return null;
+        }
+
+        val = val.toLowerCase();
+        if ("t".equals(val) || "true".equals(val) || "y".equals(val) || "yes".equals(val) || "1".equals(val)) {
+            return true;
+        } else if ("f".equals(val) || "false".equals(val) || "n".equals(val) || "no".equals(val) || "0".equals(val)) {
+            return false;
+        } else {
+            throw new OpenStegoException(null, errNamespace, errCode, val);
         }
     }
 

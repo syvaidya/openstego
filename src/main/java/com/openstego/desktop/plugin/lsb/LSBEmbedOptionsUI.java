@@ -6,62 +6,53 @@
 
 package com.openstego.desktop.plugin.lsb;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import com.openstego.desktop.OpenStegoConfig;
-import com.openstego.desktop.OpenStegoException;
-import com.openstego.desktop.ui.OpenStegoUI;
+import com.openstego.desktop.ui.OpenStegoFrame;
 import com.openstego.desktop.ui.PluginEmbedOptionsUI;
 import com.openstego.desktop.util.CommonUtil;
 import com.openstego.desktop.util.LabelUtil;
 
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+
 /**
  * GUI class for the LSB Plugin
  */
+@SuppressWarnings("unused")
 public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
     private static final long serialVersionUID = 6168148599483165215L;
 
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
 
     /**
      * "Random Image as Source" checkbox
      */
-    private JCheckBox randomImgCheckBox = new JCheckBox();
+    private final JCheckBox randomImgCheckBox = new JCheckBox();
 
     /**
      * Combobox for "Max Bits Per Color Channel"
      */
-    private JComboBox<Integer> maxBitsComboBox = null;
+    private final JComboBox<Integer> maxBitsComboBox;
 
     /**
      * Reference to the parent OpenStegoUI object
      */
-    private OpenStegoUI stegoUI = null;
+    private final OpenStegoFrame stegoUI;
 
     /**
      * Default constructor
      *
      * @param stegoUI Reference to the parent UI object
      */
-    public LSBEmbedOptionsUI(OpenStegoUI stegoUI) {
+    public LSBEmbedOptionsUI(OpenStegoFrame stegoUI) {
         this.stegoUI = stegoUI;
 
-        GridBagConstraints gridBagConstraints = null;
-        JLabel label = null;
+        GridBagConstraints gridBagConstraints;
+        JLabel label;
         Integer[] maxBitsList = new Integer[8];
 
         setLayout(new GridBagLayout());
@@ -89,19 +80,21 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
 
         gridBagConstraints.gridy = 1;
         for (int i = 0; i < 8; i++) {
-            maxBitsList[i] = Integer.valueOf(i + 1);
+            maxBitsList[i] = i + 1;
         }
-        this.maxBitsComboBox = new JComboBox<Integer>(maxBitsList);
+        this.maxBitsComboBox = new JComboBox<>(maxBitsList);
         this.maxBitsComboBox.setPreferredSize(new Dimension(40, 20));
         add(this.maxBitsComboBox, gridBagConstraints);
 
-        ChangeListener changeListener = new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent changeEvent) {
-                useRandomImgChanged();
-            }
-        };
+        ChangeListener changeListener = changeEvent -> useRandomImgChanged();
         this.randomImgCheckBox.addChangeListener(changeListener);
+    }
+
+    /**
+     * Initialize the UI
+     */
+    @Override
+    public void initialize() {
         useRandomImgChanged();
     }
 
@@ -127,10 +120,9 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
      * Method to validate plugin options for "Embed" action
      *
      * @return Boolean indicating whether validation was successful or not
-     * @throws OpenStegoException
      */
     @Override
-    public boolean validateEmbedAction() throws OpenStegoException {
+    public boolean validateEmbedAction() {
         return true;
     }
 
@@ -138,21 +130,22 @@ public class LSBEmbedOptionsUI extends PluginEmbedOptionsUI {
      * Method to populate the plugin GUI options based on the config data
      *
      * @param config OpenStego configuration data
-     * @throws OpenStegoException
      */
     @Override
-    public void setGUIFromConfig(OpenStegoConfig config) throws OpenStegoException {
-        this.maxBitsComboBox.setSelectedItem(Integer.valueOf(((LSBConfig) config).getMaxBitsUsedPerChannel()));
+    public void setGUIFromConfig(OpenStegoConfig config) {
+        this.maxBitsComboBox.setSelectedItem(((LSBConfig) config).getMaxBitsUsedPerChannel());
     }
 
     /**
      * Method to populate the config object based on the GUI data
      *
      * @param config OpenStego configuration data
-     * @throws OpenStegoException
      */
     @Override
-    public void setConfigFromGUI(OpenStegoConfig config) throws OpenStegoException {
-        ((LSBConfig) config).setMaxBitsUsedPerChannel(((Integer) this.maxBitsComboBox.getSelectedItem()).intValue());
+    public void setConfigFromGUI(OpenStegoConfig config) {
+        Integer maxBits = (Integer) this.maxBitsComboBox.getSelectedItem();
+        if (maxBits != null) {
+            ((LSBConfig) config).setMaxBitsUsedPerChannel(maxBits);
+        }
     }
 }

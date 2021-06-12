@@ -27,7 +27,7 @@ gradlew clean dist           (Windows)
 ```
 ./gradlew clean dist         (Linux / MacOS)
 ```
-*Note:* Windows installer will be generated only if build is executed on windows environment. It needs [Inno Setup](https://jrsoftware.org/isdl.php) to be installed, and `iscc.exe` to be on `PATH`. If you don't want to generate windows installer, you can skip the same using following command:
+*Note:* Windows installer will be generated only if you execute build on Windows environment. It needs [Inno Setup](https://jrsoftware.org/isdl.php) to be installed, and `iscc.exe` to be on `PATH`. If you don't want to generate Windows installer, you can skip the same using following command:
 ```
 ./gradlew clean dist -x distWin
 ```

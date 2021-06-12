@@ -17,6 +17,7 @@ import com.openstego.desktop.util.ImageUtil;
  * Refer to his thesis on watermarking: Peter Meerwald, Digital Image Watermarking in the Wavelet Transfer Domain,
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
+@SuppressWarnings("unused")
 public class DCT {
     /**
      * Constant for the JPEG block size
@@ -36,16 +37,16 @@ public class DCT {
     /**
      * JPEG Luminance Quantization Table
      */
-    private static final int[][] JPEG_LUMIN_QUANT_TBL = { { 16, 11, 10, 16, 24, 40, 51, 61 }, { 12, 12, 14, 19, 26, 58, 60, 55 },
-            { 14, 13, 16, 24, 40, 57, 69, 56 }, { 14, 17, 22, 29, 51, 87, 80, 62 }, { 18, 22, 37, 56, 68, 109, 103, 77 },
-            { 24, 35, 55, 64, 81, 104, 113, 92 }, { 49, 64, 78, 87, 103, 121, 120, 101 }, { 72, 92, 95, 98, 112, 100, 103, 99 } };
+    private static final int[][] JPEG_LUMIN_QUANT_TBL = {{16, 11, 10, 16, 24, 40, 51, 61}, {12, 12, 14, 19, 26, 58, 60, 55},
+            {14, 13, 16, 24, 40, 57, 69, 56}, {14, 17, 22, 29, 51, 87, 80, 62}, {18, 22, 37, 56, 68, 109, 103, 77},
+            {24, 35, 55, 64, 81, 104, 113, 92}, {49, 64, 78, 87, 103, 121, 120, 101}, {72, 92, 95, 98, 112, 100, 103, 99}};
 
     /**
      * JPEG Chrominance Quantization Table
      */
-    private static final int[][] JPEG_CHROMIN_QUANT_TBL = { { 17, 18, 24, 47, 99, 99, 99, 99 }, { 18, 21, 26, 66, 99, 99, 99, 99 },
-            { 24, 26, 56, 99, 99, 99, 99, 99 }, { 47, 66, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 },
-            { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 }, { 99, 99, 99, 99, 99, 99, 99, 99 } };
+    private static final int[][] JPEG_CHROMIN_QUANT_TBL = {{17, 18, 24, 47, 99, 99, 99, 99}, {18, 21, 26, 66, 99, 99, 99, 99},
+            {24, 26, 56, 99, 99, 99, 99, 99}, {47, 66, 99, 99, 99, 99, 99, 99}, {99, 99, 99, 99, 99, 99, 99, 99},
+            {99, 99, 99, 99, 99, 99, 99, 99}, {99, 99, 99, 99, 99, 99, 99, 99}, {99, 99, 99, 99, 99, 99, 99, 99}};
 
     private double[][] nxmCosTableX = null;
 
@@ -55,13 +56,13 @@ public class DCT {
 
     private double[] nxnCosTable = null;
 
-    private double[][] C = new double[NJPEG][NJPEG];
+    private final double[][] C = new double[NJPEG][NJPEG];
 
-    private double[][] Ct = new double[NJPEG][NJPEG];
+    private final double[][] Ct = new double[NJPEG][NJPEG];
 
-    private int[][] tmpIntArray = new int[NJPEG][NJPEG];
+    private final int[][] tmpIntArray = new int[NJPEG][NJPEG];
 
-    private int[][] Quantum = new int[NJPEG][NJPEG];
+    private final int[][] Quantum = new int[NJPEG][NJPEG];
 
     private int nxnLog2N = 0;
 
@@ -74,15 +75,15 @@ public class DCT {
      *
      * @param cols Number of columns
      * @param rows Number of rows
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Negative values
      */
     public void initDctNxM(int cols, int rows) throws IllegalArgumentException {
         if (cols <= 0 || rows <= 0) {
             throw new IllegalArgumentException("Dimensions out of range");
         }
 
-        int i = 0;
-        int j = 0;
+        int i;
+        int j;
         double cx = Math.sqrt(2.0 / cols);
         double cy = Math.sqrt(2.0 / rows);
 
@@ -120,13 +121,13 @@ public class DCT {
      * Perform forward DCT for N x M matrix
      *
      * @param pixels Input matrix
-     * @param dcts DCT matrix
+     * @param dcts   DCT matrix
      */
     public void fwdDctNxM(int[][] pixels, double[][] dcts) {
-        int x = 0;
-        int y = 0;
-        int i = 0;
-        int j = 0;
+        int x;
+        int y;
+        int i;
+        int j;
         double t = 0.0;
         double cx0 = Math.sqrt(1.0 / this.N);
         double cy0 = Math.sqrt(1.0 / this.M);
@@ -174,15 +175,15 @@ public class DCT {
     /**
      * Perform inverse DCT on the N x M matrix
      *
-     * @param dcts Input DCT matrix
+     * @param dcts   Input DCT matrix
      * @param pixels Output matrix
      */
     public void invDctNxM(double[][] dcts, int[][] pixels) {
-        int x = 0;
-        int y = 0;
-        int i = 0;
-        int j = 0;
-        double t = 0.0;
+        int x;
+        int y;
+        int i;
+        int j;
+        double t;
         double cx0 = Math.sqrt(1.0 / this.N);
         double cy0 = Math.sqrt(1.0 / this.M);
 
@@ -212,9 +213,9 @@ public class DCT {
     /**
      * Initialize DCT mechanism for N x M matrix
      *
-     * @param width Width of the matrix
+     * @param width  Width of the matrix
      * @param height Height of the matrix
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Negative or unequal values
      */
     public void initDctNxN(int width, int height) throws IllegalArgumentException {
         if (width != height || width <= 0) {
@@ -236,11 +237,11 @@ public class DCT {
      * Perform forward DCT for N x N matrix
      *
      * @param pixels Input matrix
-     * @param dcts DCT matrix
+     * @param dcts   DCT matrix
      */
     public void fwdDctNxN(int[][] pixels, double[][] dcts) {
-        int u = 0;
-        int v = 0;
+        int u;
+        int v;
         double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
         for (u = 0; u < this.N; u++) {
@@ -268,14 +269,14 @@ public class DCT {
     /**
      * Perform inverse DCT on the N x N matrix
      *
-     * @param dcts Input DCT matrix
+     * @param dcts   Input DCT matrix
      * @param pixels Output matrix
      */
     public void invDctNxN(double[][] dcts, int[][] pixels) {
-        int u = 0;
-        int v = 0;
+        int u;
+        int v;
         double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
-        double[][] tmp = null;
+        double[][] tmp;
 
         tmp = new double[this.N][this.N];
         for (u = 0; u < this.N; u++) {
@@ -304,8 +305,6 @@ public class DCT {
                 pixels[u][v] = ImageUtil.pixelRange((int) (tmp[u][v] + 128.5));
             }
         }
-
-        tmp = null;
     }
 
     /**
@@ -314,8 +313,8 @@ public class DCT {
      * @param coeffs DCT matrix
      */
     public void fwdDctInPlaceNxN(double[][] coeffs) {
-        int u = 0;
-        int v = 0;
+        int u;
+        int v;
         double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
         for (u = 0; u <= this.M - 1; u++) {
@@ -340,8 +339,8 @@ public class DCT {
      * @param coeffs DCT matrix
      */
     public void invDctInPlaceNxN(double[][] coeffs) {
-        int u = 0;
-        int v = 0;
+        int u;
+        int v;
         double two_over_sqrtncolsnrows = 2.0 / Math.sqrt((double) this.N * this.M);
 
         for (u = 0; u <= this.M - 1; u++) {
@@ -447,8 +446,8 @@ public class DCT {
      * Initialize DCT mechanism for 8x8 block
      */
     public void initDct8x8() {
-        int i = 0;
-        int j = 0;
+        int i;
+        int j;
         double sqJpeg = Math.sqrt(NJPEG);
         double sqJpeg2 = Math.sqrt(2.0 / NJPEG);
 
@@ -468,15 +467,15 @@ public class DCT {
     /**
      * Perform forward DCT on the 8x8 matrix
      *
-     * @param input Input matrix
+     * @param input  Input matrix
      * @param output Output matrix
      */
     public void fwdDct8x8(int[][] input, double[][] output) {
         double[][] temp = new double[NJPEG][NJPEG];
-        double temp1 = 0.0;
-        int i = 0;
-        int j = 0;
-        int k = 0;
+        double temp1;
+        int i;
+        int j;
+        int k;
 
         // MatrixMultiply(temp, input, Ct)
         for (i = 0; i < NJPEG; i++) {
@@ -503,16 +502,14 @@ public class DCT {
     /**
      * Perform forward DCT on a given 8x8 block of the input matrix
      *
-     * @param input Input matrix
-     * @param col Starting column number for the 8x8 block
-     * @param row Starting row number for the 8x8 block
+     * @param input  Input matrix
+     * @param col    Starting column number for the 8x8 block
+     * @param row    Starting row number for the 8x8 block
      * @param output Output matrix
      */
     public void fwdDctBlock8x8(int[][] input, int col, int row, double[][] output) {
         for (int i = 0; i < NJPEG; i++) {
-            for (int j = 0; j < NJPEG; j++) {
-                this.tmpIntArray[i][j] = input[col + i][row + j];
-            }
+            System.arraycopy(input[col + i], row, this.tmpIntArray[i], 0, NJPEG);
         }
 
         fwdDct8x8(this.tmpIntArray, output);
@@ -521,15 +518,15 @@ public class DCT {
     /**
      * Perform inverse DCT on the 8x8 matrix
      *
-     * @param input Input matrix
+     * @param input  Input matrix
      * @param output Output matrix
      */
     public void invDct8x8(double[][] input, int[][] output) {
         double[][] temp = new double[NJPEG][NJPEG];
-        double temp1 = 0.0;
-        int i = 0;
-        int j = 0;
-        int k = 0;
+        double temp1;
+        int i;
+        int j;
+        int k;
 
         // MatrixMultiply(temp, input, C)
         for (i = 0; i < NJPEG; i++) {
@@ -557,18 +554,16 @@ public class DCT {
     /**
      * Perform inverse DCT to given 8x8 block of the output matrix
      *
-     * @param input Input matrix (8x8)
+     * @param input  Input matrix (8x8)
      * @param output Output matrix
-     * @param col Starting column number for the 8x8 block
-     * @param row Starting row number for the 8x8 block
+     * @param col    Starting column number for the 8x8 block
+     * @param row    Starting row number for the 8x8 block
      */
     public void invDctBlock8x8(double[][] input, int[][] output, int col, int row) {
         invDct8x8(input, this.tmpIntArray);
 
         for (int i = 0; i < NJPEG; i++) {
-            for (int j = 0; j < NJPEG; j++) {
-                output[col + i][row + j] = this.tmpIntArray[i][j];
-            }
+            System.arraycopy(this.tmpIntArray[i], 0, output[col + i], row, NJPEG);
         }
     }
 

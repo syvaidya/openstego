@@ -5,16 +5,12 @@
  */
 package com.openstego.desktop.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-
 import com.openstego.desktop.OpenStego;
+import com.openstego.desktop.OpenStegoErrors;
 import com.openstego.desktop.OpenStegoException;
+
+import java.io.*;
+import java.util.Properties;
 
 /**
  * User preferences manager
@@ -34,7 +30,7 @@ public class UserPreferences {
     /**
      * Initialize the preferences
      *
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static void init() throws OpenStegoException {
         if (prefs != null) {
@@ -48,15 +44,17 @@ public class UserPreferences {
         File prefFile = new File(userHome, PREF_FILENAME);
         if (!prefFile.exists()) {
             try {
-                prefFile.createNewFile();
+                boolean res = prefFile.createNewFile();
+                assert res;
             } catch (IOException e) {
                 throw new OpenStegoException(e);
             }
 
             try (InputStream tmplIS = UserPreferences.class.getResourceAsStream("/" + DEFAULT_PREF_FILENAME);
-                    OutputStream prefFileOS = new FileOutputStream(prefFile)) {
+                 OutputStream prefFileOS = new FileOutputStream(prefFile)) {
                 int len;
                 byte[] buff = new byte[1024];
+                assert tmplIS != null;
                 while ((len = tmplIS.read(buff)) >= 0) {
                     prefFileOS.write(buff, 0, len);
                 }
@@ -91,8 +89,9 @@ public class UserPreferences {
      *
      * @param key Preference key
      * @return value
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
+    @SuppressWarnings("unused")
     public static Integer getInteger(String key) throws OpenStegoException {
         String val = getString(key);
         if (val == null) {
@@ -101,7 +100,7 @@ public class UserPreferences {
         try {
             return Integer.parseInt(val);
         } catch (NumberFormatException e) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.USERPREF_INVALID_INT, key);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.USERPREF_INVALID_INT, key);
         }
     }
 
@@ -110,7 +109,7 @@ public class UserPreferences {
      *
      * @param key Preference key
      * @return value
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static Float getFloat(String key) throws OpenStegoException {
         String val = getString(key);
@@ -120,7 +119,7 @@ public class UserPreferences {
         try {
             return Float.parseFloat(val);
         } catch (NumberFormatException e) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.USERPREF_INVALID_FLOAT, key);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.USERPREF_INVALID_FLOAT, key);
         }
     }
 
@@ -129,8 +128,9 @@ public class UserPreferences {
      *
      * @param key Preference key
      * @return value
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
+    @SuppressWarnings("unused")
     public static Boolean getBoolean(String key) throws OpenStegoException {
         String val = getString(key);
         if (val == null) {
@@ -142,7 +142,7 @@ public class UserPreferences {
         } else if ("f".equals(val) || "false".equals(val) || "n".equals(val) || "no".equals(val) || "0".equals(val)) {
             return false;
         } else {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.USERPREF_INVALID_BOOL, key);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.USERPREF_INVALID_BOOL, key);
         }
     }
 }

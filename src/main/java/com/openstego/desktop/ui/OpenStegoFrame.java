@@ -6,42 +6,19 @@
 
 package com.openstego.desktop.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.KeyEvent;
-import java.util.Enumeration;
-import java.util.Locale;
+import com.openstego.desktop.OpenStego;
+import com.openstego.desktop.OpenStegoPlugin;
+import com.openstego.desktop.util.LabelUtil;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
-
-import com.openstego.desktop.OpenStego;
-import com.openstego.desktop.util.LabelUtil;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Frame class to build the Swing UI for OpenStego. This class includes only graphics rendering
@@ -54,7 +31,7 @@ public class OpenStegoFrame extends JFrame {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     /**
      * Number of columns for text fields
@@ -75,7 +52,7 @@ public class OpenStegoFrame extends JFrame {
 
     private JScrollPane accordionPane;
     private JPanel accordion;
-    private ButtonGroup actionButtonGroup = new ButtonGroup();
+    private final ButtonGroup actionButtonGroup = new ButtonGroup();
     private JToggleButton embedButton;
     private JToggleButton extractButton;
     private JToggleButton genSigButton;
@@ -92,11 +69,15 @@ public class OpenStegoFrame extends JFrame {
     private EmbedWatermarkPanel embedWmPanel;
     private VerifyWatermarkPanel verifyWmPanel;
 
+    private final OpenStegoPlugin<?> dhPlugin;
+
     /**
      * Default constructor
      */
-    public OpenStegoFrame() {
+    @SuppressWarnings("unused")
+    public OpenStegoFrame(OpenStegoPlugin<?> dhPlugin, OpenStegoPlugin<?> wmPlugin) {
         super();
+        this.dhPlugin = dhPlugin;
         initialize();
         setActionCommands();
         setupUI();
@@ -249,7 +230,7 @@ public class OpenStegoFrame extends JFrame {
             c.gridy = gridy++;
             this.accordion.add(getVerifyWmButton(), c);
 
-            c.gridy = gridy++;
+            c.gridy = gridy;
             c.weighty = 1.0;
             this.accordion.add(new JPanel(), c);
         }
@@ -280,7 +261,7 @@ public class OpenStegoFrame extends JFrame {
     public JToggleButton getEmbedButton() {
         if (this.embedButton == null) {
             this.embedButton = new JToggleButton(labelUtil.getString("gui.label.tab.dhEmbed"),
-                    new ImageIcon(getClass().getResource("/images/EmbedIcon.png")), true);
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/EmbedIcon.png"))), true);
             if (toggleUiHack) {
                 this.embedButton.setUI(new MetalToggleButtonUI());
             }
@@ -300,7 +281,7 @@ public class OpenStegoFrame extends JFrame {
     public JToggleButton getExtractButton() {
         if (this.extractButton == null) {
             this.extractButton = new JToggleButton(labelUtil.getString("gui.label.tab.dhExtract"),
-                    new ImageIcon(getClass().getResource("/images/ExtractIcon.png")));
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/ExtractIcon.png"))));
             if (toggleUiHack) {
                 this.extractButton.setUI(new MetalToggleButtonUI());
             }
@@ -320,7 +301,7 @@ public class OpenStegoFrame extends JFrame {
     public JToggleButton getGenSigButton() {
         if (this.genSigButton == null) {
             this.genSigButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmGenSig"),
-                    new ImageIcon(getClass().getResource("/images/EmbedIcon.png"))); // TODO
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/EmbedIcon.png")))); // TODO
             if (toggleUiHack) {
                 this.genSigButton.setUI(new MetalToggleButtonUI());
             }
@@ -340,7 +321,7 @@ public class OpenStegoFrame extends JFrame {
     public JToggleButton getSignWmButton() {
         if (this.signWmButton == null) {
             this.signWmButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmEmbed"),
-                    new ImageIcon(getClass().getResource("/images/EmbedIcon.png")));
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/EmbedIcon.png")))); // TODO
             if (toggleUiHack) {
                 this.signWmButton.setUI(new MetalToggleButtonUI());
             }
@@ -360,7 +341,7 @@ public class OpenStegoFrame extends JFrame {
     public JToggleButton getVerifyWmButton() {
         if (this.verifyWmButton == null) {
             this.verifyWmButton = new JToggleButton(labelUtil.getString("gui.label.tab.wmVerify"),
-                    new ImageIcon(getClass().getResource("/images/ExtractIcon.png")));
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/ExtractIcon.png")))); // TODO
             if (toggleUiHack) {
                 this.verifyWmButton.setUI(new MetalToggleButtonUI());
             }
@@ -380,8 +361,9 @@ public class OpenStegoFrame extends JFrame {
     public JPanel getHeaderPanel() {
         if (this.headerPanel == null) {
             this.headerPanel = new JPanel();
-            this.headerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+            this.headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
             this.headerPanel.setLayout(new GridLayout());
             this.headerPanel.add(getHeader());
         }
@@ -422,7 +404,8 @@ public class OpenStegoFrame extends JFrame {
      */
     public EmbedPanel getEmbedPanel() {
         if (this.embedPanel == null) {
-            this.embedPanel = new EmbedPanel();
+            this.embedPanel = new EmbedPanel(this.dhPlugin.getEmbedOptionsUI(this));
+            this.embedPanel.initialize();
         }
         return this.embedPanel;
     }
@@ -481,8 +464,8 @@ public class OpenStegoFrame extends JFrame {
     private void setupUI() {
         // Special handling to ensure that Japanese fonts are readable
         if (Locale.getDefault().getLanguage().equals(Locale.JAPANESE.getLanguage())) {
-            Object key = null;
-            Object value = null;
+            Object key;
+            Object value;
             Enumeration<?> keys = UIManager.getDefaults().keys();
             while (keys.hasMoreElements()) {
                 key = keys.nextElement();
@@ -553,113 +536,113 @@ public class OpenStegoFrame extends JFrame {
         /**
          * Menu - File - Exit
          */
-        public static String MENU_FILE_EXIT = "MENU_FILE_EXIT";
+        String MENU_FILE_EXIT = "MENU_FILE_EXIT";
         /**
          * Menu - Help - About
          */
-        public static String MENU_HELP_ABOUT = "MENU_HELP_ABOUT";
+        String MENU_HELP_ABOUT = "MENU_HELP_ABOUT";
 
         /**
          * Switch to Data Hiding - Embed panel
          */
-        public static String SWITCH_DH_EMBED = "SWITCH_DH_EMBED";
+        String SWITCH_DH_EMBED = "SWITCH_DH_EMBED";
         /**
          * Switch to Data Hiding - Extract panel
          */
-        public static String SWITCH_DH_EXTRACT = "SWITCH_DH_EXTRACT";
+        String SWITCH_DH_EXTRACT = "SWITCH_DH_EXTRACT";
         /**
          * Switch to Watermarking - GenSig panel
          */
-        public static String SWITCH_WM_GENSIG = "SWITCH_WM_GENSIG";
+        String SWITCH_WM_GENSIG = "SWITCH_WM_GENSIG";
         /**
          * Switch to Watermarking - Embed panel
          */
-        public static String SWITCH_WM_EMBED = "SWITCH_WM_EMBED";
+        String SWITCH_WM_EMBED = "SWITCH_WM_EMBED";
         /**
          * Switch to Watermarking - Verify panel
          */
-        public static String SWITCH_WM_VERIFY = "SWITCH_WM_VERIFY";
+        String SWITCH_WM_VERIFY = "SWITCH_WM_VERIFY";
 
         /**
          * Browse action for DH-Embed-MessageFile
          */
-        public static String BROWSE_DH_EMB_MSGFILE = "BROWSE_DH_EMB_MSGFILE";
+        String BROWSE_DH_EMB_MSGFILE = "BROWSE_DH_EMB_MSGFILE";
         /**
          * Browse action for DH-Embed-CoverFile
          */
-        public static String BROWSE_DH_EMB_CVRFILE = "BROWSE_DH_EMB_CVRFILE";
+        String BROWSE_DH_EMB_CVRFILE = "BROWSE_DH_EMB_CVRFILE";
         /**
          * Browse action for DH-Embed-StegoFile
          */
-        public static String BROWSE_DH_EMB_STGFILE = "BROWSE_DH_EMB_STGFILE";
+        String BROWSE_DH_EMB_STGFILE = "BROWSE_DH_EMB_STGFILE";
         /**
          * Execute DH-Embed
          */
-        public static String RUN_DH_EMBED = "RUN_DH_EMBED";
+        String RUN_DH_EMBED = "RUN_DH_EMBED";
 
         /**
          * Browse action for DH-Extract-StegoFile
          */
-        public static String BROWSE_DH_EXT_STGFILE = "BROWSE_DH_EXT_STGFILE";
+        String BROWSE_DH_EXT_STGFILE = "BROWSE_DH_EXT_STGFILE";
         /**
          * Browse action for DH-Extract-OutputFolder
          */
-        public static String BROWSE_DH_EXT_OUTDIR = "BROWSE_DH_EXT_OUTDIR";
+        String BROWSE_DH_EXT_OUTDIR = "BROWSE_DH_EXT_OUTDIR";
         /**
          * Execute DH-Extract
          */
-        public static String RUN_DH_EXTRACT = "RUN_DH_EXTRACT";
+        String RUN_DH_EXTRACT = "RUN_DH_EXTRACT";
 
         /**
          * Browse action for WM-GenSig-SigFile
          */
-        public static String BROWSE_WM_GSG_SIGFILE = "BROWSE_WM_GSG_SIGFILE";
+        String BROWSE_WM_GSG_SIGFILE = "BROWSE_WM_GSG_SIGFILE";
         /**
          * Execute WM-GenSig
          */
-        public static String RUN_WM_GENSIG = "RUN_WM_GENSIG";
+        String RUN_WM_GENSIG = "RUN_WM_GENSIG";
 
         /**
          * Browse action for WM-Embed-InputFile
          */
-        public static String BROWSE_WM_EMB_INPFILE = "BROWSE_WM_EMB_INPFILE";
+        String BROWSE_WM_EMB_INPFILE = "BROWSE_WM_EMB_INPFILE";
         /**
          * Browse action for WM-Embed-SignatureFile
          */
-        public static String BROWSE_WM_EMB_SIGFILE = "BROWSE_WM_EMB_SIGFILE";
+        String BROWSE_WM_EMB_SIGFILE = "BROWSE_WM_EMB_SIGFILE";
         /**
          * Browse action for WM-Embed-OutputFile
          */
-        public static String BROWSE_WM_EMB_OUTFILE = "BROWSE_WM_EMB_OUTFILE";
+        String BROWSE_WM_EMB_OUTFILE = "BROWSE_WM_EMB_OUTFILE";
         /**
          * Execute WM-Embed
          */
-        public static String RUN_WM_EMBED = "RUN_WM_EMBED";
+        String RUN_WM_EMBED = "RUN_WM_EMBED";
 
         /**
          * Browse action for WM-Verify-InputFile
          */
-        public static String BROWSE_WM_VER_INPFILE = "BROWSE_WM_VER_INPFILE";
+        String BROWSE_WM_VER_INPFILE = "BROWSE_WM_VER_INPFILE";
         /**
          * Browse action for WM-Verify-SignatureFile
          */
-        public static String BROWSE_WM_VER_SIGFILE = "BROWSE_WM_VER_SIGFILE";
+        String BROWSE_WM_VER_SIGFILE = "BROWSE_WM_VER_SIGFILE";
         /**
          * Execute WM-Verify
          */
-        public static String RUN_WM_VERIFY = "RUN_WM_VERIFY";
+        String RUN_WM_VERIFY = "RUN_WM_VERIFY";
     }
 
-    class GradientPanel extends JPanel {
+    static class GradientPanel extends JPanel {
         private static final long serialVersionUID = 3865918400221647086L;
-        private Color startColor;
-        private Color endColor;
+        private final Color startColor;
+        private final Color endColor;
 
         /**
          * Default constructor
          *
-         * @param startColor
-         * @param endColor
+         * @param startColor Start of gradient
+         * @param endColor   End of gradient
          */
         public GradientPanel(Color startColor, Color endColor) {
             this.startColor = startColor;

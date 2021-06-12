@@ -5,25 +5,16 @@
  */
 package com.openstego.desktop.ui;
 
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import com.openstego.desktop.OpenStego;
+import com.openstego.desktop.OpenStegoCrypto;
+import com.openstego.desktop.util.LabelUtil;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-
-import com.openstego.desktop.OpenStego;
-import com.openstego.desktop.OpenStegoCrypto;
-import com.openstego.desktop.util.LabelUtil;
+import java.awt.*;
 
 /**
  * Panel for "Embed"
@@ -34,7 +25,7 @@ public class EmbedPanel extends JPanel {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     private JPanel optionPanel;
     private JTextField msgFileTextField;
@@ -48,12 +39,19 @@ public class EmbedPanel extends JPanel {
     private JPasswordField confPasswordTextField;
     private JButton runEmbedButton;
 
+    private final PluginEmbedOptionsUI pluginOptionPanel;
+
     /**
      * Default constructor
      */
-    public EmbedPanel() {
+    public EmbedPanel(PluginEmbedOptionsUI pluginOptionPanel) {
         super();
-        initialize();
+        this.pluginOptionPanel = pluginOptionPanel;
+        if (pluginOptionPanel != null) {
+            this.pluginOptionPanel.setBorder(new TitledBorder(
+                    new CompoundBorder(new EmptyBorder(new Insets(5, 5, 5, 5)), new EtchedBorder()),
+                    " " + labelUtil.getString("gui.label.dhEmbed.pluginOption.title") + " "));
+        }
     }
 
     /**
@@ -130,6 +128,15 @@ public class EmbedPanel extends JPanel {
             this.optionPanel.add(getConfPasswordTextField(), gridBagConstraints);
         }
         return this.optionPanel;
+    }
+
+    /**
+     * Getter method for pluginOptionPanel
+     *
+     * @return pluginOptionPanel
+     */
+    public PluginEmbedOptionsUI getPluginOptionPanel() {
+        return this.pluginOptionPanel;
     }
 
     /**
@@ -217,9 +224,9 @@ public class EmbedPanel extends JPanel {
      */
     public JComboBox<String> getEncryptionAlgoComboBox() {
         if (this.encryptionAlgoComboBox == null) {
-            this.encryptionAlgoComboBox = new JComboBox<String>(new String[] {
-                OpenStegoCrypto.ALGO_AES128,
-                OpenStegoCrypto.ALGO_AES256
+            this.encryptionAlgoComboBox = new JComboBox<>(new String[]{
+                    OpenStegoCrypto.ALGO_AES128,
+                    OpenStegoCrypto.ALGO_AES256
             });
         }
         return this.encryptionAlgoComboBox;
@@ -264,7 +271,7 @@ public class EmbedPanel extends JPanel {
         return this.runEmbedButton;
     }
 
-    private void initialize() {
+    public void initialize() {
         JLabel label;
         setLayout(new GridBagLayout());
 
@@ -381,11 +388,23 @@ public class EmbedPanel extends JPanel {
         gridBagConstraints.weighty = 0.0;
         add(getOptionPanel(), gridBagConstraints);
 
+        if (getPluginOptionPanel() != null) {
+            gridBagConstraints = new GridBagConstraints();
+            gridBagConstraints.fill = GridBagConstraints.BOTH;
+            gridBagConstraints.gridwidth = 2;
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 9;
+            gridBagConstraints.weightx = 1.0;
+            gridBagConstraints.weighty = 0.0;
+            add(getPluginOptionPanel(), gridBagConstraints);
+            getPluginOptionPanel().initialize();
+        }
+
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.anchor = GridBagConstraints.EAST;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.0;
@@ -396,10 +415,10 @@ public class EmbedPanel extends JPanel {
         gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.insets = new Insets(0, 0, 0, 0);
         gridBagConstraints.weightx = 0.01;
         gridBagConstraints.weighty = 1.0;
-        this.add(new JLabel(" "), gridBagConstraints);
+        add(new JLabel(" "), gridBagConstraints);
     }
 }

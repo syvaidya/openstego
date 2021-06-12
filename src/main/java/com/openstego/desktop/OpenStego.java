@@ -6,25 +6,18 @@
 
 package com.openstego.desktop;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
-import javax.swing.UIManager;
-
 import com.openstego.desktop.ui.OpenStegoUI;
 import com.openstego.desktop.util.CommonUtil;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.PluginManager;
 import com.openstego.desktop.util.UserPreferences;
+
+import javax.swing.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * This is the main class for OpenStego. It includes the {@link #main(String[])} method which provides the
@@ -40,25 +33,16 @@ public class OpenStego {
     /**
      * Configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * Stego plugin to use for embedding / extracting data
      */
-    private OpenStegoPlugin plugin = null;
+    private final OpenStegoPlugin<?> plugin;
 
     static {
         LabelUtil.addNamespace(NAMESPACE, "i18n.OpenStegoLabels");
-    }
-
-    /**
-     * Constructor using the default configuration
-     *
-     * @param plugin Stego plugin to use
-     * @throws OpenStegoException
-     */
-    public OpenStego(OpenStegoPlugin plugin) throws OpenStegoException {
-        this(plugin, (OpenStegoConfig) null);
+        OpenStegoErrors.init();
     }
 
     /**
@@ -66,26 +50,17 @@ public class OpenStego {
      *
      * @param plugin Stego plugin to use
      * @param config OpenStegoConfig object with configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public OpenStego(OpenStegoPlugin plugin, OpenStegoConfig config) throws OpenStegoException {
+    public OpenStego(OpenStegoPlugin<?> plugin, OpenStegoConfig config) throws OpenStegoException {
         // Plugin is mandatory
         if (plugin == null) {
-            throw new OpenStegoException(null, NAMESPACE, OpenStegoException.NO_PLUGIN_SPECIFIED);
+            throw new OpenStegoException(null, NAMESPACE, OpenStegoErrors.NO_PLUGIN_SPECIFIED);
         }
         this.plugin = plugin;
-        this.config = (config == null) ? new OpenStegoConfig() : config;
-    }
-
-    /**
-     * Constructor with configuration data in the form of {@link Map}
-     *
-     * @param plugin  Plugin object
-     * @param propMap Map containing the configuration data
-     * @throws OpenStegoException
-     */
-    public OpenStego(OpenStegoPlugin plugin, Map<String, String> propMap) throws OpenStegoException {
-        this(plugin, new OpenStegoConfig(propMap));
+        // Config is mandatory
+        assert config != null;
+        this.config = config;
     }
 
     /**
@@ -97,11 +72,11 @@ public class OpenStego {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the embedded message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         try {
@@ -138,11 +113,11 @@ public class OpenStego {
      * @param coverFile     Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the embedded message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] embedData(File msgFile, File coverFile, String stegoFileName) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         String filename = null;
@@ -154,7 +129,7 @@ public class OpenStego {
             }
 
             return embedData(CommonUtil.streamToBytes(is), filename, coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
-                coverFile == null ? null : coverFile.getName(), stegoFileName);
+                    coverFile == null ? null : coverFile.getName(), stegoFileName);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
@@ -169,11 +144,11 @@ public class OpenStego {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the embedded signature
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] embedMark(byte[] sig, String sigFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         try {
@@ -193,11 +168,11 @@ public class OpenStego {
      * @param coverFile     Cover file into which data needs to be embedded
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the embedded signature
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] embedMark(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         String filename = null;
@@ -209,7 +184,7 @@ public class OpenStego {
             }
 
             return embedMark(CommonUtil.streamToBytes(is), filename, coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
-                coverFile == null ? null : coverFile.getName(), stegoFileName);
+                    coverFile == null ? null : coverFile.getName(), stegoFileName);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }
@@ -221,15 +196,15 @@ public class OpenStego {
      * @param stegoData     Stego data from which the message needs to be extracted
      * @param stegoFileName Name of the stego file
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public List<?> extractData(byte[] stegoData, String stegoFileName) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
-        byte[] msg = null;
-        List<Object> output = new ArrayList<Object>();
+        byte[] msg;
+        List<Object> output = new ArrayList<>();
 
         try {
             // Add file name as first element of output list
@@ -244,10 +219,10 @@ public class OpenStego {
 
             // Decompress data, if required
             if (this.config.isUseCompression()) {
-                try (ByteArrayInputStream bis = new ByteArrayInputStream(msg); GZIPInputStream zis = new GZIPInputStream(bis);) {
+                try (ByteArrayInputStream bis = new ByteArrayInputStream(msg); GZIPInputStream zis = new GZIPInputStream(bis)) {
                     msg = CommonUtil.streamToBytes(zis);
                 } catch (IOException ioEx) {
-                    throw new OpenStegoException(ioEx, OpenStego.NAMESPACE, OpenStegoException.CORRUPT_DATA);
+                    throw new OpenStegoException(ioEx, OpenStego.NAMESPACE, OpenStegoErrors.CORRUPT_DATA);
                 }
             }
 
@@ -267,47 +242,14 @@ public class OpenStego {
      *
      * @param stegoFile Stego file from which message needs to be extracted
      * @return Extracted message (List's first element is filename and second element is the message as byte array)
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public List<?> extractData(File stegoFile) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_DH);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
         }
 
         return extractData(CommonUtil.fileToBytes(stegoFile), stegoFile.getName());
-    }
-
-    /**
-     * Method to extract the watermark data from stego data
-     *
-     * @param stegoData     Stego data from which the watermark needs to be extracted
-     * @param stegoFileName Name of the stego file
-     * @param origSigData   Original signature data
-     * @return Extracted watermark
-     * @throws OpenStegoException
-     */
-    public byte[] extractMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
-        }
-
-        return this.plugin.extractData(stegoData, stegoFileName, origSigData);
-    }
-
-    /**
-     * Method to extract the watermark data from stego data (alternate API)
-     *
-     * @param stegoFile   Stego file from which watermark needs to be extracted
-     * @param origSigFile Original signature file
-     * @return Extracted watermark
-     * @throws OpenStegoException
-     */
-    public byte[] extractMark(File stegoFile, File origSigFile) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
-        }
-
-        return extractMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
     }
 
     /**
@@ -317,11 +259,11 @@ public class OpenStego {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Original signature data
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         return this.plugin.checkMark(stegoData, stegoFileName, origSigData);
@@ -333,11 +275,11 @@ public class OpenStego {
      * @param stegoFile   Stego file from which watermark needs to be extracted
      * @param origSigFile Original signature file
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public double checkMark(File stegoFile, File origSigFile) throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         double correl = checkMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
@@ -351,15 +293,15 @@ public class OpenStego {
      * Method to generate the signature data using the given plugin
      *
      * @return Signature data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] generateSignature() throws OpenStegoException {
         if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PLUGIN_DOES_NOT_SUPPORT_WM);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
         if (this.config.getPassword() == null || this.config.getPassword().trim().length() == 0) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.PWD_MANDATORY_FOR_GENSIG);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PWD_MANDATORY_FOR_GENSIG);
         }
 
         return this.plugin.generateSignature();
@@ -374,7 +316,7 @@ public class OpenStego {
      * @param coverFileName Name of the cover file
      * @param diffFileName  Name of the output difference file
      * @return Difference data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName, String diffFileName)
             throws OpenStegoException {
@@ -388,7 +330,7 @@ public class OpenStego {
      * @param coverFile    Original cover file
      * @param diffFileName Name of the output difference file
      * @return Difference data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] getDiff(File stegoFile, File coverFile, String diffFileName) throws OpenStegoException {
         return getDiff(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(coverFile), coverFile.getName(), diffFileName);
@@ -421,7 +363,10 @@ public class OpenStego {
                 } catch (Exception e) {
                     // Ignore
                 }
-                new OpenStegoUI().setVisible(true);
+                // Determine default DH and WM plugins
+                OpenStegoPlugin<?> dhPlugin = PluginManager.getPluginByName("RandomLSB");
+                OpenStegoPlugin<?> wmPlugin = PluginManager.getPluginByName("DWTDugad");
+                new OpenStegoUI(dhPlugin, wmPlugin).setVisible(true);
             } else {
                 OpenStegoCmd.execute(args);
             }

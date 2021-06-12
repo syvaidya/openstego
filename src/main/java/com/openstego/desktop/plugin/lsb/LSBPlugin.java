@@ -6,33 +6,29 @@
 
 package com.openstego.desktop.plugin.lsb;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-
-import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.template.image.DHImagePluginTemplate;
-import com.openstego.desktop.ui.OpenStegoUI;
-import com.openstego.desktop.ui.PluginEmbedOptionsUI;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.cmd.CmdLineOption;
 import com.openstego.desktop.util.cmd.CmdLineOptions;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Plugin for OpenStego which implements the Least-significant bit algorithm of steganography
  */
-public class LSBPlugin extends DHImagePluginTemplate {
+public class LSBPlugin extends DHImagePluginTemplate<LSBConfig> {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
 
     /**
      * Constant for Namespace to use for this plugin
@@ -44,7 +40,7 @@ public class LSBPlugin extends DHImagePluginTemplate {
      */
     public LSBPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "i18n.LSBPluginLabels");
-        new LSBErrors(); // Initialize error codes
+        LSBErrors.init(); // Initialize error codes
     }
 
     /**
@@ -77,19 +73,19 @@ public class LSBPlugin extends DHImagePluginTemplate {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        int numOfPixels = 0;
-        ImageHolder image = null;
-        LSBOutputStream lsbOS = null;
+        int numOfPixels;
+        ImageHolder image;
+        LSBOutputStream lsbOS;
 
         try {
             // Generate random image, if input image is not provided
             if (cover == null) {
                 numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) this.config).getMaxBitsUsedPerChannel()));
+                numOfPixels += (int) (msg.length * 8 / (3.0 * this.config.getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
@@ -110,23 +106,15 @@ public class LSBPlugin extends DHImagePluginTemplate {
      * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException {
-        LSBInputStream lsbIS = null;
-
-        try {
-            lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+        ImageHolder imgHolder = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
+        try (LSBInputStream lsbIS = new LSBInputStream(imgHolder, this.config)) {
             return lsbIS.getDataHeader().getFileName();
-        } finally {
-            if (lsbIS != null) {
-                try {
-                    lsbIS.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
+        } catch (IOException ioEx) {
+            throw new OpenStegoException(ioEx);
         }
     }
 
@@ -137,17 +125,16 @@ public class LSBPlugin extends DHImagePluginTemplate {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
-        int bytesRead = 0;
-        byte[] data = null;
-        LSBDataHeader header = null;
-        LSBInputStream lsbIS = null;
+        int bytesRead;
+        byte[] data;
+        LSBDataHeader header;
+        ImageHolder imgHolder = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
 
-        try {
-            lsbIS = new LSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+        try (LSBInputStream lsbIS = new LSBInputStream(imgHolder, this.config)) {
             header = lsbIS.getDataHeader();
             data = new byte[header.getDataLength()];
 
@@ -157,18 +144,8 @@ public class LSBPlugin extends DHImagePluginTemplate {
             }
 
             return data;
-        } catch (OpenStegoException osEx) {
-            throw osEx;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new OpenStegoException(ex);
-        } finally {
-            if (lsbIS != null) {
-                try {
-                    lsbIS.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
         }
     }
 
@@ -176,7 +153,7 @@ public class LSBPlugin extends DHImagePluginTemplate {
      * Method to get the list of supported file extensions for writing
      *
      * @return List of supported file extensions for writing
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public List<String> getWritableFileExtensions() throws OpenStegoException {
@@ -185,10 +162,10 @@ public class LSBPlugin extends DHImagePluginTemplate {
         }
 
         super.getWritableFileExtensions();
-        String format = null;
-        String[] compTypes = null;
-        Iterator<ImageWriter> iter = null;
-        ImageWriteParam writeParam = null;
+        String format;
+        String[] compTypes;
+        Iterator<ImageWriter> iter;
+        ImageWriteParam writeParam;
 
         for (int i = writeFormats.size() - 1; i >= 0; i--) {
             format = writeFormats.get(i);
@@ -225,47 +202,47 @@ public class LSBPlugin extends DHImagePluginTemplate {
     }
 
     /**
-     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     *
-     * @param stegoUI Reference to the parent OpenStegoUI object
-     * @return UI object specific to this plugin
-     * @throws OpenStegoException
-     */
-    @Override
-    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException {
-        return new LSBEmbedOptionsUI(stegoUI);
-    }
-
-    /**
      * Method to populate the standard command-line options used by this plugin
      *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
-     * @throws OpenStegoException
      */
     @Override
-    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException {
+    public void populateStdCmdLineOptions(CmdLineOptions options) {
         options.add("-b", "--maxBitsUsedPerChannel", CmdLineOption.TYPE_OPTION, true);
     }
 
     /**
-     * Method to get the configuration class specific to this plugin
+     * Method to create default configuration data (specific to this plugin)
      *
-     * @return Configuration class specific to this plugin
+     * @return Configuration data
      */
     @Override
-    public Class<? extends OpenStegoConfig> getConfigClass() {
-        return LSBConfig.class;
+    protected LSBConfig createConfig() {
+        return new LSBConfig();
+    }
+
+    /**
+     * Method to create configuration data (specific to this plugin) based on the command-line options
+     *
+     * @param options Command-line options
+     * @return Configuration data
+     * @throws OpenStegoException Processing issues
+     */
+    @Override
+    protected LSBConfig createConfig(CmdLineOptions options) throws OpenStegoException {
+        LSBConfig config = new LSBConfig();
+        config.initialize(options);
+        return config;
     }
 
     /**
      * Method to get the usage details of the plugin
      *
      * @return Usage details of the plugin
-     * @throws OpenStegoException
      */
     @Override
-    public String getUsage() throws OpenStegoException {
+    public String getUsage() {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage", Integer.valueOf(defaultConfig.getMaxBitsUsedPerChannel()));
+        return labelUtil.getString("plugin.usage", defaultConfig.getMaxBitsUsedPerChannel());
     }
 }

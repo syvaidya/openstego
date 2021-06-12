@@ -6,16 +6,15 @@
 
 package com.openstego.desktop;
 
-import java.security.AlgorithmParameters;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.KeySpec;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import java.security.AlgorithmParameters;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.KeySpec;
 
 /**
  * This is the class for providing cryptography support to OpenStego.
@@ -37,7 +36,7 @@ public class OpenStegoCrypto {
     /**
      * 8-byte Salt for Password-based cryptography
      */
-    private final byte[] SALT = { (byte) 0x28, (byte) 0x5F, (byte) 0x71, (byte) 0xC9, (byte) 0x1E, (byte) 0x35, (byte) 0x0A, (byte) 0x62 };
+    private final byte[] SALT = {(byte) 0x28, (byte) 0x5F, (byte) 0x71, (byte) 0xC9, (byte) 0x1E, (byte) 0x35, (byte) 0x0A, (byte) 0x62};
 
     /**
      * Iteration count for Password-based cryptography
@@ -47,17 +46,17 @@ public class OpenStegoCrypto {
     /**
      * Secret key for encryption
      */
-    private SecretKey secretKey = null;
+    private final SecretKey secretKey;
 
     /**
      * Default constructor
      *
      * @param password  Password to use for encryption
      * @param algorithm Cryptography algorithm to use. If null or blank value is provided, then it defaults to AES128
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public OpenStegoCrypto(String password, String algorithm) throws OpenStegoException {
-        KeySpec keySpec = null;
+        KeySpec keySpec;
 
         try {
             if (algorithm == null || algorithm.trim().equals("") || ALGO_AES128.equalsIgnoreCase(algorithm)) {
@@ -68,7 +67,7 @@ public class OpenStegoCrypto {
                 System.out.println("Warning: Using insecure algorithm: " + algorithm);
                 algorithm = "PBEWithMD5AndDES";
             } else {
-                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.INVALID_CRYPT_ALGO, algorithm);
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.INVALID_CRYPT_ALGO, algorithm);
             }
 
             // Create the key
@@ -84,7 +83,7 @@ public class OpenStegoCrypto {
      *
      * @param input Data to be encrypted
      * @return Encrypted data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] encrypt(byte[] input) throws OpenStegoException {
         try {
@@ -115,7 +114,7 @@ public class OpenStegoCrypto {
      *
      * @param input Data to be decrypted
      * @return Decrypted data (returns <code>null</code> if password is invalid)
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public byte[] decrypt(byte[] input) throws OpenStegoException {
         try {
@@ -134,7 +133,7 @@ public class OpenStegoCrypto {
             decryptCipher.init(Cipher.DECRYPT_MODE, this.secretKey, algoParams);
             return decryptCipher.doFinal(msg);
         } catch (BadPaddingException bpEx) {
-            throw new OpenStegoException(bpEx, OpenStego.NAMESPACE, OpenStegoException.INVALID_PASSWORD);
+            throw new OpenStegoException(bpEx, OpenStego.NAMESPACE, OpenStegoErrors.INVALID_PASSWORD);
         } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }

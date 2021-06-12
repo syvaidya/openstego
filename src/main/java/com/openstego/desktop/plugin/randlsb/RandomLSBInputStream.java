@@ -6,12 +6,6 @@
 
 package com.openstego.desktop.plugin.randlsb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBDataHeader;
@@ -20,6 +14,11 @@ import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.StringUtil;
 
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 /**
  * InputStream to read embedded data from image file using Random LSB algorithm
  */
@@ -27,7 +26,7 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Image data
      */
-    private ImageHolder image = null;
+    private final ImageHolder image;
 
     /**
      * Data header
@@ -37,39 +36,39 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Number of bits used per color channel
      */
-    private int channelBitsUsed = 1;
+    private int channelBitsUsed;
 
     /**
      * Width of the image
      */
-    private int imgWidth = 0;
+    private final int imgWidth;
 
     /**
      * Height of the image
      */
-    private int imgHeight = 0;
+    private final int imgHeight;
 
     /**
      * Configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * Array for bits in the image
      */
-    private Set<String> bitRead = new HashSet<>();
+    private final Set<String> bitRead = new HashSet<>();
 
     /**
      * Random number generator
      */
-    private Random rand = null;
+    private final Random rand;
 
     /**
      * Default constructor
      *
      * @param image  Image data to be read
      * @param config Configuration data to use while reading
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public RandomLSBInputStream(ImageHolder image, OpenStegoConfig config) throws OpenStegoException {
         if (image == null || image.getImage() == null) {
@@ -91,7 +90,7 @@ public class RandomLSBInputStream extends InputStream {
     /**
      * Method to read header data from the input stream
      *
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     private void readHeader() throws OpenStegoException {
         this.dataHeader = new LSBDataHeader(this, this.config);
@@ -102,15 +101,14 @@ public class RandomLSBInputStream extends InputStream {
      * Implementation of <code>InputStream.read()</code> method
      *
      * @return Byte read from the stream
-     * @throws IOException
      */
     @Override
-    public int read() throws IOException {
+    public int read() {
         byte[] bitSet = new byte[8];
-        int x = 0;
-        int y = 0;
-        int channel = 0;
-        int bit = 0;
+        int x;
+        int y;
+        int channel;
+        int bit;
         String key;
 
         for (int i = 0; i < 8; i++) {
@@ -126,8 +124,8 @@ public class RandomLSBInputStream extends InputStream {
             bitSet[i] = (byte) getPixelBit(x, y, channel, bit);
         }
 
-        return ((bitSet[0] << 7) + (bitSet[1] << 6) + (bitSet[2] << 5) + (bitSet[3] << 4) + (bitSet[4] << 3) + (bitSet[5] << 2) + (bitSet[6] << 1)
-                + (bitSet[7] << 0));
+        return ((bitSet[0] << 7) + (bitSet[1] << 6) + (bitSet[2] << 5) + (bitSet[3] << 4) + (bitSet[4] << 3)
+                + (bitSet[5] << 2) + (bitSet[6] << 1) + bitSet[7]);
     }
 
     /**

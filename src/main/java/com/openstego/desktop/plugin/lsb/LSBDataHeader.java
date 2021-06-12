@@ -6,12 +6,12 @@
 
 package com.openstego.desktop.plugin.lsb;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.util.CommonUtil;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class holds the header data for the data that needs to be embedded in the image.
@@ -27,7 +27,7 @@ public class LSBDataHeader {
      * Header version to distinguish between various versions of data embedding. This should be changed to next
      * version, in case the logic of embedding data is changed.
      */
-    public static final byte[] HEADER_VERSION = new byte[] { (byte) 2 };
+    public static final byte[] HEADER_VERSION = new byte[]{(byte) 2};
 
     /**
      * Length of the fixed portion of the header
@@ -42,22 +42,22 @@ public class LSBDataHeader {
     /**
      * Length of the data embedded in the image (excluding the header data)
      */
-    private int dataLength = 0;
+    private final int dataLength;
 
     /**
      * Number of bits used per color channel for embedding the data
      */
-    private int channelBitsUsed = 0;
+    private int channelBitsUsed;
 
     /**
      * Name of the file being embedded in the image (as byte array)
      */
-    private byte[] fileName = null;
+    private final byte[] fileName;
 
     /**
      * OpenStegoConfig instance to hold the configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * This constructor should normally be used when writing the data.
@@ -75,11 +75,7 @@ public class LSBDataHeader {
         if (fileName == null) {
             this.fileName = new byte[0];
         } else {
-            try {
-                this.fileName = fileName.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException unEx) {
-                this.fileName = fileName.getBytes();
-            }
+            this.fileName = fileName.getBytes(StandardCharsets.UTF_8);
         }
     }
 
@@ -88,17 +84,18 @@ public class LSBDataHeader {
      *
      * @param dataInStream Data input stream containing the embedded data
      * @param config       OpenStegoConfig instance to hold the configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public LSBDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException {
-        int stampLen = 0;
-        int versionLen = 0;
-        int fileNameLen = 0;
-        int channelBits = 0;
-        byte[] header = null;
-        byte[] cryptAlgo = null;
-        byte[] stamp = null;
-        byte[] version = null;
+        int stampLen;
+        int versionLen;
+        int fileNameLen;
+        int channelBits;
+        int n;
+        byte[] header;
+        byte[] cryptAlgo;
+        byte[] stamp;
+        byte[] version;
 
         stampLen = DATA_STAMP.length;
         versionLen = HEADER_VERSION.length;
@@ -108,32 +105,41 @@ public class LSBDataHeader {
         version = new byte[versionLen];
 
         try {
-            dataInStream.read(stamp, 0, stampLen);
-            if (!(new String(stamp)).equals(new String(DATA_STAMP))) {
+            n = dataInStream.read(stamp, 0, stampLen);
+            if (n == -1 || !(new String(stamp)).equals(new String(DATA_STAMP))) {
                 throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER);
             }
 
-            dataInStream.read(version, 0, versionLen);
-            if (!(new String(version)).equals(new String(HEADER_VERSION))) {
+            n = dataInStream.read(version, 0, versionLen);
+            if (n == -1 || !(new String(version)).equals(new String(HEADER_VERSION))) {
                 throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_HEADER_VERSION);
             }
 
-            dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
+            n = dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
+            if (n < FIXED_HEADER_LENGTH) {
+                throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER);
+            }
             this.dataLength = (CommonUtil.byteToInt(header[0]) + (CommonUtil.byteToInt(header[1]) << 8) + (CommonUtil.byteToInt(header[2]) << 16)
-                    + (CommonUtil.byteToInt(header[3]) << 32));
+                    + (CommonUtil.byteToInt(header[3]) << 24));
             channelBits = header[4];
             fileNameLen = header[5];
             config.setUseCompression(header[6] == 1);
             config.setUseEncryption(header[7] == 1);
 
-            dataInStream.read(cryptAlgo, 0, CRYPT_ALGO_LENGTH);
+            n = dataInStream.read(cryptAlgo, 0, CRYPT_ALGO_LENGTH);
+            if (n < CRYPT_ALGO_LENGTH) {
+                throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER);
+            }
             config.setEncryptionAlgorithm(new String(cryptAlgo).trim());
 
             if (fileNameLen == 0) {
                 this.fileName = new byte[0];
             } else {
                 this.fileName = new byte[fileNameLen];
-                dataInStream.read(this.fileName, 0, fileNameLen);
+                n = dataInStream.read(this.fileName, 0, fileNameLen);
+                if (n < fileNameLen) {
+                    throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.INVALID_STEGO_HEADER);
+                }
             }
         } catch (OpenStegoException osEx) {
             throw osEx;
@@ -151,9 +157,9 @@ public class LSBDataHeader {
      * @return Header data
      */
     public byte[] getHeaderData() {
-        byte[] out = null;
-        int stampLen = 0;
-        int versionLen = 0;
+        byte[] out;
+        int stampLen;
+        int versionLen;
         int currIndex = 0;
 
         stampLen = DATA_STAMP.length;
@@ -169,7 +175,7 @@ public class LSBDataHeader {
         out[currIndex++] = (byte) ((this.dataLength & 0x000000FF));
         out[currIndex++] = (byte) ((this.dataLength & 0x0000FF00) >> 8);
         out[currIndex++] = (byte) ((this.dataLength & 0x00FF0000) >> 16);
-        out[currIndex++] = (byte) ((this.dataLength & 0xFF000000) >> 32);
+        out[currIndex++] = (byte) ((this.dataLength & 0xFF000000) >> 24);
         out[currIndex++] = (byte) this.channelBitsUsed;
         out[currIndex++] = (byte) this.fileName.length;
         out[currIndex++] = (byte) (this.config.isUseCompression() ? 1 : 0);
@@ -177,13 +183,13 @@ public class LSBDataHeader {
 
         if (this.config.getEncryptionAlgorithm() != null) {
             System.arraycopy(this.config.getEncryptionAlgorithm().getBytes(), 0, out, currIndex,
-                this.config.getEncryptionAlgorithm().getBytes().length);
+                    this.config.getEncryptionAlgorithm().getBytes().length);
         }
         currIndex += CRYPT_ALGO_LENGTH;
 
         if (this.fileName.length > 0) {
             System.arraycopy(this.fileName, 0, out, currIndex, this.fileName.length);
-            currIndex += this.fileName.length;
+            //currIndex += this.fileName.length;
         }
 
         return out;
@@ -201,7 +207,7 @@ public class LSBDataHeader {
     /**
      * Set Method for channelBitsUsed
      *
-     * @param channelBitsUsed
+     * @param channelBitsUsed Value to be set
      */
     public void setChannelBitsUsed(int channelBitsUsed) {
         this.channelBitsUsed = channelBitsUsed;
@@ -222,13 +228,9 @@ public class LSBDataHeader {
      * @return fileName
      */
     public String getFileName() {
-        String name = null;
+        String name;
 
-        try {
-            name = new String(this.fileName, "UTF-8");
-        } catch (UnsupportedEncodingException unEx) {
-            name = new String(this.fileName);
-        }
+        name = new String(this.fileName, StandardCharsets.UTF_8);
         return name;
     }
 

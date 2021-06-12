@@ -6,12 +6,12 @@
 
 package com.openstego.desktop.plugin.template.dct;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.util.CommonUtil;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class holds the header data for the data that needs to be embedded in the image.
@@ -27,7 +27,7 @@ public class DCTDataHeader {
      * Header version to distinguish between various versions of data embedding. This should be changed to next
      * version, in case the structure of the header is changed.
      */
-    public static final byte[] HEADER_VERSION = new byte[] { (byte) 1 };
+    public static final byte[] HEADER_VERSION = new byte[]{(byte) 1};
 
     /**
      * Length of the fixed portion of the header
@@ -37,24 +37,24 @@ public class DCTDataHeader {
     /**
      * Length of the data embedded in the image (excluding the header data)
      */
-    private int dataLength = 0;
+    private final int dataLength;
 
     /**
      * Name of the file being embedded in the image (as byte array)
      */
-    private byte[] fileName = null;
+    private final byte[] fileName;
 
     /**
      * OpenStegoConfig instance to hold the configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * This constructor should normally be used when writing the data.
      *
      * @param dataLength Length of the data embedded in the image (excluding the header data)
-     * @param fileName Name of the file of data being embedded
-     * @param config OpenStegoConfig instance to hold the configuration data
+     * @param fileName   Name of the file of data being embedded
+     * @param config     OpenStegoConfig instance to hold the configuration data
      */
     public DCTDataHeader(int dataLength, String fileName, OpenStegoConfig config) {
         this.dataLength = dataLength;
@@ -63,11 +63,7 @@ public class DCTDataHeader {
         if (fileName == null) {
             this.fileName = new byte[0];
         } else {
-            try {
-                this.fileName = fileName.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException unEx) {
-                this.fileName = fileName.getBytes();
-            }
+            this.fileName = fileName.getBytes(StandardCharsets.UTF_8);
         }
     }
 
@@ -75,16 +71,17 @@ public class DCTDataHeader {
      * This constructor should be used when reading embedded data from an InputStream.
      *
      * @param dataInStream Data input stream containing the embedded data
-     * @param config OpenStegoConfig instance to hold the configuration data
-     * @throws OpenStegoException
+     * @param config       OpenStegoConfig instance to hold the configuration data
+     * @throws OpenStegoException Processing issues
      */
     public DCTDataHeader(InputStream dataInStream, OpenStegoConfig config) throws OpenStegoException {
-        int stampLen = 0;
-        int versionLen = 0;
-        int fileNameLen = 0;
-        byte[] header = null;
-        byte[] stamp = null;
-        byte[] version = null;
+        int stampLen;
+        int versionLen;
+        int fileNameLen;
+        int n;
+        byte[] header;
+        byte[] stamp;
+        byte[] version;
 
         stampLen = DATA_STAMP.length;
         versionLen = HEADER_VERSION.length;
@@ -93,19 +90,22 @@ public class DCTDataHeader {
         version = new byte[versionLen];
 
         try {
-            dataInStream.read(stamp, 0, stampLen);
-            if (!(new String(stamp)).equals(new String(DATA_STAMP))) {
+            n = dataInStream.read(stamp, 0, stampLen);
+            if (n == -1 || !(new String(stamp)).equals(new String(DATA_STAMP))) {
                 throw new OpenStegoException(null, DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_STEGO_HEADER);
             }
 
-            dataInStream.read(version, 0, versionLen);
-            if (!(new String(version)).equals(new String(HEADER_VERSION))) {
+            n = dataInStream.read(version, 0, versionLen);
+            if (n == -1 || !(new String(version)).equals(new String(HEADER_VERSION))) {
                 throw new OpenStegoException(null, DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_HEADER_VERSION);
             }
 
-            dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
+            n = dataInStream.read(header, 0, FIXED_HEADER_LENGTH);
+            if (n < FIXED_HEADER_LENGTH) {
+                throw new OpenStegoException(null, DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_STEGO_HEADER);
+            }
             this.dataLength = (CommonUtil.byteToInt(header[0]) + (CommonUtil.byteToInt(header[1]) << 8) + (CommonUtil.byteToInt(header[2]) << 16)
-                    + (CommonUtil.byteToInt(header[3]) << 32));
+                    + (CommonUtil.byteToInt(header[3]) << 24));
             fileNameLen = header[4];
             config.setUseCompression(header[5] == 1);
             config.setUseEncryption(header[6] == 1);
@@ -114,7 +114,10 @@ public class DCTDataHeader {
                 this.fileName = new byte[0];
             } else {
                 this.fileName = new byte[fileNameLen];
-                dataInStream.read(this.fileName, 0, fileNameLen);
+                n = dataInStream.read(this.fileName, 0, fileNameLen);
+                if (n < fileNameLen) {
+                    throw new OpenStegoException(null, DCTPluginTemplate.NAMESPACE, DCTErrors.INVALID_STEGO_HEADER);
+                }
             }
         } catch (OpenStegoException osEx) {
             throw osEx;
@@ -131,9 +134,9 @@ public class DCTDataHeader {
      * @return Header data
      */
     public byte[] getHeaderData() {
-        byte[] out = null;
-        int stampLen = 0;
-        int versionLen = 0;
+        byte[] out;
+        int stampLen;
+        int versionLen;
         int currIndex = 0;
 
         stampLen = DATA_STAMP.length;
@@ -149,14 +152,14 @@ public class DCTDataHeader {
         out[currIndex++] = (byte) ((this.dataLength & 0x000000FF));
         out[currIndex++] = (byte) ((this.dataLength & 0x0000FF00) >> 8);
         out[currIndex++] = (byte) ((this.dataLength & 0x00FF0000) >> 16);
-        out[currIndex++] = (byte) ((this.dataLength & 0xFF000000) >> 32);
+        out[currIndex++] = (byte) ((this.dataLength & 0xFF000000) >> 24);
         out[currIndex++] = (byte) this.fileName.length;
         out[currIndex++] = (byte) (this.config.isUseCompression() ? 1 : 0);
         out[currIndex++] = (byte) (this.config.isUseEncryption() ? 1 : 0);
 
         if (this.fileName.length > 0) {
             System.arraycopy(this.fileName, 0, out, currIndex, this.fileName.length);
-            currIndex += this.fileName.length;
+            //currIndex += this.fileName.length;
         }
 
         return out;
@@ -177,14 +180,7 @@ public class DCTDataHeader {
      * @return fileName
      */
     public String getFileName() {
-        String name = null;
-
-        try {
-            name = new String(this.fileName, "UTF-8");
-        } catch (UnsupportedEncodingException unEx) {
-            name = new String(this.fileName);
-        }
-        return name;
+        return new String(this.fileName, StandardCharsets.UTF_8);
     }
 
     /**

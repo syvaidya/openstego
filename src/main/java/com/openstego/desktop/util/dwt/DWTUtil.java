@@ -34,17 +34,17 @@ public class DWTUtil {
      * @return Data after performing wavelet transform
      */
     public static ImageTree waveletTransform(Image origImg, int level, FilterGH[] filterGHList, int method) {
-        int width = 0;
-        int height = 0;
-        int min = 0;
-        int maxLevel = 0;
+        int width;
+        int height;
+        int min;
+        int maxLevel;
         Image coarseImg = null;
-        Image horizontalImg = null;
-        Image verticalImg = null;
-        Image diagonalImg = null;
-        Image tempImg = null;
-        ImageTree returnTree = null;
-        ImageTree tempTree = null;
+        Image horizontalImg;
+        Image verticalImg;
+        Image diagonalImg;
+        Image tempImg;
+        ImageTree returnTree;
+        ImageTree tempTree;
 
         width = origImg.getWidth();
         height = origImg.getHeight();
@@ -66,8 +66,7 @@ public class DWTUtil {
             level = maxLevel;
         }
 
-        if (level < 1) /* do not transform */
-        {
+        if (level < 1) /* do not transform */ {
             returnTree.setImage(tempImg);
             return returnTree;
         }
@@ -97,90 +96,6 @@ public class DWTUtil {
             tempTree.getHorizontal().setImage(horizontalImg);
             tempTree.getVertical().setImage(verticalImg);
             tempTree.getDiagonal().setImage(diagonalImg);
-            tempImg = null;
-
-            if (i != (level - 1)) {
-                tempImg = new Image(width, height);
-                copyIntoImage(tempImg, coarseImg, 0, 0);
-                coarseImg = null;
-            }
-
-            tempTree = tempTree.getCoarse();
-        }
-
-        tempTree.setImage(coarseImg);
-        return returnTree;
-    }
-
-    /**
-     * Method to perform the wavelet transform (WP)
-     *
-     * @param origImg      Original image
-     * @param currLevel    Current decomposition level
-     * @param level        Decomposition level
-     * @param filterGHList List of filters
-     * @param method       Wavelet filtering method
-     * @return Data after performing wavelet transform
-     */
-    public static ImageTree waveletTransformWp(Image origImg, int currLevel, int level, FilterGH[] filterGHList, int method) {
-        int width = 0;
-        int height = 0;
-        int min = 0;
-        int maxLevel = 0;
-        Image coarseImg = null;
-        Image horizontalImg = null;
-        Image verticalImg = null;
-        Image diagonalImg = null;
-        Image tempImg = null;
-        ImageTree returnTree = null;
-        ImageTree tempTree = null;
-
-        width = origImg.getWidth();
-        height = origImg.getHeight();
-
-        tempImg = new Image(width, height);
-        copyIntoImage(tempImg, origImg, 0, 0);
-
-        returnTree = new ImageTree();
-        tempTree = returnTree;
-        tempTree.setLevel(currLevel);
-
-        min = origImg.getWidth();
-        if (origImg.getHeight() < min) {
-            min = origImg.getHeight();
-        }
-
-        maxLevel = (int) (Math.log(min) / Math.log(2)) - 2;
-        if (maxLevel < level) {
-            level = maxLevel;
-        }
-
-        if (currLevel >= level) {
-            returnTree.setImage(tempImg);
-            return returnTree;
-        }
-
-        for (int i = currLevel; i < level; i++) {
-            width = (width + 1) / 2;
-            height = (height + 1) / 2;
-
-            coarseImg = new Image(width, height);
-            horizontalImg = new Image(width, height);
-            verticalImg = new Image(width, height);
-            diagonalImg = new Image(width, height);
-
-            decomposition(tempImg, coarseImg, horizontalImg, verticalImg, diagonalImg, filterGHList[i].getG(), filterGHList[i].getH(), method);
-
-            tempTree.setCoarse(new ImageTree());
-            tempTree.getCoarse().setLevel(i + 1);
-            tempTree.setHorizontal(waveletTransformWp(horizontalImg, i + 1, level, filterGHList, method));
-            tempTree.setVertical(waveletTransformWp(verticalImg, i + 1, level, filterGHList, method));
-            tempTree.setDiagonal(waveletTransformWp(diagonalImg, i + 1, level, filterGHList, method));
-
-            horizontalImg = null;
-            verticalImg = null;
-            diagonalImg = null;
-            tempImg = null;
 
             if (i != (level - 1)) {
                 tempImg = new Image(width, height);
@@ -208,8 +123,8 @@ public class DWTUtil {
      * @param method        Wavelet filtering method
      */
     public static void decomposition(Image inputImg, Image coarseImg, Image horizontalImg, Image verticalImg, Image diagonalImg, Filter filterG,
-            Filter filterH, int method) {
-        Image tempImg = null;
+                                     Filter filterH, int method) {
+        Image tempImg;
 
         // Coarse
         tempImg = new Image(coarseImg.getWidth(), inputImg.getHeight());
@@ -241,32 +156,32 @@ public class DWTUtil {
             switch (method) {
                 case Filter.METHOD_CUTOFF:
                     filterCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i, outputImg.getWidth(),
-                        1, filter);
+                            1, filter);
                     break;
 
                 case Filter.METHOD_INVCUTOFF:
                     filterInvCutOff(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i,
-                        outputImg.getWidth(), 1, filter);
+                            outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_PERIODICAL:
                     filterPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i,
-                        outputImg.getWidth(), 1, filter);
+                            outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_INVPERIODICAL:
                     filterInvPeriodical(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i,
-                        outputImg.getWidth(), 1, filter);
+                            outputImg.getWidth(), 1, filter);
                     break;
 
                 case Filter.METHOD_MIRROR:
                     filterMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i, outputImg.getWidth(),
-                        1, filter);
+                            1, filter);
                     break;
 
                 case Filter.METHOD_INVMIRROR:
                     filterInvMirror(inputImg, inputImg.getWidth() * i, inputImg.getWidth(), 1, outputImg, outputImg.getWidth() * i,
-                        outputImg.getWidth(), 1, filter);
+                            outputImg.getWidth(), 1, filter);
                     break;
             }
         }
@@ -285,32 +200,32 @@ public class DWTUtil {
             switch (method) {
                 case Filter.METHOD_CUTOFF:
                     filterCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(), outputImg.getWidth(),
-                        filter);
+                            filter);
                     break;
 
                 case Filter.METHOD_INVCUTOFF:
                     filterInvCutOff(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(), outputImg.getWidth(),
-                        filter);
+                            filter);
                     break;
 
                 case Filter.METHOD_PERIODICAL:
                     filterPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(),
-                        outputImg.getWidth(), filter);
+                            outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_INVPERIODICAL:
                     filterInvPeriodical(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(),
-                        outputImg.getWidth(), filter);
+                            outputImg.getWidth(), filter);
                     break;
 
                 case Filter.METHOD_MIRROR:
                     filterMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(), outputImg.getWidth(),
-                        filter);
+                            filter);
                     break;
 
                 case Filter.METHOD_INVMIRROR:
                     filterInvMirror(inputImg, i, inputImg.getHeight(), inputImg.getWidth(), outputImg, i, outputImg.getHeight(), outputImg.getWidth(),
-                        filter);
+                            filter);
                     break;
             }
         }
@@ -330,9 +245,9 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterCutOff(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
+                                    Filter filter) {
+        int fStart;
+        int fEnd;
 
         for (int i = 0; i < outLen; i++) {
             fStart = Math.max((2 * i) - (inLen - 1), filter.getStart());
@@ -359,9 +274,9 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterInvCutOff(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
+                                       Filter filter) {
+        int fStart;
+        int fEnd;
 
         for (int i = 0; i < outLen; i++) {
             fStart = Math.max(CommonUtil.ceilingHalf(filter.getStart() + i), 0);
@@ -388,10 +303,10 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterPeriodical(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
-        int iStart = 0;
+                                        Filter filter) {
+        int fStart;
+        int fEnd;
+        int iStart;
 
         for (int i = 0; i < outLen; i++) {
             fStart = filter.getStart();
@@ -422,10 +337,10 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterInvPeriodical(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
-        int iStart = 0;
+                                           Filter filter) {
+        int fStart;
+        int fEnd;
+        int iStart;
 
         for (int i = 0; i < outLen; i++) {
             fStart = CommonUtil.ceilingHalf(filter.getStart() + i);
@@ -457,10 +372,10 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterMirror(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
-        int inPos = 0;
+                                    Filter filter) {
+        int fStart;
+        int fEnd;
+        int inPos;
 
         for (int i = 0; i < outLen; i++) {
             fStart = filter.getStart();
@@ -499,10 +414,10 @@ public class DWTUtil {
      * @param filter    Filter
      */
     public static void filterInvMirror(Image inputImg, int inStart, int inLen, int inStep, Image outputImg, int outStart, int outLen, int outStep,
-            Filter filter) {
-        int fStart = 0;
-        int fEnd = 0;
-        int inPos = 0;
+                                       Filter filter) {
+        int fStart;
+        int fEnd;
+        int inPos;
 
         for (int i = 0; i < outLen; i++) {
             fStart = CommonUtil.ceilingHalf(filter.getStart() + i);
@@ -545,13 +460,13 @@ public class DWTUtil {
      * @return Inverse transformed image data
      */
     public static Image inverseTransform(ImageTree tree, FilterGH[] filterGHList, int method) {
-        int width = 0;
-        int height = 0;
-        Image retImg = null;
-        Image coarseImg = null;
-        Image verticalImg = null;
-        Image horizontalImg = null;
-        Image diagonalImg = null;
+        int width;
+        int height;
+        Image retImg;
+        Image coarseImg;
+        Image verticalImg;
+        Image horizontalImg;
+        Image diagonalImg;
 
         if (tree.getImage() == null) {
             coarseImg = inverseTransform(tree.getCoarse(), filterGHList, method);
@@ -591,10 +506,10 @@ public class DWTUtil {
      * @param method        Wavelet filter method
      */
     public static void invDecomposition(Image sumImg, Image coarseImg, Image horizontalImg, Image verticalImg, Image diagonalImg, FilterGH filterGH,
-            int method) {
-        Image tempImg = null;
-        Filter filterG = null;
-        Filter filterH = null;
+                                        int method) {
+        Image tempImg;
+        Filter filterG;
+        Filter filterH;
 
         if (filterGH.getType() == FilterGH.TYPE_ORTHOGONAL) {
             filterG = filterGH.getG();
@@ -682,9 +597,9 @@ public class DWTUtil {
      */
     private static void copyIntoImage(Image img1, Image img2, int x, int y) {
         int count = 0;
-        int start = 0;
-        int aim = 0;
-        double[] temp = null;
+        int start;
+        int aim;
+        double[] temp;
 
         temp = img2.getData();
         start = img1.getWidth() * y + x;

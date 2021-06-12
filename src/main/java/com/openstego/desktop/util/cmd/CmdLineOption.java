@@ -25,22 +25,22 @@ public class CmdLineOption {
     /**
      * Name of the option
      */
-    private String name = null;
+    private final String name;
 
     /**
      * Alternate name of the option
      */
-    private String altName = null;
+    private final String altName;
 
     /**
      * Type of the option
      */
-    private int type = -1;
+    private final int type;
 
     /**
      * Flag to indicate whether the option takes argument or not
      */
-    private boolean takesArgVal = false;
+    private final boolean takesArgVal;
 
     /**
      * Value of the option

@@ -22,10 +22,10 @@ public class DctLSBErrors {
      */
     public static final int IMAGE_SIZE_INSUFFICIENT = 2;
 
-    /*
+    /**
      * Initialize the error code - message key map
      */
-    static {
+    public static void init() {
         OpenStegoException.addErrorCode(DctLSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
         OpenStegoException.addErrorCode(DctLSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");
     }

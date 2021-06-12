@@ -5,9 +5,8 @@
  */
 package com.openstego.desktop.util;
 
-import java.awt.image.BufferedImage;
-
 import javax.imageio.metadata.IIOMetadata;
+import java.awt.image.BufferedImage;
 
 /**
  * Class to hold image and its metadata
@@ -19,8 +18,8 @@ public class ImageHolder {
     /**
      * Default constructor
      *
-     * @param image
-     * @param metadata
+     * @param image    Image
+     * @param metadata Metadata
      */
     public ImageHolder(BufferedImage image, IIOMetadata metadata) {
         this.image = image;
@@ -29,7 +28,7 @@ public class ImageHolder {
 
     /**
      * Getter method for image
-     * 
+     *
      * @return image
      */
     public BufferedImage getImage() {
@@ -38,7 +37,7 @@ public class ImageHolder {
 
     /**
      * Setter method for image
-     * 
+     *
      * @param image Value for image to be set
      */
     public void setImage(BufferedImage image) {
@@ -47,7 +46,7 @@ public class ImageHolder {
 
     /**
      * Getter method for metadata
-     * 
+     *
      * @return metadata
      */
     public IIOMetadata getMetadata() {
@@ -56,9 +55,10 @@ public class ImageHolder {
 
     /**
      * Setter method for metadata
-     * 
+     *
      * @param metadata Value for metadata to be set
      */
+    @SuppressWarnings("unused")
     public void setMetadata(IIOMetadata metadata) {
         this.metadata = metadata;
     }

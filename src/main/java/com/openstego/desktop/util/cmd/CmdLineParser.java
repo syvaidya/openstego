@@ -16,12 +16,12 @@ public class CmdLineParser {
     /**
      * Stores the list of parsed options
      */
-    private CmdLineOptions parsedOptions = new CmdLineOptions();
+    private final CmdLineOptions parsedOptions = new CmdLineOptions();
 
     /**
      * Stores the list of non-standard arguments
      */
-    private List<String> nonStdArgList = new ArrayList<String>();
+    private final List<String> nonStdArgList = new ArrayList<>();
 
     /**
      * Flag to indicate whether non-standard options are mixed within standard options or not
@@ -36,10 +36,10 @@ public class CmdLineParser {
      */
     public CmdLineParser(CmdLineOptions stdOptions, String[] args) {
         int i = 0;
-        int index = 0;
-        CmdLineOption option = null;
-        String arg = null;
-        String value = null;
+        int index;
+        CmdLineOption option;
+        String arg;
+        String value;
 
         while (i < args.length) {
             arg = args[i];
@@ -96,16 +96,16 @@ public class CmdLineParser {
      * @return Flag to indicate whether options are valid or not
      */
     public boolean isValid() {
-        List<CmdLineOption> list = null;
-        CmdLineOption option = null;
+        List<CmdLineOption> list;
+        CmdLineOption option;
 
         if (this.nonStdMixedWithStdOptions) {
             return false;
         }
 
         list = this.parsedOptions.getList();
-        for (int i = 0; i < list.size(); i++) {
-            option = list.get(i);
+        for (CmdLineOption cmdLineOption : list) {
+            option = cmdLineOption;
             if (option.takesArg() && option.getValue() == null) {
                 return false;
             }
@@ -120,8 +120,9 @@ public class CmdLineParser {
      * @param name Name of the option
      * @return Value of the command-line option
      */
+    @SuppressWarnings("unused")
     public String getOptionValue(String name) {
-        return this.parsedOptions.getOptionValue(name);
+        return this.parsedOptions.getStringValue(name);
     }
 
     /**
@@ -130,6 +131,7 @@ public class CmdLineParser {
      * @param index Index of the option
      * @return Name of the command-line option
      */
+    @SuppressWarnings("unused")
     public String getOptionName(int index) {
         return this.parsedOptions.getOption(index).getName();
     }
@@ -166,6 +168,7 @@ public class CmdLineParser {
      *
      * @return Total number of options provided in the command-line
      */
+    @SuppressWarnings("unused")
     public int getNumOfOptions() {
         return this.parsedOptions.size() + this.nonStdArgList.size();
     }

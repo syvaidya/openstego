@@ -5,18 +5,11 @@
  */
 package com.openstego.desktop.ui;
 
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import com.openstego.desktop.OpenStego;
 import com.openstego.desktop.util.LabelUtil;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Panel for "Embed Watermark"
@@ -27,7 +20,7 @@ public class EmbedWatermarkPanel extends JPanel {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     private JTextField fileForWmTextField;
     private JButton fileForWmButton;

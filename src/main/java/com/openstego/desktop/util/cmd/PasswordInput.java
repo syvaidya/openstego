@@ -6,11 +6,11 @@
 
 package com.openstego.desktop.util.cmd;
 
+import com.openstego.desktop.OpenStegoException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import com.openstego.desktop.OpenStegoException;
 
 /**
  * Utility class to handle console based password input
@@ -27,13 +27,13 @@ public class PasswordInput {
      *
      * @param prompt Prompt for the password input
      * @return The password as entered by the user
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issue
      */
     public static String readPassword(String prompt) throws OpenStegoException {
-        String password = "";
-        EraserThread et = null;
-        BufferedReader in = null;
-        Thread mask = null;
+        String password;
+        EraserThread et;
+        BufferedReader in;
+        Thread mask;
 
         et = new EraserThread(prompt);
         mask = new Thread(et);

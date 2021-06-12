@@ -6,13 +6,6 @@
 
 package com.openstego.desktop.plugin.dctlsb;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.template.dct.DCTDataHeader;
@@ -21,6 +14,13 @@ import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.StringUtil;
 import com.openstego.desktop.util.dct.DCT;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * OutputStream to embed data into image
  */
@@ -28,17 +28,17 @@ public class DctLSBOutputStream extends OutputStream {
     /**
      * Output Image data
      */
-    private ImageHolder image = null;
+    private final ImageHolder image;
 
     /**
      * Length of the data
      */
-    private int dataLength = 0;
+    private final int dataLength;
 
     /**
      * Name of the source data file
      */
-    private String fileName = null;
+    private final String fileName;
 
     /**
      * Current message bit number
@@ -46,99 +46,91 @@ public class DctLSBOutputStream extends OutputStream {
     private int n = 0;
 
     /**
-     * Actual width of the image
-     */
-    private int actualImgWidth = 0;
-
-    /**
-     * Actual height of the image
-     */
-    private int actualImgHeight = 0;
-
-    /**
      * Width of the image rounded to 8 (So that 8x8 blocks can be created from the image)
      */
-    private int imgWidth = 0;
+    private final int imgWidth;
 
     /**
      * Height of the image rounded to 8 (So that 8x8 blocks can be created from the image)
      */
-    private int imgHeight = 0;
+    private final int imgHeight;
 
     /**
      * Array to store Y component from YUV colorspace of the image
      */
-    private int[][] y = null;
+    private final int[][] y;
 
     /**
      * Array to store U component from YUV colorspace of the image
      */
-    private int[][] u = null;
+    private final int[][] u;
 
     /**
      * Array to store V component from YUV colorspace of the image
      */
-    private int[][] v = null;
+    private final int[][] v;
 
     /**
      * Object to handle DCT transforms
      */
-    private DCT dct = null;
+    private final DCT dct;
 
     /**
      * Array to store the DCT coefficients for the image
      */
-    private double[][] dcts = null;
+    private final double[][] dcts;
 
     /**
      * Coordinate hit check class
      */
-    private Coordinates coord = null;
+    private Coordinates coord;
 
     /**
      * Random number generator
      */
-    private Random rand = null;
+    private final Random rand;
 
     /**
      * Configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * Default constructor
      *
-     * @param image Source image into which data will be embedded
+     * @param image      Source image into which data will be embedded
      * @param dataLength Length of the data that would be written to the image
-     * @param fileName Name of the source data file
-     * @param config Configuration data to use while writing
-     * @throws OpenStegoException
+     * @param fileName   Name of the source data file
+     * @param config     Configuration data to use while writing
+     * @throws OpenStegoException Processing issues
      */
     public DctLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
-        List<int[][]> yuv = null;
+        List<int[][]> yuv;
 
         if (image == null) {
             throw new IllegalArgumentException("No image provided");
         }
 
         this.dataLength = dataLength;
-        this.actualImgWidth = image.getImage().getWidth();
-        this.actualImgHeight = image.getImage().getHeight();
+        // Actual width of the image
+        int actualImgWidth = image.getImage().getWidth();
+        // Actual height of the image
+        int actualImgHeight = image.getImage().getHeight();
         this.config = config;
         this.fileName = fileName;
-        BufferedImage newImg = new BufferedImage(this.actualImgWidth, this.actualImgHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImg = new BufferedImage(actualImgWidth, actualImgHeight, BufferedImage.TYPE_INT_RGB);
         this.image = new ImageHolder(newImg, image.getMetadata());
 
         // Calculate width and height rounded to 8
-        this.imgWidth = this.actualImgWidth - (this.actualImgWidth % DCT.NJPEG);
-        this.imgHeight = this.actualImgHeight - (this.actualImgHeight % DCT.NJPEG);
+        this.imgWidth = actualImgWidth - (actualImgWidth % DCT.NJPEG);
+        this.imgHeight = actualImgHeight - (actualImgHeight % DCT.NJPEG);
 
         yuv = ImageUtil.getYuvFromImage(image.getImage());
         this.y = yuv.get(0);
         this.u = yuv.get(1);
         this.v = yuv.get(2);
-        for (int i = 0; i < this.actualImgWidth; i++) {
-            for (int j = 0; j < this.actualImgHeight; j++) {
+        for (int i = 0; i < actualImgWidth; i++) {
+            for (int j = 0; j < actualImgHeight; j++) {
                 this.image.getImage().setRGB(i, j, image.getImage().getRGB(i, j));
             }
         }
@@ -155,10 +147,10 @@ public class DctLSBOutputStream extends OutputStream {
     /**
      * Method to write header data to stream
      *
-     * @throws OpenStegoException
+     * @throws OpenStegoException Writing issues
      */
     private void writeHeader() throws OpenStegoException {
-        DCTDataHeader header = null;
+        DCTDataHeader header;
 
         try {
             header = new DCTDataHeader(this.dataLength, this.fileName, this.config);
@@ -177,14 +169,14 @@ public class DctLSBOutputStream extends OutputStream {
      * Implementation of <code>OutputStream.write(int)</code> method
      *
      * @param data Byte to be written
-     * @throws IOException
+     * @throws IOException Writing issues
      */
     @Override
     public void write(int data) throws IOException {
-        int xb = 0;
-        int yb = 0;
-        int coeffNum = 0;
-        int coeff = 0;
+        int xb;
+        int yb;
+        int coeffNum;
+        int coeff;
 
         for (int count = 0; count < 8; count++) {
             if (this.n >= (this.imgWidth * this.imgHeight * 8)) {
@@ -234,7 +226,7 @@ public class DctLSBOutputStream extends OutputStream {
      * @return Image data
      */
     public ImageHolder getImage(int imgType) {
-        List<int[][]> yuv = new ArrayList<int[][]>();
+        List<int[][]> yuv = new ArrayList<>();
         yuv.add(this.y);
         yuv.add(this.u);
         yuv.add(this.v);

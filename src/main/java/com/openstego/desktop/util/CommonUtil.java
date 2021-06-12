@@ -6,23 +6,15 @@
 
 package com.openstego.desktop.util;
 
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.openstego.desktop.OpenStegoException;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-
-import com.openstego.desktop.OpenStegoException;
 
 /**
  * Common utilities for OpenStego
@@ -39,12 +31,12 @@ public class CommonUtil {
      *
      * @param is InputStream to read
      * @return Stream data as byte array
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static byte[] streamToBytes(InputStream is) throws OpenStegoException {
         final int BUF_SIZE = 512;
-        int bytesRead = 0;
-        byte[] data = null;
+        int bytesRead;
+        byte[] data;
 
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             data = new byte[BUF_SIZE];
@@ -64,7 +56,7 @@ public class CommonUtil {
      *
      * @param file File to read
      * @return File data as byte array
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static byte[] fileToBytes(File file) throws OpenStegoException {
         try (InputStream is = new FileInputStream(file)) {
@@ -79,7 +71,7 @@ public class CommonUtil {
      *
      * @param fileData File data
      * @param fileName File name (If this is <code>null</code>, then data is written to stdout)
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static void writeFile(byte[] fileData, String fileName) throws OpenStegoException {
         File file = null;
@@ -95,7 +87,7 @@ public class CommonUtil {
      *
      * @param fileData File data
      * @param file     File object (If this is <code>null</code>, then data is written to stdout)
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static void writeFile(byte[] fileData, File file) throws OpenStegoException {
         // If file is not provided, then write the data to stdout
@@ -131,13 +123,13 @@ public class CommonUtil {
      * @return List of filenames after tokenizing and wildcard expansion
      */
     public static List<File> parseFileList(String fileList, String delimiter) {
-        int index = 0;
-        StringTokenizer tokenizer = null;
-        String fileName = null;
-        String dirName = null;
-        List<File> output = new ArrayList<File>();
-        File fileDir = null;
-        File[] arrFile = null;
+        int index;
+        StringTokenizer tokenizer;
+        String fileName;
+        String dirName;
+        List<File> output = new ArrayList<>();
+        File fileDir;
+        File[] arrFile;
 
         if (fileList == null) {
             return output;
@@ -158,9 +150,8 @@ public class CommonUtil {
 
             fileDir = new File(dirName.equals("") ? "." : dirName);
             arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
-
-            for (int i = 0; i < arrFile.length; i++) {
-                output.add(arrFile[i]);
+            if (arrFile != null) {
+                Collections.addAll(output, arrFile);
             }
         }
 
@@ -188,18 +179,18 @@ public class CommonUtil {
      * @return String containing modified wildcard characters
      */
     private static String replaceWildcards(String input) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         char[] chars = input.toCharArray();
 
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '*') {
+        for (char aChar : chars) {
+            if (aChar == '*') {
                 buffer.append(".*");
-            } else if (chars[i] == '?') {
+            } else if (aChar == '?') {
                 buffer.append(".{1}");
-            } else if ("+()^$.{}[]|\\".indexOf(chars[i]) != -1) { // Escape rest of the java regexp wildcards
-                buffer.append('\\').append(chars[i]);
+            } else if ("+()^$.{}[]|\\".indexOf(aChar) != -1) { // Escape rest of the java regexp wildcards
+                buffer.append('\\').append(aChar);
             } else {
-                buffer.append(chars[i]);
+                buffer.append(aChar);
             }
         }
 
@@ -213,7 +204,7 @@ public class CommonUtil {
         /**
          * Variable to hold the filter string
          */
-        String filter = null;
+        private final String filter;
 
         /**
          * Default constructor

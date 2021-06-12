@@ -92,7 +92,7 @@ public class Filter {
     /**
      * Set method for type
      *
-     * @param type
+     * @param type Value to be set
      */
     public void setType(String type) {
         if (type.equalsIgnoreCase("nosymm")) {
@@ -118,7 +118,7 @@ public class Filter {
     /**
      * Set method for start
      *
-     * @param start
+     * @param start Value to be set
      */
     public void setStart(int start) {
         this.start = start;
@@ -136,7 +136,7 @@ public class Filter {
     /**
      * Set method for end
      *
-     * @param end
+     * @param end Value to be set
      */
     public void setEnd(int end) {
         this.end = end;
@@ -154,7 +154,7 @@ public class Filter {
     /**
      * Set method for hiPass
      *
-     * @param hiPass
+     * @param hiPass Value to be set
      */
     public void setHiPass(boolean hiPass) {
         this.hiPass = hiPass;
@@ -172,7 +172,7 @@ public class Filter {
     /**
      * Set method for data
      *
-     * @param data
+     * @param data Value to be set
      */
     public void setData(double[] data) {
         this.data = data;

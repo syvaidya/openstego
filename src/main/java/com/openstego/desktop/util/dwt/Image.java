@@ -13,17 +13,17 @@ public class Image {
     /**
      * Image data
      */
-    private double[] data = null;
+    private double[] data;
 
     /**
      * Image width
      */
-    int width = 0;
+    int width;
 
     /**
      * Image height
      */
-    int height = 0;
+    int height;
 
     /**
      * Default constructor
@@ -49,7 +49,7 @@ public class Image {
     /**
      * Set method for data
      *
-     * @param data
+     * @param data Value to be set
      */
     public void setData(double[] data) {
         this.data = data;
@@ -67,7 +67,7 @@ public class Image {
     /**
      * Set method for width
      *
-     * @param width
+     * @param width Value to be set
      */
     public void setWidth(int width) {
         this.width = width;
@@ -85,7 +85,7 @@ public class Image {
     /**
      * Set method for height
      *
-     * @param height
+     * @param height Value to be set
      */
     public void setHeight(int height) {
         this.height = height;

@@ -6,14 +6,6 @@
 
 package com.openstego.desktop.plugin.dwtdugad;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.List;
-import java.util.Random;
-
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.template.image.WMImagePluginTemplate;
 import com.openstego.desktop.util.ImageHolder;
@@ -23,6 +15,10 @@ import com.openstego.desktop.util.StringUtil;
 import com.openstego.desktop.util.dwt.DWT;
 import com.openstego.desktop.util.dwt.Image;
 import com.openstego.desktop.util.dwt.ImageTree;
+
+import java.io.*;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Plugin for OpenStego which implements the DWT based algorithm by Dugad.
@@ -37,7 +33,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(DWTDugadPlugin.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(DWTDugadPlugin.NAMESPACE);
 
     /**
      * Constant for Namespace to use for this plugin
@@ -52,7 +48,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      */
     public DWTDugadPlugin() {
         LabelUtil.addNamespace(NAMESPACE, "i18n.DWTDugadPluginLabels");
-        new DWTDugadErrors(); // Initialize error codes
+        DWTDugadErrors.init(); // Initialize error codes
     }
 
     /**
@@ -85,20 +81,20 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        ImageHolder image = null;
-        List<int[][]> yuv = null;
-        DWT dwt = null;
-        ImageTree dwtTree = null;
-        ImageTree s = null;
-        Signature sig = null;
-        int[][] luminance = null;
-        int imgType = 0;
-        int cols = 0;
-        int rows = 0;
+        ImageHolder image;
+        List<int[][]> yuv;
+        DWT dwt;
+        ImageTree dwtTree;
+        ImageTree s;
+        Signature sig;
+        int[][] luminance;
+        int imgType;
+        int cols;
+        int rows;
 
         // Cover file is mandatory
         if (cover == null) {
@@ -142,21 +138,21 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
-        ImageHolder image = null;
-        DWT dwt = null;
-        ImageTree dwtTree = null;
-        ImageTree s = null;
-        Signature sig = null;
-        int[][] luminance = null;
-        int cols = 0;
-        int rows = 0;
-        ByteArrayOutputStream baos = null;
-        ObjectOutputStream oos = null;
-        Object[] vals = null;
+        ImageHolder image;
+        DWT dwt;
+        ImageTree dwtTree;
+        ImageTree s;
+        Signature sig;
+        int[][] luminance;
+        int cols;
+        int rows;
+        ByteArrayOutputStream baos;
+        ObjectOutputStream oos;
+        Object[] vals;
 
         image = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
 
@@ -209,12 +205,12 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      * Method to generate the signature data
      *
      * @return Signature data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] generateSignature() throws OpenStegoException {
-        Random rand = null;
-        Signature sig = null;
+        Random rand;
+        Signature sig;
 
         rand = new Random(StringUtil.passwordHash(this.config.getPassword()));
         sig = new Signature(rand);
@@ -228,25 +224,24 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
-        ObjectInputStream ois = null;
+        ObjectInputStream ois;
         byte[] markArr = new byte[WM_MARKER.length()];
         int level;
         int n;
         int ok = 0;
-        int m = 0;
-        double z = 0.0;
-        double v = 0.0;
-        // double diff = 0.0;
+        int m;
+        double z;
+        double v;
         double alpha;
 
         try {
             ois = new ObjectInputStream(new ByteArrayInputStream(watermarkData));
-            ois.read(markArr, 0, WM_MARKER.length());
-            if (!WM_MARKER.equals(new String(markArr))) {
+            n = ois.read(markArr, 0, WM_MARKER.length());
+            if (n == -1 || !WM_MARKER.equals(new String(markArr))) {
                 throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_SIG_NOT_VALID);
             }
 
@@ -260,7 +255,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
                 z = ois.readDouble();
                 v = ois.readDouble();
                 if (m != 0) {
-                    ok += (z > v * alpha / 1.0) ? 1 : 0;
+                    ok += (z > v * alpha) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
                 } else {
                     n--;
@@ -271,7 +266,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
                 z = ois.readDouble();
                 v = ois.readDouble();
                 if (m != 0) {
-                    ok += (z > v * alpha / 1.0) ? 1 : 0;
+                    ok += (z > v * alpha) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
                 } else {
                     n--;
@@ -282,7 +277,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
                 z = ois.readDouble();
                 v = ois.readDouble();
                 if (m != 0) {
-                    ok += (z > v * alpha / 1.0) ? 1 : 0;
+                    ok += (z > v * alpha) ? 1 : 0;
                     // diff += ((z - v * alpha) / (1.0 * m));
                 } else {
                     n--;
@@ -299,10 +294,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
      * Method to get the usage details of the plugin
      *
      * @return Usage details of the plugin
-     * @throws OpenStegoException
      */
     @Override
-    public String getUsage() throws OpenStegoException {
+    public String getUsage() {
         return labelUtil.getString("plugin.usage");
     }
 
@@ -334,57 +328,57 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
             }
         }
 
-        return new Object[] { m, z, v };
+        return new Object[]{m, z, v};
     }
 
     /**
      * Private class for the data structure required for the signature
      */
-    private class Signature {
+    private static class Signature {
         /**
          * Signature stamp
          */
-        byte[] sig = SIG_MARKER.getBytes();
+        private final byte[] sig = SIG_MARKER.getBytes();
 
         /**
          * Length of the watermark (in bits)
          */
-        int watermarkLength = 1000;
+        private int watermarkLength = 1000;
 
         /**
          * Wavelet filter method
          */
-        int waveletFilterMethod = 2;
+        private int waveletFilterMethod = 2;
 
         /**
          * Filter number
          */
-        int filterID = 1;
+        private int filterID = 1;
 
         /**
          * Embedding level
          */
-        int decompositionLevel = 3;
+        private int decompositionLevel = 3;
 
         /**
          * Alpha factor
          */
-        double alpha = 0.2;
+        private double alpha = 0.2;
 
         /**
          * Casting threshold
          */
-        double castingThreshold = 40.0;
+        private double castingThreshold = 40.0;
 
         /**
          * Detection threshold
          */
-        double detectionThreshold = 50.0;
+        private double detectionThreshold = 50.0;
 
         /**
          * Watermark data
          */
-        double[] watermark = null;
+        private final double[] watermark;
 
         /**
          * Constructor which generates the watermark data using the given randomizer
@@ -392,7 +386,7 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
          * @param rand Randomizer to use for generating watermark data
          */
         public Signature(Random rand) {
-            double x, x1, x2;
+            double x, x1, x2, r;
             this.watermark = new double[this.watermarkLength];
 
             for (int i = 0; i < this.watermarkLength; i += 2) {
@@ -401,8 +395,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
                     x2 = 2.0 * rand.nextDouble() - 1.0;
                     x = x1 * x1 + x2 * x2;
                 } while (x >= 1.0);
-                x1 *= Math.sqrt((-2.0) * Math.log(x) / x);
-                x2 *= Math.sqrt((-2.0) * Math.log(x) / x);
+                r = Math.sqrt((-2.0) * Math.log(x) / x);
+                x1 *= r;
+                x2 *= r;
 
                 this.watermark[i] = x1;
                 this.watermark[i + 1] = x2;
@@ -413,16 +408,17 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
          * Constructor that takes existing the signature data
          *
          * @param sigData Existing signature data
-         * @throws OpenStegoException
+         * @throws OpenStegoException Processing issues
          */
         public Signature(byte[] sigData) throws OpenStegoException {
-            ObjectInputStream ois = null;
+            ObjectInputStream ois;
+            int n;
             byte[] inputSig = new byte[this.sig.length];
 
             try {
                 ois = new ObjectInputStream(new ByteArrayInputStream(sigData));
-                ois.read(inputSig, 0, this.sig.length);
-                if (!(new String(this.sig)).equals(new String(inputSig))) {
+                n = ois.read(inputSig, 0, this.sig.length);
+                if (n == -1 || !(new String(this.sig)).equals(new String(inputSig))) {
                     throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_SIG_NOT_VALID);
                 }
 
@@ -447,11 +443,11 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
          * Get the signature data generated
          *
          * @return Signature data
-         * @throws OpenStegoException
+         * @throws OpenStegoException Processing issues
          */
         public byte[] getSigData() throws OpenStegoException {
-            ByteArrayOutputStream baos = null;
-            ObjectOutputStream oos = null;
+            ByteArrayOutputStream baos;
+            ObjectOutputStream oos;
 
             try {
                 baos = new ByteArrayOutputStream();

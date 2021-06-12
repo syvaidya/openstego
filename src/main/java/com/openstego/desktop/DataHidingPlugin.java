@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @see WatermarkingPlugin
  */
-public abstract class DataHidingPlugin extends OpenStegoPlugin {
+public abstract class DataHidingPlugin<C extends OpenStegoConfig> extends OpenStegoPlugin<C> {
     // ------------- Metadata Methods -------------
 
     /**
@@ -26,7 +26,7 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      */
     @Override
     public final List<Purpose> getPurposes() {
-        List<Purpose> purposes = new ArrayList<Purpose>();
+        List<Purpose> purposes = new ArrayList<>();
         purposes.add(Purpose.DATA_HIDING);
         return purposes;
     }
@@ -38,10 +38,9 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      * hiding plugins only
      *
      * @return Signature data
-     * @throws OpenStegoException
      */
     @Override
-    public final byte[] generateSignature() throws OpenStegoException {
+    public final byte[] generateSignature() {
         return null;
     }
 
@@ -52,10 +51,9 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
-     * @throws OpenStegoException
      */
     @Override
-    public final double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException {
+    public final double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) {
         return 0.0;
     }
 
@@ -63,10 +61,9 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      * Method to get correlation value which above which it can be considered that watermark strength is high
      *
      * @return High watermark
-     * @throws OpenStegoException
      */
     @Override
-    public double getHighWatermarkLevel() throws OpenStegoException {
+    public double getHighWatermarkLevel() {
         return 0;
     }
 
@@ -74,29 +71,9 @@ public abstract class DataHidingPlugin extends OpenStegoPlugin {
      * Method to get correlation value which below which it can be considered that watermark strength is low
      *
      * @return Low watermark
-     * @throws OpenStegoException
      */
     @Override
-    public double getLowWatermarkLevel() throws OpenStegoException {
+    public double getLowWatermarkLevel() {
         return 0;
-    }
-
-    /**
-     * Method to find out whether given stego data can be handled by this plugin or not
-     *
-     * @param stegoData Stego data containing the message
-     * @return Boolean indicating whether the stego data can be handled by this plugin or not
-     */
-    @Override
-    public final boolean canHandle(byte[] stegoData) {
-        try {
-            extractMsgFileName(stegoData, "DUMMY");
-        } catch (OpenStegoException osEx) {
-            if (osEx.getErrorCode() != OpenStegoException.INVALID_PASSWORD) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

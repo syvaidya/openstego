@@ -6,20 +6,20 @@
 
 package com.openstego.desktop;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
-import java.util.Map;
-
-import com.openstego.desktop.ui.OpenStegoUI;
+import com.openstego.desktop.ui.OpenStegoFrame;
 import com.openstego.desktop.ui.PluginEmbedOptionsUI;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.cmd.CmdLineOptions;
 
+import java.util.List;
+
 /**
  * Abstract class for stego plugins for OpenStego. Abstract methods need to be implemented to add support for more
  * steganographic algorithms
+ *
+ * @param <C> Config class for the plugin
  */
-public abstract class OpenStegoPlugin {
+public abstract class OpenStegoPlugin<C extends OpenStegoConfig> {
     /**
      * Enumeration of plugin purposes
      */
@@ -38,7 +38,7 @@ public abstract class OpenStegoPlugin {
     /**
      * Configuration data to be used while embedding / extracting data
      */
-    protected OpenStegoConfig config = null;
+    protected C config = null;
 
     // ------------- Metadata Methods -------------
 
@@ -69,7 +69,7 @@ public abstract class OpenStegoPlugin {
      * @return Display lable for purpose(s) of the plugin
      */
     public final String getPurposesLabel() {
-        StringBuffer sbf = new StringBuffer();
+        StringBuilder sbf = new StringBuilder();
         LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
         List<Purpose> purposes = getPurposes();
 
@@ -101,7 +101,7 @@ public abstract class OpenStegoPlugin {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName)
             throws OpenStegoException;
@@ -112,7 +112,7 @@ public abstract class OpenStegoPlugin {
      * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException;
 
@@ -123,7 +123,7 @@ public abstract class OpenStegoPlugin {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException;
 
@@ -132,7 +132,7 @@ public abstract class OpenStegoPlugin {
      * Watermarking
      *
      * @return Signature data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract byte[] generateSignature() throws OpenStegoException;
 
@@ -143,7 +143,7 @@ public abstract class OpenStegoPlugin {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Original signature data
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public final double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         return getWatermarkCorrelation(origSigData, extractData(stegoData, stegoFileName, origSigData));
@@ -155,7 +155,7 @@ public abstract class OpenStegoPlugin {
      * @param origSigData   Original signature data
      * @param watermarkData Extracted watermark data
      * @return Correlation
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract double getWatermarkCorrelation(byte[] origSigData, byte[] watermarkData) throws OpenStegoException;
 
@@ -163,7 +163,7 @@ public abstract class OpenStegoPlugin {
      * Method to get correlation value which above which it can be considered that watermark strength is high
      *
      * @return High watermark
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract double getHighWatermarkLevel() throws OpenStegoException;
 
@@ -171,7 +171,7 @@ public abstract class OpenStegoPlugin {
      * Method to get correlation value which below which it can be considered that watermark strength is low
      *
      * @return Low watermark
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract double getLowWatermarkLevel() throws OpenStegoException;
 
@@ -184,24 +184,16 @@ public abstract class OpenStegoPlugin {
      * @param coverFileName Name of the cover file
      * @param diffFileName  Name of the output difference file
      * @return Difference data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName, String diffFileName)
             throws OpenStegoException;
 
     /**
-     * Method to find out whether given stego data can be handled by this plugin or not
-     *
-     * @param stegoData Stego data containing the message
-     * @return Boolean indicating whether the stego data can be handled by this plugin or not
-     */
-    public abstract boolean canHandle(byte[] stegoData);
-
-    /**
      * Method to get the list of supported file extensions for reading
      *
      * @return List of supported file extensions for reading
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract List<String> getReadableFileExtensions() throws OpenStegoException;
 
@@ -209,7 +201,7 @@ public abstract class OpenStegoPlugin {
      * Method to get the list of supported file extensions for writing
      *
      * @return List of supported file extensions for writing
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract List<String> getWritableFileExtensions() throws OpenStegoException;
 
@@ -219,7 +211,7 @@ public abstract class OpenStegoPlugin {
      * Method to populate the standard command-line options used by this plugin
      *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException;
 
@@ -227,7 +219,7 @@ public abstract class OpenStegoPlugin {
      * Method to get the usage details of the plugin
      *
      * @return Usage details of the plugin
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public abstract String getUsage() throws OpenStegoException;
 
@@ -237,77 +229,57 @@ public abstract class OpenStegoPlugin {
      * Method to get the UI object for "Embed" action specific to this plugin. This UI object will be embedded inside
      * the main OpenStego GUI
      *
-     * @param stegoUI Reference to the parent OpenStegoUI object
+     * @param stegoFrame Reference to the parent OpenStegoFrame object
      * @return UI object specific to this plugin for "Embed" action
-     * @throws OpenStegoException
      */
-    public abstract PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException;
+    public PluginEmbedOptionsUI getEmbedOptionsUI(@SuppressWarnings("unused") OpenStegoFrame stegoFrame) {
+        return null;
+    }
 
-    // ------------- Other Methods -------------
+    // ------------- Config Related Methods -------------
 
     /**
-     * Method to get the configuration class specific to this plugin
+     * Method to get current configuration data
      *
-     * @return Configuration class specific to this plugin
+     * @return Configuration data
      */
-    public abstract Class<? extends OpenStegoConfig> getConfigClass();
+    public C getConfig() {
+        return this.config;
+    }
+
+    /**
+     * Method to reset configuration data to default
+     *
+     * @throws OpenStegoException Processing issues
+     */
+    public void resetConfig() throws OpenStegoException {
+        this.config = createConfig();
+    }
+
+    /**
+     * Method to reset configuration data to default
+     *
+     * @param options Command-line options
+     * @throws OpenStegoException Processing issues
+     */
+    public void resetConfig(CmdLineOptions options) throws OpenStegoException {
+        this.config = createConfig(options);
+    }
 
     /**
      * Method to create default configuration data (specific to this plugin)
      *
      * @return Configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public final OpenStegoConfig createConfig() throws OpenStegoException {
-        try {
-            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(new Class[0]);
-            this.config = constructor.newInstance(new Object[0]);
-        } catch (Exception ex) {
-            throw new OpenStegoException(ex);
-        }
-        return this.config;
-    }
-
-    /**
-     * Method to create configuration data (specific to this plugin) based on the property map
-     *
-     * @param propMap Property map
-     * @return Configuration data
-     * @throws OpenStegoException
-     */
-    public final OpenStegoConfig createConfig(Map<String, String> propMap) throws OpenStegoException {
-        try {
-            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(new Class[] { Map.class });
-            this.config = constructor.newInstance(new Object[] { propMap });
-        } catch (Exception ex) {
-            throw new OpenStegoException(ex);
-        }
-        return this.config;
-    }
+    protected abstract C createConfig() throws OpenStegoException;
 
     /**
      * Method to create configuration data (specific to this plugin) based on the command-line options
      *
      * @param options Command-line options
      * @return Configuration data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public final OpenStegoConfig createConfig(CmdLineOptions options) throws OpenStegoException {
-        try {
-            Constructor<? extends OpenStegoConfig> constructor = getConfigClass().getConstructor(new Class[] { CmdLineOptions.class });
-            this.config = constructor.newInstance(new Object[] { options });
-        } catch (Exception ex) {
-            throw new OpenStegoException(ex);
-        }
-        return this.config;
-    }
-
-    /**
-     * Get method for config
-     *
-     * @return Configuration data
-     */
-    public final OpenStegoConfig getConfig() {
-        return this.config;
-    }
+    protected abstract C createConfig(CmdLineOptions options) throws OpenStegoException;
 }

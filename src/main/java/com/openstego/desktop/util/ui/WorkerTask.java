@@ -5,32 +5,15 @@
  */
 package com.openstego.desktop.util.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-
 import com.openstego.desktop.OpenStego;
 import com.openstego.desktop.util.LabelUtil;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Helper class to execute tasks asynchronously
@@ -39,28 +22,28 @@ public abstract class WorkerTask extends SwingWorker<Object, Void> {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(OpenStego.NAMESPACE);
 
     /**
      * Parent component
      */
-    protected JFrame parent;
+    protected final JFrame parent;
     /**
      * Data for task
      */
-    protected Object data;
+    protected final Object data;
     /**
      * Progress bar
      */
-    protected JProgressBar progressBar;
+    protected final JProgressBar progressBar;
     /**
      * Cancel button
      */
-    protected JButton cancelButton;
+    protected final JButton cancelButton;
     /**
      * Glass pane
      */
-    protected GlassPane glass;
+    protected final GlassPane glass;
 
     /**
      * Default constructor
@@ -142,8 +125,8 @@ public abstract class WorkerTask extends SwingWorker<Object, Void> {
         execute();
     }
 
-    class Listener implements PropertyChangeListener, ActionListener {
-        WorkerTask task;
+    static class Listener implements PropertyChangeListener, ActionListener {
+        final WorkerTask task;
 
         public Listener(WorkerTask task) {
             this.task = task;
@@ -171,7 +154,7 @@ public abstract class WorkerTask extends SwingWorker<Object, Void> {
         }
     }
 
-    class GlassPane extends JPanel implements MouseListener, FocusListener {
+    static class GlassPane extends JPanel implements MouseListener, FocusListener {
         /**
          *
          */

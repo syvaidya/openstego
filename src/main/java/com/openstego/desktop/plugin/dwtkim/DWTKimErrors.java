@@ -27,10 +27,10 @@ public class DWTKimErrors {
      */
     public static final int ERR_SIG_NOT_VALID = 3;
 
-    /*
+    /**
      * Initialize the error code - message key map
      */
-    static {
+    public static void init() {
         OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
         OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_DECOMP_LEVEL_NOT_ENOUGH, "err.image.decompLevel.notEnough");
         OpenStegoException.addErrorCode(DWTKimPlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");

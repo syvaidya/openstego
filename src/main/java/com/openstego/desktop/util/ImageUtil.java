@@ -6,30 +6,22 @@
 
 package com.openstego.desktop.util;
 
+import com.openstego.desktop.OpenStego;
+import com.openstego.desktop.OpenStegoErrors;
+import com.openstego.desktop.OpenStegoException;
+import com.openstego.desktop.OpenStegoPlugin;
+
+import javax.imageio.*;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
-import javax.imageio.stream.ImageInputStream;
-
-import com.openstego.desktop.OpenStego;
-import com.openstego.desktop.OpenStegoException;
-import com.openstego.desktop.OpenStegoPlugin;
 
 /**
  * Image utilities
@@ -44,22 +36,22 @@ public class ImageUtil {
     /**
      * Default image type in case not provided
      */
-    public static String DEFAULT_IMAGE_TYPE = "png";
+    public static final String DEFAULT_IMAGE_TYPE = "png";
 
     /**
      * Method to generate a random image filled with noise.
      *
      * @param numOfPixels Number of pixels required in the image
      * @return Random image filled with noise
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static ImageHolder generateRandomImage(int numOfPixels) throws OpenStegoException {
         final double ASPECT_RATIO = 4.0 / 3.0;
-        int width = 0;
-        int height = 0;
+        int width;
+        int height;
         byte[] rgbValue = new byte[3];
-        BufferedImage image = null;
-        SecureRandom random = null;
+        BufferedImage image;
+        SecureRandom random;
 
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
@@ -72,7 +64,7 @@ public class ImageUtil {
                 for (int y = 0; y < height; y++) {
                     random.nextBytes(rgbValue);
                     image.setRGB(x, y,
-                        CommonUtil.byteToInt(rgbValue[0]) + (CommonUtil.byteToInt(rgbValue[1]) << 8) + (CommonUtil.byteToInt(rgbValue[2]) << 16));
+                            CommonUtil.byteToInt(rgbValue[0]) + (CommonUtil.byteToInt(rgbValue[1]) << 8) + (CommonUtil.byteToInt(rgbValue[2]) << 16));
                 }
             }
 
@@ -89,16 +81,16 @@ public class ImageUtil {
      * @param imageFileName Name of the image file
      * @param plugin        Reference to the plugin
      * @return Image data as byte array
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
-    public static byte[] imageToByteArray(ImageHolder image, String imageFileName, OpenStegoPlugin plugin) throws OpenStegoException {
+    public static byte[] imageToByteArray(ImageHolder image, String imageFileName, OpenStegoPlugin<?> plugin) throws OpenStegoException {
         ByteArrayOutputStream barrOS = new ByteArrayOutputStream();
-        String imageType = null;
+        String imageType;
 
         if (imageFileName != null) {
             imageType = imageFileName.substring(imageFileName.lastIndexOf('.') + 1).toLowerCase();
             if (!plugin.getWritableFileExtensions().contains(imageType)) {
-                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_TYPE_INVALID, imageType);
+                throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.IMAGE_TYPE_INVALID, imageType);
             }
             if (imageType.equals("jp2")) {
                 imageType = "jpeg 2000";
@@ -116,7 +108,7 @@ public class ImageUtil {
      * @param imageData   Image data as byte array
      * @param imgFileName Name of the image file
      * @return Buffered image
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static ImageHolder byteArrayToImage(byte[] imageData, String imgFileName) throws OpenStegoException {
         if (imageData == null) {
@@ -125,7 +117,7 @@ public class ImageUtil {
 
         ImageHolder image = readImage(new ByteArrayInputStream(imageData));
         if (image == null) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID, imgFileName);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.IMAGE_FILE_INVALID, imgFileName);
         }
         return image;
     }
@@ -136,13 +128,14 @@ public class ImageUtil {
      * @param image Image
      * @return List with three elements of two-dimensional int's - R, G and B
      */
+    @SuppressWarnings("unused")
     public static List<int[][]> getRgbFromImage(BufferedImage image) {
-        List<int[][]> rgb = new ArrayList<int[][]>();
-        int[][] r = null;
-        int[][] g = null;
-        int[][] b = null;
-        int width = 0;
-        int height = 0;
+        List<int[][]> rgb = new ArrayList<>();
+        int[][] r;
+        int[][] g;
+        int[][] b;
+        int width;
+        int height;
 
         width = image.getWidth();
         height = image.getHeight();
@@ -155,7 +148,7 @@ public class ImageUtil {
             for (int j = 0; j < width; j++) {
                 r[i][j] = (image.getRGB(j, i) >> 16) & 0xFF;
                 g[i][j] = (image.getRGB(j, i) >> 8) & 0xFF;
-                b[i][j] = (image.getRGB(j, i) >> 0) & 0xFF;
+                b[i][j] = (image.getRGB(j, i)) & 0xFF;
             }
         }
 
@@ -173,17 +166,17 @@ public class ImageUtil {
      * @return List with three elements of two-dimensional int's - Y, U and V
      */
     public static List<int[][]> getYuvFromImage(BufferedImage image) {
-        List<int[][]> yuv = new ArrayList<int[][]>();
-        int[][] y = null;
-        int[][] u = null;
-        int[][] v = null;
-        int[][] aa = null;
-        int a = 0;
-        int r = 0;
-        int g = 0;
-        int b = 0;
-        int width = 0;
-        int height = 0;
+        List<int[][]> yuv = new ArrayList<>();
+        int[][] y;
+        int[][] u;
+        int[][] v;
+        int[][] aa;
+        int a;
+        int r;
+        int g;
+        int b;
+        int width;
+        int height;
 
         width = image.getWidth();
         height = image.getHeight();
@@ -198,15 +191,9 @@ public class ImageUtil {
                 a = (image.getRGB(j, i) >> 24) & 0xFF;
                 r = (image.getRGB(j, i) >> 16) & 0xFF;
                 g = (image.getRGB(j, i) >> 8) & 0xFF;
-                b = (image.getRGB(j, i) >> 0) & 0xFF;
+                b = (image.getRGB(j, i)) & 0xFF;
 
                 // Convert RGB to YUV colorspace
-                // y[i][j] = (int) ((0.257 * r) + (0.504 * g) + (0.098 * b) + 16);
-                // u[i][j] = (int) (-(0.148 * r) - (0.291 * g) + (0.439 * b) + 128);
-                // v[i][j] = (int) ((0.439 * r) - (0.368 * g) - (0.071 * b) + 128);
-                // y[i][j] = (int) ((0.2990 * r) + (0.5870 * g) + (0.1140 * b));
-                // u[i][j] = (int) ((-0.1687 * r) - (0.3313 * g) + (0.5000 * b) + 128);
-                // v[i][j] = (int) ((0.5000 * r) - (0.4187 * g) - (0.0813 * b) + 128);
                 y[i][j] = (int) ((0.299 * r) + (0.587 * g) + (0.114 * b));
                 u[i][j] = (int) ((-0.147 * r) - (0.289 * g) + (0.436 * b));
                 v[i][j] = (int) ((0.615 * r) - (0.515 * g) - (0.100 * b));
@@ -228,13 +215,14 @@ public class ImageUtil {
      * @param rgb List with three elements of two-dimensional int's - R, G and B
      * @return Image
      */
+    @SuppressWarnings("unused")
     public static BufferedImage getImageFromRgb(List<int[][]> rgb) {
-        BufferedImage image = null;
-        int width = 0;
-        int height = 0;
-        int[][] r = null;
-        int[][] g = null;
-        int[][] b = null;
+        BufferedImage image;
+        int width;
+        int height;
+        int[][] r;
+        int[][] g;
+        int[][] b;
 
         r = rgb.get(0);
         g = rgb.get(1);
@@ -261,17 +249,17 @@ public class ImageUtil {
      * @return Image
      */
     public static BufferedImage getImageFromYuv(List<int[][]> yuv, int imgType) {
-        BufferedImage image = null;
-        int width = 0;
-        int height = 0;
-        int a = 0;
-        int r = 0;
-        int g = 0;
-        int b = 0;
-        int[][] y = null;
-        int[][] u = null;
-        int[][] v = null;
-        int[][] aa = null;
+        BufferedImage image;
+        int width;
+        int height;
+        int a;
+        int r;
+        int g;
+        int b;
+        int[][] y;
+        int[][] u;
+        int[][] v;
+        int[][] aa;
 
         y = yuv.get(0);
         u = yuv.get(1);
@@ -285,12 +273,6 @@ public class ImageUtil {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 // Convert YUV back to RGB
-                // r = pixelRange(1.164 * (y[i][j] - 16) + 1.596 * (v[i][j] - 128));
-                // g = pixelRange(1.164 * (y[i][j] - 16) - 0.391 * (u[i][j] - 128) - 0.813 * (v[i][j] - 128));
-                // b = pixelRange(1.164 * (y[i][j] - 16) + 2.018 * (u[i][j] - 128));
-                // r = pixelRange(y[i][j] + 1.40200 * (v[i][j] - 128));
-                // g = pixelRange(y[i][j] - 0.34414 * (u[i][j] - 128) - 0.71414 * (v[i][j] - 128));
-                // b = pixelRange(y[i][j] + 1.77200 * (u[i][j] - 128));
                 r = pixelRange(y[i][j] + 1.140 * v[i][j]);
                 g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
                 b = pixelRange(y[i][j] + 2.032 * u[i][j]);
@@ -310,7 +292,7 @@ public class ImageUtil {
      * @return Limited value
      */
     public static int pixelRange(int p) {
-        return ((p > 255) ? 255 : (p < 0) ? 0 : p);
+        return ((p > 255) ? 255 : Math.max(p, 0));
     }
 
     /**
@@ -329,7 +311,7 @@ public class ImageUtil {
      * @param image Input image
      */
     public static void makeImageSquare(ImageHolder image) {
-        int max = 0;
+        int max;
 
         max = Math.max(image.getImage().getWidth(), image.getImage().getHeight());
         cropImage(image, max, max);
@@ -344,9 +326,9 @@ public class ImageUtil {
      * @param cropHeight Height required for cropped image
      */
     public static void cropImage(ImageHolder image, int cropWidth, int cropHeight) {
-        BufferedImage retImg = null;
-        int width = 0;
-        int height = 0;
+        BufferedImage retImg;
+        int width;
+        int height;
 
         width = image.getImage().getWidth();
         height = image.getImage().getHeight();
@@ -372,25 +354,24 @@ public class ImageUtil {
      * @param leftImage  Left input image
      * @param rightImage Right input image
      * @return Difference image
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static ImageHolder getDiffImage(ImageHolder leftImage, ImageHolder rightImage) throws OpenStegoException {
-        int leftW = 0;
-        int leftH = 0;
-        int rightW = 0;
-        int rightH = 0;
-        int min = 0;
-        int max = 0;
-        int diff = 0;
-        // double error = 0.0;
-        BufferedImage diffImage = null;
+        int leftW;
+        int leftH;
+        int rightW;
+        int rightH;
+        int min;
+        int max;
+        int diff;
+        BufferedImage diffImage;
 
         leftW = leftImage.getImage().getWidth();
         leftH = leftImage.getImage().getHeight();
         rightW = rightImage.getImage().getWidth();
         rightH = rightImage.getImage().getHeight();
         if (leftW != rightW || leftH != rightH) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoException.IMAGE_FILE_INVALID);
+            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.IMAGE_FILE_INVALID);
         }
         diffImage = new BufferedImage(leftW, leftH, BufferedImage.TYPE_INT_RGB);
 

@@ -6,14 +6,14 @@
 
 package com.openstego.desktop.plugin.lsb;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.LabelUtil;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * OutputStream to embed data into image
@@ -22,27 +22,27 @@ public class LSBOutputStream extends OutputStream {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(LSBPlugin.NAMESPACE);
 
     /**
      * Output Image data
      */
-    private ImageHolder image = null;
+    private final ImageHolder image;
 
     /**
      * Number of bits used per color channel
      */
-    private int channelBitsUsed = 1;
+    private int channelBitsUsed;
 
     /**
      * Length of the data
      */
-    private int dataLength = 0;
+    private final int dataLength;
 
     /**
      * Name of the source data file
      */
-    private String fileName = null;
+    private final String fileName;
 
     /**
      * Current x co-ordinate
@@ -62,22 +62,22 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Bit set to store three bits per pixel
      */
-    private byte[] bitSet = null;
+    private byte[] bitSet;
 
     /**
      * Width of the image
      */
-    private int imgWidth = 0;
+    private final int imgWidth;
 
     /**
      * Height of the image
      */
-    private int imgHeight = 0;
+    private final int imgHeight;
 
     /**
      * Configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * Default constructor
@@ -86,7 +86,7 @@ public class LSBOutputStream extends OutputStream {
      * @param dataLength Length of the data that would be written to the image
      * @param fileName   Name of the source data file
      * @param config     Configuration data to use while writing
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public LSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
         if (image == null || image.getImage() == null) {
@@ -114,13 +114,13 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Method to write header data to stream
      *
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     private void writeHeader() throws OpenStegoException {
         int channelBits = 1;
-        int noOfPixels = 0;
-        int headerSize = 0;
-        LSBDataHeader header = null;
+        int noOfPixels;
+        int headerSize;
+        LSBDataHeader header;
 
         try {
             noOfPixels = this.imgWidth * this.imgHeight;
@@ -161,7 +161,7 @@ public class LSBOutputStream extends OutputStream {
      * Implementation of <code>OutputStream.write(int)</code> method
      *
      * @param data Byte to be written
-     * @throws IOException
+     * @throws IOException Write issues
      */
     @Override
     public void write(int data) throws IOException {
@@ -179,7 +179,7 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Flushes the stream
      *
-     * @throws IOException
+     * @throws IOException Write issues
      */
     @Override
     public void flush() throws IOException {
@@ -189,7 +189,7 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Closes the stream
      *
-     * @throws IOException
+     * @throws IOException Write issues
      */
     @Override
     public void close() throws IOException {
@@ -208,7 +208,7 @@ public class LSBOutputStream extends OutputStream {
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      *
      * @return Image data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public ImageHolder getImage() throws OpenStegoException {
         try {
@@ -222,14 +222,14 @@ public class LSBOutputStream extends OutputStream {
     /**
      * Method to write current bit set
      *
-     * @throws IOException
+     * @throws IOException Write issues
      */
     private void writeCurrentBitSet() throws IOException {
-        int pixel = 0;
+        int pixel;
         int offset = 0;
-        int mask = 0;
-        int maskPerByte = 0;
-        int bitOffset = 0;
+        int mask;
+        int maskPerByte;
+        int bitOffset;
 
         if (this.y == this.imgHeight) {
             throw new IOException(labelUtil.getString("err.image.insufficientSize"));

@@ -6,57 +6,58 @@
 
 package com.openstego.desktop.plugin.template.dct;
 
-import java.util.Map;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.util.cmd.CmdLineOptions;
+
+import java.util.Map;
 
 /**
  * Class to store configuration data for DCT plugin template
  */
 public class DCTConfig extends OpenStegoConfig {
     /**
+     * Key string for configuration item - imageFileExtension
+     * <p>
+     * Image file extension for the output file
+     */
+    public static final String IMAGE_FILE_EXTENSION = "imageFileExtension";
+
+    /**
      * Image file extension to use for writing
      */
     private String imageFileExtension = "png";
 
     /**
-     * Default Constructor (with default values for configuration items)
-     */
-    public DCTConfig() {
-    }
-
-    /**
-     * Constructor with map of configuration data. Please make sure that only valid keys for configuration
-     * items are provided, and the values for those items are also valid.
-     *
-     * @param propMap Map containing the configuration data
-     * @throws OpenStegoException
-     */
-    public DCTConfig(Map<String, String> propMap) throws OpenStegoException {
-        addProperties(propMap);
-    }
-
-    /**
-     * Constructor which reads configuration data from the command line options.
+     * Converts command line options to Map form
      *
      * @param options Command-line options
-     * @throws OpenStegoException
+     * @return Options in Map form
+     * @throws OpenStegoException Processing issues
      */
-    public DCTConfig(CmdLineOptions options) throws OpenStegoException {
-        super(options);
+    @Override
+    protected Map<String, Object> convertCmdLineOptionsToMap(CmdLineOptions options) throws OpenStegoException {
+        Map<String, Object> map = super.convertCmdLineOptionsToMap(options);
+
+        if (options.getOption("-i") != null) { // imageFileExtension
+            map.put(IMAGE_FILE_EXTENSION, options.getStringValue("-i"));
+        }
+
+        return map;
     }
 
     /**
-     * Method to add properties from the map to this configuration data
+     * Processes a configuration item.
      *
-     * @param propMap Map containing the configuration data
-     * @throws OpenStegoException
+     * @param key   Configuration item key
+     * @param value Configuration item value
      */
     @Override
-    protected void addProperties(Map<String, String> propMap) throws OpenStegoException {
-        super.addProperties(propMap);
+    protected void processConfigItem(String key, Object value) {
+        if (key.equals(IMAGE_FILE_EXTENSION)) {
+            assert value instanceof String;
+            this.imageFileExtension = (String) value;
+        }
     }
 
     /**
@@ -64,6 +65,7 @@ public class DCTConfig extends OpenStegoConfig {
      *
      * @return imageFileExtension
      */
+    @SuppressWarnings("unused")
     public String getImageFileExtension() {
         return this.imageFileExtension;
     }
@@ -71,8 +73,9 @@ public class DCTConfig extends OpenStegoConfig {
     /**
      * Set method for configuration item - imageFileExtension
      *
-     * @param imageFileExtension
+     * @param imageFileExtension Value to be set
      */
+    @SuppressWarnings("unused")
     public void setImageFileExtension(String imageFileExtension) {
         this.imageFileExtension = imageFileExtension;
     }

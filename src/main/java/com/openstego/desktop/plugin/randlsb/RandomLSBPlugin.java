@@ -6,8 +6,6 @@
 
 package com.openstego.desktop.plugin.randlsb;
 
-import java.io.IOException;
-
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
 import com.openstego.desktop.plugin.lsb.LSBDataHeader;
@@ -16,6 +14,8 @@ import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.LabelUtil;
+
+import java.io.IOException;
 
 /**
  * Plugin for OpenStego which implements the Random LSB algorithm of steganography
@@ -29,7 +29,7 @@ public class RandomLSBPlugin extends LSBPlugin {
     /**
      * LabelUtil instance to retrieve labels
      */
-    private static LabelUtil labelUtil = LabelUtil.getInstance(NAMESPACE);
+    private static final LabelUtil labelUtil = LabelUtil.getInstance(NAMESPACE);
 
     /**
      * Default constructor
@@ -68,19 +68,19 @@ public class RandomLSBPlugin extends LSBPlugin {
      * @param coverFileName Name of the cover file
      * @param stegoFileName Name of the output stego file
      * @return Stego data containing the message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
-        int numOfPixels = 0;
-        ImageHolder image = null;
-        RandomLSBOutputStream lsbOS = null;
+        int numOfPixels;
+        ImageHolder image;
+        RandomLSBOutputStream lsbOS;
 
         try {
             // Generate random image, if input image is not provided
             if (cover == null) {
                 numOfPixels = (int) (LSBDataHeader.getMaxHeaderSize() * 8 / 3.0);
-                numOfPixels += (int) (msg.length * 8 / (3.0 * ((LSBConfig) this.config).getMaxBitsUsedPerChannel()));
+                numOfPixels += (int) (msg.length * 8 / (3.0 * this.config.getMaxBitsUsedPerChannel()));
                 image = ImageUtil.generateRandomImage(numOfPixels);
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
@@ -101,23 +101,15 @@ public class RandomLSBPlugin extends LSBPlugin {
      * @param stegoData     Stego data containing the message
      * @param stegoFileName Name of the stego file
      * @return Message file name
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public String extractMsgFileName(byte[] stegoData, String stegoFileName) throws OpenStegoException {
-        RandomLSBInputStream lsbIS = null;
-
-        try {
-            lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+        ImageHolder imgHolder = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
+        try (RandomLSBInputStream lsbIS = new RandomLSBInputStream(imgHolder, this.config)) {
             return lsbIS.getDataHeader().getFileName();
-        } finally {
-            if (lsbIS != null) {
-                try {
-                    lsbIS.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
+        } catch (IOException ioEx) {
+            throw new OpenStegoException(ioEx);
         }
     }
 
@@ -128,17 +120,16 @@ public class RandomLSBPlugin extends LSBPlugin {
      * @param stegoFileName Name of the stego file
      * @param origSigData   Optional signature data file for watermark
      * @return Extracted message
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public byte[] extractData(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
-        int bytesRead = 0;
-        byte[] data = null;
-        LSBDataHeader header = null;
-        RandomLSBInputStream lsbIS = null;
+        int bytesRead;
+        byte[] data;
+        LSBDataHeader header;
+        ImageHolder imgHolder = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
 
-        try {
-            lsbIS = new RandomLSBInputStream(ImageUtil.byteArrayToImage(stegoData, stegoFileName), this.config);
+        try (RandomLSBInputStream lsbIS = new RandomLSBInputStream(imgHolder, this.config)) {
             header = lsbIS.getDataHeader();
             data = new byte[header.getDataLength()];
 
@@ -148,18 +139,8 @@ public class RandomLSBPlugin extends LSBPlugin {
             }
 
             return data;
-        } catch (OpenStegoException osEx) {
-            throw osEx;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new OpenStegoException(ex);
-        } finally {
-            if (lsbIS != null) {
-                try {
-                    lsbIS.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
         }
     }
 
@@ -167,11 +148,10 @@ public class RandomLSBPlugin extends LSBPlugin {
      * Method to get the usage details of the plugin
      *
      * @return Usage details of the plugin
-     * @throws OpenStegoException
      */
     @Override
-    public String getUsage() throws OpenStegoException {
+    public String getUsage() {
         LSBConfig defaultConfig = new LSBConfig();
-        return labelUtil.getString("plugin.usage", Integer.valueOf(defaultConfig.getMaxBitsUsedPerChannel()));
+        return labelUtil.getString("plugin.usage", defaultConfig.getMaxBitsUsedPerChannel());
     }
 }

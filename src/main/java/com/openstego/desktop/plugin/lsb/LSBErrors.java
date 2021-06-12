@@ -47,10 +47,10 @@ public class LSBErrors {
      */
     public static final int INVALID_HEADER_VERSION = 7;
 
-    /*
+    /**
      * Initialize the error code - message key map
      */
-    static {
+    public static void init() {
         OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, ERR_IMAGE_DATA_READ, "err.image.read");
         OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, NULL_IMAGE_ARGUMENT, "err.image.arg.nullValue");
         OpenStegoException.addErrorCode(LSBPlugin.NAMESPACE, IMAGE_SIZE_INSUFFICIENT, "err.image.insufficientSize");

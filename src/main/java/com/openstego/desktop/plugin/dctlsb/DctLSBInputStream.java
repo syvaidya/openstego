@@ -6,11 +6,6 @@
 
 package com.openstego.desktop.plugin.dctlsb;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Random;
-
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.template.dct.DCTDataHeader;
@@ -18,6 +13,10 @@ import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.StringUtil;
 import com.openstego.desktop.util.dct.DCT;
+
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.util.Random;
 
 /**
  * InputStream to read embedded data from image file using DCT LSB algorithm
@@ -36,49 +35,49 @@ public class DctLSBInputStream extends InputStream {
     /**
      * Width of the image
      */
-    private int imgWidth = 0;
+    private int imgWidth;
 
     /**
      * Height of the image
      */
-    private int imgHeight = 0;
+    private int imgHeight;
 
     /**
      * Array to store Y component from YUV colorspace of the image
      */
-    private int[][] y = null;
+    private final int[][] y;
 
     /**
      * Object to handle DCT transforms
      */
-    private DCT dct = null;
+    private final DCT dct;
 
     /**
      * Array to store the DCT coefficients for the image
      */
-    private double[][] dcts = null;
+    private final double[][] dcts;
 
     /**
      * Coordinate hit check class
      */
-    private Coordinates coord = null;
+    private final Coordinates coord;
 
     /**
      * Random number generator
      */
-    private Random rand = null;
+    private final Random rand;
 
     /**
      * Configuration data
      */
-    private OpenStegoConfig config = null;
+    private final OpenStegoConfig config;
 
     /**
      * Default constructor
      *
-     * @param image Image data to be read
+     * @param image  Image data to be read
      * @param config Configuration data to use while reading
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public DctLSBInputStream(ImageHolder image, OpenStegoConfig config) throws OpenStegoException {
         if (image == null || image.getImage() == null) {
@@ -109,7 +108,7 @@ public class DctLSBInputStream extends InputStream {
     /**
      * Method to read header data from the input stream
      *
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     private void readHeader() throws OpenStegoException {
         this.dataHeader = new DCTDataHeader(this, this.config);
@@ -119,14 +118,13 @@ public class DctLSBInputStream extends InputStream {
      * Implementation of <code>InputStream.read()</code> method
      *
      * @return Byte read from the stream
-     * @throws IOException
      */
     @Override
-    public int read() throws IOException {
+    public int read() {
         int out = 0;
-        int xb = 0;
-        int yb = 0;
-        int coeffNum = 0;
+        int xb;
+        int yb;
+        int coeffNum;
 
         for (int count = 0; count < 8; count++) {
             if (this.n >= (this.imgWidth * this.imgHeight * 8)) {

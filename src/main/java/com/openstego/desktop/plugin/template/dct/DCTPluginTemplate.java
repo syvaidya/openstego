@@ -6,24 +6,22 @@
 
 package com.openstego.desktop.plugin.template.dct;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.OpenStegoPlugin;
-import com.openstego.desktop.ui.OpenStegoUI;
+import com.openstego.desktop.ui.OpenStegoFrame;
 import com.openstego.desktop.ui.PluginEmbedOptionsUI;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.cmd.CmdLineOptions;
 
+import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Template plugin for OpenStego which implements the DCT based steganography for images (transfer domain)
  */
-public abstract class DCTPluginTemplate extends OpenStegoPlugin {
+public abstract class DCTPluginTemplate extends OpenStegoPlugin<DCTConfig> {
     /**
      * Constant for Namespace to use for this plugin
      */
@@ -41,29 +39,28 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin {
 
     static {
         LabelUtil.addNamespace(NAMESPACE, "i18n.DCTPluginTemplateLabels");
-        new DCTErrors(); // Initialize error codes
+        DCTErrors.init(); // Initialize error codes
     }
 
     /**
      * Method to get the list of supported file extensions for reading
      *
      * @return List of supported file extensions for reading
-     * @throws OpenStegoException
      */
     @Override
-    public List<String> getReadableFileExtensions() throws OpenStegoException {
+    public List<String> getReadableFileExtensions() {
         if (readFormats != null) {
             return readFormats;
         }
 
-        String format = null;
-        String[] formats = null;
-        List<String> formatList = new ArrayList<String>();
+        String format;
+        String[] formats;
+        List<String> formatList = new ArrayList<>();
 
         formats = ImageIO.getReaderFormatNames();
-        for (int i = 0; i < formats.length; i++) {
-            format = formats[i].toLowerCase();
-            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
+        for (String s : formats) {
+            format = s.toLowerCase();
+            if (format.contains("jpeg") && format.contains("2000")) {
                 format = "jp2";
             }
             if (!formatList.contains(format)) {
@@ -80,22 +77,21 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin {
      * Method to get the list of supported file extensions for writing
      *
      * @return List of supported file extensions for writing
-     * @throws OpenStegoException
      */
     @Override
-    public List<String> getWritableFileExtensions() throws OpenStegoException {
+    public List<String> getWritableFileExtensions() {
         if (writeFormats != null) {
             return writeFormats;
         }
 
-        String format = null;
-        String[] formats = null;
-        List<String> formatList = new ArrayList<String>();
+        String format;
+        String[] formats;
+        List<String> formatList = new ArrayList<>();
 
         formats = ImageIO.getWriterFormatNames();
-        for (int i = 0; i < formats.length; i++) {
-            format = formats[i].toLowerCase();
-            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
+        for (String s : formats) {
+            format = s.toLowerCase();
+            if (format.contains("jpeg") && format.contains("2000")) {
                 format = "jp2";
             }
             if (!formatList.contains(format)) {
@@ -109,34 +105,35 @@ public abstract class DCTPluginTemplate extends OpenStegoPlugin {
     }
 
     /**
-     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     *
-     * @param stegoUI Reference to the parent OpenStegoUI object
-     * @return UI object specific to this plugin
-     * @throws OpenStegoException
-     */
-    @Override
-    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException {
-        return null;
-    }
-
-    /**
      * Method to populate the standard command-line options used by this plugin
      *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
-     * @throws OpenStegoException
      */
     @Override
-    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException {
+    public void populateStdCmdLineOptions(CmdLineOptions options) {
     }
 
     /**
-     * Method to get the configuration class specific to this plugin
+     * Method to create default configuration data (specific to this plugin)
      *
-     * @return Configuration class specific to this plugin
+     * @return Configuration data
      */
     @Override
-    public Class<? extends OpenStegoConfig> getConfigClass() {
-        return DCTConfig.class;
+    protected DCTConfig createConfig() {
+        return new DCTConfig();
+    }
+
+    /**
+     * Method to create configuration data (specific to this plugin) based on the command-line options
+     *
+     * @param options Command-line options
+     * @return Configuration data
+     * @throws OpenStegoException Processing issues
+     */
+    @Override
+    protected DCTConfig createConfig(CmdLineOptions options) throws OpenStegoException {
+        DCTConfig config = new DCTConfig();
+        config.initialize(options);
+        return config;
     }
 }

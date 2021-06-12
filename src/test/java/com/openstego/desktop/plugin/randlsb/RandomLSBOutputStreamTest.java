@@ -6,19 +6,19 @@
 
 package com.openstego.desktop.plugin.randlsb;
 
-import java.awt.image.BufferedImage;
-import java.nio.charset.StandardCharsets;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
 import com.openstego.desktop.plugin.lsb.LSBDataHeader;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.awt.image.BufferedImage;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit test class for {@link com.openstego.desktop.plugin.randlsb.RandomLSBOutputStream}
@@ -28,7 +28,7 @@ public class RandomLSBOutputStreamTest {
     @Before
     public void setup() {
         RandomLSBPlugin plugin = new RandomLSBPlugin();
-        Assert.assertNotNull(plugin);
+        assertNotNull(plugin);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class RandomLSBOutputStreamTest {
         String msg = "abcde";
 
         try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 5, "test.txt", config)) {
-            Assert.assertNotNull(os);
+            assertNotNull(os);
             // Write simple message
             os.write(msg.getBytes(StandardCharsets.UTF_8));
             os.flush();
@@ -50,32 +50,33 @@ public class RandomLSBOutputStreamTest {
         // Extract data back using RandomLSBInputStream and compare with original
         try (RandomLSBInputStream is = new RandomLSBInputStream(holder, new LSBConfig())) {
             LSBDataHeader header = is.getDataHeader();
-            Assert.assertEquals(1, header.getChannelBitsUsed());
-            Assert.assertEquals(5, header.getDataLength());
-            Assert.assertEquals("test.txt", header.getFileName());
+            assertEquals(1, header.getChannelBitsUsed());
+            assertEquals(5, header.getDataLength());
+            assertEquals("test.txt", header.getFileName());
             byte[] extMsg = new byte[5];
-            is.read(extMsg);
-            Assert.assertEquals(msg, new String(extMsg, StandardCharsets.UTF_8));
+            int n = is.read(extMsg);
+            assertEquals(msg.length(), n);
+            assertEquals(msg, new String(extMsg, StandardCharsets.UTF_8));
         }
     }
 
     @Test
     public void testNullImage() throws Exception {
         ImageHolder holder = new ImageHolder(null, null);
-        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 100, "test.txt", null)) {
+        try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(holder, 100, "test.txt", null)) {
+            fail("Did not throw OpenStegoException");
         } catch (OpenStegoException e) {
-            Assert.assertEquals(LSBPlugin.NAMESPACE, e.getNamespace());
-            Assert.assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, e.getErrorCode());
+            assertEquals(LSBPlugin.NAMESPACE, e.getNamespace());
+            assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, e.getErrorCode());
 
             // Try with null holder
-            try (RandomLSBOutputStream os = new RandomLSBOutputStream(null, 100, "test.txt", null)) {
+            try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(null, 100, "test.txt", null)) {
+                fail("Did not throw OpenStegoException");
             } catch (OpenStegoException oe) {
-                Assert.assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
-                Assert.assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, oe.getErrorCode());
-                return;
+                assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
+                assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, oe.getErrorCode());
             }
         }
-        Assert.fail("Exception not thrown");
     }
 
     @Test
@@ -85,8 +86,8 @@ public class RandomLSBOutputStreamTest {
         LSBConfig config = new LSBConfig();
         try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 100, "test.txt", config)) {
             // Image type should be converted to RGB
-            Assert.assertEquals(BufferedImage.TYPE_INT_RGB, os.getImage().getImage().getType());
-            Assert.assertNull(os.getImage().getMetadata());
+            assertEquals(BufferedImage.TYPE_INT_RGB, os.getImage().getImage().getType());
+            assertNull(os.getImage().getMetadata());
         }
     }
 
@@ -98,15 +99,14 @@ public class RandomLSBOutputStreamTest {
         // With 100x100 image and 3bits per channel used for data, approximately 90000/8 bytes can be embedded
         // Check that 11k bytes are ok, but 12k bytes fails
         try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 11000, "test.txt", config)) {
-            Assert.assertNotNull(os);
+            assertNotNull(os);
         }
-        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 12000, "test.txt", config)) {
+        try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(holder, 12000, "test.txt", config)) {
+            fail("Did not throw OpenStegoException");
         } catch (OpenStegoException oe) {
-            Assert.assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
-            Assert.assertEquals(LSBErrors.IMAGE_SIZE_INSUFFICIENT, oe.getErrorCode());
-            return;
+            assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
+            assertEquals(LSBErrors.IMAGE_SIZE_INSUFFICIENT, oe.getErrorCode());
         }
-        Assert.fail("Exception not thrown");
     }
 
 }

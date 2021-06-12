@@ -6,6 +6,8 @@
 
 package com.openstego.desktop.util;
 
+import com.openstego.desktop.OpenStegoException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,8 +16,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.openstego.desktop.OpenStegoException;
 
 /**
  * Utility class to manipulate strings
@@ -46,8 +46,8 @@ public class StringUtil {
      */
     public static long passwordHash(String password) throws OpenStegoException {
         final long DEFAULT_HASH = 98234782; // Default to a random (but constant) seed
-        byte[] byteHash = null;
-        String hexString = null;
+        byte[] byteHash;
+        String hexString;
 
         if (password == null || password.equals("")) {
             return DEFAULT_HASH;
@@ -70,12 +70,12 @@ public class StringUtil {
      *
      * @param input Input string
      * @return List of strings tokenized by line breaks
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     public static List<String> getStringLines(String input) throws OpenStegoException {
-        String str = null;
-        List<String> stringList = new ArrayList<String>();
-        BufferedReader reader = null;
+        String str;
+        List<String> stringList = new ArrayList<>();
+        BufferedReader reader;
 
         try {
             reader = new BufferedReader(new StringReader(input));
@@ -91,15 +91,5 @@ public class StringUtil {
         }
 
         return stringList;
-    }
-
-    /**
-     * Checks whether the given string is null or empty
-     *
-     * @param val Input string
-     * @return flag
-     */
-    public static boolean isNullOrEmpty(String val) {
-        return (val == null || val.length() == 0);
     }
 }

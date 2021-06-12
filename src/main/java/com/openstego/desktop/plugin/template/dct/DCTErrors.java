@@ -22,10 +22,10 @@ public class DCTErrors {
      */
     public static final int INVALID_HEADER_VERSION = 2;
 
-    /*
+    /**
      * Initialize the error code - message key map
      */
-    static {
+    public static void init() {
         OpenStegoException.addErrorCode(DCTPluginTemplate.NAMESPACE, INVALID_STEGO_HEADER, "err.invalidHeaderStamp");
         OpenStegoException.addErrorCode(DCTPluginTemplate.NAMESPACE, INVALID_HEADER_VERSION, "err.invalidHeaderVersion");
     }

@@ -22,10 +22,10 @@ public class DWTDugadErrors {
      */
     public static final int ERR_SIG_NOT_VALID = 2;
 
-    /*
+    /**
      * Initialize the error code - message key map
      */
-    static {
+    public static void init() {
         OpenStegoException.addErrorCode(DWTDugadPlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
         OpenStegoException.addErrorCode(DWTDugadPlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");
     }

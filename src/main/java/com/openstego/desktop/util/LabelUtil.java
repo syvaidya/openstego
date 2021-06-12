@@ -19,12 +19,12 @@ public class LabelUtil {
     /**
      * Static variable to hold the map of labels loaded from resource files
      */
-    private static Map<String, ResourceBundle> map = new HashMap<String, ResourceBundle>();
+    private static final Map<String, ResourceBundle> map = new HashMap<>();
 
     /**
      * Static variable to store the namespace map
      */
-    private static Map<String, LabelUtil> namespaceMap = new HashMap<String, LabelUtil>();
+    private static final Map<String, LabelUtil> namespaceMap = new HashMap<>();
 
     /**
      * Method to add new namespace using resource bundle
@@ -43,7 +43,7 @@ public class LabelUtil {
      * @return Instance of LabelUtil
      */
     public static LabelUtil getInstance(String namespace) {
-        LabelUtil util = null;
+        LabelUtil util;
 
         util = namespaceMap.get(namespace);
         if (util == null) {
@@ -57,7 +57,7 @@ public class LabelUtil {
     /**
      * Variable to store the current namespace
      */
-    private String namespace = null;
+    private final String namespace;
 
     /**
      * Constructor is protected

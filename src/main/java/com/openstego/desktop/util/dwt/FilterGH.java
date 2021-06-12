@@ -72,7 +72,7 @@ public class FilterGH {
     /**
      * Set method for id
      *
-     * @param id
+     * @param id Value to be set
      */
     public void setId(Integer id) {
         this.id = id;
@@ -90,7 +90,7 @@ public class FilterGH {
     /**
      * Set method for name
      *
-     * @param name
+     * @param name Value to be set
      */
     public void setName(String name) {
         this.name = name;
@@ -108,7 +108,7 @@ public class FilterGH {
     /**
      * Set method for type
      *
-     * @param type
+     * @param type Value to be set
      */
     public void setType(String type) {
         if (type.equalsIgnoreCase("orthogonal")) {
@@ -134,7 +134,7 @@ public class FilterGH {
     /**
      * Set method for filter g
      *
-     * @param g
+     * @param g Value to be set
      */
     public void setG(Filter g) {
         this.g = g;
@@ -152,7 +152,7 @@ public class FilterGH {
     /**
      * Set method for filter h
      *
-     * @param h
+     * @param h Value to be set
      */
     public void setH(Filter h) {
         this.h = h;
@@ -170,7 +170,7 @@ public class FilterGH {
     /**
      * Set method for filter gi
      *
-     * @param gi
+     * @param gi Value to be set
      */
     public void setGi(Filter gi) {
         this.gi = gi;
@@ -188,7 +188,7 @@ public class FilterGH {
     /**
      * Set method for filter hi
      *
-     * @param hi
+     * @param hi Value to be set
      */
     public void setHi(Filter hi) {
         this.hi = hi;

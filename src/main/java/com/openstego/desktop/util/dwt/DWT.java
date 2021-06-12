@@ -6,9 +6,9 @@
 
 package com.openstego.desktop.util.dwt;
 
-import java.util.Map;
-
 import com.openstego.desktop.util.ImageUtil;
+
+import java.util.Map;
 
 /**
  * Class to handle Discrete Wavelet Transforms (DWT).
@@ -28,32 +28,32 @@ public class DWT {
     /**
      * URI for the filter file
      */
-    private String filterFile = "/dwt/filters.xml";
+    private static final String FILTER_FILE = "/dwt/filters.xml";
 
     /**
      * List of loaded filters
      */
-    private FilterGH[] filters = null;
+    private final FilterGH[] filters;
 
     /**
      * Wavelet filtering method
      */
-    private int method = 0;
+    private final int method;
 
     /**
      * No. of columns in the image
      */
-    private int cols = 0;
+    private final int cols;
 
     /**
      * No. of rows in the image
      */
-    private int rows = 0;
+    private final int rows;
 
     /**
      * Wavelet decomposition level
      */
-    private int level = 0;
+    private final int level;
 
     /**
      * Default constructor
@@ -67,12 +67,12 @@ public class DWT {
     public DWT(int cols, int rows, int filterID, int level, int method) {
         // Read the master filter file if it is not already loaded
         if (filterGHMap == null) {
-            filterGHMap = FilterXMLReader.parse(this.filterFile);
+            filterGHMap = FilterXMLReader.parse(FILTER_FILE);
         }
 
         this.filters = new FilterGH[level + 1];
         for (int i = 0; i <= level; i++) {
-            this.filters[i] = filterGHMap.get(Integer.valueOf(filterID));
+            this.filters[i] = filterGHMap.get(filterID);
         }
 
         this.level = level;
@@ -88,8 +88,8 @@ public class DWT {
      * @return Image tree data after DWT
      */
     public ImageTree forwardDWT(int[][] pixels) {
-        Image image = null;
-        ImageTree tree = null;
+        Image image;
+        ImageTree tree;
 
         image = new Image(this.cols, this.rows);
 
@@ -104,35 +104,13 @@ public class DWT {
     }
 
     /**
-     * Method to perform forward DWT (WP) on the pixel data
-     *
-     * @param pixels Image pixel data
-     * @return Image tree data after DWT
-     */
-    public ImageTree forwardDWTwp(int[][] pixels) {
-        Image image = null;
-        ImageTree tree = null;
-
-        image = new Image(this.cols, this.rows);
-
-        for (int i = 0; i < this.rows; i++) {
-            for (int j = 0; j < this.cols; j++) {
-                DWTUtil.setPixel(image, j, i, pixels[i][j]);
-            }
-        }
-
-        tree = DWTUtil.waveletTransformWp(image, 0, this.level, this.filters, this.method);
-        return tree;
-    }
-
-    /**
      * Method to perform inverse DWT to get back the pixel data
      *
      * @param dwts   DWT data as image tree
      * @param pixels Image pixel data
      */
     public void inverseDWT(ImageTree dwts, int[][] pixels) {
-        Image image = null;
+        Image image;
 
         image = DWTUtil.inverseTransform(dwts, this.filters, this.method + 1);
 

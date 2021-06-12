@@ -6,25 +6,24 @@
 
 package com.openstego.desktop.plugin.template.image;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import com.openstego.desktop.DataHidingPlugin;
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
-import com.openstego.desktop.ui.OpenStegoUI;
+import com.openstego.desktop.ui.OpenStegoFrame;
 import com.openstego.desktop.ui.PluginEmbedOptionsUI;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.cmd.CmdLineOptions;
 
+import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Template plugin for OpenStego which implements image based steganography for data hiding
  */
-public abstract class DHImagePluginTemplate extends DataHidingPlugin {
+public abstract class DHImagePluginTemplate<C extends OpenStegoConfig> extends DataHidingPlugin<C> {
     /**
      * Static list of supported read formats
      */
@@ -44,14 +43,14 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin {
      * @param coverFileName Name of the cover file
      * @param diffFileName  Name of the output difference file
      * @return Difference data
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public final byte[] getDiff(byte[] stegoData, String stegoFileName, byte[] coverData, String coverFileName, String diffFileName)
             throws OpenStegoException {
-        ImageHolder stegoImage = null;
-        ImageHolder coverImage = null;
-        ImageHolder diffImage = null;
+        ImageHolder stegoImage;
+        ImageHolder coverImage;
+        ImageHolder diffImage;
 
         stegoImage = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
         coverImage = ImageUtil.byteArrayToImage(coverData, coverFileName);
@@ -64,22 +63,21 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin {
      * Method to get the list of supported file extensions for reading
      *
      * @return List of supported file extensions for reading
-     * @throws OpenStegoException
      */
     @Override
-    public List<String> getReadableFileExtensions() throws OpenStegoException {
+    public List<String> getReadableFileExtensions() {
         if (readFormats != null) {
             return readFormats;
         }
 
-        String format = null;
-        String[] formats = null;
-        readFormats = new ArrayList<String>();
+        String format;
+        String[] formats;
+        readFormats = new ArrayList<>();
 
         formats = ImageIO.getReaderFormatNames();
-        for (int i = 0; i < formats.length; i++) {
-            format = formats[i].toLowerCase();
-            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
+        for (String s : formats) {
+            format = s.toLowerCase();
+            if (format.contains("jpeg") && format.contains("2000")) {
                 format = "jp2";
             }
             if (!readFormats.contains(format)) {
@@ -95,7 +93,7 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin {
      * Method to get the list of supported file extensions for writing
      *
      * @return List of supported file extensions for writing
-     * @throws OpenStegoException
+     * @throws OpenStegoException Processing issues
      */
     @Override
     public List<String> getWritableFileExtensions() throws OpenStegoException {
@@ -103,14 +101,14 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin {
             return writeFormats;
         }
 
-        String format = null;
-        String[] formats = null;
-        writeFormats = new ArrayList<String>();
+        String format;
+        String[] formats;
+        writeFormats = new ArrayList<>();
 
         formats = ImageIO.getWriterFormatNames();
-        for (int i = 0; i < formats.length; i++) {
-            format = formats[i].toLowerCase();
-            if (format.indexOf("jpeg") >= 0 && format.indexOf("2000") >= 0) {
+        for (String s : formats) {
+            format = s.toLowerCase();
+            if (format.contains("jpeg") && format.contains("2000")) {
                 format = "jp2";
             }
             if (!writeFormats.contains(format)) {
@@ -123,34 +121,11 @@ public abstract class DHImagePluginTemplate extends DataHidingPlugin {
     }
 
     /**
-     * Method to get the UI object specific to this plugin, which will be embedded inside the main OpenStego GUI
-     *
-     * @param stegoUI Reference to the parent OpenStegoUI object
-     * @return UI object specific to this plugin
-     * @throws OpenStegoException
-     */
-    @Override
-    public PluginEmbedOptionsUI getEmbedOptionsUI(OpenStegoUI stegoUI) throws OpenStegoException {
-        return null;
-    }
-
-    /**
      * Method to populate the standard command-line options used by this plugin
      *
      * @param options Existing command-line options. Plugin-specific options will get added to this list
-     * @throws OpenStegoException
      */
     @Override
-    public void populateStdCmdLineOptions(CmdLineOptions options) throws OpenStegoException {
-    }
-
-    /**
-     * Method to get the configuration class specific to this plugin
-     *
-     * @return Configuration class specific to this plugin
-     */
-    @Override
-    public Class<? extends OpenStegoConfig> getConfigClass() {
-        return OpenStegoConfig.class;
+    public void populateStdCmdLineOptions(CmdLineOptions options) {
     }
 }
