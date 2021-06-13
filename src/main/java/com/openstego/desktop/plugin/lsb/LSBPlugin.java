@@ -79,7 +79,6 @@ public class LSBPlugin extends DHImagePluginTemplate<LSBConfig> {
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         int numOfPixels;
         ImageHolder image;
-        LSBOutputStream lsbOS;
 
         try {
             // Generate random image, if input image is not provided
@@ -90,11 +89,12 @@ public class LSBPlugin extends DHImagePluginTemplate<LSBConfig> {
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config);
-            lsbOS.write(msg);
-            lsbOS.close();
+            try (LSBOutputStream lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config)) {
+                lsbOS.write(msg);
+                image = lsbOS.getImage();
+            }
 
-            return ImageUtil.imageToByteArray(lsbOS.getImage(), stegoFileName, this);
+            return ImageUtil.imageToByteArray(image, stegoFileName, this);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }

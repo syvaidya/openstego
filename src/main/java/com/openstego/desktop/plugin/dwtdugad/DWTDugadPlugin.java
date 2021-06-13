@@ -30,6 +30,7 @@ import java.util.Random;
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
 public class DWTDugadPlugin extends WMImagePluginTemplate {
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -150,8 +151,6 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
         int[][] luminance;
         int cols;
         int rows;
-        ByteArrayOutputStream baos;
-        ObjectOutputStream oos;
         Object[] vals;
 
         image = ImageUtil.byteArrayToImage(stegoData, stegoFileName);
@@ -166,10 +165,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
         dwtTree = dwt.forwardDWT(luminance);
         s = dwtTree;
 
-        try {
-            baos = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(baos);
-
+        try (
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos)
+        ) {
             oos.writeBytes(WM_MARKER);
             oos.writeInt(sig.decompositionLevel);
             oos.writeDouble(sig.alpha);
@@ -194,7 +193,6 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
             }
 
             oos.flush();
-            oos.close();
             return baos.toByteArray();
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
@@ -446,12 +444,10 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
          * @throws OpenStegoException Processing issues
          */
         public byte[] getSigData() throws OpenStegoException {
-            ByteArrayOutputStream baos;
-            ObjectOutputStream oos;
-
-            try {
-                baos = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(baos);
+            try (
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ObjectOutputStream oos = new ObjectOutputStream(baos)
+            ) {
                 oos.write(this.sig);
                 oos.writeInt(this.watermarkLength);
                 oos.writeInt(this.waveletFilterMethod);
@@ -466,12 +462,11 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
                 }
 
                 oos.flush();
-                oos.close();
-
                 return baos.toByteArray();
             } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
     }
+
 }

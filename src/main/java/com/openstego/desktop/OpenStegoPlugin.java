@@ -145,7 +145,7 @@ public abstract class OpenStegoPlugin<C extends OpenStegoConfig> {
      * @return Correlation
      * @throws OpenStegoException Processing issues
      */
-    public final double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
+    public double checkMark(byte[] stegoData, String stegoFileName, byte[] origSigData) throws OpenStegoException {
         return getWatermarkCorrelation(origSigData, extractData(stegoData, stegoFileName, origSigData));
     }
 

@@ -328,8 +328,8 @@ public class OpenStegoUI extends OpenStegoFrame {
                 List<?> stegoOutput;
 
                 dhPlugin.resetConfig();
-                openStego = new OpenStego(dhPlugin, dhPlugin.getConfig());
-                config = openStego.getConfig();
+                config = dhPlugin.getConfig();
+                openStego = new OpenStego(dhPlugin, config);
                 config.setPassword(new String(getExtractPanel().getExtractPwdTextField().getPassword()));
                 stegoFileName = getExtractPanel().getInputStegoFileTextField().getText();
                 outputFolder = getExtractPanel().getOutputFolderTextField().getText();

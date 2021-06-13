@@ -25,6 +25,7 @@ import java.util.zip.GZIPOutputStream;
  * when using OpenStego as a library.
  */
 public class OpenStego {
+
     /**
      * Constant for the namespace for labels
      */
@@ -82,14 +83,12 @@ public class OpenStego {
         try {
             // Compress data, if requested
             if (this.config.isUseCompression()) {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                GZIPOutputStream zos = new GZIPOutputStream(bos);
-                zos.write(msg);
-                zos.finish();
-                zos.close();
-                bos.close();
-
-                msg = bos.toByteArray();
+                try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); GZIPOutputStream zos = new GZIPOutputStream(bos)) {
+                    zos.write(msg);
+                    zos.finish();
+                    zos.flush();
+                    msg = bos.toByteArray();
+                }
             }
 
             // Encrypt data, if requested
@@ -116,10 +115,6 @@ public class OpenStego {
      * @throws OpenStegoException Processing issues
      */
     public byte[] embedData(File msgFile, File coverFile, String stegoFileName) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
-        }
-
         String filename = null;
 
         // If no message file is provided, then read the data from stdin
@@ -128,7 +123,8 @@ public class OpenStego {
                 filename = msgFile.getName();
             }
 
-            return embedData(CommonUtil.streamToBytes(is), filename, coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
+            return embedData(CommonUtil.streamToBytes(is), filename,
+                    coverFile == null ? null : CommonUtil.fileToBytes(coverFile),
                     coverFile == null ? null : coverFile.getName(), stegoFileName);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
@@ -171,10 +167,6 @@ public class OpenStego {
      * @throws OpenStegoException Processing issues
      */
     public byte[] embedMark(File sigFile, File coverFile, String stegoFileName) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
-        }
-
         String filename = null;
 
         // If no signature file is provided, then read the data from stdin
@@ -245,10 +237,6 @@ public class OpenStego {
      * @throws OpenStegoException Processing issues
      */
     public List<?> extractData(File stegoFile) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.DATA_HIDING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_DH);
-        }
-
         return extractData(CommonUtil.fileToBytes(stegoFile), stegoFile.getName());
     }
 
@@ -266,7 +254,11 @@ public class OpenStego {
             throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
         }
 
-        return this.plugin.checkMark(stegoData, stegoFileName, origSigData);
+        double correl = this.plugin.checkMark(stegoData, stegoFileName, origSigData);
+        if (Double.isNaN(correl)) {
+            correl = 0.0;
+        }
+        return correl;
     }
 
     /**
@@ -278,15 +270,7 @@ public class OpenStego {
      * @throws OpenStegoException Processing issues
      */
     public double checkMark(File stegoFile, File origSigFile) throws OpenStegoException {
-        if (!this.plugin.getPurposes().contains(OpenStegoPlugin.Purpose.WATERMARKING)) {
-            throw new OpenStegoException(null, OpenStego.NAMESPACE, OpenStegoErrors.PLUGIN_DOES_NOT_SUPPORT_WM);
-        }
-
-        double correl = checkMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
-        if (Double.isNaN(correl)) {
-            correl = 0.0;
-        }
-        return correl;
+        return checkMark(CommonUtil.fileToBytes(stegoFile), stegoFile.getName(), CommonUtil.fileToBytes(origSigFile));
     }
 
     /**
@@ -380,4 +364,5 @@ public class OpenStego {
             ex.printStackTrace(System.err);
         }
     }
+
 }

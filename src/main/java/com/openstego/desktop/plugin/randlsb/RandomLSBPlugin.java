@@ -7,10 +7,7 @@
 package com.openstego.desktop.plugin.randlsb;
 
 import com.openstego.desktop.OpenStegoException;
-import com.openstego.desktop.plugin.lsb.LSBConfig;
-import com.openstego.desktop.plugin.lsb.LSBDataHeader;
-import com.openstego.desktop.plugin.lsb.LSBErrors;
-import com.openstego.desktop.plugin.lsb.LSBPlugin;
+import com.openstego.desktop.plugin.lsb.*;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.LabelUtil;
@@ -74,7 +71,6 @@ public class RandomLSBPlugin extends LSBPlugin {
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         int numOfPixels;
         ImageHolder image;
-        RandomLSBOutputStream lsbOS;
 
         try {
             // Generate random image, if input image is not provided
@@ -85,11 +81,12 @@ public class RandomLSBPlugin extends LSBPlugin {
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            lsbOS = new RandomLSBOutputStream(image, msg.length, msgFileName, this.config);
-            lsbOS.write(msg);
-            lsbOS.close();
+            try (LSBOutputStream lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config)) {
+                lsbOS.write(msg);
+                image = lsbOS.getImage();
+            }
 
-            return ImageUtil.imageToByteArray(lsbOS.getImage(), stegoFileName, this);
+            return ImageUtil.imageToByteArray(image, stegoFileName, this);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }

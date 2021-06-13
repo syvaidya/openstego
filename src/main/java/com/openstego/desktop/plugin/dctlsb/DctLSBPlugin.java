@@ -76,7 +76,6 @@ public class DctLSBPlugin extends WMImagePluginTemplate {
     @Override
     public byte[] embedData(byte[] msg, String msgFileName, byte[] cover, String coverFileName, String stegoFileName) throws OpenStegoException {
         ImageHolder image;
-        DctLSBOutputStream os;
         int imgType;
 
         try {
@@ -87,11 +86,12 @@ public class DctLSBPlugin extends WMImagePluginTemplate {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
             imgType = image.getImage().getType();
-            os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config);
-            os.write(msg);
-            os.close();
+            try (DctLSBOutputStream os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config)) {
+                os.write(msg);
+                image = os.getImage(imgType);
+            }
 
-            return ImageUtil.imageToByteArray(os.getImage(imgType), stegoFileName, this);
+            return ImageUtil.imageToByteArray(image, stegoFileName, this);
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
         }

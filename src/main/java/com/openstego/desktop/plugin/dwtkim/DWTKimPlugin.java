@@ -30,6 +30,7 @@ import java.util.Random;
  * Master's Thesis, Department of Scientific Computing, University of Salzburg, Austria, January 2001.
  */
 public class DWTKimPlugin extends WMImagePluginTemplate {
+
     /**
      * LabelUtil instance to retrieve labels
      */
@@ -417,12 +418,10 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
          * @throws OpenStegoException Processing issues
          */
         public byte[] getSigData() throws OpenStegoException {
-            ByteArrayOutputStream baos;
-            ObjectOutputStream oos;
-
-            try {
-                baos = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(baos);
+            try (
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ObjectOutputStream oos = new ObjectOutputStream(baos)
+            ) {
                 oos.write(this.sig);
                 oos.writeInt(this.watermarkLength);
                 oos.writeDouble(this.alphaForDetailSubBand);
@@ -434,13 +433,13 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
                 for (double v : this.watermark) {
                     oos.writeDouble(v);
                 }
-                oos.flush();
-                oos.close();
 
+                oos.flush();
                 return baos.toByteArray();
             } catch (IOException ioEx) {
                 throw new OpenStegoException(ioEx);
             }
         }
     }
+
 }

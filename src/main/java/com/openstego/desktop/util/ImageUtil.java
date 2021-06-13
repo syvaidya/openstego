@@ -27,6 +27,7 @@ import java.util.List;
  * Image utilities
  */
 public class ImageUtil {
+
     /**
      * Constructor is private so that this class is not instantiated
      */
@@ -63,8 +64,9 @@ public class ImageUtil {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     random.nextBytes(rgbValue);
-                    image.setRGB(x, y,
-                            CommonUtil.byteToInt(rgbValue[0]) + (CommonUtil.byteToInt(rgbValue[1]) << 8) + (CommonUtil.byteToInt(rgbValue[2]) << 16));
+                    image.setRGB(x, y, CommonUtil.byteToInt(rgbValue[0]) +
+                            (CommonUtil.byteToInt(rgbValue[1]) << 8) +
+                            (CommonUtil.byteToInt(rgbValue[2]) << 16));
                 }
             }
 
@@ -452,4 +454,5 @@ public class ImageUtil {
             throw new OpenStegoException(e);
         }
     }
+
 }

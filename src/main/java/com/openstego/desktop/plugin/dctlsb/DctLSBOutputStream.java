@@ -224,8 +224,15 @@ public class DctLSBOutputStream extends OutputStream {
      *
      * @param imgType Type of image
      * @return Image data
+     * @throws OpenStegoException Processing issues
      */
-    public ImageHolder getImage(int imgType) {
+    public ImageHolder getImage(int imgType) throws OpenStegoException {
+        try {
+            flush();
+        } catch (IOException ioEx) {
+            throw new OpenStegoException(ioEx);
+        }
+
         List<int[][]> yuv = new ArrayList<>();
         yuv.add(this.y);
         yuv.add(this.u);
