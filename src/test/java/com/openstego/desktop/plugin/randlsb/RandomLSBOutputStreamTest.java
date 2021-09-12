@@ -12,20 +12,20 @@ import com.openstego.desktop.plugin.lsb.LSBDataHeader;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test class for {@link com.openstego.desktop.plugin.randlsb.RandomLSBOutputStream}
  */
 public class RandomLSBOutputStreamTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         RandomLSBPlugin plugin = new RandomLSBPlugin();
         assertNotNull(plugin);

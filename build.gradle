@@ -3,10 +3,12 @@
  * Copyright (c) Samir Vaidya (mailto:syvaidya@gmail.com)
  */
 
-import java.text.SimpleDateFormat
-import org.apache.tools.ant.filters.ReplaceTokens
+
 import org.apache.tools.ant.filters.FixCrLfFilter
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.apache.tools.ant.taskdefs.condition.Os
+
+import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
@@ -52,12 +54,16 @@ sourceSets {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.+'
+    testImplementation 'org.mockito:mockito-core:3.+'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.+'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.+'
 }
 
 compileJava {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
 }
 
 processResources {
@@ -79,7 +85,7 @@ jar {
 }
 
 test {
-    useJUnit()
+    useJUnitPlatform()
     finalizedBy jacocoTestReport
 }
 
@@ -89,6 +95,17 @@ jacocoTestReport {
         xml.enabled false
         csv.enabled false
         html.enabled true
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn test
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.9
+            }
+        }
     }
 }
 
