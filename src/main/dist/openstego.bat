@@ -8,10 +8,10 @@ if "%OS%"=="Windows_NT" setlocal
 rem Set options to be passed to java command line
 set JAVA_OPTS=-Xmx1024m
 
-if defined JAVA_HOME goto findJavaFromJavaHome
-
 set JAVA_EXE=java
 if "%1"=="" set JAVA_EXE=javaw
+
+if defined JAVA_HOME goto findJavaFromJavaHome
 
 java -version >NUL 2>&1
 if "%ERRORLEVEL%" == "0" goto execute
