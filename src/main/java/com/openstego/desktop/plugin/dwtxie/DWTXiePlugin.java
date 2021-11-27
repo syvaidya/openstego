@@ -17,6 +17,7 @@ import com.openstego.desktop.util.dwt.DWTUtil;
 import com.openstego.desktop.util.dwt.ImageTree;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -396,7 +397,7 @@ public class DWTXiePlugin extends WMImagePluginTemplate {
         /**
          * Signature stamp
          */
-        private final byte[] sig = "XESG".getBytes();
+        private final byte[] sig = "XESG".getBytes(StandardCharsets.UTF_8);
 
         /**
          * Length of the watermark (in bytes)

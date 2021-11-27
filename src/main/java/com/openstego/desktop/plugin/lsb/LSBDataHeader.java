@@ -21,7 +21,7 @@ public class LSBDataHeader {
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
      */
-    public static final byte[] DATA_STAMP = "OPENSTEGO".getBytes();
+    public static final byte[] DATA_STAMP = "OPENSTEGO".getBytes(StandardCharsets.UTF_8);
 
     /**
      * Header version to distinguish between various versions of data embedding. This should be changed to next
@@ -182,8 +182,8 @@ public class LSBDataHeader {
         out[currIndex++] = (byte) (this.config.isUseEncryption() ? 1 : 0);
 
         if (this.config.getEncryptionAlgorithm() != null) {
-            System.arraycopy(this.config.getEncryptionAlgorithm().getBytes(), 0, out, currIndex,
-                    this.config.getEncryptionAlgorithm().getBytes().length);
+            byte[] encAlgo = this.config.getEncryptionAlgorithm().getBytes(StandardCharsets.UTF_8);
+            System.arraycopy(encAlgo, 0, out, currIndex, encAlgo.length);
         }
         currIndex += CRYPT_ALGO_LENGTH;
 

@@ -146,7 +146,7 @@ public class RandomLSBInputStream extends InputStream {
      * @param bit     The bit position
      * @return The bit at the given position, as the LSB of an integer
      */
-    public int getPixelBit(int x, int y, int channel, int bit) {
+    private int getPixelBit(int x, int y, int channel, int bit) {
         return ((this.image.getImage().getRGB(x, y) >> ((channel * 8) + bit)) & 0x1);
     }
 }

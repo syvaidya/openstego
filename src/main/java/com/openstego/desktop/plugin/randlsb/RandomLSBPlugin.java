@@ -81,8 +81,9 @@ public class RandomLSBPlugin extends LSBPlugin {
             } else {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
-            try (LSBOutputStream lsbOS = new LSBOutputStream(image, msg.length, msgFileName, this.config)) {
+            try (RandomLSBOutputStream lsbOS = new RandomLSBOutputStream(image, msg.length, msgFileName, this.config)) {
                 lsbOS.write(msg);
+                lsbOS.flush();
                 image = lsbOS.getImage();
             }
 

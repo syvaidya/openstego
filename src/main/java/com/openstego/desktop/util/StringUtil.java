@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class StringUtil {
         }
 
         try {
-            byteHash = MessageDigest.getInstance("MD5").digest(password.getBytes());
+            byteHash = MessageDigest.getInstance("MD5").digest(password.getBytes(StandardCharsets.UTF_8));
             hexString = getHexString(byteHash);
 
             // Hex string will be 32 bytes long whereas parsing to long can handle only 16 bytes, so trim it

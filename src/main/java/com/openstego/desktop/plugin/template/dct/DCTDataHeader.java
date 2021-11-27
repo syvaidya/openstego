@@ -21,7 +21,7 @@ public class DCTDataHeader {
     /**
      * Magic string at the start of the header to identify OpenStego embedded data
      */
-    public static final byte[] DATA_STAMP = "OSDCT".getBytes();
+    public static final byte[] DATA_STAMP = "OSDCT".getBytes(StandardCharsets.UTF_8);
 
     /**
      * Header version to distinguish between various versions of data embedding. This should be changed to next
