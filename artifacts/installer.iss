@@ -7,6 +7,8 @@
 AppName=@AppName@
 AppVersion=@AppVersion@
 AppVerName=@AppName@ v@AppVersion@
+AppPublisher=@AuthorName@
+AppPublisherURL=@HomepageUrl@
 WizardStyle=modern
 SourceDir=@AppDir@
 OutputDir=@DistDir@

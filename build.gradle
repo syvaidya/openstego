@@ -163,10 +163,12 @@ tasks.register("distWin", Exec) {
             from 'artifacts/installer.iss'
             into "${buildDir}/generated"
             filter(ReplaceTokens, tokens: [
-                    'AppName'   : projectName,
-                    'AppVersion': project.version,
-                    'AppDir'    : distBaseDir.path,
-                    'DistDir'   : project.buildDir.path + '\\distributions'
+                    'AppName'    : projectName,
+                    'AppVersion' : project.version,
+                    'AuthorName' : project.author,
+                    'HomepageUrl': project.homepageUrl,
+                    'AppDir'     : distBaseDir.path,
+                    'DistDir'    : project.buildDir.path + '\\distributions'
             ])
         }
     }
