@@ -57,6 +57,7 @@ public class LSBConfig extends OpenStegoConfig {
      */
     @Override
     protected void processConfigItem(String key, Object value) throws OpenStegoException {
+        super.processConfigItem(key, value);
         if (key.equals(MAX_BITS_USED_PER_CHANNEL)) {
             assert value instanceof Integer;
             this.maxBitsUsedPerChannel = (int) value;

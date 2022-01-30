@@ -53,7 +53,8 @@ public class DCTConfig extends OpenStegoConfig {
      * @param value Configuration item value
      */
     @Override
-    protected void processConfigItem(String key, Object value) {
+    protected void processConfigItem(String key, Object value) throws OpenStegoException {
+        super.processConfigItem(key, value);
         if (key.equals(IMAGE_FILE_EXTENSION)) {
             assert value instanceof String;
             this.imageFileExtension = (String) value;
