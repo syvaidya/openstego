@@ -10,6 +10,7 @@ import com.openstego.desktop.OpenStego;
 import com.openstego.desktop.OpenStegoErrors;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.OpenStegoPlugin;
+import org.w3c.dom.Node;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
@@ -431,7 +432,31 @@ public class ImageUtil {
 
             ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
             writer.setOutput(ImageIO.createImageOutputStream(os));
-            writer.write(null, new IIOImage(image.getImage(), null, image.getMetadata()), jpegParams);
+
+            // We only copy over EXIF data from original file
+            IIOMetadata metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image.getImage()), jpegParams);
+            String metadataFormatName = image.getMetadata().getNativeMetadataFormatName();
+            Node mdRoot = image.getMetadata().getAsTree(metadataFormatName);
+            Node mdNode = mdRoot.getFirstChild();
+            while (mdNode != null) {
+                if ("markerSequence".equals(mdNode.getNodeName())) {
+                    Node marker = mdNode.getFirstChild();
+                    while (marker != null) {
+                        Node next = marker.getNextSibling();
+                        // Remove all markers other than EXIF (225)
+                        if (marker.getAttributes().getNamedItem("MarkerTag") == null
+                                || !"225".equals(marker.getAttributes().getNamedItem("MarkerTag").getNodeValue())) {
+                            mdNode.removeChild(marker);
+                        }
+                        marker = next;
+                    }
+                    break;
+                }
+                mdNode = mdNode.getNextSibling();
+            }
+            metadata.mergeTree(metadataFormatName, mdRoot);
+
+            writer.write(null, new IIOImage(image.getImage(), null, metadata), jpegParams);
         } catch (IOException e) {
             throw new OpenStegoException(e);
         }
