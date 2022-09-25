@@ -23,10 +23,16 @@ public class DWTDugadErrors {
     public static final int ERR_SIG_NOT_VALID = 2;
 
     /**
+     * Error Code - file size not enough to embed watermark
+     */
+    public static final int ERR_FILE_TOO_SMALL = 3;
+
+    /**
      * Initialize the error code - message key map
      */
     public static void init() {
         OpenStegoException.addErrorCode(DWTDugadPlugin.NAMESPACE, ERR_NO_COVER_FILE, "err.cover.missing");
         OpenStegoException.addErrorCode(DWTDugadPlugin.NAMESPACE, ERR_SIG_NOT_VALID, "err.signature.invalid");
+        OpenStegoException.addErrorCode(DWTDugadPlugin.NAMESPACE, ERR_FILE_TOO_SMALL, "err.file.too.small");
     }
 }

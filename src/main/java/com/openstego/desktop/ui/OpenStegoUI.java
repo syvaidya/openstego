@@ -5,10 +5,7 @@
  */
 package com.openstego.desktop.ui;
 
-import com.openstego.desktop.OpenStego;
-import com.openstego.desktop.OpenStegoConfig;
-import com.openstego.desktop.OpenStegoException;
-import com.openstego.desktop.OpenStegoPlugin;
+import com.openstego.desktop.*;
 import com.openstego.desktop.util.CommonUtil;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.ui.WorkerTask;
@@ -237,6 +234,7 @@ public class OpenStegoUI extends OpenStegoFrame {
                     coverFileList.add(null);
                 }
 
+                OpenStegoBulkException bulkException = new OpenStegoBulkException();
                 for (int i = 0; i < coverFileList.size(); i++) {
                     setProgress(i * 100 / coverFileList.size());
                     cvrFile = coverFileList.get(i);
@@ -266,11 +264,16 @@ public class OpenStegoUI extends OpenStegoFrame {
                     }
 
                     processCount++;
-                    stegoData = openStego.embedData(
-                            dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName),
-                            cvrFile, outputFileName);
-                    CommonUtil.writeFile(stegoData, outputFileName);
+                    try {
+                        stegoData = openStego.embedData(
+                                dataFileName == null || dataFileName.equals("") ? null : new File(dataFileName),
+                                cvrFile, outputFileName);
+                        CommonUtil.writeFile(stegoData, outputFileName);
+                    } catch (OpenStegoException e) {
+                        bulkException.add(cvrFile == null ? "-" : cvrFile.getName(), e);
+                    }
                 }
+                bulkException.throwIfRequired();
 
                 return new Integer[]{processCount, skipCount};
             }
@@ -501,6 +504,7 @@ public class OpenStegoUI extends OpenStegoFrame {
                 outputFileName = getEmbedWmPanel().getOutputWmFileTextField().getText();
                 outputFile = new File(outputFileName);
 
+                OpenStegoBulkException bulkException = new OpenStegoBulkException();
                 for (int i = 0; i < inputFileList.size(); i++) {
                     setProgress(i * 100 / inputFileList.size());
                     inputFile = inputFileList.get(i);
@@ -529,10 +533,15 @@ public class OpenStegoUI extends OpenStegoFrame {
                     }
 
                     processCount++;
-                    wmData = openStego.embedMark(sigFileName == null || sigFileName.equals("") ? null : new File(sigFileName), inputFile,
-                            outputFileName);
-                    CommonUtil.writeFile(wmData, outputFileName);
+                    try {
+                        wmData = openStego.embedMark(sigFileName == null || sigFileName.equals("") ? null : new File(sigFileName), inputFile,
+                                outputFileName);
+                        CommonUtil.writeFile(wmData, outputFileName);
+                    } catch (OpenStegoException e) {
+                        bulkException.add(inputFile.getName(), e);
+                    }
                 }
+                bulkException.throwIfRequired();
 
                 return new Integer[]{processCount, skipCount};
             }
@@ -826,22 +835,26 @@ public class OpenStegoUI extends OpenStegoFrame {
      * @param ex Exception to be handled
      */
     private void handleException(Throwable ex) {
-        String msg;
+        Object msg;
 
         if (ex instanceof OutOfMemoryError) {
             msg = labelUtil.getString("err.memory.full");
         } else if (ex instanceof OpenStegoException) {
             msg = ex.getMessage();
+        } else if (ex instanceof OpenStegoBulkException) {
+            msg = getBulkMessage((OpenStegoBulkException) ex);
         } else {
             Throwable cause = ex.getCause();
             if (cause instanceof OpenStegoException) {
                 msg = cause.getMessage();
+            } else if (cause instanceof OpenStegoBulkException) {
+                msg = getBulkMessage((OpenStegoBulkException) cause);
             } else {
                 msg = ex.getMessage();
             }
         }
 
-        if ((msg == null) || (msg.trim().equals(""))) {
+        if (msg == null || (msg instanceof String && ((String) msg).trim().equals(""))) {
             StringWriter writer = new StringWriter();
             ex.printStackTrace(new PrintWriter(writer));
             msg = writer.toString();
@@ -849,6 +862,35 @@ public class OpenStegoUI extends OpenStegoFrame {
 
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this, msg, labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Helper method to build single output component out of all exceptions within a Bulk Exception
+     *
+     * @param ex Bulk Exception
+     * @return Output message component
+     */
+    private Object getBulkMessage(OpenStegoBulkException ex) {
+        int len = ex.getExceptions().size();
+        if (len == 1) {
+            return ex.getExceptions().get(0);
+        }
+
+        String prefix = "<html><head><style type='text/css'>" +
+                "table, th, td { border: 1px solid #333; }" +
+                "table { border-width: 0 0 1px 1px }" +
+                "th, td { border-width: 1px 1px 0 0 }" +
+                "td { background-color: white }" +
+                "</style></head><body><table border='0' cellspacing='0' cellpadding='5'>";
+        StringBuilder sb = new StringBuilder(prefix).append("<tr><th>")
+                .append(labelUtil.getString("gui.msg.err.header.file")).append("</th><th>")
+                .append(labelUtil.getString("gui.msg.err.header.error")).append("</th></tr>");
+        for (int i = 0; i < ex.getKeys().size(); i++) {
+            sb.append("<tr><td>").append(ex.getKeys().get(i)).append("</td><td>")
+                    .append(ex.getExceptions().get(i).getMessage()).append("</td></tr>");
+        }
+        sb.append("</table></body></html>");
+        return new JLabel(sb.toString());
     }
 
     /**

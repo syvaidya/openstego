@@ -120,6 +120,9 @@ public class DWTDugadPlugin extends WMImagePluginTemplate {
 
         // Embed watermark in all subbands of a decomposition level
         for (int i = 0; i < sig.decompositionLevel; i++) {
+            if (s.getHorizontal() == null || s.getVertical() == null || s.getDiagonal() == null) {
+                throw new OpenStegoException(null, NAMESPACE, DWTDugadErrors.ERR_FILE_TOO_SMALL);
+            }
             wmSubBand(s.getHorizontal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             wmSubBand(s.getVertical().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);
             wmSubBand(s.getDiagonal().getImage(), sig.watermark, sig.watermarkLength, sig.alpha, sig.castingThreshold);

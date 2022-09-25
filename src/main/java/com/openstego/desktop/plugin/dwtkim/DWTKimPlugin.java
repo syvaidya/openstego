@@ -129,6 +129,10 @@ public class DWTKimPlugin extends WMImagePluginTemplate {
 
         // process each decomposition level
         while (p.getCoarse() != null) {
+            if (p.getHorizontal() == null || p.getVertical() == null || p.getDiagonal() == null) {
+                throw new OpenStegoException(null, NAMESPACE, DWTKimErrors.ERR_FILE_TOO_SMALL);
+            }
+
             double threshold;
 
             // Get current decomposition level number

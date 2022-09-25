@@ -172,6 +172,15 @@ public class OpenStegoCmd {
             } else {
                 System.err.println(osEx.getMessage());
             }
+        } catch (OpenStegoBulkException bulkEx) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bulkEx.getExceptions().size(); i++) {
+                sb.append("  ").append(i + 1).append(". ").append(bulkEx.getKeys().get(i)).append(": ")
+                        .append(bulkEx.getExceptions().get(i).getMessage()).append("\n");
+            }
+            System.err.println();
+            System.err.println(labelUtil.getString("cmd.label.bulkerror.header"));
+            System.err.println(sb);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -182,9 +191,11 @@ public class OpenStegoCmd {
      *
      * @param options Command-line options
      * @param stego   {@link OpenStego} object
-     * @throws OpenStegoException Processing issues
+     * @throws OpenStegoException     Processing issues
+     * @throws OpenStegoBulkException Errors for multiple files
      */
-    private static void executeEmbed(CmdLineOptions options, OpenStego stego) throws OpenStegoException {
+    private static void executeEmbed(CmdLineOptions options, OpenStego stego)
+            throws OpenStegoException, OpenStegoBulkException {
         String msgFileName = options.getStringValue("-mf");
         String coverFileName = options.getStringValue("-cf");
         String stegoFileName = options.getStringValue("-sf");
@@ -216,12 +227,18 @@ public class OpenStegoCmd {
                 System.err.println(labelUtil.getString("cmd.warn.stegoFileIgnored"));
             }
 
+            OpenStegoBulkException bulkException = new OpenStegoBulkException();
             // Loop through all cover files
             for (File file : coverFileList) {
                 coverFileName = file.getName();
-                CommonUtil.writeFile(stego.embedData(msgFile, file, coverFileName), coverFileName);
-                System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
+                try {
+                    CommonUtil.writeFile(stego.embedData(msgFile, file, coverFileName), coverFileName);
+                    System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
+                } catch (OpenStegoException e) {
+                    bulkException.add(coverFileName, e);
+                }
             }
+            bulkException.throwIfRequired();
         }
     }
 
@@ -230,9 +247,11 @@ public class OpenStegoCmd {
      *
      * @param options Command-line options
      * @param stego   {@link OpenStego} object
-     * @throws OpenStegoException Processing issues
+     * @throws OpenStegoException     Processing issues
+     * @throws OpenStegoBulkException Errors for multiple files
      */
-    private static void executeEmbedMark(CmdLineOptions options, OpenStego stego) throws OpenStegoException {
+    private static void executeEmbedMark(CmdLineOptions options, OpenStego stego)
+            throws OpenStegoException, OpenStegoBulkException {
         String sigFileName = options.getStringValue("-gf");
         String coverFileName = options.getStringValue("-cf");
         String stegoFileName = options.getStringValue("-sf");
@@ -258,12 +277,18 @@ public class OpenStegoCmd {
                 System.err.println(labelUtil.getString("cmd.warn.stegoFileIgnored"));
             }
 
+            OpenStegoBulkException bulkException = new OpenStegoBulkException();
             // Loop through all cover files
             for (File file : coverFileList) {
                 coverFileName = file.getName();
-                CommonUtil.writeFile(stego.embedMark(sigFile, file, coverFileName), coverFileName);
-                System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
+                try {
+                    CommonUtil.writeFile(stego.embedMark(sigFile, file, coverFileName), coverFileName);
+                    System.err.println(labelUtil.getString("cmd.msg.coverProcessed", coverFileName));
+                } catch (OpenStegoException e) {
+                    bulkException.add(coverFileName, e);
+                }
             }
+            bulkException.throwIfRequired();
         }
     }
 

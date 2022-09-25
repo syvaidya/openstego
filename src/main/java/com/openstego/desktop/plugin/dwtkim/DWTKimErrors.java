@@ -28,6 +28,11 @@ public class DWTKimErrors {
     public static final int ERR_SIG_NOT_VALID = 3;
 
     /**
+     * Error Code - file size not enough to embed watermark
+     */
+    public static final int ERR_FILE_TOO_SMALL = 3;
+
+    /**
      * Initialize the error code - message key map
      */
     public static void init() {

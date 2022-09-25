@@ -14,6 +14,7 @@ import com.openstego.desktop.util.UserPreferences;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -118,7 +119,7 @@ public class OpenStego {
         String filename = null;
 
         // If no message file is provided, then read the data from stdin
-        try (InputStream is = (msgFile == null ? System.in : new FileInputStream(msgFile))) {
+        try (InputStream is = (msgFile == null ? System.in : Files.newInputStream(msgFile.toPath()))) {
             if (msgFile != null) {
                 filename = msgFile.getName();
             }
@@ -170,7 +171,7 @@ public class OpenStego {
         String filename = null;
 
         // If no signature file is provided, then read the data from stdin
-        try (InputStream is = (sigFile == null ? System.in : new FileInputStream(sigFile))) {
+        try (InputStream is = (sigFile == null ? System.in : Files.newInputStream(sigFile.toPath()))) {
             if (sigFile != null) {
                 filename = sigFile.getName();
             }
