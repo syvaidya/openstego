@@ -54,16 +54,16 @@ sourceSets {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.+'
-    testImplementation 'org.mockito:mockito-core:3.+'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation 'org.mockito:mockito-core:4.8.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.8.0'
 
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
 compileJava {
-    sourceCompatibility = '11'
-    targetCompatibility = '11'
+    sourceCompatibility = '8'
+    targetCompatibility = '8'
 }
 
 processResources {
@@ -92,9 +92,9 @@ test {
 jacocoTestReport {
     dependsOn test
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.enabled true
+        xml.required = false
+        csv.required = false
+        html.required = true
     }
 }
 
