@@ -473,7 +473,14 @@ public class ImageUtil {
             ImageReader reader = readers.next();
             reader.setInput(imageIS);
             BufferedImage image = reader.read(0);
-            IIOMetadata metadata = reader.getImageMetadata(0);
+            IIOMetadata metadata;
+            try {
+                metadata = reader.getImageMetadata(0);
+            } catch (IOException e) {
+                ImageWriter writer = ImageIO.getImageWriter(reader);
+                ImageWriteParam param = writer.getDefaultWriteParam();
+                metadata = writer.getDefaultImageMetadata(ImageTypeSpecifier.createFromRenderedImage(image), param);
+            }
             return new ImageHolder(image, metadata);
         } catch (IOException e) {
             throw new OpenStegoException(e);
