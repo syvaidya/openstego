@@ -9,15 +9,22 @@ import com.openstego.desktop.OpenStego;
 import com.openstego.desktop.OpenStegoErrors;
 import com.openstego.desktop.OpenStegoException;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * User preferences manager
  */
 public class UserPreferences {
-    private static final String PREF_FILENAME = "openstego.ini";
-    private static final String DEFAULT_PREF_FILENAME = "openstego.default.ini";
+    private static final String PREF_FILENAME = "openstego.cfg";
+    private static final String DEFAULT_PREF_FILENAME = "openstego.default.cfg";
     private static Properties prefs = null;
 
     /**
@@ -39,32 +46,40 @@ public class UserPreferences {
 
         prefs = new Properties();
 
-        // Create user preference file if it does not exist
-        String userHome = System.getProperty("user.home");
-        File prefFile = new File(userHome, PREF_FILENAME);
-        if (!prefFile.exists()) {
-            try {
-                boolean res = prefFile.createNewFile();
-                assert res;
-            } catch (IOException e) {
-                throw new OpenStegoException(e);
+        try {
+            // Find the path where config file should be stored
+            String userHome = System.getProperty("user.home");
+            String configHome = System.getenv("XDG_CONFIG_HOME");
+            if (configHome == null || configHome.trim().length() == 0) {
+                configHome = userHome + File.separator + ".config";
             }
 
-            try (InputStream tmplIS = UserPreferences.class.getResourceAsStream("/" + DEFAULT_PREF_FILENAME);
-                 OutputStream prefFileOS = new FileOutputStream(prefFile)) {
-                int len;
-                byte[] buff = new byte[1024];
-                assert tmplIS != null;
-                while ((len = tmplIS.read(buff)) >= 0) {
-                    prefFileOS.write(buff, 0, len);
+            // Create config directory if it does not exist
+            Path configPath = Paths.get(configHome, "openstego");
+            if (Files.notExists(configPath)) {
+                Files.createDirectories(configPath);
+            }
+
+            // Create preference file if it does not exist
+            Path prefFile = configPath.resolve(PREF_FILENAME);
+            if (Files.notExists(prefFile)) {
+                // First check if old style "openstego.ini" file is present in user home
+                Path oldPrefFile = Paths.get(userHome, "openstego.ini");
+                if (Files.exists(oldPrefFile)) {
+                    Files.copy(oldPrefFile, prefFile);
+                    Files.delete(oldPrefFile);
+                } else {
+                    // Otherwise use the default template from application bundle
+                    try (InputStream tmplIS = UserPreferences.class.getResourceAsStream("/" + DEFAULT_PREF_FILENAME)) {
+                        assert tmplIS != null;
+                        Files.copy(tmplIS, prefFile, REPLACE_EXISTING);
+                    }
                 }
-            } catch (IOException e) {
-                throw new OpenStegoException(e);
             }
-        }
 
-        try (InputStream prefFileIS = new FileInputStream(prefFile)) {
-            prefs.load(prefFileIS);
+            try (InputStream prefFileIS = Files.newInputStream(prefFile)) {
+                prefs.load(prefFileIS);
+            }
         } catch (IOException e) {
             throw new OpenStegoException(e);
         }
