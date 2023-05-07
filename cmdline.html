@@ -67,7 +67,7 @@
         <tr><td nowrap><code>-p</code>, <code>--password &lt;password&gt;</code></td><td>Password to be used for encryption. If this is not provided then prompt will be displayed for entry</td></tr>
         <tr><td nowrap><code>-A</code>, <code>--cryptalgo &lt;crypto algorithm&gt;</code></td><td>Algorithm to be used for encryption. Defaults to <code>AES128</code>. Possible values are <code>AES128</code> or <code>AES256</code>. Please note that <code>AES256</code> will only be supported with JRE having unlimited strength jurisdiction policy</td></tr>
       </table>
-      <p>Additions and changes to <code>embed</code> options while using LSB/RandomLSB Plugins</p>
+      <p>Additions and changes to <code>embed</code> options while using RandomLSB Plugin</p>
       <table class="table table-condensed table-striped">
         <tr><th>Option</th><th>Description</th></tr>
         <tr><td nowrap><code>-b</code>, <code>--maxBitsUsedPerChannel &lt;n&gt;</code></td><td>Max number of bits to use per color channel in the image for embedding data. This value can be increased at the expense of image quality, in case size of image is not able to accommodate the data (Default = 3)</td></tr>
@@ -103,13 +103,13 @@
       </table>
       <h2>Examples</h2>
       <p>To embed <code>secret.txt</code> into <code>wallpaper.png</code> and generate the output into <code>test.png</code>:</p>
-      <pre>java -jar &lt;path&gt;\openstego.jar embed -a lsb -mf secret.txt -cf wallpaper.png -sf test.png</pre>
+      <pre>java -jar &lt;path&gt;\openstego.jar embed -a randomlsb -mf secret.txt -cf wallpaper.png -sf test.png</pre>
       <p>OR</p>
-      <pre>java -jar &lt;path&gt;\openstego.jar --embed --algorithm=lsb --messagefile=secret.txt --coverfile=wallpaper.png --stegofile=test.png</pre>
+      <pre>java -jar &lt;path&gt;\openstego.jar --embed --algorithm=randomlsb --messagefile=secret.txt --coverfile=wallpaper.png --stegofile=test.png</pre>
       <p>To extract embedded data from <code>test.png</code> to <code>/data</code> directory:</p>
-      <pre>java -jar &lt;path&gt;\openstego.jar extract -a lsb -sf test.png -xd /data</pre>
+      <pre>java -jar &lt;path&gt;\openstego.jar extract -a randomlsb -sf test.png -xd /data</pre>
       <p>OR</p>
-      <pre>java -jar &lt;path&gt;\openstego.jar extract --algorithm=lsb --stegofile=test.png --extractdir=/data</pre>
+      <pre>java -jar &lt;path&gt;\openstego.jar extract --algorithm=randomlsb --stegofile=test.png --extractdir=/data</pre>
       <p>To generate a signature file:</p>
       <pre>java -jar &lt;path&gt;\openstego.jar gensig -a dwtdugad -gf my.sig</pre>
       <p>OR</p>
@@ -123,9 +123,9 @@
       <p>OR</p>
       <pre>java -jar &lt;path&gt;\openstego.jar checkmark --algorithm=dwtdugad --sigfile=my.sig --stegofile=test.png</pre>
       <p>Piping example:</p>
-      <pre>ls -R | java -jar &lt;path&gt;\openstego.jar embed -a lsb &gt; test.png</pre>
+      <pre>ls -R | java -jar &lt;path&gt;\openstego.jar embed -a randomlsb &gt; test.png</pre>
       <p>Wildcard example (Please note that the double quotes are important):</p>
-      <pre>java -jar &lt;path&gt;\openstego.jar embed -a lsb -cf &quot;img???.png;wall*.png&quot; -mf watermark.txt</pre>
+      <pre>java -jar &lt;path&gt;\openstego.jar embed -a randomlsb -cf &quot;img???.png;wall*.png&quot; -mf watermark.txt</pre>
     </div>
     <footer class="footer">
       <div class="container">
