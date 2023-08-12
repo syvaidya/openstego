@@ -33,7 +33,7 @@ gradlew clean dist           (Windows)
 ```
 
 ## Author
-Samir Vaidya (syvaidya [at] gmail)
+Samir Vaidya (samir [at] openstego.com)
 
 ## Homepage
 https://www.openstego.com
