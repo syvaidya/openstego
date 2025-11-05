@@ -1,17 +1,11 @@
-/*
- * Steganography utility to hide messages into cover files
- * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Modified by: Jordan Fava
- */
-
 package com.openstego.desktop.plugin.randlsb;
 
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
 import com.openstego.desktop.plugin.lsb.LSBDataHeader;
-import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
+import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
 import com.openstego.desktop.util.StringUtil;
 
@@ -45,7 +39,6 @@ public class RandomLSBOutputStream extends OutputStream {
         this.imgHeight = image.getImage().getHeight();
         this.config = config;
 
-        // Ensure RGB type
         if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
             this.image = image;
         } else {
@@ -61,65 +54,71 @@ public class RandomLSBOutputStream extends OutputStream {
         this.channelBitsUsed = 1;
         this.fileName = fileName;
 
-        // Initialize random generator with password hash as seed
+        // Initialize random number generator with seed generated using password
         this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
-
         writeHeader();
     }
 
     /**
-     * Write header data to stream
-     * Modified: removed capacity check to allow larger files.
+     * Write the header bytes directly to the image, avoiding recursive calls to write(int)
      */
     private void writeHeader() throws OpenStegoException {
-        int channelBits = 1;
-        int noOfPixels;
-        int headerSize;
-        LSBDataHeader header;
-
         try {
-            noOfPixels = this.imgWidth * this.imgHeight;
-            header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
-            headerSize = header.getHeaderSize();
+            int channelBits = 1;
+            int noOfPixels = this.imgWidth * this.imgHeight;
 
-            // Optionally increase bits per channel if needed
-            while (true) {
+            LSBDataHeader header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
+            int headerSize = header.getHeaderSize();
+
+            // Increase channel bits if needed to fit data
+            while ((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength)) {
+                channelBits++;
                 if (channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel()) {
                     throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT);
                 }
-                break; // We removed capacity check, so we just use initial or max channelBits
             }
 
+            // Update channelBitsUsed
             header.setChannelBitsUsed(channelBits);
-            write(header.getHeaderData());
             this.channelBitsUsed = channelBits;
+
+            // Write header bytes directly, bypassing write(int) to avoid StackOverflowError
+            byte[] headerData = header.getHeaderData();
+            for (byte b : headerData) {
+                for (int i = 0; i < 8; i++) {
+                    boolean bitValue = ((b >> (7 - i)) & 0x1) == 1;
+                    writeBitRandomly(bitValue);
+                }
+            }
         } catch (Exception ex) {
             throw new OpenStegoException(ex);
         }
     }
 
     /**
-     * Embed a byte into the image
-     * Prevents overwriting previously written bits.
+     * Writes a single bit into the image at a random unused location
      */
+    private void writeBitRandomly(boolean bitValue) {
+        int x, y, channel, bit;
+        String key;
+
+        do {
+            x = this.rand.nextInt(this.imgWidth);
+            y = this.rand.nextInt(this.imgHeight);
+            channel = this.rand.nextInt(3);
+            bit = this.rand.nextInt(this.channelBitsUsed);
+            key = x + "_" + y + "_" + channel + "_" + bit;
+        } while (this.bitWritten.contains(key));
+
+        this.bitWritten.add(key);
+        setPixelBit(x, y, channel, bit, bitValue);
+    }
+
     @Override
     public void write(int data) {
         for (int i = 0; i < 8; i++) {
-            boolean bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
-            int x, y, channel, bit;
-            String key;
-
-            // Pick a random unused bit position
-            do {
-                x = this.rand.nextInt(this.imgWidth);
-                y = this.rand.nextInt(this.imgHeight);
-                channel = this.rand.nextInt(3);
-                bit = this.rand.nextInt(this.channelBitsUsed);
-                key = x + "_" + y + "_" + channel + "_" + bit;
-            } while (this.bitWritten.contains(key));
-
-            this.bitWritten.add(key);
-            setPixelBit(x, y, channel, bit, bitValue);
+            boolean bitValue = ((data >> (7 - i)) & 0x1) == 1;
+            writeBitRandomly(bitValue);
         }
     }
 
@@ -127,23 +126,18 @@ public class RandomLSBOutputStream extends OutputStream {
         return this.image;
     }
 
-    /**
-     * Set a specific bit in a pixel's channel
-     */
     private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue) {
         int pixel = this.image.getImage().getRGB(x, y);
         int newPixel;
 
         if (bitValue) {
-            newPixel = pixel | (1 << (bit + (channel * 8)));
+            newPixel = pixel | 1 << (bit + (channel * 8));
         } else {
-            int mask = ~(1 << (bit + (channel * 8)));
+            int mask = 0xffffffff;
+            mask = ~(1 << (bit + (channel * 8)));
             newPixel = pixel & mask;
         }
 
         this.image.getImage().setRGB(x, y, newPixel);
     }
-}
-
-
 }
