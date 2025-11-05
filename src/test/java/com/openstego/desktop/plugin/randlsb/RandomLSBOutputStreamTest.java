@@ -63,10 +63,12 @@ public class RandomLSBOutputStream extends OutputStream {
 
         // Initialize random generator with password hash as seed
         this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
-        writeHeader();
+
+        // Do NOT call writeHeader() in constructor to prevent recursion
     }
 
-    private void writeHeader() throws OpenStegoException {
+    // Call this method explicitly after constructing the object
+    public void writeHeader() throws OpenStegoException {
         int channelBits = 1;
         int noOfPixels;
         int headerSize;
@@ -77,7 +79,7 @@ public class RandomLSBOutputStream extends OutputStream {
             header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
             headerSize = header.getHeaderSize();
 
-            // Increase bits per channel if needed (step 2)
+            // Increase bits per channel if needed
             while ((noOfPixels * 3 * channelBits) / 8.0 < (headerSize + this.dataLength)) {
                 channelBits++;
                 if (channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel()) {
@@ -85,13 +87,34 @@ public class RandomLSBOutputStream extends OutputStream {
                 }
             }
 
-            // Update header with channelBitsUsed
             header.setChannelBitsUsed(channelBits);
-            write(header.getHeaderData());
+            writeHeaderData(header.getHeaderData()); // Use private method to avoid calling overridden write()
             this.channelBitsUsed = channelBits;
         } catch (Exception ex) {
-            // Removed catch(OpenStegoException) since nothing inside actually throws it
             throw new OpenStegoException(ex);
+        }
+    }
+
+    // Internal method to write header bytes directly
+    private void writeHeaderData(byte[] headerData) {
+        for (byte b : headerData) {
+            writeByteDirect(b);
+        }
+    }
+
+    // Write a byte directly to image without using bitWritten set
+    private void writeByteDirect(int data) {
+        for (int i = 0; i < 8; i++) {
+            boolean bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
+            int x, y, channel, bit;
+            do {
+                x = this.rand.nextInt(this.imgWidth);
+                y = this.rand.nextInt(this.imgHeight);
+                channel = this.rand.nextInt(3);
+                bit = this.rand.nextInt(this.channelBitsUsed);
+            } while (false); // no bitWritten check for header
+
+            setPixelBit(x, y, channel, bit, bitValue);
         }
     }
 
@@ -133,3 +156,4 @@ public class RandomLSBOutputStream extends OutputStream {
         this.image.getImage().setRGB(x, y, newPixel);
     }
 }
+
