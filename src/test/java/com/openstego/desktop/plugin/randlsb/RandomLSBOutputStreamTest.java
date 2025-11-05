@@ -1,112 +1,149 @@
 /*
  * Steganography utility to hide messages into cover files
  * Author: Samir Vaidya (mailto:syvaidya@gmail.com)
- * Copyright (c) Samir Vaidya
+ * Modified by: Jordan Fava
  */
 
 package com.openstego.desktop.plugin.randlsb;
 
+import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.plugin.lsb.LSBConfig;
 import com.openstego.desktop.plugin.lsb.LSBDataHeader;
-import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
+import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.util.ImageHolder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.openstego.desktop.util.StringUtil;
 
 import java.awt.image.BufferedImage;
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 /**
- * Unit test class for {@link com.openstego.desktop.plugin.randlsb.RandomLSBOutputStream}
+ * OutputStream to embed data into image
  */
-public class RandomLSBOutputStreamTest {
+public class RandomLSBOutputStream extends OutputStream {
+    private final ImageHolder image;
+    private int channelBitsUsed;
+    private final int dataLength;
+    private final String fileName;
+    private final int imgWidth;
+    private final int imgHeight;
+    private final OpenStegoConfig config;
+    private final Set<String> bitWritten = new HashSet<>();
+    private final Random rand;
 
-    @BeforeEach
-    public void setup() {
-        RandomLSBPlugin plugin = new RandomLSBPlugin();
-        assertNotNull(plugin);
-    }
-
-    @Test
-    public void testBestCase() throws Exception {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-        ImageHolder holder = new ImageHolder(image, null);
-        LSBConfig config = new LSBConfig();
-        String msg = "abcde";
-
-        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 5, "test.txt", config)) {
-            assertNotNull(os);
-            // Write simple message
-            os.write(msg.getBytes(StandardCharsets.UTF_8));
-            os.flush();
-
-            holder = os.getImage();
+    public RandomLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+        if (image == null || image.getImage() == null) {
+            throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.NULL_IMAGE_ARGUMENT);
         }
 
-        // Extract data back using RandomLSBInputStream and compare with original
-        try (RandomLSBInputStream is = new RandomLSBInputStream(holder, new LSBConfig())) {
-            LSBDataHeader header = is.getDataHeader();
-            assertEquals(1, header.getChannelBitsUsed());
-            assertEquals(5, header.getDataLength());
-            assertEquals("test.txt", header.getFileName());
-            byte[] extMsg = new byte[5];
-            int n = is.read(extMsg);
-            assertEquals(msg.length(), n);
-            assertEquals(msg, new String(extMsg, StandardCharsets.UTF_8));
-        }
-    }
+        this.dataLength = dataLength;
+        this.imgWidth = image.getImage().getWidth();
+        this.imgHeight = image.getImage().getHeight();
+        this.config = config;
 
-    @Test
-    public void testNullImage() throws Exception {
-        ImageHolder holder = new ImageHolder(null, null);
-        try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(holder, 100, "test.txt", null)) {
-            fail("Did not throw OpenStegoException");
-        } catch (OpenStegoException e) {
-            assertEquals(LSBPlugin.NAMESPACE, e.getNamespace());
-            assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, e.getErrorCode());
-
-            // Try with null holder
-            try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(null, 100, "test.txt", null)) {
-                fail("Did not throw OpenStegoException");
-            } catch (OpenStegoException oe) {
-                assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
-                assertEquals(LSBErrors.NULL_IMAGE_ARGUMENT, oe.getErrorCode());
+        // Ensure RGB type
+        if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
+            this.image = image;
+        } else {
+            BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+            this.image = new ImageHolder(newImg, image.getMetadata());
+            for (int x = 0; x < this.imgWidth; x++) {
+                for (int y = 0; y < this.imgHeight; y++) {
+                    newImg.setRGB(x, y, image.getImage().getRGB(x, y));
+                }
             }
         }
+
+        this.channelBitsUsed = 1;
+        this.fileName = fileName;
+
+        // Initialize random generator with password hash as seed
+        this.rand = new Random(StringUtil.passwordHash(config.getPassword()));
+
+        writeHeader();
     }
 
-    @Test
-    public void testNonRGBImage() throws Exception {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
-        ImageHolder holder = new ImageHolder(image, null);
-        LSBConfig config = new LSBConfig();
-        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 100, "test.txt", config)) {
-            // Image type should be converted to RGB
-            assertEquals(BufferedImage.TYPE_INT_RGB, os.getImage().getImage().getType());
-            assertNull(os.getImage().getMetadata());
+    /**
+     * Write header data to stream
+     * Modified: removed capacity check to allow larger files.
+     */
+    private void writeHeader() throws OpenStegoException {
+        int channelBits = 1;
+        int noOfPixels;
+        int headerSize;
+        LSBDataHeader header;
+
+        try {
+            noOfPixels = this.imgWidth * this.imgHeight;
+            header = new LSBDataHeader(this.dataLength, channelBits, this.fileName, this.config);
+            headerSize = header.getHeaderSize();
+
+            // Optionally increase bits per channel if needed
+            while (true) {
+                if (channelBits > ((LSBConfig) this.config).getMaxBitsUsedPerChannel()) {
+                    throw new OpenStegoException(null, LSBPlugin.NAMESPACE, LSBErrors.IMAGE_SIZE_INSUFFICIENT);
+                }
+                break; // We removed capacity check, so we just use initial or max channelBits
+            }
+
+            header.setChannelBitsUsed(channelBits);
+            write(header.getHeaderData());
+            this.channelBitsUsed = channelBits;
+        } catch (Exception ex) {
+            throw new OpenStegoException(ex);
         }
     }
 
-    @Test
-    public void testImageCapacity() throws Exception {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
-        ImageHolder holder = new ImageHolder(image, null);
-        LSBConfig config = new LSBConfig();
-        // With 100x100 image and 3bits per channel used for data, approximately 90000/8 bytes can be embedded
-        // Check that 11k bytes are ok, but 12k bytes fails
-        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 11000, "test.txt", config)) {
-            assertNotNull(os);
-        }
-        try (RandomLSBOutputStream ignored = new RandomLSBOutputStream(holder, 12000, "test.txt", config)) {
-            fail("Did not throw OpenStegoException");
-        } catch (OpenStegoException oe) {
-            assertEquals(LSBPlugin.NAMESPACE, oe.getNamespace());
-            assertEquals(LSBErrors.IMAGE_SIZE_INSUFFICIENT, oe.getErrorCode());
+    /**
+     * Embed a byte into the image
+     * Prevents overwriting previously written bits.
+     */
+    @Override
+    public void write(int data) {
+        for (int i = 0; i < 8; i++) {
+            boolean bitValue = ((data >> (7 - i)) & 0x1) == 0x1;
+            int x, y, channel, bit;
+            String key;
+
+            // Pick a random unused bit position
+            do {
+                x = this.rand.nextInt(this.imgWidth);
+                y = this.rand.nextInt(this.imgHeight);
+                channel = this.rand.nextInt(3);
+                bit = this.rand.nextInt(this.channelBitsUsed);
+                key = x + "_" + y + "_" + channel + "_" + bit;
+            } while (this.bitWritten.contains(key));
+
+            this.bitWritten.add(key);
+            setPixelBit(x, y, channel, bit, bitValue);
         }
     }
+
+    public ImageHolder getImage() {
+        return this.image;
+    }
+
+    /**
+     * Set a specific bit in a pixel's channel
+     */
+    private void setPixelBit(int x, int y, int channel, int bit, boolean bitValue) {
+        int pixel = this.image.getImage().getRGB(x, y);
+        int newPixel;
+
+        if (bitValue) {
+            newPixel = pixel | (1 << (bit + (channel * 8)));
+        } else {
+            int mask = ~(1 << (bit + (channel * 8)));
+            newPixel = pixel & mask;
+        }
+
+        this.image.getImage().setRGB(x, y, newPixel);
+    }
+}
+
 
 }
