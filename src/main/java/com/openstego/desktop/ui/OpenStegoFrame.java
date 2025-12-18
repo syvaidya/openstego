@@ -58,6 +58,7 @@ public class OpenStegoFrame extends JFrame {
     private JToggleButton genSigButton;
     private JToggleButton signWmButton;
     private JToggleButton verifyWmButton;
+    private JToggleButton pwdAttackButton;
 
     private JPanel headerPanel;
     private JLabel header;
@@ -68,6 +69,7 @@ public class OpenStegoFrame extends JFrame {
     private GenerateSignaturePanel genSigPanel;
     private EmbedWatermarkPanel embedWmPanel;
     private VerifyWatermarkPanel verifyWmPanel;
+    private PasswordAttackPanel pwdAttackPanel;
 
     private final OpenStegoPlugin<?> dhPlugin;
 
@@ -230,6 +232,17 @@ public class OpenStegoFrame extends JFrame {
             c.gridy = gridy++;
             this.accordion.add(getVerifyWmButton(), c);
 
+            c.gridy = gridy++;
+            this.accordion.add(Box.createVerticalStrut(20), c);
+
+            c.gridy = gridy++;
+            c.insets = new Insets(0, 0, 0, 0);
+            this.accordion.add(createAccordionHeader(labelUtil.getString("gui.label.tabHeader.pwdRecovery")), c);
+
+            c.gridy = gridy++;
+            c.insets = new Insets(0, pad, 0, pad);
+            this.accordion.add(getPwdAttackButton(), c);
+
             c.gridy = gridy;
             c.weighty = 1.0;
             this.accordion.add(new JPanel(), c);
@@ -354,6 +367,26 @@ public class OpenStegoFrame extends JFrame {
     }
 
     /**
+     * Getter method for pwdAttackButton
+     *
+     * @return pwdAttackButton
+     */
+    public JToggleButton getPwdAttackButton() {
+        if (this.pwdAttackButton == null) {
+            this.pwdAttackButton = new JToggleButton(labelUtil.getString("gui.label.tab.pwdAttack"),
+                    new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/ExtractIcon.png"))));
+            if (toggleUiHack) {
+                this.pwdAttackButton.setUI(new MetalToggleButtonUI());
+            }
+            this.pwdAttackButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+            this.pwdAttackButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            this.pwdAttackButton.setFocusable(false);
+            this.actionButtonGroup.add(this.pwdAttackButton);
+        }
+        return this.pwdAttackButton;
+    }
+
+    /**
      * Getter method for headerPanel
      *
      * @return headerPanel
@@ -459,6 +492,18 @@ public class OpenStegoFrame extends JFrame {
     }
 
     /**
+     * Getter method for pwdAttackPanel
+     *
+     * @return pwdAttackPanel
+     */
+    public PasswordAttackPanel getPwdAttackPanel() {
+        if (this.pwdAttackPanel == null) {
+            this.pwdAttackPanel = new PasswordAttackPanel();
+        }
+        return this.pwdAttackPanel;
+    }
+
+    /**
      * This method initializes the UI resources like fonts, size, etc.
      */
     private void setupUI() {
@@ -527,6 +572,15 @@ public class OpenStegoFrame extends JFrame {
         getVerifyWmPanel().getInputFileButton().setActionCommand(ActionCommands.BROWSE_WM_VER_INPFILE);
         getVerifyWmPanel().getSignatureFileButton().setActionCommand(ActionCommands.BROWSE_WM_VER_SIGFILE);
         getVerifyWmPanel().getRunVerifyWmButton().setActionCommand(ActionCommands.RUN_WM_VERIFY);
+
+        getPwdAttackButton().setActionCommand(ActionCommands.SWITCH_PWD_ATTACK);
+        getPwdAttackPanel().getStegoFileButton().setActionCommand(ActionCommands.BROWSE_PWD_STGFILE);
+        getPwdAttackPanel().getOutputFolderButton().setActionCommand(ActionCommands.BROWSE_PWD_OUTDIR);
+        getPwdAttackPanel().getWordlistButton().setActionCommand(ActionCommands.BROWSE_PWD_WORDLIST);
+        getPwdAttackPanel().getWordlist2Button().setActionCommand(ActionCommands.BROWSE_PWD_WORDLIST2);
+        getPwdAttackPanel().getRulesFileButton().setActionCommand(ActionCommands.BROWSE_PWD_RULES);
+        getPwdAttackPanel().getStartButton().setActionCommand(ActionCommands.RUN_PWD_START);
+        getPwdAttackPanel().getStopButton().setActionCommand(ActionCommands.RUN_PWD_STOP);
     }
 
     /**
@@ -562,6 +616,10 @@ public class OpenStegoFrame extends JFrame {
          * Switch to Watermarking - Verify panel
          */
         String SWITCH_WM_VERIFY = "SWITCH_WM_VERIFY";
+        /**
+         * Switch to Password Attack panel
+         */
+        String SWITCH_PWD_ATTACK = "SWITCH_PWD_ATTACK";
 
         /**
          * Browse action for DH-Embed-MessageFile
@@ -631,6 +689,35 @@ public class OpenStegoFrame extends JFrame {
          * Execute WM-Verify
          */
         String RUN_WM_VERIFY = "RUN_WM_VERIFY";
+
+        /**
+         * Browse action for PwdAttack-StegoFile
+         */
+        String BROWSE_PWD_STGFILE = "BROWSE_PWD_STGFILE";
+        /**
+         * Browse action for PwdAttack-OutputDir
+         */
+        String BROWSE_PWD_OUTDIR = "BROWSE_PWD_OUTDIR";
+        /**
+         * Browse action for PwdAttack-Wordlist
+         */
+        String BROWSE_PWD_WORDLIST = "BROWSE_PWD_WORDLIST";
+        /**
+         * Browse action for PwdAttack-Wordlist2
+         */
+        String BROWSE_PWD_WORDLIST2 = "BROWSE_PWD_WORDLIST2";
+        /**
+         * Browse action for PwdAttack-RulesFile
+         */
+        String BROWSE_PWD_RULES = "BROWSE_PWD_RULES";
+        /**
+         * Execute PwdAttack-Start
+         */
+        String RUN_PWD_START = "RUN_PWD_START";
+        /**
+         * Execute PwdAttack-Stop
+         */
+        String RUN_PWD_STOP = "RUN_PWD_STOP";
     }
 
     static class GradientPanel extends JPanel {

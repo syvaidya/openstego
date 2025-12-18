@@ -6,6 +6,7 @@
 
 package com.openstego.desktop;
 
+import com.openstego.desktop.pwdattack.*;
 import com.openstego.desktop.util.CommonUtil;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.PluginManager;
@@ -138,6 +139,9 @@ public class OpenStegoCmd {
                     break;
                 case "diff":
                     executeDiff(options, stego);
+                    break;
+                case "pwdattack":
+                    executePwdAttack(options, stego);
                     break;
                 case "readformats": {
                     List<String> formats = plugin.getReadableFileExtensions();
@@ -421,6 +425,182 @@ public class OpenStegoCmd {
     }
 
     /**
+     * Method to execute "pwdattack" command
+     *
+     * @param options Command-line options
+     * @param stego   {@link OpenStego} object
+     * @throws OpenStegoException Processing issues
+     */
+    private static void executePwdAttack(CmdLineOptions options, OpenStego stego) throws OpenStegoException {
+        String stegoFileName = options.getStringValue("-sf");
+        String attackModeStr = options.getStringValue("-m");
+        String wordlistPath = options.getStringValue("-w");
+        String wordlist2Path = options.getStringValue("-w2");
+        String mask = options.getStringValue("-M");
+        String rulesPath = options.getStringValue("-r");
+        String extractDir = options.getStringValue("-xd");
+
+        // Custom character sets
+        String[] customCharsets = new String[4];
+        customCharsets[0] = options.getStringValue("-1");
+        customCharsets[1] = options.getStringValue("-2");
+        customCharsets[2] = options.getStringValue("-3");
+        customCharsets[3] = options.getStringValue("-4");
+
+        if (stegoFileName == null) {
+            System.err.println(labelUtil.getString("cmd.pwdattack.err.noStegoFile"));
+            displayUsage();
+            return;
+        }
+
+        File stegoFile = new File(stegoFileName);
+        if (!stegoFile.exists()) {
+            System.err.println(labelUtil.getString("cmd.pwdattack.err.stegoFileNotFound", stegoFileName));
+            return;
+        }
+
+        // Determine attack mode
+        PasswordAttack.AttackMode attackMode = PasswordAttack.AttackMode.DICTIONARY;
+        if (attackModeStr != null) {
+            try {
+                int modeCode = Integer.parseInt(attackModeStr);
+                attackMode = PasswordAttack.AttackMode.fromCode(modeCode);
+            } catch (NumberFormatException e) {
+                // Try to match by name
+                for (PasswordAttack.AttackMode mode : PasswordAttack.AttackMode.values()) {
+                    if (mode.name().equalsIgnoreCase(attackModeStr) ||
+                            mode.getName().equalsIgnoreCase(attackModeStr)) {
+                        attackMode = mode;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Validate required parameters based on attack mode
+        File wordlist1 = wordlistPath != null ? new File(wordlistPath) : null;
+        File wordlist2 = wordlist2Path != null ? new File(wordlist2Path) : null;
+        File rulesFile = rulesPath != null ? new File(rulesPath) : null;
+
+        switch (attackMode) {
+            case DICTIONARY:
+            case RULE_BASED:
+                if (wordlist1 == null || !wordlist1.exists()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noWordlist"));
+                    return;
+                }
+                break;
+            case COMBINATOR:
+                if (wordlist1 == null || !wordlist1.exists()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noWordlist"));
+                    return;
+                }
+                if (wordlist2 == null || !wordlist2.exists()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noWordlist2"));
+                    return;
+                }
+                break;
+            case MASK:
+                if (mask == null || mask.isEmpty()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noMask"));
+                    return;
+                }
+                break;
+            case HYBRID_WORDLIST_MASK:
+            case HYBRID_MASK_WORDLIST:
+                if (wordlist1 == null || !wordlist1.exists()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noWordlist"));
+                    return;
+                }
+                if (mask == null || mask.isEmpty()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.err.noMask"));
+                    return;
+                }
+                break;
+        }
+
+        System.err.println(labelUtil.getString("cmd.pwdattack.msg.starting", attackMode.getName()));
+        System.err.println(labelUtil.getString("cmd.pwdattack.msg.stegoFile", stegoFileName));
+
+        // Create and execute the attack
+        PasswordAttack attack = PasswordAttack.create(
+                attackMode, stegoFile, stego.getPlugin(),
+                wordlist1, wordlist2, mask, rulesFile, customCharsets);
+
+        // Add a CLI progress listener
+        final long[] lastReportTime = {0};
+        attack.setListener(new PasswordAttackListener() {
+            @Override
+            public void onProgress(long attemptCount, String currentPassword, long elapsedTimeMs, long estimatedTotal) {
+                // Report every 5 seconds
+                if (elapsedTimeMs - lastReportTime[0] >= 5000) {
+                    lastReportTime[0] = elapsedTimeMs;
+                    double speed = (attemptCount * 1000.0) / elapsedTimeMs;
+                    String progressStr;
+                    if (estimatedTotal > 0) {
+                        double pct = (attemptCount * 100.0) / estimatedTotal;
+                        progressStr = String.format("Progress: %d/%d (%.1f%%) | Speed: %.0f pwd/sec | Current: %s",
+                                attemptCount, estimatedTotal, pct, speed, truncate(currentPassword, 20));
+                    } else {
+                        progressStr = String.format("Progress: %d | Speed: %.0f pwd/sec | Current: %s",
+                                attemptCount, speed, truncate(currentPassword, 20));
+                    }
+                    System.err.println(progressStr);
+                }
+            }
+
+            @Override
+            public void onComplete(PasswordAttackResult result) {
+                System.err.println();
+                if (result.isFound()) {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.found"));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.password", result.getPassword()));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.attempts", result.getAttemptCount()));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.time",
+                            String.format("%.2f", result.getElapsedTimeMs() / 1000.0)));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.speed",
+                            String.format("%.2f", result.getPasswordsPerSecond())));
+                } else {
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.notFound"));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.attempts", result.getAttemptCount()));
+                    System.err.println(labelUtil.getString("cmd.pwdattack.msg.time",
+                            String.format("%.2f", result.getElapsedTimeMs() / 1000.0)));
+                }
+            }
+
+            @Override
+            public void onError(Exception error) {
+                System.err.println(labelUtil.getString("cmd.pwdattack.err.error", error.getMessage()));
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            private String truncate(String s, int maxLen) {
+                if (s == null) return "";
+                return s.length() <= maxLen ? s : s.substring(0, maxLen) + "...";
+            }
+        });
+
+        PasswordAttackResult result = attack.execute();
+
+        // Save extracted file if found
+        if (result.isFound() && result.getExtractedData() != null) {
+            String extractFileName = result.getExtractedFileName();
+            if (extractFileName == null || extractFileName.isEmpty()) {
+                extractFileName = "extracted_data";
+            }
+            if (extractDir != null) {
+                extractFileName = extractDir + File.separator + extractFileName;
+            }
+            CommonUtil.writeFile(result.getExtractedData(), extractFileName);
+            System.err.println(labelUtil.getString("cmd.pwdattack.msg.extracted", extractFileName));
+        }
+    }
+
+    /**
      * Method to display usage for OpenStego
      *
      * @throws OpenStegoException Processing issues
@@ -450,6 +630,7 @@ public class OpenStegoCmd {
         options.add("embedmark", "--embedmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("checkmark", "--checkmark", CmdLineOption.TYPE_COMMAND, false);
         options.add("diff", "--diff", CmdLineOption.TYPE_COMMAND, false);
+        options.add("pwdattack", "--pwdattack", CmdLineOption.TYPE_COMMAND, false);
         options.add("readformats", "--readformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("writeformats", "--writeformats", CmdLineOption.TYPE_COMMAND, false);
         options.add("algorithms", "--algorithms", CmdLineOption.TYPE_COMMAND, false);
@@ -473,6 +654,17 @@ public class OpenStegoCmd {
         options.add("-E", "--noencrypt", CmdLineOption.TYPE_OPTION, false);
         options.add("-p", "--password", CmdLineOption.TYPE_OPTION, true);
         options.add("-A", "--cryptalgo", CmdLineOption.TYPE_OPTION, true);
+
+        // Password attack options
+        options.add("-m", "--attackmode", CmdLineOption.TYPE_OPTION, true);
+        options.add("-w", "--wordlist", CmdLineOption.TYPE_OPTION, true);
+        options.add("-w2", "--wordlist2", CmdLineOption.TYPE_OPTION, true);
+        options.add("-M", "--mask", CmdLineOption.TYPE_OPTION, true);
+        options.add("-r", "--rules", CmdLineOption.TYPE_OPTION, true);
+        options.add("-1", "--custom1", CmdLineOption.TYPE_OPTION, true);
+        options.add("-2", "--custom2", CmdLineOption.TYPE_OPTION, true);
+        options.add("-3", "--custom3", CmdLineOption.TYPE_OPTION, true);
+        options.add("-4", "--custom4", CmdLineOption.TYPE_OPTION, true);
 
         // Plugin-specific options
         if (plugin != null) {

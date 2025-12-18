@@ -6,6 +6,7 @@
 package com.openstego.desktop.ui;
 
 import com.openstego.desktop.*;
+import com.openstego.desktop.pwdattack.*;
 import com.openstego.desktop.util.CommonUtil;
 import com.openstego.desktop.util.LabelUtil;
 import com.openstego.desktop.util.ui.WorkerTask;
@@ -49,6 +50,10 @@ public class OpenStegoUI extends OpenStegoFrame {
 
     private final OpenStegoPlugin<?> dhPlugin;
     private final OpenStegoPlugin<?> wmPlugin;
+
+    // Password attack related fields
+    private PasswordAttack currentAttack;
+    private SwingWorker<PasswordAttackResult, Void> attackWorker;
 
     /**
      * Default constructor
@@ -96,6 +101,16 @@ public class OpenStegoUI extends OpenStegoFrame {
         getVerifyWmPanel().getInputFileButton().addActionListener(listener);
         getVerifyWmPanel().getSignatureFileButton().addActionListener(listener);
         getVerifyWmPanel().getRunVerifyWmButton().addActionListener(listener);
+
+        getPwdAttackButton().addActionListener(listener);
+        getPwdAttackPanel().getStegoFileButton().addActionListener(listener);
+        getPwdAttackPanel().getOutputFolderButton().addActionListener(listener);
+        getPwdAttackPanel().getWordlistButton().addActionListener(listener);
+        getPwdAttackPanel().getWordlist2Button().addActionListener(listener);
+        getPwdAttackPanel().getRulesFileButton().addActionListener(listener);
+        getPwdAttackPanel().getStartButton().addActionListener(listener);
+        getPwdAttackPanel().getStopButton().addActionListener(listener);
+        getPwdAttackPanel().getAttackModeComboBox().addActionListener(e -> getPwdAttackPanel().updatePanelVisibility());
 
         pack();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -694,6 +709,254 @@ public class OpenStegoUI extends OpenStegoFrame {
     }
 
     /**
+     * Starts a password attack on the selected stego file
+     */
+    private void startPasswordAttack() {
+        PasswordAttackPanel panel = getPwdAttackPanel();
+
+        // Validate inputs
+        String stegoFileName = panel.getStegoFileTextField().getText();
+        String outputFolder = panel.getOutputFolderTextField().getText();
+
+        if (stegoFileName == null || stegoFileName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noStegoFile"),
+                    labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+            panel.getStegoFileTextField().requestFocus();
+            return;
+        }
+
+        if (outputFolder == null || outputFolder.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noOutputDir"),
+                    labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+            panel.getOutputFolderTextField().requestFocus();
+            return;
+        }
+
+        File stegoFile = new File(stegoFileName);
+        if (!stegoFile.exists()) {
+            JOptionPane.showMessageDialog(this, labelUtil.getString("cmd.pwdattack.err.stegoFileNotFound", stegoFileName),
+                    labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        PasswordAttack.AttackMode mode = panel.getSelectedAttackMode();
+
+        // Validate mode-specific inputs
+        File wordlist1 = null;
+        File wordlist2 = null;
+        File rulesFile = null;
+        String mask = panel.getMaskTextField().getText();
+        String[] customCharsets = panel.getCustomCharsets();
+
+        boolean needsWordlist = mode == PasswordAttack.AttackMode.DICTIONARY ||
+                mode == PasswordAttack.AttackMode.COMBINATOR ||
+                mode == PasswordAttack.AttackMode.HYBRID_WORDLIST_MASK ||
+                mode == PasswordAttack.AttackMode.HYBRID_MASK_WORDLIST ||
+                mode == PasswordAttack.AttackMode.RULE_BASED;
+
+        boolean needsWordlist2 = mode == PasswordAttack.AttackMode.COMBINATOR;
+        boolean needsMask = mode == PasswordAttack.AttackMode.MASK ||
+                mode == PasswordAttack.AttackMode.HYBRID_WORDLIST_MASK ||
+                mode == PasswordAttack.AttackMode.HYBRID_MASK_WORDLIST;
+        boolean needsRules = mode == PasswordAttack.AttackMode.RULE_BASED;
+
+        if (needsWordlist) {
+            String wordlistPath = panel.getWordlistTextField().getText();
+            if (wordlistPath == null || wordlistPath.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noWordlist"),
+                        labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            wordlist1 = new File(wordlistPath);
+            if (!wordlist1.exists()) {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noWordlist"),
+                        labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        if (needsWordlist2) {
+            String wordlist2Path = panel.getWordlist2TextField().getText();
+            if (wordlist2Path == null || wordlist2Path.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noWordlist2"),
+                        labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            wordlist2 = new File(wordlist2Path);
+            if (!wordlist2.exists()) {
+                JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noWordlist2"),
+                        labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        if (needsMask && (mask == null || mask.trim().isEmpty())) {
+            JOptionPane.showMessageDialog(this, labelUtil.getString("gui.msg.err.pwdAttack.noMask"),
+                    labelUtil.getString("gui.msg.title.err"), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (needsRules && !panel.getUseDefaultRulesCheckBox().isSelected()) {
+            String rulesPath = panel.getRulesFileTextField().getText();
+            if (rulesPath != null && !rulesPath.trim().isEmpty()) {
+                rulesFile = new File(rulesPath);
+            }
+        }
+
+        // Create the attack
+        final File finalWordlist1 = wordlist1;
+        final File finalWordlist2 = wordlist2;
+        final File finalRulesFile = rulesFile;
+        final String finalMask = mask;
+        final String finalOutputFolder = outputFolder;
+
+        // Update UI state
+        panel.getStartButton().setEnabled(false);
+        panel.getStopButton().setEnabled(true);
+        panel.getProgressBar().setValue(0);
+        panel.getStatusLabel().setText("Running...");
+        panel.getAttemptsLabel().setText("0");
+        panel.getSpeedLabel().setText("0 pwd/sec");
+        panel.getCurrentPwdLabel().setText("-");
+
+        // Create a SwingWorker to run the attack in the background
+        attackWorker = new SwingWorker<PasswordAttackResult, Void>() {
+            @Override
+            protected PasswordAttackResult doInBackground() {
+                PasswordAttack attack;
+
+                if (mode == PasswordAttack.AttackMode.RULE_BASED && panel.getUseDefaultRulesCheckBox().isSelected()) {
+                    attack = new RuleBasedAttack(stegoFile, dhPlugin, finalWordlist1,
+                            RuleBasedAttack.getDefaultRules());
+                } else {
+                    attack = PasswordAttack.create(mode, stegoFile, dhPlugin,
+                            finalWordlist1, finalWordlist2, finalMask, finalRulesFile, customCharsets);
+                }
+
+                currentAttack = attack;
+
+                // Set up the listener for progress updates
+                attack.setListener(new PasswordAttackListener() {
+                    @Override
+                    public void onProgress(long attemptCount, String currentPassword, long elapsedTimeMs, long estimatedTotal) {
+                        SwingUtilities.invokeLater(() -> {
+                            double speed = elapsedTimeMs > 0 ? (attemptCount * 1000.0) / elapsedTimeMs : 0;
+                            panel.getAttemptsLabel().setText(String.format("%,d", attemptCount));
+                            panel.getSpeedLabel().setText(String.format("%.0f pwd/sec", speed));
+                            panel.getCurrentPwdLabel().setText(truncate(currentPassword, 30));
+
+                            if (estimatedTotal > 0) {
+                                int pct = (int) ((attemptCount * 100) / estimatedTotal);
+                                panel.getProgressBar().setValue(Math.min(pct, 100));
+                                panel.getProgressBar().setString(pct + "%");
+                            } else {
+                                panel.getProgressBar().setIndeterminate(true);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onComplete(PasswordAttackResult result) {
+                        // Handled in done()
+                    }
+
+                    @Override
+                    public void onError(Exception error) {
+                        SwingUtilities.invokeLater(() -> handleException(error));
+                    }
+
+                    @Override
+                    public boolean isCancelled() {
+                        return attackWorker.isCancelled();
+                    }
+
+                    private String truncate(String s, int maxLen) {
+                        if (s == null) return "-";
+                        return s.length() <= maxLen ? s : s.substring(0, maxLen) + "...";
+                    }
+                });
+
+                return attack.execute();
+            }
+
+            @Override
+            protected void done() {
+                panel.getStartButton().setEnabled(true);
+                panel.getStopButton().setEnabled(false);
+                panel.getProgressBar().setIndeterminate(false);
+
+                if (isCancelled()) {
+                    panel.getStatusLabel().setText("Cancelled");
+                    JOptionPane.showMessageDialog(OpenStegoUI.this,
+                            labelUtil.getString("gui.msg.info.pwdAttack.cancelled"),
+                            labelUtil.getString("gui.msg.title.results"), JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                try {
+                    PasswordAttackResult result = get();
+
+                    if (result.isFound()) {
+                        panel.getProgressBar().setValue(100);
+                        panel.getProgressBar().setString("100%");
+                        panel.getStatusLabel().setText("Password found!");
+
+                        // Save the extracted file
+                        String extractFileName = result.getExtractedFileName();
+                        if (extractFileName == null || extractFileName.isEmpty()) {
+                            extractFileName = "extracted_data";
+                        }
+                        String outputPath = finalOutputFolder + File.separator + extractFileName;
+
+                        // Check if file exists
+                        File outputFile = new File(outputPath);
+                        if (outputFile.exists()) {
+                            int overwrite = JOptionPane.showConfirmDialog(OpenStegoUI.this,
+                                    labelUtil.getString("gui.msg.warn.fileExists", outputPath),
+                                    labelUtil.getString("gui.msg.title.warn"),
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                            if (overwrite == JOptionPane.NO_OPTION) {
+                                return;
+                            }
+                        }
+
+                        CommonUtil.writeFile(result.getExtractedData(), outputPath);
+
+                        JOptionPane.showMessageDialog(OpenStegoUI.this,
+                                labelUtil.getString("gui.msg.success.pwdAttack.found", result.getPassword()) + "\n" +
+                                        labelUtil.getString("gui.msg.success.pwdAttack.extracted", outputPath),
+                                labelUtil.getString("gui.msg.title.success"), JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        panel.getStatusLabel().setText("Not found");
+                        JOptionPane.showMessageDialog(OpenStegoUI.this,
+                                labelUtil.getString("gui.msg.info.pwdAttack.notFound"),
+                                labelUtil.getString("gui.msg.title.results"), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    handleException(e);
+                }
+            }
+        };
+
+        attackWorker.execute();
+    }
+
+    /**
+     * Stops the current password attack
+     */
+    private void stopPasswordAttack() {
+        if (attackWorker != null && !attackWorker.isDone()) {
+            attackWorker.cancel(true);
+            if (currentAttack != null) {
+                currentAttack.cancel();
+            }
+        }
+        getPwdAttackPanel().getStartButton().setEnabled(true);
+        getPwdAttackPanel().getStopButton().setEnabled(false);
+        getPwdAttackPanel().getStatusLabel().setText("Stopped");
+    }
+
+    /**
      * This method shows the file chooser and updates the text field based on the selection
      *
      * @throws OpenStegoException Processing issues
@@ -790,6 +1053,35 @@ public class OpenStegoUI extends OpenStegoFrame {
                 filterDesc = labelUtil.getString("gui.filer.filter.sigFiles", "*" + SIG_FILE_EXTENSION);
                 allowedExts = Collections.singletonList(SIG_FILE_EXTENSION);
                 textField = getVerifyWmPanel().getSignatureFileTextField();
+                break;
+            case ActionCommands.BROWSE_PWD_STGFILE:
+                title = labelUtil.getString("gui.filer.title.pwdAttack.stegoFile");
+                filterDesc = labelUtil.getString("gui.filer.filter.stegoFiles", getExtensionsString(dhPlugin, WRITE_EXTENSIONS));
+                allowedExts = getExtensionsList(dhPlugin, WRITE_EXTENSIONS);
+                textField = getPwdAttackPanel().getStegoFileTextField();
+                break;
+            case ActionCommands.BROWSE_PWD_OUTDIR:
+                title = labelUtil.getString("gui.filer.title.pwdAttack.outputDir");
+                allowFileDir = FileBrowser.ALLOW_DIRECTORY;
+                textField = getPwdAttackPanel().getOutputFolderTextField();
+                break;
+            case ActionCommands.BROWSE_PWD_WORDLIST:
+                title = labelUtil.getString("gui.filer.title.pwdAttack.wordlist");
+                filterDesc = labelUtil.getString("gui.filer.filter.wordlist");
+                allowedExts = java.util.Arrays.asList(".txt", ".lst", ".dict");
+                textField = getPwdAttackPanel().getWordlistTextField();
+                break;
+            case ActionCommands.BROWSE_PWD_WORDLIST2:
+                title = labelUtil.getString("gui.filer.title.pwdAttack.wordlist2");
+                filterDesc = labelUtil.getString("gui.filer.filter.wordlist");
+                allowedExts = java.util.Arrays.asList(".txt", ".lst", ".dict");
+                textField = getPwdAttackPanel().getWordlist2TextField();
+                break;
+            case ActionCommands.BROWSE_PWD_RULES:
+                title = labelUtil.getString("gui.filer.title.pwdAttack.rulesFile");
+                filterDesc = labelUtil.getString("gui.filer.filter.rulesFile");
+                allowedExts = java.util.Arrays.asList(".rule", ".txt");
+                textField = getPwdAttackPanel().getRulesFileTextField();
                 break;
             default:
                 throw new OpenStegoException(new RuntimeException("Unknown action: " + action));
@@ -1008,6 +1300,10 @@ public class OpenStegoUI extends OpenStegoFrame {
                             getMainPanel().add(getVerifyWmPanel());
                             getHeader().setText(labelUtil.getString("gui.label.panelHeader.wmVerify"));
                             break;
+                        case ActionCommands.SWITCH_PWD_ATTACK:
+                            getMainPanel().add(getPwdAttackPanel());
+                            getHeader().setText(labelUtil.getString("gui.label.panelHeader.pwdAttack"));
+                            break;
                     }
                     getMainPanel().revalidate();
                     getMainPanel().repaint();
@@ -1029,6 +1325,12 @@ public class OpenStegoUI extends OpenStegoFrame {
                                 break;
                             case ActionCommands.RUN_WM_VERIFY:
                                 checkMark();
+                                break;
+                            case ActionCommands.RUN_PWD_START:
+                                startPasswordAttack();
+                                break;
+                            case ActionCommands.RUN_PWD_STOP:
+                                stopPasswordAttack();
                                 break;
                         }
                     } finally {
