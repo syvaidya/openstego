@@ -14,7 +14,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Common utilities for OpenStego
@@ -117,45 +117,93 @@ public class CommonUtil {
     /**
      * Method to parse a delimiter separated list of files into arraylist of filenames. It supports wildcard characters
      * "*" and "?" within the filenames.
+     * <p>
+     * File names which themselves contain the delimiter (e.g. "photo;2023.png" when the delimiter is ";") are supported:
+     * if consecutive tokens, joined back with the delimiter, form the path of an existing file, then that file is used
+     * instead of treating each token as a separate file name.
      *
      * @param fileList  Delimiter separated list of filenames
      * @param delimiter Delimiter for tokenization
      * @return List of filenames after tokenizing and wildcard expansion
      */
     public static List<File> parseFileList(String fileList, String delimiter) {
-        int index;
-        StringTokenizer tokenizer;
-        String fileName;
-        String dirName;
         List<File> output = new ArrayList<>();
-        File fileDir;
-        File[] arrFile;
 
         if (fileList == null) {
             return output;
         }
 
-        tokenizer = new StringTokenizer(fileList, delimiter);
-        while (tokenizer.hasMoreTokens()) {
-            fileName = tokenizer.nextToken().trim();
-            index = fileName.lastIndexOf(File.separator);
-
-            if (index >= 0) {
-                dirName = fileName.substring(0, index);
-                fileName = fileName.substring(index + 1);
-            } else {
-                dirName = ".";
+        String[] tokens = fileList.split(Pattern.quote(delimiter), -1);
+        int i = 0;
+        while (i < tokens.length) {
+            // Find the longest run of tokens (starting at i) which, joined with the delimiter, is an existing file
+            int matchEnd = -1;
+            StringBuilder candidate = new StringBuilder(tokens[i]);
+            for (int j = i + 1; j < tokens.length; j++) {
+                candidate.append(delimiter).append(tokens[j]);
+                if (isExistingFile(candidate.toString().trim())) {
+                    matchEnd = j;
+                }
             }
-            fileName = replaceWildcards(fileName);
 
-            fileDir = new File(dirName.equals("") ? "." : dirName);
-            arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
-            if (arrFile != null) {
-                Collections.addAll(output, arrFile);
+            if (matchEnd >= 0) {
+                StringBuilder fileName = new StringBuilder(tokens[i]);
+                for (int j = i + 1; j <= matchEnd; j++) {
+                    fileName.append(delimiter).append(tokens[j]);
+                }
+                output.add(toFile(fileName.toString().trim()));
+                i = matchEnd + 1;
+            } else {
+                String fileName = tokens[i].trim();
+                if (!fileName.isEmpty()) {
+                    addMatchingFiles(fileName, output);
+                }
+                i++;
             }
         }
 
         return output;
+    }
+
+    /**
+     * Checks whether the given path (without wildcard expansion) is an existing regular file
+     */
+    private static boolean isExistingFile(String path) {
+        return !path.isEmpty() && new File(path).isFile();
+    }
+
+    /**
+     * Converts the given path to a File object, consistent with the File objects returned by wildcard expansion
+     */
+    private static File toFile(String path) {
+        int index = path.lastIndexOf(File.separator);
+        if (index >= 0) {
+            String dirName = path.substring(0, index);
+            return new File(dirName.equals("") ? File.separator : dirName, path.substring(index + 1));
+        }
+        return new File(".", path);
+    }
+
+    /**
+     * Expands the given file name (which may contain wildcards) and adds all matching files to the output list
+     */
+    private static void addMatchingFiles(String fileName, List<File> output) {
+        String dirName;
+        int index = fileName.lastIndexOf(File.separator);
+
+        if (index >= 0) {
+            dirName = fileName.substring(0, index);
+            fileName = fileName.substring(index + 1);
+        } else {
+            dirName = ".";
+        }
+        fileName = replaceWildcards(fileName);
+
+        File fileDir = new File(dirName.equals("") ? "." : dirName);
+        File[] arrFile = fileDir.listFiles(new WildcardFilenameFilter(fileName));
+        if (arrFile != null) {
+            Collections.addAll(output, arrFile);
+        }
     }
 
     /**
