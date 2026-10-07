@@ -9,6 +9,7 @@ package com.openstego.desktop.plugin.lsb;
 import com.openstego.desktop.OpenStegoConfig;
 import com.openstego.desktop.OpenStegoException;
 import com.openstego.desktop.util.ImageHolder;
+import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.LabelUtil;
 
 import java.awt.image.BufferedImage;
@@ -97,7 +98,9 @@ public class LSBOutputStream extends OutputStream {
         this.imgWidth = image.getImage().getWidth();
         this.imgHeight = image.getImage().getHeight();
         this.config = config;
-        BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+        // Preserve the alpha channel (transparency) of the cover image, if present
+        int targetType = ImageUtil.hasAlpha(image.getImage()) ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
+        BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, targetType);
         this.image = new ImageHolder(newImg, image.getMetadata());
         for (int x = 0; x < this.imgWidth; x++) {
             for (int y = 0; y < this.imgHeight; y++) {

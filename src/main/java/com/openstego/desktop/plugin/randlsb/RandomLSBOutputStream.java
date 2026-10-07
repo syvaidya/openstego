@@ -13,6 +13,7 @@ import com.openstego.desktop.plugin.lsb.LSBDataHeader;
 import com.openstego.desktop.plugin.lsb.LSBErrors;
 import com.openstego.desktop.plugin.lsb.LSBPlugin;
 import com.openstego.desktop.util.ImageHolder;
+import com.openstego.desktop.util.ImageUtil;
 import com.openstego.desktop.util.StringUtil;
 
 import java.awt.image.BufferedImage;
@@ -89,10 +90,13 @@ public class RandomLSBOutputStream extends OutputStream {
         this.imgHeight = image.getImage().getHeight();
         this.config = config;
 
-        if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
+        // Preserve the alpha channel (transparency) of the cover image, if present. Data is embedded only in the
+        // R, G and B channels, so keeping alpha does not affect the embedding capacity or extraction.
+        int targetType = ImageUtil.hasAlpha(image.getImage()) ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
+        if (image.getImage().getType() == targetType) {
             this.image = image;
         } else {
-            BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage newImg = new BufferedImage(this.imgWidth, this.imgHeight, targetType);
             this.image = new ImageHolder(newImg, image.getMetadata());
             for (int x = 0; x < this.imgWidth; x++) {
                 for (int y = 0; y < this.imgHeight; y++) {

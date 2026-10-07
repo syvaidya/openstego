@@ -196,10 +196,11 @@ public class ImageUtil {
                 g = (image.getRGB(j, i) >> 8) & 0xFF;
                 b = (image.getRGB(j, i)) & 0xFF;
 
-                // Convert RGB to YUV colorspace
-                y[i][j] = (int) ((0.299 * r) + (0.587 * g) + (0.114 * b));
-                u[i][j] = (int) ((-0.147 * r) - (0.289 * g) + (0.436 * b));
-                v[i][j] = (int) ((0.615 * r) - (0.515 * g) - (0.100 * b));
+                // Convert RGB to YUV colorspace (BT.601). Values are rounded rather than truncated, as truncation
+                // introduces a systematic error which degrades image quality on the RGB -> YUV -> RGB round trip.
+                y[i][j] = (int) Math.round((0.299 * r) + (0.587 * g) + (0.114 * b));
+                u[i][j] = (int) Math.round((-0.14713 * r) - (0.28886 * g) + (0.436 * b));
+                v[i][j] = (int) Math.round((0.615 * r) - (0.51499 * g) - (0.10001 * b));
                 aa[i][j] = a;
             }
         }
@@ -276,9 +277,9 @@ public class ImageUtil {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 // Convert YUV back to RGB
-                r = pixelRange(y[i][j] + 1.140 * v[i][j]);
-                g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
-                b = pixelRange(y[i][j] + 2.032 * u[i][j]);
+                r = pixelRange(y[i][j] + 1.13983 * v[i][j]);
+                g = pixelRange(y[i][j] - 0.39465 * u[i][j] - 0.58060 * v[i][j]);
+                b = pixelRange(y[i][j] + 2.03211 * u[i][j]);
                 a = aa[i][j];
 
                 image.setRGB(j, i, (a << 24) + (r << 16) + (g << 8) + b);
@@ -305,7 +306,7 @@ public class ImageUtil {
      * @return Limited value
      */
     public static int pixelRange(double p) {
-        return ((p > 255) ? 255 : (p < 0) ? 0 : (int) p);
+        return ((p > 255) ? 255 : (p < 0) ? 0 : (int) Math.round(p));
     }
 
     /**
@@ -405,14 +406,47 @@ public class ImageUtil {
         return new ImageHolder(diffImage, null);
     }
 
+    /**
+     * Checks whether the given image has an alpha (transparency) channel
+     *
+     * @param image Image
+     * @return true if the image has an alpha channel
+     */
+    public static boolean hasAlpha(BufferedImage image) {
+        return image != null && image.getColorModel().hasAlpha();
+    }
+
+    /**
+     * Returns a copy of the given image without the alpha channel. The R, G and B values of every pixel are copied
+     * as-is (no blending with a background colour), so that any data embedded in those bits is preserved.
+     *
+     * @param image Image with alpha channel
+     * @return Image of type TYPE_INT_RGB
+     */
+    public static BufferedImage removeAlpha(BufferedImage image) {
+        BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                rgbImage.setRGB(x, y, image.getRGB(x, y) & 0x00FFFFFF);
+            }
+        }
+        return rgbImage;
+    }
+
     private static void writeImage(ImageHolder image, String imageType, OutputStream os) throws OpenStegoException {
         if ("jpeg".equals(imageType) || "jpg".equals(imageType)) {
             writeJpegImage(image, os);
         } else {
             try {
                 ImageWriter writer = ImageIO.getImageWritersByFormatName(imageType).next();
+                BufferedImage outImage = image.getImage();
+                // Some formats (e.g. BMP) cannot store an alpha channel. In that case, drop the alpha channel instead
+                // of failing with an error like "Image cannot be encoded with compression type BI_RGB".
+                if (hasAlpha(outImage) && !writer.getOriginatingProvider().canEncodeImage(outImage)) {
+                    outImage = removeAlpha(outImage);
+                }
                 writer.setOutput(ImageIO.createImageOutputStream(os));
-                writer.write(null, new IIOImage(image.getImage(), null, image.getMetadata()), null);
+                writer.write(null, new IIOImage(outImage, null, image.getMetadata()), null);
             } catch (IOException e) {
                 throw new OpenStegoException(e);
             }
@@ -433,8 +467,11 @@ public class ImageUtil {
             ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
             writer.setOutput(ImageIO.createImageOutputStream(os));
 
+            // JPEG does not support transparency, so drop the alpha channel if present
+            BufferedImage outImage = hasAlpha(image.getImage()) ? removeAlpha(image.getImage()) : image.getImage();
+
             // We only copy over EXIF data from original file
-            IIOMetadata metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image.getImage()), jpegParams);
+            IIOMetadata metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(outImage), jpegParams);
             String metadataFormatName = image.getMetadata().getNativeMetadataFormatName();
             Node mdRoot = image.getMetadata().getAsTree(metadataFormatName);
             Node mdNode = mdRoot.getFirstChild();
@@ -456,7 +493,7 @@ public class ImageUtil {
             }
             metadata.mergeTree(metadataFormatName, mdRoot);
 
-            writer.write(null, new IIOImage(image.getImage(), null, metadata), jpegParams);
+            writer.write(null, new IIOImage(outImage, null, metadata), jpegParams);
         } catch (IOException e) {
             throw new OpenStegoException(e);
         }

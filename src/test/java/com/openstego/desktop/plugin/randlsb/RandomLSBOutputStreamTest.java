@@ -81,13 +81,29 @@ public class RandomLSBOutputStreamTest {
 
     @Test
     public void testNonRGBImage() throws Exception {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_3BYTE_BGR);
         ImageHolder holder = new ImageHolder(image, null);
         LSBConfig config = new LSBConfig();
         try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 100, "test.txt", config)) {
-            // Image type should be converted to RGB
+            // Image type without alpha channel should be converted to RGB
             assertEquals(BufferedImage.TYPE_INT_RGB, os.getImage().getImage().getType());
             assertNull(os.getImage().getMetadata());
+        }
+    }
+
+    @Test
+    public void testImageWithAlphaKeepsAlpha() throws Exception {
+        // Issue #58: transparency of the cover image must not be lost
+        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
+        image.setRGB(0, 0, 0x00112233);
+        image.setRGB(1, 0, 0x80445566);
+        ImageHolder holder = new ImageHolder(image, null);
+        LSBConfig config = new LSBConfig();
+        try (RandomLSBOutputStream os = new RandomLSBOutputStream(holder, 100, "test.txt", config)) {
+            BufferedImage out = os.getImage().getImage();
+            assertEquals(BufferedImage.TYPE_INT_ARGB, out.getType());
+            assertEquals(0x00, out.getRGB(0, 0) >>> 24);
+            assertEquals(0x80, out.getRGB(1, 0) >>> 24);
         }
     }
 
