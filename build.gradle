@@ -54,6 +54,9 @@ sourceSets {
 }
 
 dependencies {
+    // WebP image format support (read and write) for Java ImageIO, see issue #63
+    runtimeOnly 'com.github.usefulness:webp-imageio:0.11.0'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testImplementation 'org.mockito:mockito-core:4.8.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.8.0'
@@ -62,8 +65,8 @@ dependencies {
 }
 
 compileJava {
-    sourceCompatibility = '8'
-    targetCompatibility = '8'
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
 }
 
 processResources {
@@ -79,7 +82,8 @@ jar {
                 'Name'                  : projectName,
                 'Main-Class'            : 'com.openstego.desktop.OpenStego',
                 'Implementation-Version': project.version,
-                'Built-By'              : project.author
+                'Built-By'              : project.author,
+                'Class-Path'            : configurations.runtimeClasspath.collect { it.name }.join(' ')
         ])
     }
 }
@@ -119,7 +123,7 @@ javadoc {
 
 tasks.register("run", JavaExec) {
     dependsOn jar
-    classpath = files(tasks.jar)
+    classpath = files(tasks.jar) + configurations.runtimeClasspath
 }
 
 tasks.register("distBase", Copy) {
@@ -141,6 +145,9 @@ tasks.register("distBase", Copy) {
         fileMode 0755
     }
     from(tasks.jar) {
+        into 'lib'
+    }
+    from(configurations.runtimeClasspath) {
         into 'lib'
     }
 }
@@ -185,7 +192,7 @@ tasks.register("distDeb", Deb) {
     packageGroup = 'utils'
     maintainer = "${author} (${authorMail})"
     url = project.homepageUrl
-    requires('default-jre').or('java8-runtime')
+    requires('default-jre').or('java11-runtime')
 
     into '/usr/share'
     from(distBaseDir) {
@@ -235,7 +242,7 @@ tasks.register("distRpm", Rpm) {
     license = 'GPLv2'
     buildHost = ''
     os = LINUX
-    requires('java', '1.8', GREATER | EQUAL)
+    requires('java', '11', GREATER | EQUAL)
 
     into '/usr/share'
     from(distBaseDir) {

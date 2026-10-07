@@ -411,8 +411,18 @@ public class ImageUtil {
         } else {
             try {
                 ImageWriter writer = ImageIO.getImageWritersByFormatName(imageType).next();
+                ImageWriteParam param = null;
+                IIOMetadata metadata = image.getMetadata();
+                if ("webp".equals(imageType)) {
+                    // WebP is lossy by default, which would destroy the embedded data. Always use lossless WebP.
+                    param = getLosslessWriteParam(writer);
+                    // Metadata of other formats (e.g. PNG) cannot be used for WebP
+                    if (metadata != null && !isNativeMetadataOf(writer, metadata)) {
+                        metadata = null;
+                    }
+                }
                 writer.setOutput(ImageIO.createImageOutputStream(os));
-                writer.write(null, new IIOImage(image.getImage(), null, image.getMetadata()), null);
+                writer.write(null, new IIOImage(image.getImage(), null, metadata), param);
             } catch (IOException e) {
                 throw new OpenStegoException(e);
             }
@@ -435,7 +445,12 @@ public class ImageUtil {
 
             // We only copy over EXIF data from original file
             IIOMetadata metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image.getImage()), jpegParams);
-            String metadataFormatName = image.getMetadata().getNativeMetadataFormatName();
+            String metadataFormatName = image.getMetadata() == null ? null : image.getMetadata().getNativeMetadataFormatName();
+            if (metadataFormatName == null) {
+                // Cover image without metadata (e.g. WebP)
+                writer.write(null, new IIOImage(image.getImage(), null, metadata), jpegParams);
+                return;
+            }
             Node mdRoot = image.getMetadata().getAsTree(metadataFormatName);
             Node mdNode = mdRoot.getFirstChild();
             while (mdNode != null) {
@@ -487,4 +502,34 @@ public class ImageUtil {
         }
     }
 
+    /**
+     * Returns write parameters which select a lossless compression type of the given writer (e.g. lossless WebP)
+     *
+     * @param writer Image writer
+     * @return Write parameters using lossless compression
+     * @throws IOException If the writer does not support lossless compression
+     */
+    public static ImageWriteParam getLosslessWriteParam(ImageWriter writer) throws IOException {
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        if (!param.canWriteCompressed()) {
+            return param;
+        }
+        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        String[] compressionTypes = param.getCompressionTypes();
+        if (compressionTypes != null) {
+            for (String type : compressionTypes) {
+                if (type != null && type.toLowerCase().contains("lossless")) {
+                    param.setCompressionType(type);
+                    return param;
+                }
+            }
+        }
+        throw new IOException("Image writer " + writer.getOriginatingProvider().getDescription(null)
+                + " does not support lossless compression");
+    }
+
+    private static boolean isNativeMetadataOf(ImageWriter writer, IIOMetadata metadata) {
+        String writerFormat = writer.getOriginatingProvider().getNativeImageMetadataFormatName();
+        return writerFormat != null && writerFormat.equals(metadata.getNativeMetadataFormatName());
+    }
 }

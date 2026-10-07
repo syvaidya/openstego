@@ -176,8 +176,13 @@ public class LSBPlugin extends DHImagePluginTemplate<LSBConfig> {
                 try {
                     writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                     compTypes = writeParam.getCompressionTypes();
-                    if (compTypes.length > 0) {
-                        writeParam.setCompressionType(compTypes[0]);
+                    // Pick a lossless compression type if the format offers one (e.g. WebP offers "Lossy" and
+                    // "Lossless"), otherwise the first compression type
+                    for (String compType : compTypes) {
+                        writeParam.setCompressionType(compType);
+                        if (writeParam.isCompressionLossless()) {
+                            break;
+                        }
                     }
                 } catch (UnsupportedOperationException uoEx) {
                     // Compression not supported
