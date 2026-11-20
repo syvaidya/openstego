@@ -53,6 +53,14 @@ sourceSets {
     }
 }
 
+compileTestJava {
+    source(fileTree('src/main/java') {
+        include 'com/openstego/desktop/plugin/dctlsb/**'
+        include 'com/openstego/desktop/plugin/template/dct/**'
+        include 'com/openstego/desktop/util/dct/**'
+    })
+}
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testImplementation 'org.mockito:mockito-core:4.8.0'

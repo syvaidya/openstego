@@ -247,7 +247,7 @@ public class ImageUtil {
     /**
      * Get image (with RGB data) from given YUV data
      *
-     * @param yuv     List with three elements of two-dimensional int's - Y, U and V
+     * @param yuv     List of two-dimensional int arrays: Y, U, V and optional alpha (opaque if omitted)
      * @param imgType Type of image (e.g. BufferedImage.TYPE_INT_RGB)
      * @return Image
      */
@@ -267,7 +267,7 @@ public class ImageUtil {
         y = yuv.get(0);
         u = yuv.get(1);
         v = yuv.get(2);
-        aa = yuv.get(3);
+        aa = yuv.size() > 3 ? yuv.get(3) : null;
 
         height = y.length;
         width = y[0].length;
@@ -279,7 +279,7 @@ public class ImageUtil {
                 r = pixelRange(y[i][j] + 1.140 * v[i][j]);
                 g = pixelRange(y[i][j] - 0.395 * u[i][j] - 0.581 * v[i][j]);
                 b = pixelRange(y[i][j] + 2.032 * u[i][j]);
-                a = aa[i][j];
+                a = aa == null ? 255 : aa[i][j];
 
                 image.setRGB(j, i, (a << 24) + (r << 16) + (g << 8) + b);
             }

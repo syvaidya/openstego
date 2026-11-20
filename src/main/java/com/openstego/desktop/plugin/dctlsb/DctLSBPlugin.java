@@ -86,9 +86,9 @@ public class DctLSBPlugin extends WMImagePluginTemplate {
                 image = ImageUtil.byteArrayToImage(cover, coverFileName);
             }
             imgType = image.getImage().getType();
-            try (DctLSBOutputStream os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config)) {
+            try (DctLSBOutputStream os = new DctLSBOutputStream(image, msg.length, msgFileName, this.config, imgType)) {
                 os.write(msg);
-                image = os.getImage(imgType);
+                image = os.getImage();
             }
 
             return ImageUtil.imageToByteArray(image, stegoFileName, this);
