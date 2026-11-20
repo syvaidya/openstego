@@ -17,7 +17,7 @@ import com.openstego.desktop.util.dct.DCT;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -25,10 +25,14 @@ import java.util.Random;
  * OutputStream to embed data into image
  */
 public class DctLSBOutputStream extends OutputStream {
-    /**
-     * Output Image data
-     */
+    private static final int MAX_ATTEMPTS = 33;
     private final ImageHolder image;
+    private final int[][] blockY = new int[DCT.NJPEG][DCT.NJPEG];
+    private final int[][] blockU = new int[DCT.NJPEG][DCT.NJPEG];
+    private final int[][] blockV = new int[DCT.NJPEG][DCT.NJPEG];
+    private final List<int[][]> block = Arrays.asList(this.blockY, this.blockU, this.blockV);
+    private final double[][] original = new double[DCT.NJPEG][DCT.NJPEG];
+    private final int[] pixels = new int[DCT.NJPEG * DCT.NJPEG];
 
     /**
      * Length of the data
@@ -44,6 +48,8 @@ public class DctLSBOutputStream extends OutputStream {
      * Current message bit number
      */
     private int n = 0;
+    private int expectedBits;
+    private boolean failed;
 
     /**
      * Width of the image rounded to 8 (So that 8x8 blocks can be created from the image)
@@ -102,9 +108,11 @@ public class DctLSBOutputStream extends OutputStream {
      * @param dataLength Length of the data that would be written to the image
      * @param fileName   Name of the source data file
      * @param config     Configuration data to use while writing
+     * @param imgType    Type of image to produce
      * @throws OpenStegoException Processing issues
      */
-    public DctLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config) throws OpenStegoException {
+    public DctLSBOutputStream(ImageHolder image, int dataLength, String fileName, OpenStegoConfig config, int imgType)
+            throws OpenStegoException {
         List<int[][]> yuv;
 
         if (image == null) {
@@ -118,8 +126,6 @@ public class DctLSBOutputStream extends OutputStream {
         int actualImgHeight = image.getImage().getHeight();
         this.config = config;
         this.fileName = fileName;
-        BufferedImage newImg = new BufferedImage(actualImgWidth, actualImgHeight, BufferedImage.TYPE_INT_RGB);
-        this.image = new ImageHolder(newImg, image.getMetadata());
 
         // Calculate width and height rounded to 8
         this.imgWidth = actualImgWidth - (actualImgWidth % DCT.NJPEG);
@@ -129,12 +135,7 @@ public class DctLSBOutputStream extends OutputStream {
         this.y = yuv.get(0);
         this.u = yuv.get(1);
         this.v = yuv.get(2);
-        for (int i = 0; i < actualImgWidth; i++) {
-            for (int j = 0; j < actualImgHeight; j++) {
-                this.image.getImage().setRGB(i, j, image.getImage().getRGB(i, j));
-            }
-        }
-
+        this.image = new ImageHolder(ImageUtil.getImageFromYuv(yuv.subList(0, 3), imgType), image.getMetadata());
         this.dct = new DCT();
         this.dct.initDct8x8();
         this.dct.initQuantumJpegLumin();
@@ -155,10 +156,13 @@ public class DctLSBOutputStream extends OutputStream {
         try {
             header = new DCTDataHeader(this.dataLength, this.fileName, this.config);
 
-            if (((header.getHeaderSize() + this.dataLength) * 8) > (this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG))) {
+            long bits = (header.getHeaderSize() + (long) this.dataLength) * 8;
+            if (this.dataLength < 0 || bits > (long) this.imgWidth * this.imgHeight / (DCT.NJPEG * DCT.NJPEG)
+                    || bits > Integer.MAX_VALUE) {
                 throw new OpenStegoException(null, DctLSBPlugin.NAMESPACE, DctLSBErrors.IMAGE_SIZE_INSUFFICIENT);
             }
-            this.coord = new Coordinates((header.getHeaderSize() + this.dataLength) * 8);
+            this.expectedBits = (int) bits;
+            this.coord = new Coordinates(this.expectedBits);
             write(header.getHeaderData());
         } catch (IOException ioEx) {
             throw new OpenStegoException(ioEx);
@@ -176,45 +180,27 @@ public class DctLSBOutputStream extends OutputStream {
         int xb;
         int yb;
         int coeffNum;
-        int coeff;
+
+        if (this.failed) {
+            throw new IOException("DctLSB output is incomplete after a write failure");
+        }
+        if (this.n >= this.expectedBits) {
+            throw new IOException("Declared DctLSB data length exceeded");
+        }
 
         for (int count = 0; count < 8; count++) {
-            if (this.n >= (this.imgWidth * this.imgHeight * 8)) {
-                throw new IOException("Image size insufficient");
-            }
-
             // Randomly select a block, check to get distinct blocks (don't use a block twice)
             do {
                 xb = Math.abs(this.rand.nextInt()) % (this.imgWidth / DCT.NJPEG);
                 yb = Math.abs(this.rand.nextInt()) % (this.imgHeight / DCT.NJPEG);
             } while (!this.coord.add(xb, yb));
 
-            // Do the forward 8x8 DCT of that block
-            this.dct.fwdDctBlock8x8(this.y, xb * DCT.NJPEG, yb * DCT.NJPEG, this.dcts);
-
             // Randomly select a coefficient. Only accept coefficient in the middle frequency range
             do {
                 coeffNum = (Math.abs(this.rand.nextInt()) % (DCT.NJPEG * DCT.NJPEG - 2)) + 1;
             } while (this.dct.isMidFreqCoeff8x8(coeffNum) == 0);
 
-            // Quantize block according to quantization quality parameter
-            this.dct.quantize8x8(this.dcts);
-
-            // Read the coefficient value and replace its LSB based on the message bit
-            coeff = (int) this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG];
-            if (((data >> (7 - count)) & 1) == 1) {
-                coeff |= 1;
-            } else {
-                coeff &= ~(1);
-            }
-            this.dcts[coeffNum / DCT.NJPEG][coeffNum % DCT.NJPEG] = coeff;
-
-            // Dequantize the block
-            this.dct.dequantize8x8(this.dcts);
-
-            // Do the inverse DCT on the modified 8x8 block
-            this.dct.invDctBlock8x8(this.dcts, this.y, xb * DCT.NJPEG, yb * DCT.NJPEG);
-
+            writeBit(xb * DCT.NJPEG, yb * DCT.NJPEG, coeffNum, (data >>> (7 - count)) & 1);
             this.n++;
         }
     }
@@ -222,23 +208,50 @@ public class DctLSBOutputStream extends OutputStream {
     /**
      * Get the image containing the embedded data. Ideally, this should be called after the stream is closed.
      *
-     * @param imgType Type of image
      * @return Image data
      * @throws OpenStegoException Processing issues
      */
-    public ImageHolder getImage(int imgType) throws OpenStegoException {
-        try {
-            flush();
-        } catch (IOException ioEx) {
-            throw new OpenStegoException(ioEx);
+    public ImageHolder getImage() throws OpenStegoException {
+        if (this.failed || this.n != this.expectedBits) {
+            throw new OpenStegoException(new IOException("DctLSB output is incomplete"));
+        }
+        return this.image;
+    }
+
+    private void writeBit(int row, int column, int coefficient, int value) throws IOException {
+        int size = DCT.NJPEG;
+        this.dct.fwdDctBlock8x8(this.y, row, column, this.original);
+        this.dct.quantize8x8(this.original);
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(this.u[row + i], column, this.blockU[i], 0, size);
+            System.arraycopy(this.v[row + i], column, this.blockV[i], 0, size);
         }
 
-        List<int[][]> yuv = new ArrayList<>();
-        yuv.add(this.y);
-        yuv.add(this.u);
-        yuv.add(this.v);
+        int coefficientRow = coefficient / size;
+        int coefficientColumn = coefficient % size;
+        int first = ((int) this.original[coefficientRow][coefficientColumn] & ~1) | value;
+        BufferedImage raster = this.image.getImage().getSubimage(column, row, size, size);
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            for (int i = 0; i < size; i++) {
+                System.arraycopy(this.original[i], 0, this.dcts[i], 0, size);
+            }
 
-        this.image.setImage(ImageUtil.getImageFromYuv(yuv, imgType));
-        return this.image;
+            // Try the original value first, then +/-2, +/-4, and so on without changing parity.
+            int offset = (attempt % 2 == 0) ? -attempt : attempt + 1;
+            this.dcts[coefficientRow][coefficientColumn] = first + offset;
+            this.dct.dequantize8x8(this.dcts);
+            this.dct.invDct8x8(this.dcts, this.blockY);
+
+            BufferedImage rgb = ImageUtil.getImageFromYuv(this.block, BufferedImage.TYPE_INT_RGB);
+            rgb.getRGB(0, 0, size, size, this.pixels, 0, size);
+            raster.setRGB(0, 0, size, size, this.pixels, 0, size);
+            this.dct.fwdDct8x8(ImageUtil.getYuvFromImage(raster).get(0), this.dcts);
+            this.dct.quantize8x8(this.dcts);
+            if (((int) this.dcts[coefficientRow][coefficientColumn] & 1) == value) {
+                return;
+            }
+        }
+        this.failed = true;
+        throw new IOException("Cannot preserve a DctLSB bit in the requested image type");
     }
 }
